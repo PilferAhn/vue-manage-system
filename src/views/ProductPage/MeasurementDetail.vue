@@ -1,0 +1,426 @@
+<template>
+  <div class="container">
+    <el-form ref="formRef" :rules="rules" :model="form" label-width="100px">
+      <div class="split-layout">
+        <!-- 첫 번째 컬럼의 내용 -->
+        <div class="form-box">
+          <el-form-item label="고객사 정보">
+            <el-input v-model="form.customerCompany"></el-input>
+          </el-form-item>
+
+          <el-form-item label="제품 스팩" class="form-item-spacing">
+            <el-col :span="6">
+              <el-form-item>
+                <el-input
+                  v-model="form.specTemperature"
+                  placeholder="Temperature"
+                  :disabled="!form.isSpecEdit"
+                />
+                <!-- <el-button v-if="isEditable" @click="enableEditing"
+                >직접 입력</el-button
+              > -->
+              </el-form-item>
+            </el-col>
+            <el-col class="line" :span="3">/</el-col>
+            <el-col :span="6">
+              <el-input
+                v-model="form.specPower"
+                placeholder="Input Power"
+                :disabled="!form.isSpecEdit"
+              />
+            </el-col>
+
+            <!-- <el-col class="line" :span="3">/</el-col>
+            <el-col :span="6">
+              <el-checkbox v-model="form.isSpecEdit">직접 입력</el-checkbox>
+            </el-col> -->
+          </el-form-item>
+
+          <el-form-item label="설계정보" prop="band">
+            <el-col :span="6">
+              <el-form-item>
+                <el-input
+                  placeholder="Band"
+                  v-model="form.band"
+                  style="width: 100%"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col class="line" :span="3">/</el-col>
+            <el-col :span="6">
+              <el-form-item prop="modelName">
+                <el-input
+                  placeholder="기종명"
+                  v-model="form.modelName"
+                  style="width: 100%"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col class="line" :span="3">/</el-col>
+            <el-col :span="6">
+              <el-form-item prop="ps">
+                <el-input
+                  placeholder="설계 차수"
+                  v-model="form.condition"
+                  style="width: 100%"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+
+          <el-form-item label="작성자">
+            <el-col :span="11">
+              <el-form-item prop="designer">
+                <el-input
+                  placeholder="개발자"
+                  v-model="form.designer"
+                  style="width: 100%"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col class="line" :span="2">/</el-col>
+            <el-col :span="11">
+              <el-form-item prop="requester">
+                <el-input
+                  placeholder="의뢰자"
+                  v-model="form.requester"
+                  style="width: 100%"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+
+          <el-form-item label="의뢰목적" prop="purpose">
+            <el-input v-model="form.purpose"></el-input>
+          </el-form-item>
+
+          <el-form-item label="작성일">
+            <el-col :span="11">
+              <el-form-item prop="date1">
+                <el-date-picker
+                  type="date"
+                  placeholder="샘플 전달일"
+                  v-model="form.dateOfCreated"
+                  style="width: 100%"
+                  disabled
+                ></el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+
+          <el-form-item label="제품 정보">
+            <el-col :span="11">
+              <el-form-item prop="waferType">
+                <el-input
+                  placeholder="ex) HS, NS, TC"
+                  v-model="form.waferType"
+                  style="width: 100%"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col class="line" :span="2">/</el-col>
+            <el-col :span="11">
+              <el-form-item prop="productType">
+                <el-input
+                  placeholder="ex) CSP / WLP"
+                  v-model="form.packageType"
+                  style="width: 100%"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+
+          <el-form-item label="Type" prop="testType">
+            <el-input
+              placeholder="Type"
+              v-model="form.testType"
+              style="width: 100%"
+            ></el-input>
+          </el-form-item>
+
+          <el-form-item label="Position" prop="position">
+            <el-input
+              placeholder="Type"
+              v-model="form.targetPosition"
+              style="width: 100%"
+            >
+            </el-input>
+          </el-form-item>
+
+          <el-form-item label="수량" prop="sample_quantity">
+            <el-select
+              v-model="form.sampleQuantity"
+              placeholder="Select a number"
+            >
+              <el-option
+                v-for="i in 30"
+                :key="i"
+                :label="i"
+                :value="i"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item
+            v-if="form.sampleQuantity >= 1"
+            label="SPL 정보"
+            prop="test-position"
+          >
+            <el-table :data="form.samples" style="width: 100%">
+              <el-table-column label="Sample Number" prop="sampleNumber">
+                <template #default="{ row }">
+                  <el-input v-model="row.sample_number"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column label="-3dB(주파수)" prop="freq3dB">
+                <template #default="{ row }">
+                  <el-input v-model="row.db_3_freq"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column label="Target" prop="targetFreq">
+                <template #default="{ row }">
+                  <el-input v-model="row.target_freq"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column label="상태" prop="selfHeating">
+                <template #default="{ row }">
+                  <div
+                    v-if="row.status === 'finished'"
+                    :style="{ color: 'blue' }"
+                  >
+                    측정 완료
+                  </div>
+                  <div
+                    v-else-if="row.status === 'in progress'"
+                    :style="{ color: 'green' }"
+                  >
+                    측정 진행
+                  </div>
+                  <div v-else :style="{ color: 'orange' }">측정 대기</div>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form-item>
+        </div>
+
+        <!-- 두 번째 컬럼의 내용 -->
+        <div class="form-box">
+          <el-form-item label="의뢰번호" prop="request_number">
+            <el-col :span="11">
+              <el-input
+                placeholder="ex) 24-123"
+                v-model="form.requestNumber"
+                style="width: 100%"
+              ></el-input>
+            </el-col>
+          </el-form-item>
+
+          <el-form-item label="진행상황" prop="status">
+            <el-col :span="11">
+              <el-select
+                v-model="form.status"
+                placeholder="상태 선택"
+                style="width: 100%"
+              >
+                <el-option label="의뢰서 작성 완료" value="created"></el-option>
+                <el-option label="투입 대기" value="reserved"></el-option>
+                <el-option label="측정 완료" value="finished"></el-option>
+                <el-option label="측정 진행 중" value="in progress"></el-option>
+              </el-select>
+            </el-col>
+          </el-form-item>
+
+          <!-- <el-form-item label="소요시간">
+            <el-col :span="11">
+              <el-form-item prop="requestToCompletionDuration">
+                <el-input
+                  placeholder="소요시간 의뢰일-완료일 [day]"
+                  v-model="form.requestToCompletionDuration"
+                  style="width: 100%"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+
+            <el-col class="line" :span="2">/</el-col>
+
+            <el-col :span="11">
+              <el-form-item prop="startToCompletionDuration">
+                <el-input
+                  placeholder="소요시간 투입일-완료일 [day]"
+                  v-model="form.startToCompletionDuration"
+                  style="width: 100%"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+          </el-form-item> -->
+
+          <el-form-item label="의뢰일">
+            <el-col :span="11">
+              <el-form-item prop="date1">
+                <el-date-picker
+                  type="date"
+                  placeholder="의뢰일"
+                  v-model="form.dateOfSampleConvey"
+                  style="width: 100%"
+                ></el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col class="line" :span="2">/</el-col>
+            <el-col :span="11">
+              <el-form-item prop="date1">
+                <el-date-picker
+                  type="date"
+                  placeholder="투입일"
+                  v-model="form.expectedMeasurementDate"
+                  style="width: 100%"
+                ></el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+          <el-form-item label="완료일">
+            <el-col :span="11">
+              <el-form-item prop="date1">
+                <el-date-picker
+                  type="date"
+                  placeholder="완료일"
+                  v-model="form.expectedCompletionDate"
+                  style="width: 100%"
+                ></el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+          <el-form-item label="특이사항" prop="detail">
+            <el-input
+              type="textarea"
+              rows="10"
+              v-model="form.detail"
+            ></el-input>
+          </el-form-item>
+        </div>
+      </div>
+    </el-form>
+  </div>
+</template>
+
+<script setup lang="ts" name="baseform">
+import { reactive, ref, watch, onMounted } from "vue";
+import { ElMessageBox, ElMessage } from "element-plus";
+import type { FormInstance, FormRules } from "element-plus";
+import axios from "axios";
+import { getCurrentDate } from "../../utils/utility";
+import { createApplicationForm } from "../../utils/form";
+import { useRoute } from "vue-router";
+import { utils } from "xlsx";
+//import ScatterChart from "../views/ScatterChart.vue";
+
+const rules: FormRules = {
+  request_number: [
+    { required: true, message: "의뢰번호를 입력해주세요.", trigger: "blur" },
+  ],
+  status: [
+    { required: true, message: "진행상황을 입력해주세요.", trigger: "blur" },
+  ],
+};
+
+// useRoute 훅을 사용하여 현재 라우트 객체를 가져옵니다.
+const route = useRoute();
+
+// route.params에서 uuid 값을 추출합니다.
+const uuid = route.params.uuid;
+
+// uuid 값을 사용하여 필요한 데이터를 가져오는 로직을 여기에 추가하세요.
+// 예를 들어, API 호출을 통해 uuid에 해당하는 상세 정보를 불러올 수 있습니다.
+
+const name = localStorage.getItem("ms_username");
+const role: string = name === "admin" ? "요소기술그룹" : "요소기술그룹";
+
+// reactive 객체를 사용하여 form 상태를 정의합니다.
+const formRef = ref<FormInstance>();
+const form = createApplicationForm();
+
+const fetchApplicationDetail = async () => {
+  try {
+    const response = await axios.post(
+      "pdt_application/get_application_detail",
+      { uuid: uuid }
+    );
+    // 받아온 데이터를 reactive form 객체에 할당합니다.
+
+    form.requestNumber = response.data.request_number;
+
+    form.status = response.data.status;
+
+    form.customerCompany = response.data.customer_company.toUpperCase();
+    form.specTemperature = response.data.spec_temperature;
+    form.specPower = response.data.spec_power;
+    form.isSpecEdit = response.data.is_spec_edit;
+
+    form.modelName = response.data.model_name;
+    form.condition = response.data.condition;
+
+    form.signalType = response.data.signal_type;
+    form.band = response.data.band;
+    form.duplexMode = response.data.duplex_mode;
+    form.bandwidth = response.data.bandwidth;
+
+    form.designer = response.data.designer;
+    form.requester = response.data.requester;
+
+    form.dateOfSampleConvey = getCurrentDate();
+    form.purpose = response.data.purpose;
+
+    form.waferType = response.data.wafer_type;
+
+    form.packageType = response.data.package_type;
+
+    form.detail = response.data.detail;
+
+    form.testType = response.data.test_type;
+    form.targetPosition = response.data.target_position.toUpperCase();
+
+    form.samples = response.data.samples;
+    form.sampleQuantity = response.data.samples.length;
+
+    form.dateOfCreated = response.data.date_of_created;
+
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+// 컴포넌트가 마운트될 때 HTTP 요청을 보냄
+onMounted(fetchApplicationDetail);
+
+const formatDate = (dateStr: string): string => {
+  const date = new Date(dateStr);
+  const year = date.getFullYear();
+  const month = ("0" + (date.getMonth() + 1)).slice(-2);
+  const day = ("0" + date.getDate()).slice(-2);
+  const hours = ("0" + date.getHours()).slice(-2);
+  const minutes = ("0" + date.getMinutes()).slice(-2);
+  const seconds = ("0" + date.getSeconds()).slice(-2);
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
+</script>
+
+<style>
+.container {
+  width: 90%;
+  max-width: 90%;
+}
+
+.split-layout {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.form-box {
+  flex: 1;
+  margin-right: 20px; /* 폼 박스 간의 간격 조정 */
+}
+
+.form-box:last-child {
+  margin-right: 0;
+}
+</style>

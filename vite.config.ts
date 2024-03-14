@@ -18,5 +18,17 @@ export default defineConfig({
 	],
 	optimizeDeps: {
 		include: ['schart.js']
-	}
+	},
+	server: {
+		host: '10.29.11.59',
+		port: 40006,
+		proxy : {
+			"/pdt_measurement" : "http://10.29.11.59:40000",
+			"/pdt_application" : "http://10.29.11.59:40000",
+			"/measurement" : "http://10.29.11.57:40000",
+			"/wafer" : "http://10.29.11.57:40000",
+			"/application" : "http://10.29.11.57:40000"
+
+		}
+	  },
 });

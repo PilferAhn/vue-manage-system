@@ -5,7 +5,7 @@
 			<el-icon v-if="sidebar.collapse"><Expand /></el-icon>
 			<el-icon v-else><Fold /></el-icon>
 		</div>
-		<div class="logo">后台管理系统</div>
+		<div class="logo">요소기술그룹</div>
 		<div class="header-right">
 			<div class="header-user-con">
 				<!-- 消息中心 -->
@@ -31,11 +31,11 @@
 					</span>
 					<template #dropdown>
 						<el-dropdown-menu>
-							<a href="https://github.com/lin-xin/vue-manage-system" target="_blank">
+							<!-- <a href="https://github.com/lin-xin/vue-manage-system" target="_blank">
 								<el-dropdown-item>项目仓库</el-dropdown-item>
-							</a>
-							<el-dropdown-item command="user">个人中心</el-dropdown-item>
-							<el-dropdown-item divided command="loginout">退出登录</el-dropdown-item>
+							</a> -->
+							<!-- <el-dropdown-item command="user">个人中心</el-dropdown-item> -->
+							<el-dropdown-item divided command="loginout">로그아웃</el-dropdown-item>
 						</el-dropdown-menu>
 					</template>
 				</el-dropdown>

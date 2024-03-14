@@ -18,10 +18,83 @@ const routes: RouteRecordRaw[] = [
                 path: '/dashboard',
                 name: 'dashboard',
                 meta: {
-                    title: '系统首页',
+                    title: 'DashBoard',
                     permiss: '1',
                 },
-                component: () => import(/* webpackChunkName: "dashboard" */ '../views/dashboard.vue'),
+                component: () => import(/* webpackChunkName: "dashboard" */ '../views/DashboardPage/Dashboard.vue'),
+            },
+            {
+                path: '/product/create-application',
+                name: 'ApplicationForm',
+                meta: {
+                    title: '의뢰서 작성',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/ApplicationForm.vue'),
+            },
+            {
+                path: '/admin/application-list',
+                name: 'ApplicationList',
+                meta: {
+                    title: '의뢰서',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/AdminPage/ApplicationList.vue'),
+            },
+            {
+                path: '/admin/application-detail/:uuid',
+                name: 'ApplicationDetail',
+                meta: {
+                    title: '의뢰서 자세히',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/AdminPage/ApplicationDetail.vue'),
+            },
+            {
+                path: '/product/reserved-application-list',
+                name: 'ReservedApplicationList',
+                meta: {
+                    title: '의뢰서 자세히',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/ReservedApplicationList.vue'),
+            },
+            {
+                path: '/product/application-detil/:uuid',
+                name: 'MeasurementDetail',
+                meta: {
+                    title: '의뢰서 자세히',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/MeasurementDetail.vue'),
+            },
+            {
+                path: '/product/my-application-list',
+                name: 'MyProductApplicationList',
+                meta: {
+                    title: '의뢰서 자세히',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/MyProductApplicationList.vue'),
+            },
+            
+            {
+                path: '/teg/waiting-list',
+                name: 'TegWaitingList',
+                meta: {
+                    title: '의뢰서 자세히',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/TegPage/TegWaitingList.vue'),
+            },
+            {
+                path: '/product/application/:uuid',
+                name: 'LoadProductApp',
+                meta: {
+                    title: '의뢰서 자세히',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/LoadProductApp.vue'),
             },
             {
                 path: '/table',
@@ -32,6 +105,7 @@ const routes: RouteRecordRaw[] = [
                 },
                 component: () => import(/* webpackChunkName: "table" */ '../views/table.vue'),
             },
+            
             {
                 path: '/charts',
                 name: 'basecharts',

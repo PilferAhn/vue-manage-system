@@ -11,7 +11,7 @@
 				<el-icon @click="closeTags(index)"><Close /></el-icon>
 			</li>
 		</ul>
-		<div class="tags-close-box">
+		<!-- <div class="tags-close-box">
 			<el-dropdown @command="handleTags">
 				<el-button size="small" type="primary">
 					标签选项
@@ -26,7 +26,7 @@
 					</el-dropdown-menu>
 				</template>
 			</el-dropdown>
-		</div>
+		</div> -->
 	</div>
 </template>
 
