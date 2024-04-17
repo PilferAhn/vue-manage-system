@@ -60,12 +60,7 @@
           align="center"
           width="65px"
         >
-          <!-- <template #default="scope">
-              <el-input
-                v-model="scope.row.sample_quantity"
-                size="small"
-              ></el-input>
-            </template> -->
+
         </el-table-column>
         
         <el-table-column prop="designer" label="개발자" align="center">
@@ -77,15 +72,22 @@
         <el-table-column prop="purpose" label="의뢰목적" align="center">
         </el-table-column>
 
-        <el-table-column label="Action" width="280" align="center">
+        <el-table-column label="Action" align="center">
           <template #default="scope">
             <el-button
               type=""
               size="small"
               style="margin-right: 5px"
               @click="handleDetail(scope.row)"
-              >비슷한 의뢰서 작성</el-button
+              >자세히</el-button
             >
+            <!-- <el-button
+              type=""
+              size="small"
+              style="margin-right: 5px"
+              @click="handleDetail(scope.row)"
+              >비슷한 의뢰서 작성</el-button
+            > -->
           </template>
         </el-table-column>
       </el-table>
@@ -125,7 +127,7 @@
 import { ref, reactive, onMounted, defineProps } from "vue";
 import axios from "axios";
 import { ElMessage } from "element-plus";
-import { getLastThursday, formatDate } from "../../utils/utility";
+import { getLastThursday, formatDate } from "../../../utils/utility";
 import { useRouter } from "vue-router";
 
 const query = reactive({
@@ -215,7 +217,7 @@ const router = useRouter();
 
 const handleDetail = (row: ApplicationItem) => {
   // `application/application_detail` 페이지로 리디렉트하면서 `uuid`를 파라미터로 전달합니다.
-  router.push({ name: "LoadProductApp", params: { uuid: row.uuid } });
+  router.push({ name: "MyProductApplicationDetail", params: { uuid: row.uuid } });
 };
 
 const closeDialog = () => {

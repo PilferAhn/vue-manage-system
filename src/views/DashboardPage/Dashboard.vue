@@ -78,12 +78,12 @@
     <el-row :gutter="20">
       <el-col :span="12">
         <el-card shadow="hover">
-          <WeeklyProductSummaryGraph> </WeeklyProductSummaryGraph>
+          <WeeklyTEGSummaryGraph> </WeeklyTEGSummaryGraph>
         </el-card>
       </el-col>
       <el-col :span="12">
         <el-card shadow="hover">
-          <WeeklyTEGSummaryGraph></WeeklyTEGSummaryGraph>
+          <MonthlyTEGSummaryGraph></MonthlyTEGSummaryGraph>
           <!-- <Pie></Pie> -->
         </el-card>
       </el-col>
@@ -96,8 +96,9 @@ import { ref, onMounted, reactive } from "vue";
 import axios from "../../utils/request";
 // import Pie from "../views/ProductPieChart.vue";
 
-import WeeklyTEGSummaryGraph from "../../views/DashboardPage/WeeklyTEGSummaryGraph.vue";
-import WeeklyProductSummaryGraph from "../../views/DashboardPage/WeeklyProductSummaryGraph.vue";
+import MonthlyTEGSummaryGraph from "./MonthlyTEGSummaryGraph.vue";
+import WeeklyTEGSummaryGraph from "./WeeklyTEGSummaryGraph.vue";
+// import WeeklyProductSummaryGraph from "../../views/DashboardPage/WeeklyProductSummaryGraph.vue";
 import RecentAppList from '../../views/DashboardPage/RecentAppList.vue';
 
 import imgurl from "../../assets/img/img.jpg";
@@ -229,7 +230,9 @@ onMounted(() => {
 });
 
 const name = localStorage.getItem("ms_username");
-const role: string = name === "admin" ? "요소기술그룹" : "요소기술그룹";
+const role: string = name === "admin" ? "RF개발팀" : "RF개발팀";
+
+console.log(localStorage)
 
 </script>
 

@@ -1,7 +1,7 @@
 <template>
 	<div class="tags" v-if="tags.show">
 		<ul>
-			<li
+			<!-- <li
 				class="tags-li"
 				v-for="(item, index) in tags.list"
 				:class="{ active: isActive(item.path) }"
@@ -9,7 +9,7 @@
 			>
 				<router-link :to="item.path" class="tags-li-title">{{ item.title }}</router-link>
 				<el-icon @click="closeTags(index)"><Close /></el-icon>
-			</li>
+			</li> -->
 		</ul>
 		<!-- <div class="tags-close-box">
 			<el-dropdown @command="handleTags">

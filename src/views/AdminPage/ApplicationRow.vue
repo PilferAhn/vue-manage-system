@@ -3,8 +3,8 @@
     <div class="container">
       <div class="search-box" v-if="props.status === 'created'">
         <el-input
-          v-model="query.productName"
-          placeholder="제품 이름"
+          v-model="query.uuid"
+          placeholder="QR Code 스켄"
           class="search-input mr10"
           clearable
         ></el-input>
@@ -33,7 +33,7 @@
         <el-table-column prop="condition" label="Condition" align="center">
         </el-table-column>
 
-        <el-table-column prop="signal" label="Signal" align="center">
+        <el-table-column prop="signal_type" label="Signal" align="center">
         </el-table-column>
 
         <el-table-column prop="test_type" label="TEST" align="center">
@@ -52,18 +52,10 @@
         </el-table-column>
 
         <el-table-column
-          prop="sample_quantity"
-          label="수량"
+          prop="target_position"
+          label="Target"
           align="center"
-          width="65px"
-        >
-          <!-- <template #default="scope">
-            <el-input
-              v-model="scope.row.sample_quantity"
-              size="small"
-            ></el-input>
-          </template> -->
-        </el-table-column>
+        ></el-table-column>
 
         <el-table-column prop="designer" label="개발자" align="center">
         </el-table-column>
@@ -71,7 +63,31 @@
         <el-table-column prop="requester" label="담당자" align="center">
         </el-table-column>
 
-        <el-table-column prop="purpose" label="의뢰목적" align="center">
+        <!-- <el-table-column prop="purpose" label="의뢰목적" align="center">
+        </el-table-column> -->
+
+        <el-table-column prop="request_number" label="의뢰 번호" align="center">
+        </el-table-column>
+
+        <el-table-column label="상태" align="center">
+          <template #default="scope">
+            <span
+              v-if="scope.row.status === 'in progress'"
+              :style="{ color: 'green' }"
+              >측정 진행 중</span
+            >
+            <span
+              v-else-if="scope.row.status === 'reserved'"
+              :style="{ color: 'orange' }"
+              >측정 대기</span
+            >
+            <span
+              v-else-if="scope.row.status === 'created'"
+              :style="{ color: 'orange' }"
+              >접수 대기</span
+            >
+            <span v-else :style="{ color: 'blue' }">측정 종료</span>
+          </template>
         </el-table-column>
 
         <el-table-column label="Action" width="280" align="center">
@@ -93,16 +109,17 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="pagination" v-if="props.status === 'created'">
+      
         <el-pagination
           background
-          layout="total, prev, pager, next"
+          layout="prev, pager, next"
           :current-page="query.pageIndex"
           :page-size="query.pageSize"
           :total="pageTotal"
           @current-change="handlePageChange"
+          class="pagination-margin"
         ></el-pagination>
-      </div>
+      
     </div>
     <el-dialog
       :title="idEdit ? '제품 편집' : '제품 추가'"
@@ -130,16 +147,15 @@ import { ref, reactive, onMounted, defineProps } from "vue";
 import axios from "axios";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useRouter } from "vue-router";
-import { sendGetRequest } from "../../utils/httpProtocol"
-import ApplicationDetail from './ApplicationDetail.vue'
-
+import { sendGetRequest } from "../../utils/httpProtocol";
+import ApplicationDetail from "./ApplicationDetail.vue";
 
 const props = defineProps<{
   status: string;
 }>();
 
 const query = reactive({
-  productName: "",
+  uuid: "",
   pageIndex: 1,
   pageSize: 10,
 });
@@ -160,6 +176,7 @@ interface ApplicationItem {
   test_type: string;
   signal: string;
   purpose: string;
+  target_position: string;
 }
 const applicationList = ref<ApplicationItem[]>([]);
 
@@ -170,7 +187,7 @@ const pageTotal = ref(0);
 const fetchData = async () => {
   try {
     const response = await axios.post("pdt_application/get_application_list", {
-      status: props.status,
+      status: props.status,      
     });
 
     allData.value = response.data;
@@ -183,18 +200,15 @@ const fetchData = async () => {
 };
 
 const filterData = () => {
-  // 제품 이름으로 필터링
+  // UUID로 필터링
   const filtered = allData.value.filter((item) =>
-    item.model_name.toLowerCase().includes(query.productName.toLowerCase())
+    item.uuid.includes(query.uuid)
   );
 
-  // 페이지네이션을 위한 인덱스 계산
+  // 페이지네이션을 위한 인덱스 계산 및 현재 페이지 데이터 설정
   const startIndex = (query.pageIndex - 1) * query.pageSize;
   const endIndex = startIndex + query.pageSize;
-
-  // 현재 페이지에 표시될 데이터 슬라이스
   tableData.value = filtered.slice(startIndex, endIndex);
-  // 전체 페이지 수를 위한 전체 필터링된 항목 수 업데이트
   pageTotal.value = filtered.length;
 };
 
@@ -215,28 +229,33 @@ const idEdit = ref(false);
 const rowData = ref({});
 
 const handleDelete = async (row) => {
-  ElMessageBox.confirm("삭제된 데이터는 되돌릴 수 없습니다.\n정말로 삭제하시겠습니까?", "경고", {
-    confirmButtonText: "예",
-    cancelButtonText: "아니오",
-    type: "warning",
-  })
-  .then(async () => { // async 키워드 추가
-    try {
-      const result = await sendGetRequest("pdt_application/delete_pdt_application", row.uuid);
-      // 성공적으로 삭제된 후의 로직을 여기에 추가
-      location.reload(); // 페이지 새로고침
-
-    } catch (error) {
-      // 에러 처리 로직을 여기에 추가
-      console.error(error);
-      
+  ElMessageBox.confirm(
+    "삭제된 데이터는 되돌릴 수 없습니다.\n정말로 삭제하시겠습니까?",
+    "경고",
+    {
+      confirmButtonText: "예",
+      cancelButtonText: "아니오",
+      type: "warning",
     }
-  })
-  .catch(() => {
-    // 사용자가 '아니오'를 누르거나 팝업을 닫을 경우, 여기서 처리할 수 있습니다.
-  });
+  )
+    .then(async () => {
+      // async 키워드 추가
+      try {
+        const result = await sendGetRequest(
+          "pdt_application/delete_pdt_application",
+          row.uuid
+        );
+        // 성공적으로 삭제된 후의 로직을 여기에 추가
+        location.reload(); // 페이지 새로고침
+      } catch (error) {
+        // 에러 처리 로직을 여기에 추가
+        console.error(error);
+      }
+    })
+    .catch(() => {
+      // 사용자가 '아니오'를 누르거나 팝업을 닫을 경우, 여기서 처리할 수 있습니다.
+    });
 };
-
 
 // useRouter 훅을 사용하여 라우터 인스턴스를 가져옵니다.
 const router = useRouter();
@@ -263,5 +282,8 @@ const visible1 = ref(false);
 }
 .mr10 {
   margin-right: 10px;
+}
+.pagination-margin {
+  margin-top: 20px; /* 원하는 마진 값을 설정하세요 */
 }
 </style>

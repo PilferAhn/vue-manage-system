@@ -1,13 +1,15 @@
 <template>
   <div class="container">
-    <canvas id="barChart"></canvas>
+    <canvas id="barChart2"></canvas>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { Chart, registerables } from "chart.js";
-import axios from "../../utils/request";
+
+import axios from "../../../utils/request";
+
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
 // Chart.js에 필요한 모든 차트 타입과 기능을 등록
@@ -17,6 +19,7 @@ interface TestType {
   date_list: string[];
   TEG1: number[];
   TEG2: number[];
+  TEG1_5 : number[];
   TCF: number[];
 }
 
@@ -24,13 +27,14 @@ const testTypes = ref<TestType>({
   date_list: [],
   TEG1: [],
   TEG2: [],
+  TEG1_5 : [],
   TCF: [],
 });
 
 // 데이터를 가져오는 함수
 const fetchData = async () => {
   try {
-    const response = await axios.get("measurement/get_weekly_progress");
+    const response = await axios.get("measurement/get_weekly_progress2");
     testTypes.value = response.data;
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -46,6 +50,7 @@ onMounted(async () => {
   const maxValues = [
     ...testTypes.value.TEG1,
     ...testTypes.value.TEG2,
+    ...testTypes.value.TEG1_5,
     ...testTypes.value.TCF,
   ];
   const max = Math.max(...maxValues) + 2;
@@ -54,11 +59,12 @@ onMounted(async () => {
     const totalSum = [
       ...testTypes.value.TEG1,
       ...testTypes.value.TEG2,
+      ...testTypes.value.TEG1_5,
       ...testTypes.value.TCF,
     ].reduce((acc, cur) => acc + cur, 0);
     return totalSum.toString();
   };
-  const ctx = document.getElementById("barChart") as HTMLCanvasElement;
+  const ctx = document.getElementById("barChart2") as HTMLCanvasElement;
   if (ctx) {
     myChart = new Chart(ctx, {
       type: "bar",
@@ -71,6 +77,11 @@ onMounted(async () => {
             backgroundColor: "rgba(241, 89, 74, 0.8)",
             data: testTypes.value.TEG1,
           },
+          {
+            label: "TEG1_5",
+            backgroundColor: "rgba(255, 215, 0, 0.8)",
+            data: testTypes.value.TEG1_5,
+          },        
           {
             label: "TEG2",
             backgroundColor: "rgba(76, 175, 80, 0.8)",
@@ -94,6 +105,9 @@ onMounted(async () => {
           title: {
             display: true,
             text: "TEG 측정 일간 측정 현황 (Wafer 기준) - " + sumAllNumbersAsString() + "장",
+            font : {
+              size : 25
+            }
           },
           // 데이터 포인트 위에 값을 표시하는 커스텀 플러그인 추가
           datalabels: {

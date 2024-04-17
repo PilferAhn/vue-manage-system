@@ -38,16 +38,6 @@
 
           <el-form-item label="설계정보" prop="band">
             <el-col :span="6">
-              <el-form-item>
-                <el-input
-                  placeholder="Band"
-                  v-model="form.band"
-                  style="width: 100%"
-                />
-              </el-form-item>
-            </el-col>
-            <el-col class="line" :span="3">/</el-col>
-            <el-col :span="6">
               <el-form-item prop="modelName">
                 <el-input
                   placeholder="기종명"
@@ -130,10 +120,63 @@
             </el-col>
           </el-form-item>
 
+          <el-form-item label="Test 종류">
+            <el-form-item>
+              <el-input
+                placeholder="Type"
+                v-model="form.testType"
+                style="width: 100%"
+              >
+              </el-input>
+            </el-form-item>
+          </el-form-item>
+
+          <el-form-item label="Signal">
+            <el-col :span="6">
+              <el-form-item>
+                <el-input
+                  placeholder="Type"
+                  v-model="form.signalType"
+                  style="width: 100%"
+                >
+                </el-input>
+              </el-form-item>
+            </el-col>
+
+            <el-col class="line" :span="3">/</el-col>
+
+            <el-col :span="6">
+              <el-form-item>
+                <el-input v-model="form.duplexMode"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col class="line" :span="3">/</el-col>
+
+            <el-col :span="5">
+              <el-form-item>
+                <el-input
+                  placeholder="Type"
+                  v-model="form.band"
+                  style="width: 100%"
+                >
+                </el-input>
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+
           <el-form-item label="Position" prop="position">
             <el-input
               placeholder="Type"
               v-model="form.targetPosition"
+              style="width: 100%"
+            >
+            </el-input>
+          </el-form-item>
+
+          <el-form-item label="실험 온도">
+            <el-input
+              placeholder="Temperature"
+              v-model="form.temperature"
               style="width: 100%"
             >
             </el-input>
@@ -164,33 +207,38 @@
                   <el-input v-model="row.sample_number"></el-input>
                 </template>
               </el-table-column>
-              <el-table-column label="-3dB(주파수)" prop="freq3dB">
-                <template #default="{ row }">
-                  <el-input v-model="row.db_3_freq"></el-input>
-                </template>
-              </el-table-column>
               <el-table-column label="Target" prop="targetFreq">
                 <template #default="{ row }">
                   <el-input v-model="row.target_freq"></el-input>
                 </template>
               </el-table-column>
 
-              <el-table-column
-                label="상태"
-                prop="selfHeating"                
-              >
+              <el-table-column label="상태" prop="selfHeating">
                 <template #default="{ row }">
-                  <el-select
-                    v-model="row.status"                    
-                  >
+                  <el-select v-model="row.status">
                     <el-option key="cancel" label="취소" value="cancel" />
-                    <el-option key="waiting" label="측정 대기" value="waiting" />
+                    <el-option
+                      key="waiting"
+                      label="측정 대기"
+                      value="waiting"
+                    />
                     <el-option key="finished" label="완료" value="finished" />
-                    <el-option key="in progress" label = "측정중" value = "in progress"></el-option>
+                    <el-option
+                      key="in progress"
+                      label="측정중"
+                      value="in progress"
+                    ></el-option>
                   </el-select>
                 </template> </el-table-column
-              >>
+              >
             </el-table>
+          </el-form-item>
+          <el-form-item label="특이사항" prop="detail">
+            <el-input
+              type="textarea"
+              rows="10"
+              v-model="form.detail"
+            ></el-input>
           </el-form-item>
         </div>
 
@@ -204,6 +252,12 @@
                 style="width: 100%"
               ></el-input>
             </el-col>
+            <el-col class="line" :span="2">/</el-col>
+            <el-col :span="11">
+              <el-button type="info" @click="generateRequstNumber(form)" round
+                >의뢰번호 생성</el-button
+              >
+            </el-col>
           </el-form-item>
 
           <el-form-item label="진행상황" prop="status">
@@ -216,6 +270,7 @@
                 <el-option label="의뢰서 작성 완료" value="created"></el-option>
                 <el-option label="투입 대기" value="reserved"></el-option>
                 <el-option label="측정 완료" value="finished"></el-option>
+                <el-option label="측정 진행중" value="in progress"></el-option>
               </el-select>
             </el-col>
           </el-form-item>
@@ -279,16 +334,20 @@
               </el-form-item>
             </el-col>
           </el-form-item>
-          <el-form-item label="특이사항" prop="detail">
-            <el-input
-              type="textarea"
-              rows="10"
-              v-model="form.detail"
-            ></el-input>
-          </el-form-item>
+
+          <div v-if="form.testType !== 'Life'">
+            <canvas ref="chartCanvas"></canvas>
+          </div>
           <el-form-item>
-            <el-button type="primary" @click="onSubmit()"> 접수 </el-button>
-            <el-button type="danger" disabled> 삭제 </el-button>
+            <div class="mb-4">
+              <el-button type="primary" @click="onSubmit()" round>
+                업데이트
+              </el-button>
+              <el-button type="info" @click="downloadExcel(uuid)" round>
+                의뢰서 다운로드
+              </el-button>
+              <el-button type="danger" disabled round> 삭제 </el-button>
+            </div>
           </el-form-item>
         </div>
       </div>
@@ -297,15 +356,24 @@
 </template>
 
 <script setup lang="ts" name="baseform">
+// 외부 라이브러리
 import { reactive, ref, watch, onMounted } from "vue";
-import { ElMessageBox, ElMessage } from "element-plus";
-import axios from "axios";
 import { useRoute } from "vue-router";
+import axios from "axios";
+import { Chart } from "chart.js";
+import { ElMessageBox, ElMessage } from "element-plus";
 
+// 타입 정의
+import type { FormInstance, FormRules } from "element-plus";
+
+// 로컬 유틸리티 함수 및 설정
 import { getCurrentDate } from "../../utils/utility";
 import { createApplicationForm } from "../../utils/form";
-
-import type { FormInstance, FormRules } from "element-plus";
+import {
+  createRequestNumber,
+  downloadExcel,
+} from "../../utils/applicationUtility";
+import { drawChart } from "../../utils/chartHelper";
 
 const rules: FormRules = {
   requestNumber: [
@@ -373,7 +441,7 @@ const fetchApplicationDetail = async () => {
     form.waferType = response.data.wafer_type;
 
     form.packageType = response.data.package_type;
-
+    form.temperature = response.data.temperature + "℃";
     form.detail = response.data.detail;
 
     form.testType = response.data.test_type;
@@ -389,18 +457,23 @@ const fetchApplicationDetail = async () => {
 };
 
 // 컴포넌트가 마운트될 때 HTTP 요청을 보냄
+
 onMounted(fetchApplicationDetail);
 
 const onSubmit = () => {
   formRef.value.validate((valid) => {
     if (valid) {
-      ElMessage.success("Form is valid");
       submitData();
       // 폼 제출 로직
     } else {
       ElMessage.error("Form is invalid");
     }
   });
+};
+
+const generateRequstNumber = (form) => {
+  // form.requestNumber =  createRequestNumber();
+  console.log(form.request_number);
 };
 
 const formatDate = (dateStr: string): string => {
@@ -458,19 +531,41 @@ const submitData = async () => {
       test_type: form.testType,
       target_position: form.targetPosition,
       samples: form.samples,
+
+      temperature: form.temperature,
     };
 
-    console.log(const_data_dict);
     const response = await axios.post(
       "/pdt_application/update_appliction",
       const_data_dict
     );
+
+    if (response.data.status == false) {
+      ElMessage.error(response.data.message);
+    } else {
+      ElMessage.success("의뢰서가 성공적으로 업데이트 되었습니다.");
+    }
   } catch (error) {
-    console.log("Error 발생?");
     console.error("Error:", error);
     // Handle the error as needed
   }
 };
+
+const chartCanvas = ref<HTMLCanvasElement | null>(null);
+let myChart: Chart | null = null;
+
+onMounted(() => {
+  // 샘플 데이터를 가져와서 차트를 그리는 로직
+  myChart = drawChart(chartCanvas.value!, form.samples, myChart);
+});
+
+watch(
+  () => form.samples,
+  (newSamples) => {
+    myChart = drawChart(chartCanvas.value!, newSamples, myChart);
+  },
+  { immediate: true }
+);
 </script>
 
 <style>

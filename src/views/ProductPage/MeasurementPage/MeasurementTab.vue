@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="container">
+    <div v-if="tableData.length != 0" class="container">
       <div class="search-box">
         <el-input
           v-model="query.model_name"
@@ -18,16 +18,15 @@
         header-cell-class-name="table-header"
         :row-class-name="getRowClassName"
       >
-        <el-table-column prop="model_name" label="Product Name" align="center" width="150">
-          <!-- <template #default="scope">
-              <el-input v-model="scope.row.model_name" size="small"></el-input>
-            </template> -->
+        <el-table-column
+          prop="model_name"
+          label="Product Name"
+          align="center"
+          width="150"
+        >
         </el-table-column>
 
         <el-table-column prop="band" label="Band" align="center" width="100px">
-          <!-- <template #default="scope">
-              <el-input v-model="scope.row.band" size="small"></el-input>
-            </template> -->
         </el-table-column>
 
         <el-table-column prop="condition" label="Status" align="center">
@@ -40,36 +39,13 @@
         </el-table-column>
 
         <el-table-column prop="test_type" label="TEST" align="center">
-          <!-- <template #default="scope">
-              <el-select
-                v-model="scope.row.test_type"
-                placeholder="예) Fuse Max"
-                size="small"
-              >
-                <el-option key="Max Fuse " label="Max Fuse" value="Max Fuse" />
-                <el-option key="AMR" label="AMR" value="AMR" />
-                <el-option key="Life" label="Life" value="Life" />
-                <el-option key="Aging" label="Aging" value="Aging" />
-              </el-select>
-            </template> -->
         </el-table-column>
-
-        <!-- <el-table-column
-          prop="sample_quantity"
-          label="수량"
-          align="center"
-          width="70px"
-        >
-        </el-table-column> -->
 
         <el-table-column prop="designer" label="개발자" align="center">
         </el-table-column>
 
         <el-table-column prop="requester" label="담당자" align="center">
         </el-table-column>
-
-        <!-- <el-table-column prop="purpose" label="의뢰목적" align="center">
-        </el-table-column> -->
 
         <el-table-column label="상태" align="center">
           <template #default="scope">
@@ -92,24 +68,10 @@
 
         <el-table-column label="Action" width="100" align="center">
           <template #default="scope">
-            <!-- <el-button
-              type="success"
-              size="small"
-              style="margin-right: 5px"
-              @click="handleUpdate(scope.row)"
-              >업데이트</el-button
-            >
-            <el-button
-              type="danger"
-              size="small"
-              style="margin-right: 5px"
-              @click="handleDelete(scope.row)"
-              >삭제</el-button
-            > -->
             <el-button
               type="primary"
               size="small"
-              @click="handleDetail(scope.row)"              
+              @click="handleDetail(scope.row)"
               >자세히</el-button
             >
           </template>
@@ -117,48 +79,45 @@
       </el-table>
 
       <el-pagination
-          background
-          layout="prev, pager, next"
-          :current-page="query.pageIndex"
-          :page-size="query.pageSize"
-          :total="pageTotal"
-          @current-change="handlePageChange"
-          class="pagination-margin"
-        ></el-pagination>
-
+        background
+        layout="prev, pager, next"
+        :current-page="query.pageIndex"
+        :page-size="query.pageSize"
+        :total="pageTotal"
+        @current-change="handlePageChange"
+        class="pagination-margin"
+      ></el-pagination>
     </div>
-    <!-- <el-dialog
-      :title="idEdit ? '제품 편집' : '제품 추가'"
-      v-model="visible"
-      width="500px"
-      destroy-on-close
-      :close-on-click-modal="false"
-      @close="closeDialog"
-    >
-      
-    </el-dialog>
-    <el-dialog
-      title="제품 상세 정보"
-      v-model="visible1"
-      width="700px"
-      destroy-on-close
-    >
-      <RequestDetail :data="rowData" />
-    </el-dialog> -->
+    <div v-else>
+      <div class="container">
+        <div class="search-box">
+          <el-input
+            v-model="query.model_name"
+            placeholder="Model 검색"
+            class="search-input mr10"
+            clearable
+          ></el-input>
+          <el-button type="primary" @click="handleSearch">검색</el-button>
+        </div>
+        <el-empty description="진행중인 측정 의뢰가 없습니다."></el-empty>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, defineProps, onUnmounted } from "vue";
+import { ref, reactive, onMounted, onUnmounted, watch } from "vue";
 import axios from "axios";
 import { ElMessage } from "element-plus";
-import { getLastThursday, formatDate } from "../../utils/utility";
-import { applicationRules } from "../../utils/FromRule";
+import { getLastThursday, formatDate } from "../../../utils/utility";
+import { applicationRules } from "../../../utils/FromRule";
 import { useRouter } from "vue-router";
 
-// const props = defineProps<{
-//   status: string;
-// }>();
+const props = defineProps<{
+  testType: string;
+  searchType: string;
+  status : string;
+}>();
 
 
 
@@ -174,8 +133,30 @@ const getRowClassName = ({ row }) => {
 const query = reactive({
   model_name: "",
   pageIndex: 1,
-  pageSize: 10,
+  pageSize: 13,
 });
+
+// 로컬 저장소에서 저장된 값을 불러와서 초기화합니다.
+onMounted(() => {
+  query.model_name = localStorage.getItem("modelSearchQuery") || "";
+  fetchData();
+});
+
+// model_name이 변경될 때마다 이를 로컬 저장소에 저장합니다.
+watch(() => query.model_name, (newValue) => {
+  localStorage.setItem("modelSearchQuery", newValue);
+});
+
+// // 로컬 저장소에서 저장된 값을 불러와서 초기화합니다.
+// onMounted(() => {
+//   query.model_name = localStorage.getItem("modelSearchQuery") || "";
+//   fetchData();
+// });
+
+// // model_name이 변경될 때마다 이를 로컬 저장소에 저장합니다.
+// watch(() => query.model_name, (newValue) => {
+//   localStorage.setItem("modelSearchQuery", newValue);
+// });
 
 interface ApplicationItem {
   uuid: string;
@@ -193,8 +174,10 @@ interface ApplicationItem {
   target_position: string;
 }
 
+const name = localStorage.getItem("ms_username");
+const role: string = name === "admin" ? "RF개발팀" : "RF개발팀";
 
-
+console.log(localStorage);
 
 const allData = ref<ApplicationItem[]>([]);
 const tableData = ref<ApplicationItem[]>([]);
@@ -203,9 +186,15 @@ const pageTotal = ref(0);
 const fetchData = async () => {
   try {
     //props.status = 'finished'
-    const response = await axios.post("pdt_application/get_application_list", {
-      status: "reserved",
-    });
+    const response = await axios.post(
+      "pdt_application/get_application_list_by_test_type",
+      {
+        status: props.status,
+        test_type: props.testType,
+        search_type : props.searchType,
+        user_name : name
+      }
+    );
 
     allData.value = response.data;
 
@@ -268,6 +257,7 @@ const router = useRouter();
 
 const handleDetail = (row: ApplicationItem) => {
   // `application/application_detail` 페이지로 리디렉트하면서 `uuid`를 파라미터로 전달합니다.
+  
   router.push({ name: "MeasurementInfo", params: { uuid: row.uuid } });
 };
 

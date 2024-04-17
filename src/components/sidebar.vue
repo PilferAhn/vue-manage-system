@@ -41,7 +41,7 @@
               </el-sub-menu>
               <el-menu-item
                 v-else
-                :key = "subItem.index"
+                :key="subItem.index"
                 :index="subItem.index"
                 v-permiss="item.permiss"
               >
@@ -82,17 +82,22 @@ const items = [
   {
     icon: "Calendar",
     index: "1",
-    title: "Product",
+    title: "Product - PDT ",
     permiss: "2",
     subs: [
       {
-        index: "/product/reserved-application-list",
-        title: "Measurement Status",
+        index: "/product/create-application2",
+        title: "의뢰서 작성",
         permiss: "2",
       },
       {
-        index: "/product/create-application",
-        title: "Create Reqeust",
+        index: "/product/reserved-application-list",
+        title: "측정 진행 현황",
+        permiss: "2",
+      },
+      {
+        index: "/product/completed-application-list",
+        title: "측정 완료 현황",
         permiss: "2",
       },
     ],
@@ -108,20 +113,20 @@ const items = [
         title: "Measurement Status",
         permiss: "2",
       },
-    //   {
-    //     index: "/export",
-    //     title: "Create Reqeust",
-    //     permiss: "2",
-    //   },
+      //   {
+      //     index: "/export",
+      //     title: "Create Reqeust",
+      //     permiss: "2",
+      //   },
     ],
   },
 
-  {
-    icon: "DocumentCopy",
-    index: "/tabs",
-    title: "Excel",
-    permiss: "3",
-  },
+  // {
+  //   icon: "DocumentCopy",
+  //   index: "/tabs",
+  //   title: "Excel",
+  //   permiss: "3",
+  // },
   {
     icon: "Edit",
     index: "3",
@@ -134,53 +139,69 @@ const items = [
         permiss: "5",
       },
       {
-        index: "/upload",
-        title: "File Upload",
-        permiss: "6",
+        index: "/teg/create-teg-application",
+        title: "TEG 의뢰서 작성",
+        permiss: "5",
       },
       {
-        index: "4",
-        title: "Sub-menu",
-        permiss: "7",
-        subs: [
-          {
-            index: "/editor",
-            title: "Rich Text Editor",
-            permiss: "8",
-          },
-          {
-            index: "/markdown",
-            title: "Markdown Editor",
-            permiss: "9",
-          },
-        ],
+        index: "/statistic/chart",
+        title: "측정 통계",
+        permiss: "6",
       },
+      // {
+      //   index: "/admin/next-function",
+      //   title: "개발기능",
+      //   permiss: "6",
+      // },
+      // {
+      //   index: "4",
+      //   title: "Sub-menu",
+      //   permiss: "7",
+      //   subs: [
+      //     {
+      //       index: "/editor",
+      //       title: "Rich Text Editor",
+      //       permiss: "8",
+      //     },
+      //     {
+      //       index: "/markdown",
+      //       title: "Markdown Editor",
+      //       permiss: "9",
+      //     },
+      //   ],
+      // },
     ],
   },
-  {
-    icon: "Setting",
-    index: "/icon",
-    title: "Custom Icons",
-    permiss: "10",
-  },
-//   {
-//     icon: "PieChart",
-//     index: "/charts",
-//     title: "Charts",
-//     permiss: "11",
-//   },
-//   {
-//     icon: "Warning",
-//     index: "/permission",
-//     title: "Permission Management",
-//     permiss: "13",
-//   },
-//   {
-//     icon: "CoffeeCup",
-//     index: "/donate",
-//     title: "Support the Author",
-//     permiss: "14",
-//   },
+  // {
+  //   icon: "Setting",
+  //   index: "/icon",
+  //   title: "Custom Icons",
+  //   permiss: "10",
+  // },
+  // {
+  //   icon: "User",
+  //   index: "/user",
+  //   title: "user",
+  //   permiss: "11",
+  // },
+  // {
+  //   icon: "PieChart",
+  //   index: "/charts",
+  //   title: "Charts",
+  //   permiss: "11",
+  // },
+  //   {
+  //     icon: "Warning",
+  //     index: "/permission",
+  //     title: "Permission Management",
+  //     permiss: "13",
+  //   },
+  //   {
+  //     icon: "CoffeeCup",
+  //     index: "/donate",
+  //     title: "Support the Author",
+  //     permiss: "14",
+  //   },
 ];
 
 const route = useRoute();

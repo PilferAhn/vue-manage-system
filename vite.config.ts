@@ -27,7 +27,8 @@ export default defineConfig({
 			"/pdt_application" : "http://10.29.11.59:40000",
 			"/measurement" : "http://10.29.11.57:40000",
 			"/wafer" : "http://10.29.11.57:40000",
-			"/application" : "http://10.29.11.57:40000"
+			"/application" : "http://10.29.11.57:40000",
+			"/user" : "http://10.29.11.59:40000",
 
 		}
 	  },

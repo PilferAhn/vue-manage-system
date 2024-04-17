@@ -1,4 +1,5 @@
 <template>
+  
   <div>
     <div class="container">
       <div class="search-box">
@@ -73,24 +74,7 @@
         ></el-pagination>
       </div>
     </div>
-    <el-dialog
-      :title="idEdit ? '제품 편집' : '제품 추가'"
-      v-model="visible"
-      width="500px"
-      destroy-on-close
-      :close-on-click-modal="false"
-      @close="closeDialog"
-    >
-      <!-- TableEdit 컴포넌트 내용 -->
-    </el-dialog>
-    <el-dialog
-      title="제품 상세 정보"
-      v-model="visible1"
-      width="700px"
-      destroy-on-close
-    >
-      <RequestDetail :data="rowData" />
-    </el-dialog>
+    
   </div>
 </template>
 
@@ -98,6 +82,8 @@
 import { ref, reactive, onMounted } from "vue";
 import axios from "axios";
 import { ElMessage } from "element-plus";
+
+
 
 interface WaitingItem {
   cnt: number;
@@ -171,17 +157,7 @@ onMounted(fetchData);
 const visible = ref(false);
 const idEdit = ref(false);
 const rowData = ref({});
-const handleDetail = (row: WaitingItem) => {
-  rowData.value = row;
-  visible1.value = true;
-};
 
-const closeDialog = () => {
-  visible.value = false;
-  idEdit.value = false;
-};
-
-const visible1 = ref(false);
 </script>
 
 <style scoped>

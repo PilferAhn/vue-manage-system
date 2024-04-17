@@ -17,8 +17,8 @@
                   :disabled="!form.isSpecEdit"
                 />
                 <!-- <el-button v-if="isEditable" @click="enableEditing"
-                >직접 입력</el-button
-              > -->
+                  >직접 입력</el-button
+                > -->
               </el-form-item>
             </el-col>
             <el-col class="line" :span="3">/</el-col>
@@ -31,9 +31,9 @@
             </el-col>
 
             <!-- <el-col class="line" :span="3">/</el-col>
-            <el-col :span="6">
-              <el-checkbox v-model="form.isSpecEdit">직접 입력</el-checkbox>
-            </el-col> -->
+              <el-col :span="6">
+                <el-checkbox v-model="form.isSpecEdit">직접 입력</el-checkbox>
+              </el-col> -->
           </el-form-item>
 
           <el-form-item label="설계정보" prop="band">
@@ -130,7 +130,7 @@
             </el-col>
           </el-form-item>
 
-          <el-form-item label="측정 구분" >
+          <el-form-item label="측정 구분">
             <el-input
               placeholder="Type"
               v-model="form.testType"
@@ -138,13 +138,12 @@
             ></el-input>
           </el-form-item>
 
-          <el-form-item label="측정 온도" >
+          <el-form-item label="측정 온도">
             <el-input
               placeholder="Type"
-              v-model="form.temperature" 
+              v-model="form.temperature"
               style="width: 100%"
             ></el-input>
-            
           </el-form-item>
 
           <el-form-item label="Position" prop="position">
@@ -160,6 +159,7 @@
             <el-select
               v-model="form.sampleQuantity"
               placeholder="Select a number"
+              disabled
             >
               <el-option
                 v-for="i in 30"
@@ -182,10 +182,10 @@
                 </template>
               </el-table-column>
               <!-- <el-table-column label="f -3dB @85" prop="freq3dB">
-                <template #default="{ row }">
-                  <el-input v-model="row.db_3_freq"></el-input>
-                </template>
-              </el-table-column> -->
+                  <template #default="{ row }">
+                    <el-input v-model="row.db_3_freq"></el-input>
+                  </template>
+                </el-table-column> -->
               <el-table-column label="Target" prop="targetFreq">
                 <template #default="{ row }">
                   <el-input v-model="row.target_freq"></el-input>
@@ -243,6 +243,7 @@
                 v-model="form.status"
                 placeholder="상태 선택"
                 style="width: 100%"
+                disabled
               >
                 <el-option label="의뢰서 작성 완료" value="created"></el-option>
                 <el-option label="투입 대기" value="reserved"></el-option>
@@ -252,29 +253,6 @@
             </el-col>
           </el-form-item>
 
-          <!-- <el-form-item label="소요시간">
-            <el-col :span="11">
-              <el-form-item prop="requestToCompletionDuration">
-                <el-input
-                  placeholder="소요시간 의뢰일-완료일 [day]"
-                  v-model="form.requestToCompletionDuration"
-                  style="width: 100%"
-                ></el-input>
-              </el-form-item>
-            </el-col>
-
-            <el-col class="line" :span="2">/</el-col>
-
-            <el-col :span="11">
-              <el-form-item prop="startToCompletionDuration">
-                <el-input
-                  placeholder="소요시간 투입일-완료일 [day]"
-                  v-model="form.startToCompletionDuration"
-                  style="width: 100%"
-                ></el-input>
-              </el-form-item>
-            </el-col>
-          </el-form-item> -->
 
           <el-form-item label="의뢰일">
             <el-col :span="11">
@@ -295,6 +273,7 @@
                   placeholder="투입일"
                   v-model="form.expectedMeasurementDate"
                   style="width: 100%"
+                  disabled
                 ></el-date-picker>
               </el-form-item>
             </el-col>
@@ -307,15 +286,29 @@
                   placeholder="완료일"
                   v-model="form.expectedCompletionDate"
                   style="width: 100%"
+                  disabled
                 ></el-date-picker>
               </el-form-item>
             </el-col>
           </el-form-item>
-
-          <div v-if = "form.testType !== 'Life'">
+          <el-form-item>
+            <div class="button-group">
+              <!-- <el-button
+                type="success"
+                disabled
+                @click="updateApplication()"
+                
+                >의뢰서 업데이트</el-button
+              > -->
+              <el-button type="info" @click="downloadExcel(route.params.uuid)"
+                :disabled="excelUuid === ''"
+                >의뢰서 다운로드</el-button
+              >
+            </div>
+          </el-form-item>
+          <div v-if="form.testType !== 'Life'">
             <canvas ref="chartCanvas"></canvas>
           </div>
-                  
         </div>
       </div>
     </el-form>
@@ -327,11 +320,11 @@ import { reactive, ref, watch, onMounted, defineProps } from "vue";
 import { ElMessageBox, ElMessage } from "element-plus";
 import type { FormInstance, FormRules } from "element-plus";
 import axios from "axios";
-import { getCurrentDate } from "../../utils/utility";
-import { createApplicationForm } from "../../utils/form";
+import { getCurrentDate } from "../../../utils/utility";
+import { createApplicationForm } from "../../../utils/form";
+import { checkApplication, downloadExcel } from "../../../utils/applicationUtility"
 import { useRoute } from "vue-router";
 import { utils } from "xlsx";
-
 
 import {
   Chart,
@@ -341,16 +334,15 @@ import {
   ChartType,
 } from "chart.js";
 
-// Props 정의 및 타입 설정
-const props = defineProps({
-  uuid: String
-});
+// useRoute 훅을 사용하여 현재 라우트 객체를 가져옵니다.
+const route = useRoute();
 
+// route.params에서 uuid 값을 추출합니다.
+const uuid = route.params.uuid;
+const excelUuid = ref('')
 Chart.register(...registerables);
 
-
 const chartCanvas = ref<HTMLCanvasElement | null>(null);
-
 
 const name = localStorage.getItem("ms_username");
 const role: string = name === "admin" ? "요소기술그룹" : "요소기술그룹";
@@ -358,8 +350,6 @@ const role: string = name === "admin" ? "요소기술그룹" : "요소기술그�
 // reactive 객체를 사용하여 form 상태를 정의합니다.
 const formRef = ref<FormInstance>();
 const form = createApplicationForm();
-
-
 
 const fetchApplicationDetail = async (uuid) => {
   try {
@@ -407,27 +397,81 @@ const fetchApplicationDetail = async (uuid) => {
 
     form.dateOfCreated = response.data.date_of_created;
 
+    excelUuid.value = await checkApplication(uuid);
+    console.log(excelUuid.value)
 
   } catch (error) {
     console.error(error);
   }
 };
 
-// route.params.uuid가 변경될 때마다 fetchApplicationDetail 함수를 호출합니다.
-watch(() => props.uuid, (newUuid, oldUuid) => {
-  if (newUuid !== oldUuid) {
-    fetchApplicationDetail(newUuid);
-  }
-});
-
 // 컴포넌트가 마운트될 때 데이터를 불러옵니다.
 onMounted(() => {
-  fetchApplicationDetail(props.uuid);
-});;
+  fetchApplicationDetail(uuid);
+  
+});
 
+const updateApplication = async () => {
+  try {
 
+    const const_data_dict = {
+      request_number: form.requestNumber,
+      status: form.status,
+      uuid: uuid,
 
+      expected_measurement_date: form.expectedMeasurementDate,
+      expected_completion_date: form.expectedCompletionDate,
+      desired_completion_date: form.desiredCompletionDate,
 
+      customer_company: form.customerCompany,
+      spec_temperature: form.specTemperature,
+      spec_power: form.specPower,
+      is_spec_edit: form.isSpecEdit,
+
+      model_name: form.modelName,
+      condition: form.condition,
+
+      signal_type: form.signalType,
+      band: form.band,
+      duplex_mode: form.duplexMode,
+      bandwidth: form.bandwidth,
+
+      designer: form.designer,
+      requester: form.requester,
+
+      purpose: form.purpose,
+      date_of_sample_convey: form.dateOfSampleConvey,
+
+      wafer_type: form.waferType,
+
+      package_type: form.packageType,
+
+      detail: form.detail,
+
+      test_type: form.testType,
+      target_position: form.targetPosition,
+      samples: form.samples,
+    };
+
+    
+    const response = await axios.post(
+      "/pdt_application/update_appliction_by_user",
+      const_data_dict
+    );
+
+    if(response.data.status == false){
+      ElMessage.error(response.data.message);
+    }
+    else{
+      ElMessage.success("의뢰서가 성공적으로 업데이트 되었습니다.");
+    }    
+
+  } catch (error) {
+    
+    console.error("Error:", error);
+    // Handle the error as needed
+  }
+};
 </script>
 
 <style>
@@ -448,5 +492,21 @@ onMounted(() => {
 
 .form-box:last-child {
   margin-right: 0;
+}
+
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px; /* 버튼 위의 여백 */
+}
+
+/* Element Plus에서 제공하는 'type' 속성에 의해 기본 스타일이 적용됩니다.
+'el-button'에 대한 추가적인 스타일 커스터마이징이 필요하다면 아래와 같이 추가합니다. */
+.el-button--success {
+  background-color: #67c23a; /* 의뢰서 업데이트 버튼 색상 */
+}
+
+.el-button--info {
+  background-color: #409eff; /* 의뢰서 다운로드 버튼 색상 */
 }
 </style>

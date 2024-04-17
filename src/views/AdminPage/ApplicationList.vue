@@ -2,6 +2,7 @@
   <div class="request-list-container">
     <ApplicationRow :status="'reserved'"> </ApplicationRow>
     <ApplicationRow :status="'created'"> </ApplicationRow>
+    <ApplicationRow :status="'finished'"> </ApplicationRow>
   </div>
 </template>
 

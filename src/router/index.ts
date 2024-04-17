@@ -33,6 +33,24 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/ApplicationForm.vue'),
             },
             {
+                path: '/product/create-application2',
+                name: 'CreateApplication',
+                meta: {
+                    title: '의뢰서 작성',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/CreateApplication.vue'),
+            },
+            {
+                path: '/product/meas-info/:uuid',
+                name: 'MeasurementInfo',
+                meta: {
+                    title: '의뢰서 작성',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/MeasurementPage/MeasurementInfo.vue'),
+            },
+            {
                 path: '/admin/application-list',
                 name: 'ApplicationList',
                 meta: {
@@ -52,12 +70,21 @@ const routes: RouteRecordRaw[] = [
             },
             {
                 path: '/product/reserved-application-list',
-                name: 'ReservedApplicationList',
+                name: 'ReservedMeasurement',
                 meta: {
                     title: '의뢰서 자세히',
                     permiss: '2',
                 },
-                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/ReservedApplicationList.vue'),
+                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/MeasurementPage/ReservedMeasurement.vue'),
+            },
+            {
+                path: '/product/completed-application-list',
+                name: 'CompletedMeasurementList',
+                meta: {
+                    title: '측정 완료 항목',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/MeasurementPage/CompletedMeasurementList.vue'),
             },
             {
                 path: '/product/application-detil/:uuid',
@@ -66,7 +93,7 @@ const routes: RouteRecordRaw[] = [
                     title: '의뢰서 자세히',
                     permiss: '2',
                 },
-                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/MeasurementDetail.vue'),
+                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/MeasurementPage/MeasurementDetail.vue'),
             },
             {
                 path: '/product/my-application-list',
@@ -75,7 +102,16 @@ const routes: RouteRecordRaw[] = [
                     title: '의뢰서 자세히',
                     permiss: '2',
                 },
-                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/MyProductApplicationList.vue'),
+                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/ApplicationPage/MyProductApplicationList.vue'),
+            },
+            {
+                path: '/product/my-application-detail:uuid',
+                name: 'MyProductApplicationDetail',
+                meta: {
+                    title: '내 의뢰서 보기',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/ApplicationPage/MyProductApplicationDetail.vue'),
             },
             
             {
@@ -85,7 +121,7 @@ const routes: RouteRecordRaw[] = [
                     title: '의뢰서 자세히',
                     permiss: '2',
                 },
-                component: () => import(/* webpackChunkName: "table" */ '../views/TegPage/TegWaitingList.vue'),
+                component: () => import(/* webpackChunkName: "table" */ '../views/TegPage/TegMeasMoniter.vue'),
             },
             {
                 path: '/product/application/:uuid',
@@ -97,6 +133,25 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/LoadProductApp.vue'),
             },
             {
+                path: '/teg/create-teg-application',
+                name: 'TegApplication',
+                meta: {
+                    title: '의뢰서 자세히',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/TegPage/Application/TegApplication.vue'),
+            },
+            // {
+            //     path: '/admin/next-function',
+            //     name: 'ReservedMeasurement',
+            //     meta: {
+            //         title: '개발중인 기능',
+            //         permiss: '6',
+            //     },
+            //     component: () => import(/* webpackChunkName: "table" */ '../views/AdminPage/ReservedMeasurement.vue'),
+            // },
+                            
+            {
                 path: '/table',
                 name: 'basetable',
                 meta: {
@@ -107,13 +162,13 @@ const routes: RouteRecordRaw[] = [
             },
             
             {
-                path: '/charts',
+                path: '/statistic/chart',
                 name: 'basecharts',
                 meta: {
-                    title: '图表',
+                    title: '통계',
                     permiss: '11',
                 },
-                component: () => import(/* webpackChunkName: "charts" */ '../views/charts.vue'),
+                component: () => import(/* webpackChunkName: "charts" */ '../views/AdminPage/Statistic/charts.vue'),
             },
             {
                 path: '/form',
@@ -224,6 +279,14 @@ const routes: RouteRecordRaw[] = [
         component: () => import(/* webpackChunkName: "login" */ '../views/login.vue'),
     },
     {
+        path: '/create-account',
+        name: 'Register',
+        meta: {
+            title: '계정생성',
+        },
+        component: () => import(/* webpackChunkName: "login" */ '../views/Register.vue'),
+    },
+    {
         path: '/403',
         name: '403',
         meta: {
@@ -242,9 +305,13 @@ router.beforeEach((to, from, next) => {
     NProgress.start();
     const role = localStorage.getItem('ms_username');
     const permiss = usePermissStore();
-    if (!role && to.path !== '/login') {
-        next('/login');
-    } else if (to.meta.permiss && !permiss.key.includes(to.meta.permiss)) {
+    if (to.path === '/create-account'){
+        next()
+    }
+    else if (!role && to.path !== '/login') {        
+        next('/login');    
+    }
+    else if (to.meta.permiss && !permiss.key.includes(to.meta.permiss)) {
         // 如果没有权限，则进入403
         next('/403');
     } else {

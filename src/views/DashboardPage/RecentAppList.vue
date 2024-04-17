@@ -126,20 +126,6 @@ interface application {
 
 const applications = ref<application[]>([]);
 
-// const applications = ref(
-//   [] as {
-//     uuid: string;
-//     model_name: string;
-//     request_number: string;
-//     condition: string;
-//     sample_numbers: string[];
-//     sample_quantity: string;
-//     status: string;
-//     test_type: string;
-//   }[]
-// );
-
-// aowie jfrioawe
 interface re {
   requester: string;
 }
@@ -151,8 +137,8 @@ const requesterInfo = ref<re>({
 });
 
 
-console.log(requesterInfo.value)
-
+// useRouter 훅을 사용하여 라우터 인스턴스를 가져옵니다.
+const router = useRouter();
 
 const getProductData = async () => {
   try {
@@ -161,7 +147,7 @@ const getProductData = async () => {
       requesterInfo.value
     );
 
-    console.log(data);
+    
     applications.value = data;
   } catch (error) {
     console.error("Error fetching application type list:", error);
@@ -169,12 +155,12 @@ const getProductData = async () => {
   }
 };
 
+
 onMounted(() => {
   getProductData();
 });
 
-// useRouter 훅을 사용하여 라우터 인스턴스를 가져옵니다.
-const router = useRouter();
+
 
 const viewAppDetail = (row: application) => {
   // `application/application_detail` 페이지로 리디렉트하면서 `uuid`를 파라미터로 전달합니다.

@@ -1,3 +1,36 @@
+export interface CalcuatedSummary{
+  sampleNumber : string;
+  dbm3 : string;
+  p1Input : string;
+  p2Input : string;
+  p1Output : string;
+  targetFreq : string;
+
+  lf1 : string;
+  lf2 : string;
+  rf1 : string;
+  rf2 : string;
+
+  pIn: Number[];
+  pOut: Number[];
+  rf1Mhz: Number[];
+  rf2Mhz: Number[];
+
+}
+
+export interface CalcuatedAverageSummary{
+  
+  p1InputAvg : string;
+  p2InputAvg : string;
+  p1OutputAvg : string;
+
+  p1InputStd : string;
+  p2InputStd : string;
+  p1OutputStd : string;
+
+}
+
+
 interface Sample {
   uuid: string;
   sampleNumber: string;
@@ -7,6 +40,30 @@ interface Sample {
   isEdit : boolean;
   status: string;
   pdtApplicationUuid: string;
+  p_in : string | null ;
+  p_out : string | null ;
+}
+
+
+export interface TegFormRuleInterface {
+  name: string
+  region: string
+  count: string
+  date1: string
+  date2: string
+  delivery: boolean
+  type: string[]
+  resource: string
+  desc: string
+  waferQuantity : number
+  dateOfConvery : ""
+  waferSize: string
+  note : string
+  purpose : string
+  lotID : string
+  designer : string
+  requester : string
+  modelName : string
 }
 
 export interface ApplicationForm {
@@ -211,12 +268,24 @@ export const bandInformationDict: BandInformationDict = {
       downlinkMhz: ["859", "894"],
       channelBandwidthsMhz: ["1.4", "3", "5", "10", "15"],
     },
-    "28": {
+    "28A" : {
+      duplexMode: "FDD",
+      uplinkMhz: ["703", "733"],
+      downlinkMhz: ["758", "788"],
+      channelBandwidthsMhz: ["3", "5", "10", "15", "20"],
+    },
+    "28B" : {
+      duplexMode: "FDD",
+      uplinkMhz: ["718", "748"],
+      downlinkMhz: ["773", "803"],
+      channelBandwidthsMhz: ["3", "5", "10", "15", "20"],
+    },
+    "28F": {
       duplexMode: "FDD",
       uplinkMhz: ["703", "748"],
       downlinkMhz: ["758", "803"],
       channelBandwidthsMhz: ["3", "5", "10", "15", "20"],
-    },
+    },    
     "29": {
       duplexMode: "SDL",
       uplinkMhz: ["\u2014"],
