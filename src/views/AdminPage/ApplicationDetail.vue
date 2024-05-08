@@ -229,8 +229,8 @@
                       value="in progress"
                     ></el-option>
                   </el-select>
-                </template> </el-table-column
-              >
+                </template>
+              </el-table-column>
             </el-table>
           </el-form-item>
           <el-form-item label="특이사항" prop="detail">
@@ -373,6 +373,10 @@ import {
   createRequestNumber,
   downloadExcel,
 } from "../../utils/applicationUtility";
+import {
+  getRequestNumber,
+  getCurrentYearLastTwoDigits,
+} from "../../utils/adminUtility";
 import { drawChart } from "../../utils/chartHelper";
 
 const rules: FormRules = {
@@ -441,7 +445,7 @@ const fetchApplicationDetail = async () => {
     form.waferType = response.data.wafer_type;
 
     form.packageType = response.data.package_type;
-    form.temperature = response.data.temperature + "℃";
+    form.temperature = response.data.temperature;
     form.detail = response.data.detail;
 
     form.testType = response.data.test_type;
@@ -471,9 +475,14 @@ const onSubmit = () => {
   });
 };
 
-const generateRequstNumber = (form) => {
+const generateRequstNumber = async(form) => {
   // form.requestNumber =  createRequestNumber();
-  console.log(form.request_number);
+  
+  const year = getCurrentYearLastTwoDigits()
+  const response = await getRequestNumber("pdt")
+  
+  form.requestNumber = year.toString() + "-" + response.toString()
+  
 };
 
 const formatDate = (dateStr: string): string => {

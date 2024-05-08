@@ -168,7 +168,7 @@ const viewAppDetail = (row: application) => {
 };
 
 const writeApplicationForm = () => {
-  router.push({name : "ApplicationForm"})
+  router.push({name : "PDTApplication"})
 }
 
 const viewMyApplicationForm = () => {

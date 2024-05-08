@@ -8,6 +8,26 @@
           class="search-input mr10"
           clearable
         ></el-input>
+
+        <!-- New input for Developer or Requester -->
+        <el-input
+          v-model="query.searchName"
+          placeholder="개발자 또는 담당자 이름"
+          class="search-input mr10"
+          clearable
+        ></el-input>
+
+        <el-button type="primary" @click="handleSearch">검색</el-button>
+      </div>
+      <div class="search-box"  v-else>
+        <!-- New input for Developer or Requester -->
+        <el-input
+          v-model="query.searchName"
+          placeholder="개발자 또는 담당자 이름"
+          class="search-input mr10"
+          clearable
+        ></el-input>
+
         <el-button type="primary" @click="handleSearch">검색</el-button>
       </div>
 
@@ -109,17 +129,16 @@
           </template>
         </el-table-column>
       </el-table>
-      
-        <el-pagination
-          background
-          layout="prev, pager, next"
-          :current-page="query.pageIndex"
-          :page-size="query.pageSize"
-          :total="pageTotal"
-          @current-change="handlePageChange"
-          class="pagination-margin"
-        ></el-pagination>
-      
+
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :current-page="query.pageIndex"
+        :page-size="query.pageSize"
+        :total="pageTotal"
+        @current-change="handlePageChange"
+        class="pagination-margin"
+      ></el-pagination>
     </div>
     <el-dialog
       :title="idEdit ? '제품 편집' : '제품 추가'"
@@ -156,6 +175,7 @@ const props = defineProps<{
 
 const query = reactive({
   uuid: "",
+  searchName: "",
   pageIndex: 1,
   pageSize: 10,
 });
@@ -187,7 +207,7 @@ const pageTotal = ref(0);
 const fetchData = async () => {
   try {
     const response = await axios.post("pdt_application/get_application_list", {
-      status: props.status,      
+      status: props.status,
     });
 
     allData.value = response.data;
@@ -200,12 +220,15 @@ const fetchData = async () => {
 };
 
 const filterData = () => {
-  // UUID로 필터링
-  const filtered = allData.value.filter((item) =>
-    item.uuid.includes(query.uuid)
+  // Filter based on UUID and developer/requester name
+  const filtered = allData.value.filter(
+    (item) =>
+      item.uuid.includes(query.uuid) &&
+      (item.designer.includes(query.searchName) ||
+        item.requester.includes(query.searchName))
   );
 
-  // 페이지네이션을 위한 인덱스 계산 및 현재 페이지 데이터 설정
+  // Pagination logic (remains the same)
   const startIndex = (query.pageIndex - 1) * query.pageSize;
   const endIndex = startIndex + query.pageSize;
   tableData.value = filtered.slice(startIndex, endIndex);

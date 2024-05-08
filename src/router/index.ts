@@ -23,23 +23,23 @@ const routes: RouteRecordRaw[] = [
                 },
                 component: () => import(/* webpackChunkName: "dashboard" */ '../views/DashboardPage/Dashboard.vue'),
             },
+            // {
+            //     path: '/product/create-application',
+            //     name: 'ApplicationForm',
+            //     meta: {
+            //         title: '의뢰서 작성',
+            //         permiss: '2',
+            //     },
+            //     component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/ApplicationForm.vue'),
+            // },
             {
                 path: '/product/create-application',
-                name: 'ApplicationForm',
+                name: 'PDTApplication',
                 meta: {
                     title: '의뢰서 작성',
                     permiss: '2',
                 },
-                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/ApplicationForm.vue'),
-            },
-            {
-                path: '/product/create-application2',
-                name: 'CreateApplication',
-                meta: {
-                    title: '의뢰서 작성',
-                    permiss: '2',
-                },
-                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/CreateApplication.vue'),
+                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/PDTApplication.vue'),
             },
             {
                 path: '/product/meas-info/:uuid',
@@ -116,12 +116,12 @@ const routes: RouteRecordRaw[] = [
             
             {
                 path: '/teg/waiting-list',
-                name: 'TegWaitingList',
+                name: 'TegMeasurementQue',
                 meta: {
                     title: '의뢰서 자세히',
                     permiss: '2',
                 },
-                component: () => import(/* webpackChunkName: "table" */ '../views/TegPage/TegMeasMoniter.vue'),
+                component: () => import(/* webpackChunkName: "table" */ '../views/TegPage/MeasurementQueue/TegMeasurementQue.vue'),
             },
             {
                 path: '/product/application/:uuid',
@@ -133,24 +133,50 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/LoadProductApp.vue'),
             },
             {
-                path: '/teg/create-teg-application',
-                name: 'TegApplication',
+                path: '/admin/pdt/application',
+                name: 'PDTApplication2',
                 meta: {
                     title: '의뢰서 자세히',
-                    permiss: '2',
+                    permiss: '5',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage//PDTApplication.vue'),
+            },
+            {
+                path: '/admin/teg/create-teg-application',
+                name: 'TegApplication',
+                meta: {
+                    title: 'TEG 의뢰서 작성',
+                    permiss: '5',
                 },
                 component: () => import(/* webpackChunkName: "table" */ '../views/TegPage/Application/TegApplication.vue'),
             },
+            {
+                path: '/admin/teg/teg-application-list',
+                name: 'TegApplicationList',
+                meta: {
+                    title: 'TEG 의뢰서 목록',
+                    permiss: '5',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/AdminPage/TEG/TegApplicationListPage.vue'),
+            },
+            {
+                path: '/teg/teg-queue',
+                name: 'TegMeasurementQueue',
+                meta: {
+                    title: '의뢰서 자세히',
+                    permiss: '5',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/TegPage/MeasurementQueue/TegMeasurementQue.vue'),
+            },
             // {
-            //     path: '/admin/next-function',
-            //     name: 'ReservedMeasurement',
+            //     path: '/teg/teg-application-detail/:uuid',
+            //     name: 'TegApplicationDetail',
             //     meta: {
-            //         title: '개발중인 기능',
-            //         permiss: '6',
+            //         title: '의뢰서 자세히',
+            //         permiss: '5',
             //     },
-            //     component: () => import(/* webpackChunkName: "table" */ '../views/AdminPage/ReservedMeasurement.vue'),
-            // },
-                            
+            //     component: () => import(/* webpackChunkName: "table" */ '../views/TegPage/MeasurementQueue/LoadTegApplication.vue'),
+            // },                            
             {
                 path: '/table',
                 name: 'basetable',

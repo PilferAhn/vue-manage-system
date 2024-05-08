@@ -27,6 +27,10 @@
         </el-table-column>
 
         <el-table-column prop="band" label="Band" align="center" width="100px">
+          <template #default="scope">
+            <span v-if="scope.row.band.length > 5">{{ scope.row.band.substring(0,4) }}</span>
+            <span v-else>{{ scope.row.band }}</span>
+          </template>
         </el-table-column>
 
         <el-table-column prop="condition" label="Status" align="center">
@@ -116,10 +120,8 @@ import { useRouter } from "vue-router";
 const props = defineProps<{
   testType: string;
   searchType: string;
-  status : string;
+  status: string;
 }>();
-
-
 
 const getRowClassName = ({ row }) => {
   if (row.status === "in progress") {
@@ -143,9 +145,12 @@ onMounted(() => {
 });
 
 // model_name이 변경될 때마다 이를 로컬 저장소에 저장합니다.
-watch(() => query.model_name, (newValue) => {
-  localStorage.setItem("modelSearchQuery", newValue);
-});
+watch(
+  () => query.model_name,
+  (newValue) => {
+    localStorage.setItem("modelSearchQuery", newValue);
+  }
+);
 
 // // 로컬 저장소에서 저장된 값을 불러와서 초기화합니다.
 // onMounted(() => {
@@ -191,8 +196,8 @@ const fetchData = async () => {
       {
         status: props.status,
         test_type: props.testType,
-        search_type : props.searchType,
-        user_name : name
+        search_type: props.searchType,
+        user_name: name,
       }
     );
 
@@ -257,7 +262,7 @@ const router = useRouter();
 
 const handleDetail = (row: ApplicationItem) => {
   // `application/application_detail` 페이지로 리디렉트하면서 `uuid`를 파라미터로 전달합니다.
-  
+
   router.push({ name: "MeasurementInfo", params: { uuid: row.uuid } });
 };
 

@@ -1,35 +1,31 @@
-export interface CalcuatedSummary{
-  sampleNumber : string;
-  dbm3 : string;
-  p1Input : string;
-  p2Input : string;
-  p1Output : string;
-  targetFreq : string;
+export interface CalcuatedSummary {
+  sampleNumber: string;
+  dbm3: string;
+  p1Input: string;
+  p2Input: string;
+  p1Output: string;
+  targetFreq: string;
 
-  lf1 : string;
-  lf2 : string;
-  rf1 : string;
-  rf2 : string;
+  lf1: string;
+  lf2: string;
+  rf1: string;
+  rf2: string;
 
   pIn: Number[];
   pOut: Number[];
   rf1Mhz: Number[];
   rf2Mhz: Number[];
-
 }
 
-export interface CalcuatedAverageSummary{
-  
-  p1InputAvg : string;
-  p2InputAvg : string;
-  p1OutputAvg : string;
+export interface CalcuatedAverageSummary {
+  p1InputAvg: string;
+  p2InputAvg: string;
+  p1OutputAvg: string;
 
-  p1InputStd : string;
-  p2InputStd : string;
-  p1OutputStd : string;
-
+  p1InputStd: string;
+  p2InputStd: string;
+  p1OutputStd: string;
 }
-
 
 interface Sample {
   uuid: string;
@@ -37,34 +33,21 @@ interface Sample {
   db3Freq: string;
   targetFreq: string;
   isSelf: boolean;
-  isEdit : boolean;
+  isEdit: boolean;
   status: string;
   pdtApplicationUuid: string;
-  p_in : string | null ;
-  p_out : string | null ;
+  p_in: string | null;
+  p_out: string | null;
+}
+
+export interface TegFreqauncySection {
+  start: string;
+  stop: string;
+  point: string;
+  ifbw: string;
 }
 
 
-export interface TegFormRuleInterface {
-  name: string
-  region: string
-  count: string
-  date1: string
-  date2: string
-  delivery: boolean
-  type: string[]
-  resource: string
-  desc: string
-  waferQuantity : number
-  dateOfConvery : ""
-  waferSize: string
-  note : string
-  purpose : string
-  lotID : string
-  designer : string
-  requester : string
-  modelName : string
-}
 
 export interface ApplicationForm {
   customerCompany: "";
@@ -94,7 +77,7 @@ export interface ApplicationForm {
   expectedMeasurementDate: string | null;
   expectedCompletionDate: string | null;
   desiredCompletionDate: string | null;
-  testType : string
+  testType: string;
   signalType: string;
   duplexMode: string | null;
   bandwidth: string;
@@ -268,13 +251,13 @@ export const bandInformationDict: BandInformationDict = {
       downlinkMhz: ["859", "894"],
       channelBandwidthsMhz: ["1.4", "3", "5", "10", "15"],
     },
-    "28A" : {
+    "28A": {
       duplexMode: "FDD",
       uplinkMhz: ["703", "733"],
       downlinkMhz: ["758", "788"],
       channelBandwidthsMhz: ["3", "5", "10", "15", "20"],
     },
-    "28B" : {
+    "28B": {
       duplexMode: "FDD",
       uplinkMhz: ["718", "748"],
       downlinkMhz: ["773", "803"],
@@ -285,7 +268,7 @@ export const bandInformationDict: BandInformationDict = {
       uplinkMhz: ["703", "748"],
       downlinkMhz: ["758", "803"],
       channelBandwidthsMhz: ["3", "5", "10", "15", "20"],
-    },    
+    },
     "29": {
       duplexMode: "SDL",
       uplinkMhz: ["\u2014"],

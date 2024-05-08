@@ -1,4 +1,7 @@
 import axios from "axios";
+import { Ref, ref } from "vue";
+import { canConvertToFloat } from "./tegUtility";
+import { ElMessage } from "element-plus";
 // signalOptions.ts
 
 export async function checkApplication(applicationUuid: string) {
@@ -13,11 +16,17 @@ export async function checkApplication(applicationUuid: string) {
   }
 }
 
-
-
-export function computeChannelBandwidth(testType: string) {
+export function computeChannelBandwidth(testType: string, duplexMode : string) {
   if (testType === "Aging") {
-    return ["1.4Mhz"];
+    
+    if (duplexMode === "TDD") 
+      return ["5Mhz"];
+    else{
+
+      // FDD 일 경우
+      return ["1.4Mhz"];
+    }
+
   } else if (testType === "AMR") {
     return ["5Mhz"];
   } else if (["Lifetime", "Max Fuse", "Step Stress"].includes(testType)) {
@@ -41,7 +50,10 @@ export function computeSignalOptions(testType: string) {
       { label: "기타", value: "etc" },
     ];
   } else {
-    return [{ label: "LTE", value: "LTE" }];
+    return [
+      { label: "LTE", value: "LTE" },
+      { label: "WIFI", value: "WIFI" },
+    ];
   }
 }
 
@@ -59,14 +71,11 @@ export function computeRB(testType: string) {
 
 export const createRequestNumber = async () => {
   try {
-
-    const url = "pdt_application/generate-reqeust-number"
-    const response = await axios.get(url)
-    const requestNumber = response.data.value.reqeust_number
-    return requestNumber
-
-  } 
-  catch(error) {
+    const url = "pdt_application/generate-reqeust-number";
+    const response = await axios.get(url);
+    const requestNumber = response.data.value.reqeust_number;
+    return requestNumber;
+  } catch (error) {
     console.error("Error:", error);
   }
 };
@@ -108,5 +117,40 @@ export const downloadExcel = async (application_excel_uuid: string) => {
   }
 };
 
+export function validateSampleData(dataList: Ref<any[]>): boolean {
 
-export const dutyList = ["40", "50"]
+  dataList.value.forEach((data) => {
+
+    if (!data.useDefaultFreq) {
+      if (data.offset === "") {
+        data.offset = "0";
+      }
+
+      if (!canConvertToFloat(data.offset)) {
+        ElMessage.error("ΔFreq 값은 양수나 음수로 이루어진 숫자여야합니다.");
+        return false;
+      }
+
+      if (!canConvertToFloat(data.offset)) {
+        ElMessage.error("ΔFreq 값은 양수나 음수로 이루어진 숫자여야합니다.");
+        return false;
+      }
+
+      data.targetFreq = (
+        Number(data.defaultFreq) + Number(data.offset)
+      ).toString();
+
+    }
+    else {
+
+      data.targetFreq = data.defaultFreq;
+
+    }
+  });
+
+  
+  return true
+
+}
+
+export const dutyList = ["40", "50"];

@@ -1,7 +1,7 @@
 <!-- Wafer.vue -->
 <template>
   <div>
-    <h3>Wafer Size: {{ props.waferInfo.size }} x {{ props.waferInfo.size }}</h3>
+    <!-- <h3>Wafer Size: {{ props.waferInfo.size }} x {{ props.waferInfo.size }}</h3> -->
     <div class="grid-container" :style="gridStyle">
       <el-button
         v-for="(button, index) in buttonStates"
@@ -50,6 +50,7 @@ watch(() => props.waferInfo, (newVal) => {
 
 const toggleButton = (index: number) => {
   buttonStates[index].active = !buttonStates[index].active;
+  props.waferInfo.status[index] = "activate"
   emits('updateActiveShots', buttonStates.filter(b => b.active).map(b => b.text));
 };
 

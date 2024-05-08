@@ -86,7 +86,7 @@ const items = [
     permiss: "2",
     subs: [
       {
-        index: "/product/create-application2",
+        index: "/product/create-application",
         title: "의뢰서 작성",
         permiss: "2",
       },
@@ -135,19 +135,32 @@ const items = [
     subs: [
       {
         index: "/admin/application-list",
-        title: "의뢰서",
+        title: "PDT 측정 의뢰서",
         permiss: "5",
       },
       {
-        index: "/teg/create-teg-application",
-        title: "TEG 의뢰서 작성",
+        index: "/admin/teg/teg_application",
+        title: "TEG 측정",
         permiss: "5",
+        subs: [
+          {
+            index: "/admin/teg/create-teg-application",
+            title: "TEG 의뢰서 작성",
+            permiss: "5",
+          },
+          {
+            index: "/admin/teg/teg-application-list",
+            title: "TEG 의뢰서 접수",
+            permiss: "5",
+          },
+          {
+            index: "/statistic/chart",
+            title: "측정 통계",
+            permiss: "5",
+          },
+        ],
       },
-      {
-        index: "/statistic/chart",
-        title: "측정 통계",
-        permiss: "6",
-      },
+
       // {
       //   index: "/admin/next-function",
       //   title: "개발기능",
