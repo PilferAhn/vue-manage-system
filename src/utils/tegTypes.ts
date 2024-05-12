@@ -51,7 +51,10 @@ export interface MeasInfo {
   freqSectionInfo: FreqSectionInfo[];
 }
 
-export interface TegApplication {
+export interface TegApplication{
+
+  status : string;
+
   designer: string;
   requester: string;
   purpose: string;
@@ -103,6 +106,7 @@ export const TempTegApplicationForm = reactive<TegApplication>({
   requester: "",
   purpose: "",
   lotID: "",
+  status : "",
 
   shotSize: "",
   chipSize: "",
@@ -156,6 +160,7 @@ export const TegApplicationForm = reactive<TegApplication>({
   requester: "Tester_Req",
   purpose: "Test Form",
   lotID: "TESTING LOT",
+  status : "",
 
   shotSize: "10.23 * 10.17",
   chipSize: "0.93*1.13",
@@ -204,9 +209,18 @@ export const TegApplicationForm = reactive<TegApplication>({
   applicationType: "",
 });
 
-// interface PriorityGroup {
-//   priority: string;
-// }
+
+interface tegApplicationRow {
+
+  modelName : string,
+  lotID : string,
+  designer : string,
+  reqeuster : string,
+  dateOfCreated : string,
+  dateOfReserved : string,
+  status : string
+
+}
 
 // 전체 객체의 타입을 정의하는 인터페이스
 export const applicationPriority = [

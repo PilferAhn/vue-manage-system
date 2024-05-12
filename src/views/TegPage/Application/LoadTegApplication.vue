@@ -7,9 +7,7 @@
     label-width="100px"
   >
     <div class="container">
-      <el-button type="primary" @click="submitForm"
-        >Submit Application</el-button
-      >
+
       <div class="split-layout">
         <div class="form-box">
           <div class="meas-types-container">
@@ -250,7 +248,8 @@ import { FormInstance } from "element-plus";
 import { useRoute } from "vue-router";
 
 // type 정의
-import { getWaferInfoBySize } from "./../../../utils/waferApplicationHelper";
+import { getWaferInfoBySize, } from "./../../../utils/waferApplicationHelper";
+import { getTegApplicationDetail} from "./../../../utils/waferMeasurementHelper";
 import {
   TempTegApplicationForm,
   TegApplicationForm,
@@ -260,7 +259,7 @@ import {
   waferSizeList,
 } from "./../../../utils/tegTypes";
 import { tegApplicationRules } from "./../../../utils/tegApplicationRules";
-import { submitForm } from "./../../../utils/tegUtility";
+import { submitForm, getNewTegApplicationDetail } from "./../../../utils/tegUtility";
 
 // 하위 component 정의
 import InputText from "./InputText.vue"; // assuming generic text input component
@@ -276,25 +275,37 @@ import WaferInformationUpdate from "./WaferInfomation.vue";
 // useRoute 훅을 사용하여 현재 라우트 정보를 가져옵니다.
 const route = useRoute();
 const applicationID = ref<string>("");
-const applicationType = ref<string>("");
-
-onMounted(() => {
-  // 타입 체크와 단언을 통해 안전하게 값을 할당합니다.
-  const uuid = route.params.uuid;
-  const type = route.params.applicationType;
-
-  applicationID.value = Array.isArray(uuid) ? uuid[0] : uuid as string;
-  applicationType.value = Array.isArray(type) ? type[0] : type as string;
-});
 
 const applicationForm = ref<FormInstance>();
 const selectedFile = ref<File | null>(null);
 const tegApplicationForm = TegApplicationForm;
 const rules = tegApplicationRules;
 
+// 타입 체크와 단언을 통해 안전하게 값을 할당합니다.
+
+// `route.params.uuid`의 변화를 감시하고 데이터를 가져오는 함수
+watch(() => route.params.uuid, async (newUuid, oldUuid) => {
+
+  if (newUuid) {
+    applicationID.value = Array.isArray(newUuid) ? newUuid[0] : newUuid as string;
+    try {
+
+      getNewTegApplicationDetail(applicationID.value)
+      // const app = await getTegApplicationDetail(applicationID.value);
+      // tegApplicationForm.modelName = app.productName
+
+    } catch (error) {
+      console.error("Error fetching application details:", error);
+    }
+  }
+}, { immediate: true }); // `immediate: true` 옵션은 컴포넌트 마운트 시에도 감시 기능을 즉시 실행합니다.
+
+
 function handleFormSubmission() {
   if (applicationForm.value) {
     submitForm(applicationForm.value, tegApplicationForm, selectedFile.value);
+    
+
   } else {
     console.error("Form is not yet initialized.");
   }
@@ -315,8 +326,7 @@ watch(
       Object.assign(
         TegApplicationForm.shotInformation,
         getWaferInfoBySize(newSize)
-      );
-      console.log(TegApplicationForm.shotInformation); // Logs updated wafer info for debugging
+      );      
     }
   }
 );

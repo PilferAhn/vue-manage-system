@@ -42,10 +42,31 @@
       <div class="charts-container">
         <div class="charts-row">
           <div class="form-box">
+            <LinveGraph
+              :chartData="chartS21"
+              chartTitle="PDT"
+              :reverseY="false"
+              xAxisName = "Frequancy"
+              yAxisName="dBm"                        
+            />
+          </div>
+          <div class="form-box">          
+            <LinveGraph
+              :chartData="chartSPara"
+              chartTitle="SPara"
+              :reverseY="false"
+              xAxisName = "Frequancy"
+              yAxisName="dBm"                        
+            />
+          </div>
+        </div>
+        <div class="charts-row">
+          <div class="form-box">
             <ScatterChart
               :chartData="chartDataRfLfDifference"
               chartTitle="Input vs Bandwidth"
               :reverseY="true"
+              xAxisName = "Input Power(dBm)"
               yAxisName="BandWidth"
             />
           </div>
@@ -54,6 +75,7 @@
               :chartData="chartDataPout"
               chartTitle="Input vs Output"
               :reverseY="false"
+              xAxisName = "Input Power(dBm)"
               yAxisName="Power(dBm)"
             />
           </div>
@@ -64,6 +86,7 @@
               :chartData="chartDataLf1Mhz"
               chartTitle="Input vs LF [MHz] @ -10dB"
               :reverseY="false"
+              xAxisName = "Input Power(dBm)"
               yAxisName="LF [Mhz] @-10dB"
             />
           </div>
@@ -72,6 +95,7 @@
               :chartData="chartDataRf1Mhz"
               chartTitle="Input vs RF [MHz] @ -10dB"
               :reverseY="true"
+              xAxisName = "Input Power(dBm)"
               yAxisName="RF [MHz] @-10dB"
             />
           </div>
@@ -84,8 +108,9 @@
 <script lang="ts" setup>
 import { onMounted, ref, computed, watch} from "vue";
 import { CalcuatedSummary } from "../../../utils/types";
-
+import {colorList} from "../../../utils/utility"
 import ScatterChart from "./ScatterChart.vue";
+import LinveGraph from "./LinveGraph.vue";
 import axios from "axios";
 
 const props = defineProps({
@@ -128,6 +153,14 @@ const getSummaryData = async (uuid: string) => {
       pOut: item.p_out.split("\t").map(Number),
       rf1Mhz: item.rf1_mhz.split("\t").map(Number),
       lf1Mhz: item.lf1_mhz.split("\t").map(Number),
+
+      
+      s21Freq : item.s21_freq.split("\t").map(Number),
+      s21dBm : item.s21_dbm.split("\t").map(Number),
+
+      sParaDbm : item.s_para_dbm.split(",").map(Number),
+      sParaFreq : item.s_para_freq.split(",").map(Number),
+
     }));
 
     calculateStatistics();
@@ -142,26 +175,64 @@ watch(() => props.uuid, (newUuid, oldUuid) => {
   getSummaryData(newUuid);
 }, { immediate: true });
 
+function createSParaChartData(xValueKey, yValueKey, step = 3) {
+  console.log(xValueKey, yValueKey)
+  const colors = colorList;
+  return computed(() => {
+    return calculatedSummaries.value.map((summary, index) => {
+      const data = summary.sParaDbm.reduce((acc, _, idx) => {
+        // 현재 인덱스가 step 배수인 경우에만 데이터 포인트를 생성
+        if (idx % step === 0) {
+          acc.push({
+            x: summary[xValueKey][idx],
+            y: summary[yValueKey][idx]
+          });
+        }
+        return acc;
+      }, []);
+
+      return {
+        label: summary.sampleNumber,
+        data,
+        backgroundColor: colors[index % colors.length],
+        borderColor: colors[index % colors.length],
+      };
+    });
+  });
+}
+
+function createS21ChartData(xValueKey, yValueKey, step = 10) {
+  const colors = colorList;
+  return computed(() => {
+    return calculatedSummaries.value.map((summary, index) => {
+      const data = summary.s21Freq.reduce((acc, _, idx) => {
+        // 현재 인덱스가 step 배수인 경우에만 데이터 포인트를 생성
+        if (idx % step === 0) {
+          acc.push({
+            x: summary[xValueKey][idx],
+            y: summary[yValueKey][idx]
+          });
+        }
+        return acc;
+      }, []);
+
+      return {
+        label: summary.sampleNumber,
+        data,
+        backgroundColor: colors[index % colors.length],
+        borderColor: colors[index % colors.length],
+      };
+    });
+  });
+}
+
+
+
+
+
 // `chartData` 생성을 위한 함수를 반환하는 함수
 function createChartDataFunction(yValueKey, maxIndexKey) {
-  const colors = [
-    "rgba(255, 99, 132, 1)", // 빨간색
-    "rgba(54, 162, 235, 1)", // 파란색
-    "rgba(255, 206, 86, 1)", // 노란색
-    "rgba(75, 192, 192, 1)", // 청록색
-    "rgba(153, 102, 255, 1)", // 보라색
-    "rgba(255, 159, 64, 1)", // 주황색
-    "rgba(255, 99, 132, 0.6)", // 연한 빨간색
-    "rgba(255, 159, 64, 0.6)", // 연한 주황색
-    "rgba(153, 102, 255, 0.6)", // 연한 보라색
-    "rgba(54, 162, 235, 0.6)", // 연한 파란색
-    "rgba(75, 192, 192, 0.6)", // 연한 청록색
-    "rgba(255, 206, 86, 0.6)", // 연한 노란색
-    "rgba(116, 185, 255, 1)", // 하늘색
-    "rgba(162, 155, 254, 1)", // 연보라색
-    "rgba(0, 184, 148, 1)", // 에메랄드색
-    "rgba(253, 121, 168, 1)", // 분홍색
-  ];
+  const colors = colorList
   return computed(() => {
     return calculatedSummaries.value.map((summary, index) => {
       // maxIndex를 현재 summary 객체에서 maxIndexKey에 해당하는 값으로 설정
@@ -194,25 +265,7 @@ function createChartDataFunction(yValueKey, maxIndexKey) {
 
 // rf1Mhz와 lf1Mhz의 차이에 대한 차트 데이터를 생성하는 함수
 function createChartDataForRfLfDifference(maxIndexKey) {
-  const colors = [
-    "rgba(255, 99, 132, 1)",
-    "rgba(54, 162, 235, 1)",
-    "rgba(255, 206, 86, 1)",
-    "rgba(75, 192, 192, 1)",
-    "rgba(153, 102, 255, 1)",
-    "rgba(255, 159, 64, 1)",
-    "rgba(255, 99, 132, 0.6)",
-    "rgba(255, 159, 64, 0.6)",
-    "rgba(153, 102, 255, 0.6)",
-    "rgba(54, 162, 235, 0.6)",
-    "rgba(75, 192, 192, 0.6)",
-    "rgba(255, 206, 86, 0.6)",
-    "rgba(116, 185, 255, 1)",
-    "rgba(162, 155, 254, 1)",
-    "rgba(0, 184, 148, 1)",
-    "rgba(253, 121, 168, 1)",
-  ];
-
+  const colors = colorList
   return computed(() => {
     return calculatedSummaries.value.map((summary, index) => {
       // maxIndex를 현재 summary 객체에서 maxIndexKey에 해당하는 값으로 설정
@@ -247,6 +300,8 @@ function createChartDataForRfLfDifference(maxIndexKey) {
 
 
 // 각 데이터 타입별로 차트 데이터 생성
+const chartSPara = createSParaChartData("sParaFreq", "sParaDbm");
+const chartS21 = createS21ChartData("s21Freq", "s21dBm");
 const chartDataPout = createChartDataFunction("pOut", "p2_index");
 const chartDataRf1Mhz = createChartDataFunction("rf1Mhz", "p1_index");
 const chartDataLf1Mhz = createChartDataFunction("lf1Mhz", "p1_index");

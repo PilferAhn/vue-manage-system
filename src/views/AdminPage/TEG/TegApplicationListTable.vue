@@ -18,7 +18,7 @@
     header-cell-class-name="table-header"
     :row-class-name="getRowClass"
   >
-    <!-- <el-table-column label="UUID" prop="applicationID"></el-table-column> -->
+    <el-table-column label="UUID" prop="applicationID"></el-table-column>
     <el-table-column label="Model Name" prop="productName"></el-table-column>
     <el-table-column label="LOT ID" prop="lotId"></el-table-column>
     <el-table-column label="Test Type" prop="measType"></el-table-column>
@@ -46,7 +46,11 @@
       <!-- 추가된 '자세히' 버튼 컬럼 -->
 
       <template #default="scope">
-        <el-button type="primary" @click="viewDetail(scope.row.applicationID, scope.row.applicationType)"
+        <el-button
+          type="primary"
+          @click="
+            viewDetail(scope.row.applicationID, scope.row.applicationType)
+          "
           >자세히</el-button
         >
       </template>
@@ -64,6 +68,10 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
+
+import { getNewTegApplication } from "../../../utils/tegUtility";
+import { TegApplication as newTegApplications } from "../../../utils/tegTypes";
+
 import {
   TegApplication,
   getTegApplication,
@@ -81,11 +89,18 @@ const searchQuery = ref("");
 const currentPage = ref(1);
 const pageSize = props.pageSize;
 const applications = ref<TegApplication[]>([]);
+const newApplications = ref<TegApplication[]>([]);
 
 onMounted(async () => {
   try {
+
+    newApplications.value = await getNewTegApplication("created")
     applications.value = await getTegApplication(props.category);
 
+    const combinedApplications = [...newApplications.value , ...applications.value];
+    applications.value = combinedApplications;  // 원래의 applications ref를 업데이트
+    
+    
   } catch (error) {
     console.error("Error fetching applications:", error);
   }
@@ -100,9 +115,9 @@ const filteredData = computed(() => {
 // useRouter 훅을 사용하여 라우터 인스턴스를 가져옵니다.
 const router = useRouter();
 
-const viewDetail = async (uuid: string, applicationType : string) => {
+const viewDetail = async (uuid: string, applicationType: string) => {
   try {
-    await router.push({ name: "TegApplicationDetail", params: { uuid: uuid, applicationType : applicationType} });
+    await router.push({ name: "LoadTegApplication", params: { uuid: uuid } });
   } catch (error) {
     console.error("Routing error:", error);
   }
@@ -118,7 +133,7 @@ function filterTable() {
 }
 </script>
 
-<style>
+<style scope>
 .search-box {
   margin-bottom: 10px;
 }

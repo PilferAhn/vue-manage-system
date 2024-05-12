@@ -120,7 +120,7 @@ function filterTable() {
 }
 </script>
 
-<style>
+<style scope>
 .search-box {
   margin-bottom: 10px;
 }

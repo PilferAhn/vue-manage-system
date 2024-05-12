@@ -2,18 +2,62 @@ import axios from "axios";
 // tegUtility.ts
 import { ElMessage, FormInstance } from "element-plus";
 import { TegApplication, waferInformation, MeasInfo } from "./tegTypes";
+import { TegApplication as oldTegApplication } from "./waferMeasurementHelper";
 
 async function create_teg_application_excel(application_uuid: string) {
   try {
     const response = await axios.get(
       "/teg_application/create_teg_application_excel" + "/" + application_uuid
     );
-
   } catch (error) {
-    ElMessage.error("Excel File을 생성하는데 실패했습니다. 관리자에게 문의하세요")
+    ElMessage.error(
+      "Excel File을 생성하는데 실패했습니다. 관리자에게 문의하세요"
+    );
     console.error("Excel File을 생성하는데 실패했습니다. :", error);
   }
 }
+
+export async function getNewTegApplicationDetail(uuid: string): Promise<TegApplication | null> {
+  const url = `teg_application/get_teg_application_by_uuid/${uuid}`;
+  try {
+    const response = await axios.get<TegApplication>(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching application details:", error);
+    return null;
+  }
+}
+
+export const getNewTegApplication = async (
+  status: string
+): Promise<oldTegApplication[]> => {
+  try {
+    const url = "teg_application/get-teg-applications-by-status";
+    const response = await axios.get(url + "/" + status);
+    let wafers = [];
+
+    const applications: oldTegApplication[] = response.data.map((app: any) => ({
+      applicationID: app.uuid,
+      productName: app.model_name,
+      lotId: app.lot_id,
+      // waferId: app.wafer_id,
+      // isTcf: app.is_tcf,
+      // temperatures: app.temperatures,
+      measType: "Testing",
+      status: app.status,
+      priority: app.priority,
+      designer: app.designer + " / " + app.reqeuster,
+      progress: "0 / 0",
+      dateOfCreated: app.date_of_created,
+      applicationType: app.application_type,
+    }));
+
+    return applications;
+  } catch (error) {
+    console.error("Failed to fetch applications:", error);
+    throw error;
+  }
+};
 
 export async function submitForm(
   form: FormInstance | null,
@@ -58,9 +102,8 @@ export async function submitForm(
         }
 
         if (response.status == 200) {
-          await create_teg_application_excel(response.data.applicationUUID)
+          await create_teg_application_excel(response.data.applicationUUID);
         }
-
       } catch (error) {
         console.error("Error during server request:", error);
       }

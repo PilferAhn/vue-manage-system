@@ -17,10 +17,11 @@ const props = defineProps({
   chartTitle: String,
   yAxisName: String,
   xAxisName : String,
-  reverseY: Boolean, // x축 반전을 위한 새 prop
-  yAxisMin: Number
-
+  reverseY: Boolean, // x축 반전을 위한 새 prop  
 });
+
+
+console.log(props.chartData)
 
 const chartCanvas = ref(null);
 let myChart = null;
@@ -40,10 +41,10 @@ const drawChart = () => {
           data: dataset.data,
           backgroundColor: dataset.backgroundColor,
           borderColor: dataset.backgroundColor,
-          borderWidth: 1, // 선의 두께를 줄임
+          borderWidth: 2, // 선의 두께를 줄임
           fill: false,
           tension: 0,
-          pointRadius: dataset.data.map((_, index) => index === lastIndex ? 3 : 2), // 마지막 포인트의 크기를 더 크게 설정
+          pointRadius: dataset.data.map((_, index) => index === lastIndex ? 1 : 0.5), // 마지막 포인트의 크기를 더 크게 설정
           pointBackgroundColor: dataset.data.map((_, index) => index === lastIndex ? dataset.backgroundColor : dataset.backgroundColor), // 마지막 포인트의 배경 색상 변경
           pointBorderColor: dataset.data.map((_, index) => index === lastIndex ? dataset.backgroundColor : dataset.backgroundColor),
           pointBorderWidth: dataset.data.map((_, index) => index === lastIndex ? 3 : 2), // 마지막 포인트의 테두리 두께를 더 크게 설정
@@ -58,7 +59,7 @@ const drawChart = () => {
           
           title: {
             display: true,
-            text: "Input Power(dBm)",
+            text: props.xAxisName,
             font: {
               size: 16,
               weight: "bold",
@@ -68,7 +69,7 @@ const drawChart = () => {
         },
         y: {
           reverse: props.reverseY,
-          // min: props.yAxisMin || undefined, // x축 최소값을 props에서 가져와 설정
+          min: -10,
           title: {
             display: true,
             text: props.yAxisName,
@@ -89,11 +90,11 @@ const drawChart = () => {
             pinch: {
               enabled: true, // 핀치 제스처를 통한 zoom 활성화 (모바일 기기에서 유용)
             },
-            mode: 'y', // x축과 y축 모두에서 zoom을 활성화
+            mode: 'xy', // x축과 y축 모두에서 zoom을 활성화
           },
           pan: {
             enabled: true, // 드래그를 통한 pan 활성화
-            mode: 'y', // x축과 y축 모두에서 pan을 활성화
+            mode: 'xy', // x축과 y축 모두에서 pan을 활성화
           },
         },
         title: {

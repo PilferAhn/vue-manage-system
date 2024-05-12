@@ -115,7 +115,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-
+        
         <div v-if="form.testType !== ''">
           <el-form-item v-if="form.testType === 'Life'" label="고객사 정보">
             <el-select
@@ -268,7 +268,7 @@
             </el-col>
           </el-form-item>
 
-          <el-form-item label="Test 온도" prop="temperature">
+          <el-form-item v-if="form.testType !== 'Life'" label="Test 온도" prop="temperature">
             <el-input
               placeholder="Temperature ℃"
               v-model="form.temperature"

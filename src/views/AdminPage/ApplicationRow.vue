@@ -17,13 +17,27 @@
           clearable
         ></el-input>
 
+        <el-input
+          v-model="query.model_name"
+          placeholder="기종명"
+          class="search-input mr10"
+          clearable
+        ></el-input>
+
         <el-button type="primary" @click="handleSearch">검색</el-button>
       </div>
-      <div class="search-box"  v-else>
+      <div class="search-box" v-else>
         <!-- New input for Developer or Requester -->
         <el-input
           v-model="query.searchName"
           placeholder="개발자 또는 담당자 이름"
+          class="search-input mr10"
+          clearable
+        ></el-input>
+
+        <el-input
+          v-model="query.model_name"
+          placeholder="기종명"
           class="search-input mr10"
           clearable
         ></el-input>
@@ -110,6 +124,15 @@
           </template>
         </el-table-column>
 
+        <el-table-column label="작성일" align="center">
+          <template #default="scope">
+            <span v-if="scope.row.date_of_created != null">
+              {{ scope.row.date_of_created.slice(0, 10) }}
+              </span
+            >
+          </template>
+        </el-table-column>
+
         <el-table-column label="Action" width="280" align="center">
           <template #default="scope">
             <el-button
@@ -176,6 +199,7 @@ const props = defineProps<{
 const query = reactive({
   uuid: "",
   searchName: "",
+  model_name: "",
   pageIndex: 1,
   pageSize: 10,
 });
@@ -190,7 +214,7 @@ interface ApplicationItem {
   temperature: string;
   product_type: string;
   wafer_type: string;
-  date_of_create: string;
+  date_of_created: string;
   status: string;
   sample_quantity: number;
   test_type: string;
@@ -198,7 +222,6 @@ interface ApplicationItem {
   purpose: string;
   target_position: string;
 }
-const applicationList = ref<ApplicationItem[]>([]);
 
 const allData = ref<ApplicationItem[]>([]);
 const tableData = ref<ApplicationItem[]>([]);
@@ -225,7 +248,8 @@ const filterData = () => {
     (item) =>
       item.uuid.includes(query.uuid) &&
       (item.designer.includes(query.searchName) ||
-        item.requester.includes(query.searchName))
+        item.requester.includes(query.searchName)) &&
+      item.model_name.includes(query.model_name)
   );
 
   // Pagination logic (remains the same)

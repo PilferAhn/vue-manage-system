@@ -268,14 +268,16 @@
             </el-col>
           </el-form-item>
 
-          <el-form-item label="Test 온도" prop="temperature">
-            <el-input
-              placeholder="Temperature ℃"
-              v-model="form.temperature"
-              style="width: 100%"
-            ></el-input>
-          </el-form-item>
-
+          <span v-if="form.testType !== 'Life'">
+            <el-form-item label="Test 온도" prop="temperature">
+              <el-input
+                placeholder="Temperature ℃"
+                v-model="form.temperature"
+                style="width: 100%"
+              ></el-input>
+            </el-form-item>
+          </span>
+            
           <el-form-item label="Position" prop="position">
             <el-select
               v-model="form.targetPosition"

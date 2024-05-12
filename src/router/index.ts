@@ -168,15 +168,15 @@ const routes: RouteRecordRaw[] = [
                 },
                 component: () => import(/* webpackChunkName: "table" */ '../views/TegPage/MeasurementQueue/TegMeasurementQue.vue'),
             },
-            // {
-            //     path: '/teg/teg-application-detail/:uuid',
-            //     name: 'TegApplicationDetail',
-            //     meta: {
-            //         title: '의뢰서 자세히',
-            //         permiss: '5',
-            //     },
-            //     component: () => import(/* webpackChunkName: "table" */ '../views/TegPage/MeasurementQueue/LoadTegApplication.vue'),
-            // },                            
+            {
+                path: '/teg/teg-application-detail/:uuid',
+                name: 'LoadTegApplication',
+                meta: {
+                    title: '의뢰서 자세히',
+                    permiss: '5',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/TegPage/Application/LoadTegApplication.vue'),
+            },                            
             {
                 path: '/table',
                 name: 'basetable',

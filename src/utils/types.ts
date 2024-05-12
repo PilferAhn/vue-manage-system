@@ -15,6 +15,12 @@ export interface CalcuatedSummary {
   pOut: Number[];
   rf1Mhz: Number[];
   rf2Mhz: Number[];
+
+  s21dBm: Number[];
+  s21Freq: Number[];
+
+  sParaDbm : Number[];
+  sParaFreq : Number[];
 }
 
 export interface CalcuatedAverageSummary {

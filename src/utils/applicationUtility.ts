@@ -16,20 +16,16 @@ export async function checkApplication(applicationUuid: string) {
   }
 }
 
-export function computeChannelBandwidth(testType: string, duplexMode : string) {
+export function computeChannelBandwidth(testType: string, duplexMode: string) {
   if (testType === "Aging") {
-    
-    if (duplexMode === "TDD") 
-      return ["5Mhz"];
-    else{
-
+    if (duplexMode === "TDD") return ["5Mhz"];
+    else {
       // FDD 일 경우
       return ["1.4Mhz"];
     }
-
   } else if (testType === "AMR") {
     return ["5Mhz"];
-  } else if (["Lifetime", "Max Fuse", "Step Stress"].includes(testType)) {
+  } else if (["Life", "Max Fuse", "Step Stress"].includes(testType)) {
     return ["1.4Mhz", "5Mhz", "10Mhz"];
   } else {
     return [];
@@ -118,9 +114,7 @@ export const downloadExcel = async (application_excel_uuid: string) => {
 };
 
 export function validateSampleData(dataList: Ref<any[]>): boolean {
-
   dataList.value.forEach((data) => {
-
     if (!data.useDefaultFreq) {
       if (data.offset === "") {
         data.offset = "0";
@@ -139,18 +133,12 @@ export function validateSampleData(dataList: Ref<any[]>): boolean {
       data.targetFreq = (
         Number(data.defaultFreq) + Number(data.offset)
       ).toString();
-
-    }
-    else {
-
+    } else {
       data.targetFreq = data.defaultFreq;
-
     }
   });
 
-  
-  return true
-
+  return true;
 }
 
 export const dutyList = ["40", "50"];

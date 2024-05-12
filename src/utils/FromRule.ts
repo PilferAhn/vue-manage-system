@@ -26,9 +26,9 @@ export const applicationRules: FormRules = {
   packageType : [
     { required: true, message: "Package 종류를 선택하세요", trigger: "blur" }
   ],
-  temperature : [
-    { required: true, message: "Test 온도를 입력하세요", trigger: "blur" }
-  ],
+  // temperature : [
+  //   { required: true, message: "Test 온도를 입력하세요", trigger: "blur" }
+  // ],
   band: [
     {
       required: true,      
