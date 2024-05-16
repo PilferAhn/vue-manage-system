@@ -1,7 +1,46 @@
 // rules.ts
-import { FormRules } from "element-plus";
+import { FormRules, FormItemRule  } from "element-plus";
 import { TegFormRuleInterface } from './waferApplicationHelper';
 import { reactive } from 'vue'
+
+
+
+// formRules.ts
+export const registrationRules = {
+  name: [
+    { required: true, message: "Please input your name", trigger: "blur" },
+  ],
+  email: [
+    {
+      required: true,
+      message: "Please input your email address",
+      trigger: "blur",
+    },
+    {
+      type: "email",
+      message: "Please input a valid email address",
+      trigger: ["blur", "change"],
+    },
+  ],
+  password: [
+    { required: true, message: "Please input your password", trigger: "blur" },
+  ],
+  passwordConfirmation: [
+    {
+      required: true,
+      message: "Please confirm your password",
+      trigger: "blur",
+    },
+
+  ],
+  department: [
+    { required: true, message: "Please input your department", trigger: "blur" },
+  ],
+  employeeId: [
+    { required: true, message: "Please input your employee ID", trigger: "blur" },
+  ],
+};
+
 
 export const applicationRules: FormRules = {
   name: [{ required: true, message: "값을 입력해주세요", trigger: "blur" }],

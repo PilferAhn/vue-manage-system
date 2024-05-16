@@ -10,7 +10,7 @@
         class="ms-content"
       >
         <el-form-item prop="username">
-          <el-input v-model="param.username" placeholder="username">
+          <el-input v-model="param.username" placeholder="ID">
             <template #prepend>
               <el-button :icon="User"></el-button>
             </template>
@@ -118,6 +118,8 @@ const submitForm = (formEl: FormInstance | undefined) => {
           ElMessage.success("Login successful");
           localStorage.setItem("ms_username", response.user_name);
           
+     
+
           // 기타 사용자 정의 로직
           // 예: 권한 설정, 로컬 스토리지 업데이트 등
           const keys = JSON.parse(response.ms_keys);          
@@ -125,7 +127,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
           permiss.handleSet(keys);
 
           localStorage.setItem("ms_keys", JSON.stringify(keys));
-          console.log(localStorage);
+          
 
           router.push("/");
         }

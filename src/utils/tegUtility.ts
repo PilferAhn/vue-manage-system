@@ -4,6 +4,10 @@ import { ElMessage, FormInstance } from "element-plus";
 import { TegApplication, waferInformation, MeasInfo } from "./tegTypes";
 import { TegApplication as oldTegApplication } from "./waferMeasurementHelper";
 
+
+
+
+
 async function create_teg_application_excel(application_uuid: string) {
   try {
     const response = await axios.get(

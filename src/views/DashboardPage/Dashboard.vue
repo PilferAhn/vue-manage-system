@@ -232,7 +232,7 @@ onMounted(() => {
 const name = localStorage.getItem("ms_username");
 const role: string = name === "admin" ? "RF개발팀" : "RF개발팀";
 
-console.log(localStorage)
+
 
 </script>
 

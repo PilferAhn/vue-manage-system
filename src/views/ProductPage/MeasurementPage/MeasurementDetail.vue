@@ -253,30 +253,6 @@
             </el-col>
           </el-form-item>
 
-          <!-- <el-form-item label="소요시간">
-            <el-col :span="11">
-              <el-form-item prop="requestToCompletionDuration">
-                <el-input
-                  placeholder="소요시간 의뢰일-완료일 [day]"
-                  v-model="form.requestToCompletionDuration"
-                  style="width: 100%"
-                ></el-input>
-              </el-form-item>
-            </el-col>
-
-            <el-col class="line" :span="2">/</el-col>
-
-            <el-col :span="11">
-              <el-form-item prop="startToCompletionDuration">
-                <el-input
-                  placeholder="소요시간 투입일-완료일 [day]"
-                  v-model="form.startToCompletionDuration"
-                  style="width: 100%"
-                ></el-input>
-              </el-form-item>
-            </el-col>
-          </el-form-item> -->
-
           <el-form-item label="의뢰일">
             <el-col :span="11">
               <el-form-item prop="date1">
@@ -329,6 +305,7 @@ import type { FormInstance, FormRules } from "element-plus";
 import axios from "axios";
 import { getCurrentDate } from "../../../utils/utility";
 import { createApplicationForm } from "../../../utils/form";
+import { ApplicationForm } from "../../../utils/types";
 import { useRoute } from "vue-router";
 import { utils } from "xlsx";
 
@@ -340,24 +317,11 @@ import {
   ChartType,
 } from "chart.js";
 
-// onMounted(() => {
-//   // 페이지를 새로고침하는 로직을 추가합니다.
-//   // 처음 페이지 로드 시에만 새로고침이 발생하도록 localStorage를 활용합니다.
-//   if (!localStorage.getItem("isReloaded")) {
-//     localStorage.setItem("isReloaded", "true");
-//     window.location.reload();
-//   } else {
-//     // 페이지가 새로고침된 후에는 'isReloaded' 키를 삭제하여 무한 루프를 방지합니다.
-//     localStorage.removeItem("isReloaded");
-//   }
-// });
-
 // Props 정의 및 타입 설정
 const props = defineProps({
   uuid: String,
+  application: Object as () => ApplicationForm,
 });
-
-
 
 Chart.register(...registerables);
 let myChart = null; // 그래프 인스턴스를 저장할 변수 선언
@@ -368,72 +332,65 @@ const role: string = name === "admin" ? "요소기술그룹" : "요소기술그�
 
 // reactive 객체를 사용하여 form 상태를 정의합니다.
 const formRef = ref<FormInstance>();
-const form = createApplicationForm();
+const form = props.application;
 
-const fetchApplicationDetail = async (uuid) => {
-  try {
-    const response = await axios.post(
-      "pdt_application/get_application_detail",
-      { uuid: uuid }
-    );
-    // 받아온 데이터를 reactive form 객체에 할당합니다.
+// const fetchApplicationDetail = async (uuid) => {
+//   try {
+//     const response = await axios.post(
+//       "pdt_application/get_application_detail",
+//       { uuid: uuid }
+//     );
+//     // 받아온 데이터를 reactive form 객체에 할당합니다.
 
-    form.requestNumber = response.data.request_number;
+//     form.requestNumber = response.data.request_number;
 
-    form.status = response.data.status;
+//     form.status = response.data.status;
 
-    form.customerCompany = response.data.customer_company.toUpperCase();
-    form.specTemperature = response.data.spec_temperature;
-    form.specPower = response.data.spec_power;
-    form.isSpecEdit = response.data.is_spec_edit;
+//     form.customerCompany = response.data.customer_company.toUpperCase();
+//     form.specTemperature = response.data.spec_temperature;
+//     form.specPower = response.data.spec_power;
+//     form.isSpecEdit = response.data.is_spec_edit;
 
-    form.modelName = response.data.model_name;
-    form.condition = response.data.condition;
+//     form.modelName = response.data.model_name;
+//     form.condition = response.data.condition;
 
-    form.signalType = response.data.signal_type;
-    form.band = response.data.band.toUpperCase();
-    form.duplexMode = response.data.duplex_mode;
-    form.bandwidth = response.data.bandwidth;
+//     form.signalType = response.data.signal_type;
+//     form.band = response.data.band.toUpperCase();
+//     form.duplexMode = response.data.duplex_mode;
+//     form.bandwidth = response.data.bandwidth;
 
-    form.designer = response.data.designer;
-    form.requester = response.data.requester;
+//     form.designer = response.data.designer;
+//     form.requester = response.data.requester;
 
-    form.dateOfCreated = response.data.date_of_created;
+//     form.dateOfCreated = response.data.date_of_created;
 
-    form.dateOfSampleConvey = getCurrentDate();
-    form.purpose = response.data.purpose;
+//     form.dateOfSampleConvey = getCurrentDate();
+//     form.purpose = response.data.purpose;
 
-    form.waferType = response.data.wafer_type;
+//     form.waferType = response.data.wafer_type;
 
-    form.packageType = response.data.package_type;
+//     form.packageType = response.data.package_type;
 
-    form.detail = response.data.detail;
+//     form.detail = response.data.detail;
 
-    form.testType = response.data.test_type;
-    form.targetPosition = response.data.target_position.toUpperCase();
-    form.temperature = response.data.temperature + "℃";
-    form.samples = response.data.samples;
+//     form.testType = response.data.test_type;
+//     form.targetPosition = response.data.target_position.toUpperCase();
+//     form.temperature = response.data.temperature + "℃";
+//     form.samples = response.data.samples;
 
-    
+//     form.sampleQuantity = response.data.samples.length;
 
-    form.sampleQuantity = response.data.samples.length;
+//     form.dateOfCreated = response.data.date_of_created;
 
-    form.dateOfCreated = response.data.date_of_created;
+//     drawChart();
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
-    drawChart();
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-// UUID 변경 감시 설정
-watch(() => props.uuid, (newUuid, oldUuid) => {
-  fetchApplicationDetail(newUuid);
-}, { immediate: true });
 
 const drawChart = () => {
   if (chartCanvas.value && form.samples) {
-
     if (myChart) {
       myChart.destroy();
     }
@@ -512,6 +469,25 @@ const drawChart = () => {
     myChart = new Chart(chartCanvas.value, chartConfig);
   }
 };
+
+
+// onMounted(drawChart)
+watch(() => form.samples, (newSamples) => {
+  if (newSamples && newSamples.length > 0) {
+    drawChart();
+  }
+}, { immediate: true, deep: true });
+
+
+// UUID 변경 감시 설정
+watch(
+  () => props.uuid,
+  (newUuid, oldUuid) => {
+    drawChart
+  },
+  { immediate: true }
+);
+
 </script>
 
 <style>

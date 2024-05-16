@@ -84,7 +84,7 @@ const applications = ref<TegApplication[]>([]);
 onMounted(async () => {
   try {
     applications.value = await getTegApplication(props.category);
-    console.log(applications.value)
+    
   } catch (error) {
     console.error("Error fetching applications:", error);
   }

@@ -1,3 +1,15 @@
+// types.ts
+export interface UserForm {
+  id : string;
+  name: string;
+  email: string;
+  password: string;
+  passwordConfirmation: string;
+  department: string;
+  employeeId: string;
+}
+
+
 export interface CalcuatedSummary {
   sampleNumber: string;
   dbm3: string;
@@ -56,9 +68,9 @@ export interface TegFreqauncySection {
 
 
 export interface ApplicationForm {
-  customerCompany: "";
-  specTemperature: "";
-  specPower: "";
+  customerCompany: string
+  specTemperature: string;
+  specPower: string;
   isSpecEdit: false;
   uuid: string;
   requestNumber: string | null;
@@ -134,7 +146,7 @@ export interface BandData {
   [key: string]: NetworkData;
 }
 
-interface BandInformationDict {
+export interface BandInformationDict {
   LTE: NetworkData;
   NR: NetworkData;
   CW: NetworkData;

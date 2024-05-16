@@ -1,7 +1,10 @@
 import axios from "axios";
 import { Ref, ref } from "vue";
 import { canConvertToFloat } from "./tegUtility";
+import { createApplicationForm } from "./form"
+import { ApplicationForm } from "./types";
 import { ElMessage } from "element-plus";
+import { bandInformationDict, BandInformationDict } from "./types";
 // signalOptions.ts
 
 export async function checkApplication(applicationUuid: string) {
@@ -76,6 +79,28 @@ export const createRequestNumber = async () => {
   }
 };
 
+
+export function getSystemBand(signalType: string, band: string) {
+  const bandInfo: BandInformationDict = bandInformationDict;
+
+  
+
+  if (["LTE", "NR", "CW"].includes(signalType)) {
+
+    const bandList = Object.keys(bandInfo[signalType]);
+    
+    const tempBand = band.toLowerCase()
+
+    if (bandList.includes(tempBand)) {
+      return bandInfo[signalType][tempBand]["uplinkMhz"]
+      
+    }
+  }
+
+  return ["1" , "2"]
+}
+
+
 export const downloadExcel = async (application_excel_uuid: string) => {
   try {
     const response = await axios.get(
@@ -112,6 +137,60 @@ export const downloadExcel = async (application_excel_uuid: string) => {
     // 적절한 오류 처리
   }
 };
+
+// fetchData 함수 정의
+export async function requestApplicationDetailbyUUID(uuid: string, applicationForm : ApplicationForm ): Promise<ApplicationForm> {
+  try {
+    const response = await axios.post("pdt_application/get_application_detail", { uuid });
+    
+
+    applicationForm.requestNumber = response.data.request_number;
+
+    applicationForm.status = response.data.status;
+
+    applicationForm.customerCompany = response.data.customer_company.toUpperCase();
+    applicationForm.specTemperature = response.data.spec_temperature;
+    applicationForm.specPower = response.data.spec_power;
+    applicationForm.isSpecEdit = response.data.is_spec_edit;
+
+    applicationForm.modelName = response.data.model_name;
+    applicationForm.condition = response.data.condition;
+
+    applicationForm.signalType = response.data.signal_type;
+    applicationForm.band = response.data.band.toUpperCase();
+    applicationForm.duplexMode = response.data.duplex_mode;
+    applicationForm.bandwidth = response.data.bandwidth;
+
+    applicationForm.designer = response.data.designer;
+    applicationForm.requester = response.data.requester;
+
+    applicationForm.dateOfCreated = response.data.date_of_created;
+
+    applicationForm.dateOfSampleConvey = response.data.date_of_comformed;
+    applicationForm.purpose = response.data.purpose;
+
+    applicationForm.waferType = response.data.wafer_type;
+
+    applicationForm.packageType = response.data.package_type;
+
+    applicationForm.detail = response.data.detail;
+
+    applicationForm.testType = response.data.test_type;
+    applicationForm.targetPosition = response.data.target_position.toUpperCase();
+    applicationForm.temperature = response.data.temperature + "℃";
+    applicationForm.samples = response.data.samples;
+
+    applicationForm.sampleQuantity = response.data.samples.length;
+    applicationForm.dateOfCreated = response.data.date_of_created;
+
+    return applicationForm
+    
+
+  } catch (error) {
+    console.error("Failed to fetch measurement data:", error);
+    throw error; // 에러를 다시 던져 호출 측에서 처리하도록 함
+  }
+}
 
 export function validateSampleData(dataList: Ref<any[]>): boolean {
   dataList.value.forEach((data) => {

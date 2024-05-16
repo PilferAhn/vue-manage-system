@@ -310,7 +310,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
             title: '계정생성',
         },
-        component: () => import(/* webpackChunkName: "login" */ '../views/Register.vue'),
+        component: () => import(/* webpackChunkName: "login" */ '../views/RegisterPage/Register.vue'),
     },
     {
         path: '/403',

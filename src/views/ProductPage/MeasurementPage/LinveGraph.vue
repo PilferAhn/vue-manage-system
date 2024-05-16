@@ -1,62 +1,150 @@
 <template>
-  <div>
+  <div class="chart-container">
     <canvas ref="chartCanvas"></canvas>
+
+    <div class="controls">
+      <div class="input-group">
+        <label class="input-label">Scale 초기화:</label>
+        <button class="input-button" @click="resetScale">Reset Scale</button>        
+      </div>
+      <div class="input-group">
+        <label class="input-label">Spec 숨기기:</label>
+        <button class="input-button" @click="toggleCustomPlugin" disabled>
+          비활성화
+        </button>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="input-group">
+        <label class="input-label">Y축 최소값:</label>
+        <input
+          type="number"
+          id="minYValue"
+          class="input-field"
+          v-model.number="minYValue"
+          @change="updateChart"
+        />
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Y축 최대값:</label>
+        <input
+          type="number"
+          id="maxYValue"
+          class="input-field"
+          v-model.number="maxYValue"
+          @change="updateChart"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
+
 <script setup>
 import { ref, onMounted, watch } from "vue";
-import Chart from "chart.js/auto";
+import { Chart, registerables } from "chart.js";
 import zoomPlugin from "chartjs-plugin-zoom";
-
-// Chart.js에 zoom 플러그인을 등록합니다.
-Chart.register(zoomPlugin);
+import { customPlugin, getSpecPoint } from "./LinveGraph";
 
 const props = defineProps({
   chartData: Array,
   chartTitle: String,
   yAxisName: String,
-  xAxisName : String,
-  reverseY: Boolean, // x축 반전을 위한 새 prop  
+  xAxisName: String,
+  reverseY: Boolean, // x축 반전을 위한 새 prop
+  systemBandInfo: Array,
+  targetFreq: Array,
 });
 
+const spec_info = [];
+const minYValue = ref(-5); // y축 최소값을 위한 ref, 기본값 -5로 설정
+const maxYValue = ref(0); // y축 최대값을 위한 ref, 기본값 1로 설정
+const startX = Number(props.systemBandInfo[0]);
+const endX = Number(props.systemBandInfo[1]);
 
-console.log(props.chartData)
+const specInfoList = []
+
+props.chartData.map((dataset, index) => {
+  const specInfo = getSpecPoint(dataset, props.targetFreq[index])
+  specInfo["lineColor"] = dataset.backgroundColor
+  specInfo["targetFreq"] = props.targetFreq[index]
+  specInfoList.push(specInfo)
+})
+
+
+
+let customPluginEnabled = ref(true);
+const buttonLabel = ref("비활성화"); // 버튼 레이블을 위한 ref
+Chart.register(...registerables, zoomPlugin, customPlugin(startX, endX, specInfoList));
 
 const chartCanvas = ref(null);
 let myChart = null;
+
+
+
 
 const drawChart = () => {
   if (myChart) {
     myChart.destroy();
   }
 
+  // Add spec_info points as scatter dataset
+  const specInfoPoints = spec_info.flatMap((info) => [
+    { x: info.leftX, y: info.leftY },
+    { x: info.rightX, y: info.rightY },
+  ]);
+
+  const datasets = props.chartData.map((dataset, index) => {
+    const lastIndex = dataset.data.length - 1;
+
+    const specInfo = specInfoList[index]//getSpecPoint(dataset, props.targetFreq[index]);
+
+    const indexList = [specInfo["rightIndex"],specInfo["leftIndex"]];
+
+    return {
+      label: dataset.label,
+      data: dataset.data,
+      backgroundColor: dataset.backgroundColor,
+      borderColor: dataset.backgroundColor,
+      borderWidth: 2,
+      fill: false,
+      tension: 0,
+      pointRadius: dataset.data.map((_, index) =>
+        indexList.includes(index) ? 7 : 0.5
+      ),
+      pointBackgroundColor: dataset.data.map((_, index) =>
+        index === lastIndex ? "black" : dataset.backgroundColor
+      ),
+      pointBorderColor: dataset.data.map((_, index) =>
+        indexList.includes(index) ? "black" : dataset.backgroundColor
+      ),
+      pointBorderWidth: dataset.data.map((_, index) =>
+        indexList.includes(index) ? 3 : 0.5
+      ),
+      pointStyle: dataset.data.map((_, index) =>
+        indexList.includes(index) ? "crossRot" : "circle"
+      ),
+    };
+  });
+
+  // const plugins = [
+  //   zoomPlugin,
+  //   ...(customPluginEnabled.value ? [customPlugin(startX, endX)] : []),
+
+  // ];
+
   myChart = new Chart(chartCanvas.value, {
     type: "line",
     data: {
-      datasets: props.chartData.map((dataset) => {
-        const lastIndex = dataset.data.length - 1; // 마지막 인덱스 계산
-        return {
-          label: dataset.label,
-          data: dataset.data,
-          backgroundColor: dataset.backgroundColor,
-          borderColor: dataset.backgroundColor,
-          borderWidth: 2, // 선의 두께를 줄임
-          fill: false,
-          tension: 0,
-          pointRadius: dataset.data.map((_, index) => index === lastIndex ? 1 : 0.5), // 마지막 포인트의 크기를 더 크게 설정
-          pointBackgroundColor: dataset.data.map((_, index) => index === lastIndex ? dataset.backgroundColor : dataset.backgroundColor), // 마지막 포인트의 배경 색상 변경
-          pointBorderColor: dataset.data.map((_, index) => index === lastIndex ? dataset.backgroundColor : dataset.backgroundColor),
-          pointBorderWidth: dataset.data.map((_, index) => index === lastIndex ? 3 : 2), // 마지막 포인트의 테두리 두께를 더 크게 설정
-        };
-      }),
+      datasets: datasets,
     },
     options: {
       scales: {
         x: {
           type: "linear",
           position: "bottom",
-          
           title: {
             display: true,
             text: props.xAxisName,
@@ -69,34 +157,23 @@ const drawChart = () => {
         },
         y: {
           reverse: props.reverseY,
-          min: -10,
+          min: minYValue.value, // Use minYValue ref
+          max: maxYValue.value, // Use maxYValue ref
           title: {
             display: true,
             text: props.yAxisName,
             font: {
               size: 16,
-              weight: 'bold',
+              weight: "bold",
             },
-            color: '#000',
-          }
+            color: "#000",
+          },
         },
       },
-      plugins: {
-        zoom: {
-          zoom: {
-            wheel: {
-              enabled: true, // 마우스 휠을 통한 zoom 활성화
-            },
-            pinch: {
-              enabled: true, // 핀치 제스처를 통한 zoom 활성화 (모바일 기기에서 유용)
-            },
-            mode: 'xy', // x축과 y축 모두에서 zoom을 활성화
-          },
-          pan: {
-            enabled: true, // 드래그를 통한 pan 활성화
-            mode: 'xy', // x축과 y축 모두에서 pan을 활성화
-          },
-        },
+      
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins:     {
         title: {
           display: true,
           text: props.chartTitle,
@@ -111,19 +188,33 @@ const drawChart = () => {
           position: "top",
         },
       },
-      responsive: true,
-      maintainAspectRatio: false,
     },
   });
 };
 
+const updateChart = () => {
+  if (myChart) {
+    myChart.options.scales.y.min = minYValue.value;
+    myChart.options.scales.y.max = maxYValue.value;
+    myChart.update();
+  }
+};
+
+const resetScale = () => {
+  minYValue.value = -5;
+  maxYValue.value = 1;
+  updateChart();
+};
+
+const toggleCustomPlugin = () => {
+  customPluginEnabled.value = !customPluginEnabled.value;
+  drawChart(); // Redraw chart to apply the plugin change
+};
 
 onMounted(drawChart);
 watch(() => props.chartData, drawChart, { deep: true });
 </script>
 
 <style scoped>
-div {
-  height: 400px;
-}
+@import "../../../assets/css/LinveGraph.css";
 </style>

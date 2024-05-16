@@ -1,6 +1,20 @@
 // formFactory.ts
-import { reactive } from 'vue';
-import { ApplicationForm } from '../utils/types'; // ApplicationForm 인터페이스의 경로를 적절하게 수정하세요.
+import { reactive, ref  } from 'vue';
+import { ApplicationForm, UserForm } from '../utils/types'; // ApplicationForm 인터페이스의 경로를 적절하게 수정하세요.
+
+export const useForm = () => {
+  const form = ref<UserForm>({
+    id : '',
+    name: "JiminAhn"  ,
+    email: 'w2200202@wisol.co.kr',
+    password: '',
+    passwordConfirmation: '',
+    department: '',
+    employeeId: 'w2200202'
+  });
+
+  return form;
+};
 
 export function createApplicationForm(): ApplicationForm {
   return reactive<ApplicationForm>({
