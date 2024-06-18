@@ -29,10 +29,12 @@ interface shotInformation {
 }
 
 export interface waferInformation {
+  
   waferName: string;
   waferStatus: string;
   dateOfStart: Date | null;
   dateOfEnd: Date | null;
+
 }
 
 export interface w {
@@ -53,6 +55,7 @@ export interface MeasInfo {
 
 export interface TegApplication{
 
+  uuid : string;
   status : string;
 
   designer: string;
@@ -65,6 +68,7 @@ export interface TegApplication{
   chipQuantity: string;
   maskName: string;
   isMaskChange: string;
+  isAOI : string;
   port: string;
 
   detail: string;
@@ -101,9 +105,58 @@ export interface TegApplication{
   applicationType: string;
 }
 
-export const TempTegApplicationForm = reactive<TegApplication>({
+
+
+export const defaultTegApplicationForm = (): TegApplication => reactive({
+  uuid: "",
   designer: "",
   requester: "",
+  purpose: "",
+  lotID: "",
+  status: "",
+  shotSize: "",
+  chipSize: "",
+  chipQuantity: "",
+  maskName: "",
+  isMaskChange: "",
+  isAOI: "",
+  port: "",
+  detail: "",
+  shortPatternNo: "",
+  thruPatternNo: "",
+  openPatternNo: "",
+  rawPatternNo: "",
+  preTegPatternMeasShot: "",
+  waferQuantity: 0,
+  waferIDList: [],
+  waferSize: "",
+  activeShots: [],
+  measInfo: [],
+  dateOfCreated: "",
+  dateOfReserve: "",
+  dateOfFinish: "",
+  dateOfMeasStart: null,
+  temperatures: [],
+  note: "",
+  modelName: "",
+  shotInformation: {
+    shots: [],
+    disableShots: [],
+    size: 0,
+    status: [],
+  },
+  waferInformation: [],
+  priority: "",
+  applicationType: "",
+});
+
+
+export const TempTegApplicationForm = reactive<TegApplication>({
+
+  uuid : "",
+
+  designer: "",
+  requester: localStorage.getItem("ms_username") || "",
   purpose: "",
   lotID: "",
   status : "",
@@ -113,6 +166,7 @@ export const TempTegApplicationForm = reactive<TegApplication>({
   chipQuantity: "",
   maskName: "",
   isMaskChange: "",
+  isAOI : "",
   port: "",
 
   detail: "",
@@ -153,20 +207,24 @@ export const TempTegApplicationForm = reactive<TegApplication>({
 
   priority: "",
   applicationType: "",
+
+  
 });
 
 export const TegApplicationForm = reactive<TegApplication>({
-  designer: "Tester_De",
+  designer: "이승용",
   requester: "Tester_Req",
-  purpose: "Test Form",
-  lotID: "TESTING LOT",
+  purpose: "의뢰서 양식 작성 데모",
+  lotID: "LOT1234",
   status : "",
+  uuid : "",
 
   shotSize: "10.23 * 10.17",
   chipSize: "0.93*1.13",
   chipQuantity: "600",
   maskName: "KF 128-240430",
   isMaskChange: "",
+  isAOI : "",
   port: "1Port(SG)",
 
   detail: "",
@@ -193,7 +251,7 @@ export const TegApplicationForm = reactive<TegApplication>({
 
   note: "",
 
-  modelName: "WSG24",
+  modelName: "MODEL1234",
 
 
   shotInformation: {

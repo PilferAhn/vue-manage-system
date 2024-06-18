@@ -1,6 +1,108 @@
 // src/plugins/customPlugin.ts
 import { Chart, Plugin } from "chart.js";
 
+export function drawLineGraph(
+  chartCanvas: HTMLCanvasElement,
+  chartData: [],
+  specInfoList: [],
+  yAxisName: string,
+  xAxisName: string,
+  minYValue: number,
+  maxYValue: number,
+  reverseY: boolean,
+  chartTitle: string
+) {
+  let myChart = Chart.getChart(chartCanvas); // 이미 존재하는 차트 인스턴스 가져오기
+
+  if (myChart) {
+    myChart.destroy(); // 기존 차트가 있으면 파괴
+  }
+
+  const datasets = chartData.map((dataset, index) => {
+    const specInfo = specInfoList[index];
+    const indexList = [specInfo["rightIndex"], specInfo["leftIndex"]];
+
+    return {
+      label: dataset.label,
+      data: dataset.data,
+      backgroundColor: dataset.backgroundColor,
+      borderColor: dataset.backgroundColor,
+      borderWidth: 2,
+      fill: false,
+      tension: 0,
+      pointRadius: dataset.data.map((_, index) =>
+        indexList.includes(index) ? 7 : 0.5
+      ),
+      pointBackgroundColor: dataset.data.map((_, index) =>
+        index === dataset.data.length - 1 ? "black" : dataset.backgroundColor
+      ),
+      pointBorderColor: dataset.data.map((_, index) =>
+        indexList.includes(index) ? "black" : dataset.backgroundColor
+      ),
+      pointBorderWidth: dataset.data.map((_, index) =>
+        indexList.includes(index) ? 3 : 0.5
+      ),
+      pointStyle: dataset.data.map((_, index) =>
+        indexList.includes(index) ? "crossRot" : "circle"
+      ),
+    };
+  });
+
+  myChart = new Chart(chartCanvas, {
+    type: 'line',
+    data: { datasets },
+    options: {
+      scales: {
+        x: {
+          type: 'linear',
+          position: 'bottom',
+          title: {
+            display: true,
+            text: xAxisName,
+            font: {
+              size: 16,
+              weight: 'bold',
+            },
+            color: '#000',
+          },
+        },
+        y: {
+          reverse: reverseY,
+          min: minYValue,
+          max: maxYValue,
+          title: {
+            display: true,
+            text: yAxisName,
+            font: {
+              size: 16,
+              weight: 'bold',
+            },
+            color: '#000',
+          },
+        },
+      },
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: {
+          display: true,
+          text: chartTitle,
+          font: {
+            size: 20,
+            weight: 'bold',
+          },
+          color: '#000',
+        },
+        legend: {
+          display: true,
+          position: 'top',
+        },
+      },
+    },
+  });
+}
+
+
 export function findClosestIndex(target: number, array: number[]): number {
   const validNumbers = array.filter((num) => !isNaN(num));
   let closestIndex = -1;
@@ -26,6 +128,7 @@ export function getSpecPoint(spl: any, targetPoint: number) {
   let xRange: number[] = [];
   let yRange: number[] = [];
 
+  
   temp_data.forEach((point: any, index: number) => {
     if (point.y > maxValue) {
       maxValue = point.y;
@@ -33,6 +136,8 @@ export function getSpecPoint(spl: any, targetPoint: number) {
       maxIndex = index;
     }
   });
+
+  
 
   const ilLevel = -3;
   let leftIndex = 0;
@@ -51,12 +156,14 @@ export function getSpecPoint(spl: any, targetPoint: number) {
       }
     }
   }
+
+  
   let interplatedPoints: any = {};
   if (breakPoint != 0) {
     const x1 = temp_data[breakPoint]["x"];
     const y1 = temp_data[breakPoint]["y"];
-    const x2 = temp_data[breakPoint - 1]["x"];
-    const y2 = temp_data[breakPoint - 1]["y"];
+    const x2 = temp_data[breakPoint + 1]["x"];
+    const y2 = temp_data[breakPoint + 1]["y"];
 
     var a = (y2 - y1) / (x2 - x1);
     var b = y1 - a * x1;
@@ -92,18 +199,16 @@ export function getSpecPoint(spl: any, targetPoint: number) {
       }
     }
   }
-
+  
   if (breakPoint != 0) {
     const x1 = temp_data[breakPoint]["x"];
     const y1 = temp_data[breakPoint]["y"];
     const x2 = temp_data[breakPoint - 1]["x"];
     const y2 = temp_data[breakPoint - 1]["y"];
 
-    const interpolatedX = (x1 + x2) / 2;
-    const interpolatedY = y1 + ((interpolatedX - x1) * (y2 - y1)) / (x2 - x1);
-    interplatedPoints["splNumber"] = spl.label;
-    interplatedPoints["rightX"] = interpolatedX;
-    interplatedPoints["rightY"] = interpolatedY;
+    // const interpolatedX = (x1 + x2) / 2;
+    // const interpolatedY = y1 + ((interpolatedX - x1) * (y2 - y1)) / (x2 - x1);
+    
 
     var a = (y2 - y1) / (x2 - x1);
     var b = y1 - a * x1;
@@ -111,6 +216,10 @@ export function getSpecPoint(spl: any, targetPoint: number) {
     var tempIL = -3;
     var x = (tempIL - b) / a;
 
+    interplatedPoints["splNumber"] = spl.label;
+    interplatedPoints["rightX"] = x;
+    interplatedPoints["rightY"] = tempIL;
+    
     var slicedArrray1 = temp_data.slice(rightIndex - 2, rightIndex + 2);
 
     temp_data.splice(rightIndex, 0, { x: x, y: -3 });
@@ -134,8 +243,8 @@ export function getSpecPoint(spl: any, targetPoint: number) {
     xRange
   );
 
-  interplatedPoints["targetPoint"] = targetPoint//findClosestIndex(targetPoint, xRange);
-
+  interplatedPoints["targetPoint"] = targetPoint; //findClosestIndex(targetPoint, xRange);
+  
   return interplatedPoints;
 }
 
@@ -161,6 +270,9 @@ interface CustomPluginOptions {
 export const customPlugin = (startX, endX, targets): Plugin => ({
   id: "myCustomPlugin",
   afterDraw: (chart, args, options) => {
+
+    
+
     const ctx = chart.ctx;
     const yAxis = chart.scales.y;
     const xAxis = chart.scales.x;
@@ -184,6 +296,8 @@ export const customPlugin = (startX, endX, targets): Plugin => ({
     const xTargetPixel = xAxis.getPixelForValue(endX);
     const xLeftTargetPixel = xAxis.getPixelForValue(startX);
 
+  
+
     targets.map((dict, index) => {
       const centerFC = dict["fc"];
       const splXPixcel = xAxis.getPixelForValue(centerFC);
@@ -194,8 +308,8 @@ export const customPlugin = (startX, endX, targets): Plugin => ({
       // Sample FC
       ctx.save();
       ctx.beginPath();
-      ctx.moveTo(splXPixcel, yStart + 10 + (index * 3));
-      ctx.lineTo(splXPixcel, yEnd + 10 + (index * 3));
+      ctx.moveTo(splXPixcel, yStart + 10 + index * 3);
+      ctx.lineTo(splXPixcel, yEnd + 10 + index * 3);
       ctx.lineWidth = 2;
       ctx.strokeStyle = dict["lineColor"];
       ctx.stroke();
@@ -204,14 +318,12 @@ export const customPlugin = (startX, endX, targets): Plugin => ({
       // Target F
       ctx.save();
       ctx.beginPath();
-      ctx.moveTo(splXTargetPixcel, yStart + 10 + (index * 3));
-      ctx.lineTo(splXTargetPixcel, yEnd + 10  + (index * 3));
+      ctx.moveTo(splXTargetPixcel, yStart + 10 + index * 3);
+      ctx.lineTo(splXTargetPixcel, yEnd + 10 + index * 3);
       ctx.lineWidth = 2;
       ctx.strokeStyle = dict["lineColor"];
       ctx.stroke();
       ctx.restore();
-
-      
     });
 
     // specInfoList.map((dict, index) => {
@@ -248,7 +360,7 @@ export const customPlugin = (startX, endX, targets): Plugin => ({
     ctx.save();
     ctx.font = "12px Arial";
     ctx.fillStyle = "black";
-    ctx.fillText(`Target f`, xTargetPixel - 23, yEnd - 2); // x 값의 위치에 텍스트 추가
+    ctx.fillText(`RF`, xTargetPixel - 6, yEnd - 2); // x 값의 위치에 텍스트 추가
     ctx.restore();
 
     // System Target F Left Side
@@ -264,7 +376,7 @@ export const customPlugin = (startX, endX, targets): Plugin => ({
     ctx.save();
     ctx.font = "12px Arial";
     ctx.fillStyle = "black";
-    ctx.fillText(`Target f`, xLeftTargetPixel - 23, yEnd - 2); // x 값의 위치에 텍스트 추가
+    ctx.fillText(`LF`, xLeftTargetPixel - 6, yEnd - 2); // x 값의 위치에 텍스트 추가
     ctx.restore();
 
     // system FC
@@ -300,6 +412,7 @@ export const customPlugin = (startX, endX, targets): Plugin => ({
     ctx.fillStyle = "black";
     ctx.fillText(`System fc`, xPixel - 23, yEnd - 23); // x 값의 위치에 텍스트 추가
     ctx.restore();
+    
   },
 });
 

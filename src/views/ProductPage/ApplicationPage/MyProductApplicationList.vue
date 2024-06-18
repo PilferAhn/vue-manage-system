@@ -112,14 +112,7 @@
     >
       <!-- TableEdit 컴포넌트 내용 -->
     </el-dialog>
-    <el-dialog
-      title="제품 상세 정보"
-      v-model="visible1"
-      width="700px"
-      destroy-on-close
-    >
-      <RequestDetail :data="rowData" />
-    </el-dialog>
+    
   </div>
 </template>
 
@@ -153,6 +146,8 @@ interface ApplicationItem {
 }
 const applicationList = ref<ApplicationItem[]>([]);
 
+console.log("MyProductApplicationList")
+
 const allData = ref<ApplicationItem[]>([]);
 const tableData = ref<ApplicationItem[]>([]);
 const pageTotal = ref(0);
@@ -167,7 +162,7 @@ const fetchData = async () => {
     });
 
     allData.value = response.data;
-    console.log(allData.value)
+    
 
     filterData();
   } catch (error) {
@@ -225,7 +220,7 @@ const closeDialog = () => {
   idEdit.value = false;
 };
 
-const visible1 = ref(false);
+
 
 
 

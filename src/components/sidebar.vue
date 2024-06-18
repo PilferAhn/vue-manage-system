@@ -113,6 +113,11 @@ const items = [
         title: "Measurement Status",
         permiss: "2",
       },
+      {
+        index: "/teg/create-teg-application",
+        title: "의뢰서작성",
+        permiss: "2",
+      },
       //   {
       //     index: "/export",
       //     title: "Create Reqeust",
@@ -159,6 +164,16 @@ const items = [
             permiss: "5",
           },
         ],
+      },
+      {
+        index: '/calculator/s-parameter',
+        title: "TCF계산기",
+        permiss: "5",
+      },
+      {
+        index: '/calculator/s-parameter_ver2',
+        title: "TCF계산기_Ver2",
+        permiss: "5",
       },
 
       // {

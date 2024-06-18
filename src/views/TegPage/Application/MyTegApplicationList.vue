@@ -1,16 +1,11 @@
+<!--
+
+    지난 의뢰 보기에서 TEG 부분에 나타나는 영역
+    DB 내부에서 designer or requester 이름이 겹치면 아래 화면에 나타난다. 
+
+-->
+
 <template>
-  <div class="search-panel">
-    <div class="search-box">
-      <el-input
-        v-model="searchQuery"
-        class="search-input mr10"
-        placeholder="QR Code를 스켄하세요"
-      ></el-input>
-      <el-button @click="filterTable">Search</el-button>
-      <el-button type="warning" @click="sendToServer">접수</el-button>
-      <!-- 접수 버튼 추가 -->
-    </div>
-  </div>
   <el-table
     :data="
       filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize)
@@ -20,7 +15,7 @@
     header-cell-class-name="table-header"
     :row-class-name="getRowClass"
   >
-    <el-table-column label="UUID" prop="applicationID"></el-table-column>
+    <!-- <el-table-column label="UUID" prop="applicationID"></el-table-column> -->
     <el-table-column label="Model Name" prop="productName"></el-table-column>
     <el-table-column label="LOT ID" prop="lotId"></el-table-column>
     <el-table-column label="Test Type" prop="measType"></el-table-column>
@@ -34,11 +29,6 @@
         <span>{{ formatTime(scope.row.dateOfCreated) }}</span>
       </template>
     </el-table-column>
-    <el-table-column label="완료일">
-      <template #default="scope">
-        <span>{{ formatTime(scope.row.dateOfFinished) }}</span>
-      </template>
-    </el-table-column>
     <el-table-column label="진행도">
       <template #default="scope">
         <span>{{ scope.row.progress }}</span>
@@ -49,6 +39,17 @@
       prop="priority"
       width="100px"
     ></el-table-column>
+    <el-table-column>
+      <template #default="scope">
+        <el-button          
+          @click="
+            viewDetail(scope.row.applicationID, scope.row.applicationType)
+          "
+          :disabled="scope.row.applicationVersion === '1'"
+          >자세히</el-button
+        >        
+      </template>
+    </el-table-column>
     <el-table-column v-if="userType === 'admin'" label="Action" width="200">
       <!-- 추가된 '자세히' 버튼 컬럼 -->
 
@@ -68,9 +69,8 @@
           "
           :disabled="scope.row.applicationVersion === '1'"
           >삭제</el-button
-        >        
+        >
       </template>
-      
     </el-table-column>
   </el-table>
   <el-pagination
@@ -87,9 +87,8 @@ import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
 import { getNewTegApplication } from "../../../utils/tegUtility";
-import { TegApplication as newTegApplications } from "../../../utils/tegTypes";
-// import { logSearchQuery } from "./TegApplicationListTable";
-import { logSearchQuery } from "./TegApplicationListTable";
+import { logSearchQuery } from "./../../AdminPage/TEG/TegApplicationListTable";
+import { getTegApplicationByUserName } from "./MyTegApplicationList";
 
 import {
   TegApplication,
@@ -110,22 +109,13 @@ const pageSize = props.pageSize;
 const applications = ref<TegApplication[]>([]);
 const newApplications = ref<TegApplication[]>([]);
 
-console.log(applications);
-
 async function sendToServer() {
   logSearchQuery(searchQuery.value, "reserved");
 }
 
 onMounted(async () => {
   try {
-    newApplications.value = await getNewTegApplication(props.category);
-    // applications.value = await getTegApplication(props.category);
-
-    const combinedApplications = [
-      ...newApplications.value,
-      ...applications.value,
-    ];
-    applications.value = combinedApplications; // 원래의 applications ref를 업데이트
+    applications.value = await getTegApplicationByUserName(userType);
   } catch (error) {
     console.error("Error fetching applications:", error);
   }

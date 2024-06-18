@@ -270,12 +270,11 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { FormInstance } from "element-plus";
-
+import { useRoute, useRouter } from "vue-router";
 // type 정의
 import { getWaferInfoBySize } from "./../../../utils/waferApplicationHelper";
 import {
   defaultTegApplicationForm,
-  tegApplicationForm,
   applicationPriority,
   maskChanges,
   portOptions,
@@ -283,6 +282,9 @@ import {
 } from "./../../../utils/tegTypes";
 import { tegApplicationRules } from "./../../../utils/tegApplicationRules";
 import { submitForm, download } from "./../../../utils/tegUtility";
+import {
+  cloneApplicationDetail
+} from "./LoadTegApplication";
 
 // 하위 component 정의
 import InputText from "./InputText.vue"; // assuming generic text input component
@@ -295,6 +297,7 @@ import MeasTemperature from "./MeasTemperature.vue";
 import Wafer from "../Wafer.vue";
 import WaferInformationUpdate from "./WaferInfomation.vue";
 
+const route = useRoute();
 const activateDownload = ref(false);
 const applicationUuid = ref('');
 const applicationForm = ref<FormInstance>();
@@ -307,6 +310,18 @@ const requesterName = localStorage.getItem("ms_username");
 tegApplicationForm.requester = requesterName
 
 const rules = tegApplicationRules;
+
+// UUID 변경 감지
+watch(
+  () => route.params.uuid,
+  (newUuid) => {
+    if (newUuid) {
+      // getApplicationDetail(newUuid, tegApplicationForm);
+      cloneApplicationDetail(newUuid, tegApplicationForm)
+    }
+  },
+  { immediate: true }
+); // immediate: true 옵션으로 컴포넌트 마운트 시 즉시 실행
 
 function handleFormSubmission() {
   if (applicationForm.value) {

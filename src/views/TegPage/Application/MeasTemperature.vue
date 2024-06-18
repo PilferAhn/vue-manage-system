@@ -39,7 +39,7 @@ import { ref, computed, watch } from "vue";
 import { MeasInfo } from "../../../utils/waferApplicationHelper";
 
 const props = defineProps<{ measInfo: MeasInfo[] }>();
-
+console.log(props)
 const emit = defineEmits(["updateTemperature"]);
 
 const selectedCount = ref(1);

@@ -97,12 +97,12 @@ const routes: RouteRecordRaw[] = [
             },
             {
                 path: '/product/my-application-list',
-                name: 'MyProductApplicationList',
+                name: 'MyApplications',
                 meta: {
                     title: '의뢰서 자세히',
                     permiss: '2',
                 },
-                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/ApplicationPage/MyProductApplicationList.vue'),
+                component: () => import(/* webpackChunkName: "table" */ '../views/MyApplications.vue'),
             },
             {
                 path: '/product/my-application-detail:uuid',
@@ -139,7 +139,16 @@ const routes: RouteRecordRaw[] = [
                     title: '의뢰서 자세히',
                     permiss: '5',
                 },
-                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage//PDTApplication.vue'),
+                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/PDTApplication.vue'),
+            },
+            {
+                path: "/teg/create-teg-application",
+                name: 'TegApplication2',
+                meta: {
+                    title: 'TEG 의뢰서 작성',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/TegPage/Application/TegApplication.vue'),
             },
             {
                 path: '/admin/teg/create-teg-application',
@@ -173,10 +182,37 @@ const routes: RouteRecordRaw[] = [
                 name: 'LoadTegApplication',
                 meta: {
                     title: '의뢰서 자세히',
-                    permiss: '5',
+                    permiss: '2',
                 },
                 component: () => import(/* webpackChunkName: "table" */ '../views/TegPage/Application/LoadTegApplication.vue'),
-            },                            
+            },  
+            {
+                path: '/teg/clone-teg-application/:uuid',
+                name: 'CloneTegApplication',
+                meta: {
+                    title: '의뢰서 자세히',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/TegPage/Application/CloneTegApplication.vue'),
+            },  
+            {
+                path: '/calculator/s-parameter',
+                name: 'TCF계산기',
+                meta: {
+                    title: 'TCF 계산기',
+                    permiss: '5',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/Calculator/SParameter/SParameter.vue'),
+            },             
+            {
+                path: '/calculator/s-parameter_ver2',
+                name: 'TcfCal',
+                meta: {
+                    title: 'TCF 계산기_Ver',
+                    permiss: '5',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/Calculator/SParameter/TcfCal.vue'),
+            },    
             {
                 path: '/table',
                 name: 'basetable',

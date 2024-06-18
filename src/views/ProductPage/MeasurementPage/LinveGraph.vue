@@ -5,7 +5,7 @@
     <div class="controls">
       <div class="input-group">
         <label class="input-label">Scale 초기화:</label>
-        <button class="input-button" @click="resetScale">Reset Scale</button>        
+        <button class="input-button" @click="resetScale">Reset Scale</button>
       </div>
       <div class="input-group">
         <label class="input-label">Spec 숨기기:</label>
@@ -41,12 +41,11 @@
   </div>
 </template>
 
-
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { Chart, registerables } from "chart.js";
 import zoomPlugin from "chartjs-plugin-zoom";
-import { customPlugin, getSpecPoint } from "./LinveGraph";
+import { customPlugin, getSpecPoint, drawLineGraph } from "./LinveGraph";
 
 const props = defineProps({
   chartData: Array,
@@ -56,52 +55,48 @@ const props = defineProps({
   reverseY: Boolean, // x축 반전을 위한 새 prop
   systemBandInfo: Array,
   targetFreq: Array,
+  uuid: String,
 });
 
-const spec_info = [];
+
+
+const applicationUuid = ref(props.uuid)
 const minYValue = ref(-5); // y축 최소값을 위한 ref, 기본값 -5로 설정
 const maxYValue = ref(0); // y축 최대값을 위한 ref, 기본값 1로 설정
 const startX = Number(props.systemBandInfo[0]);
 const endX = Number(props.systemBandInfo[1]);
 
-const specInfoList = []
-
+const specInfoList = [];
 props.chartData.map((dataset, index) => {
-  const specInfo = getSpecPoint(dataset, props.targetFreq[index])
-  specInfo["lineColor"] = dataset.backgroundColor
-  specInfo["targetFreq"] = props.targetFreq[index]
-  specInfoList.push(specInfo)
-})
-
-
+  const specInfo = getSpecPoint(dataset, props.targetFreq[index]);
+  specInfo["lineColor"] = dataset.backgroundColor;
+  specInfo["targetFreq"] = props.targetFreq[index];
+  specInfoList.push(specInfo);
+});
 
 let customPluginEnabled = ref(true);
 const buttonLabel = ref("비활성화"); // 버튼 레이블을 위한 ref
-Chart.register(...registerables, zoomPlugin, customPlugin(startX, endX, specInfoList));
+
+Chart.register(
+  ...registerables,
+  zoomPlugin,
+  customPlugin(startX, endX, specInfoList)
+);
 
 const chartCanvas = ref(null);
 let myChart = null;
-
-
-
 
 const drawChart = () => {
   if (myChart) {
     myChart.destroy();
   }
 
-  // Add spec_info points as scatter dataset
-  const specInfoPoints = spec_info.flatMap((info) => [
-    { x: info.leftX, y: info.leftY },
-    { x: info.rightX, y: info.rightY },
-  ]);
-
   const datasets = props.chartData.map((dataset, index) => {
     const lastIndex = dataset.data.length - 1;
 
-    const specInfo = specInfoList[index]//getSpecPoint(dataset, props.targetFreq[index]);
+    const specInfo = specInfoList[index]; //getSpecPoint(dataset, props.targetFreq[index]);
 
-    const indexList = [specInfo["rightIndex"],specInfo["leftIndex"]];
+    const indexList = [specInfo["rightIndex"], specInfo["leftIndex"]];
 
     return {
       label: dataset.label,
@@ -128,12 +123,6 @@ const drawChart = () => {
       ),
     };
   });
-
-  // const plugins = [
-  //   zoomPlugin,
-  //   ...(customPluginEnabled.value ? [customPlugin(startX, endX)] : []),
-
-  // ];
 
   myChart = new Chart(chartCanvas.value, {
     type: "line",
@@ -170,10 +159,10 @@ const drawChart = () => {
           },
         },
       },
-      
+
       responsive: true,
       maintainAspectRatio: false,
-      plugins:     {
+      plugins: {
         title: {
           display: true,
           text: props.chartTitle,
@@ -211,8 +200,25 @@ const toggleCustomPlugin = () => {
   drawChart(); // Redraw chart to apply the plugin change
 };
 
-onMounted(drawChart);
-watch(() => props.chartData, drawChart, { deep: true });
+onMounted(() => {
+  // updateSpecInfoList();
+  // console.log("여기만 되는거 같은데 ")
+  drawChart();
+});
+// watch(() => props.chartData, () => {
+//   drawChart();
+//   console.log("여기도 실행됨? ")
+// },{ deep: true });
+
+// watch(applicationUuid, (newValue, oldValue) => {
+//   if( newValue !== oldValue){
+//     console.log(`UUID ${oldValue} to ${newValue} has been changed`)
+//   }
+// })
+
+// watch(()=>props.uuid, () => {
+//   console.log("??"), {deep:true}
+// })
 </script>
 
 <style scoped>

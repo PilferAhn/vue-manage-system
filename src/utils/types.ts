@@ -419,6 +419,12 @@ export const bandInformationDict: BandInformationDict = {
       downlinkMhz: ["738", "758"],
       channelBandwidthsMhz: ["5", "10", "15", "20"],
     },
+    "68" : {
+      duplexMode: "FDD",
+      uplinkMhz: ["698", "728"],
+      downlinkMhz: ["753", "783"],
+      channelBandwidthsMhz: ["30"],
+    },
     "69": {
       duplexMode: "SDL",
       uplinkMhz: ["\u2014"],
@@ -636,12 +642,30 @@ export const bandInformationDict: BandInformationDict = {
       downlinkMhz: ["859", "894"],
       channelBandwidthsMhz: ["3", "5", "10", "15", "20", "25[B 4]", "30[B 4]"],
     },
-    n28: {
+    n28A: {
+      duplexMode: "FDD",
+      uplinkMhz: ["703", "733"],
+      downlinkMhz: ["758", "788"],
+      channelBandwidthsMhz: ["3", "5", "10", "15", "20"],
+    },
+    n28B: {
+      duplexMode: "FDD",
+      uplinkMhz: ["718", "748"],
+      downlinkMhz: ["773", "803"],
+      channelBandwidthsMhz: ["3", "5", "10", "15", "20"],
+    },
+    n28F: {
       duplexMode: "FDD",
       uplinkMhz: ["703", "748"],
       downlinkMhz: ["758", "803"],
       channelBandwidthsMhz: ["3", "5", "10", "15", "20", "25", "30"],
     },
+    // n28: {
+    //   duplexMode: "FDD",
+    //   uplinkMhz: ["703", "748"],
+    //   downlinkMhz: ["758", "803"],
+    //   channelBandwidthsMhz: ["3", "5", "10", "15", "20", "25", "30"],
+    // },
     n29: {
       duplexMode: "SDL",
       uplinkMhz: ["\u2014"],

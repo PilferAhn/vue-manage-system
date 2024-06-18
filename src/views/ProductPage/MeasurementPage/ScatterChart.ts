@@ -84,6 +84,11 @@ export function getMinMax(dataset : Dataset[], chartTitle : string){
 
     if(chartTitle === "Input vs Output"){
         yMin = yMin - 0.5
+        
+    }
+    else{
+        yMin = yMin - 0.2//* 1.02
+        yMax = yMax + 0.2//* 1.02
     }
 
     

@@ -132,6 +132,7 @@ export const getTegApplication = async (
       priority: app.priority,
       measType: app.meas_type,
       designer: app.designer,
+      requester : app.requester,
       dateOfCreated: app.date_of_created,
       dateOfReserve: app.date_of_reserve,
       dateOfFinish: app.date_of_finish,
@@ -146,7 +147,7 @@ export const getTegApplication = async (
         waferName: loc.wafer_name,
         status: loc.status,
       })),
-      applicationType : app.application_type
+      applicationVersion : app.application_version
     }));
 
     return applications;
@@ -168,6 +169,7 @@ export const getRunningMeasurement = async (): Promise<TegRunningMeas[]> => {
         shots: app.shots,
         waferID: app.wafer_id,
         measType: app.meas_type,
+        machine_name : app.machine_name
       })
     );
 

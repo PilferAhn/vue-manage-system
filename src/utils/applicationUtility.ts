@@ -194,11 +194,17 @@ export async function requestApplicationDetailbyUUID(uuid: string, applicationFo
 
 export function validateSampleData(dataList: Ref<any[]>): boolean {
   dataList.value.forEach((data) => {
+
+    // 사용자가 Input 주파수를 변경하고 싶을때
     if (!data.useDefaultFreq) {
+
+
+      // 만약 offset 값에 아무것도 없다면 
       if (data.offset === "") {
         data.offset = "0";
       }
 
+       
       if (!canConvertToFloat(data.offset)) {
         ElMessage.error("ΔFreq 값은 양수나 음수로 이루어진 숫자여야합니다.");
         return false;
@@ -212,7 +218,9 @@ export function validateSampleData(dataList: Ref<any[]>): boolean {
       data.targetFreq = (
         Number(data.defaultFreq) + Number(data.offset)
       ).toString();
+
     } else {
+      // 사용자가 System Band값을 그대로 사용하고 싶은 경우
       data.targetFreq = data.defaultFreq;
     }
   });

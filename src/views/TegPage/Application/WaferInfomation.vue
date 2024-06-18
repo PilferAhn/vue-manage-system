@@ -5,9 +5,7 @@
         v-model="localWaferQuantity"
         @change="initializeWaferInformation"
       >
-        <el-option v-for="num in 30" :key="num" :value="num">{{
-          num
-        }}</el-option>
+        <el-option v-for="num in 30" :key="num" :value="num">{{ num }}</el-option>
       </el-select>
     </el-form-item>
     <div v-for="(wafer, index) in localWaferInformation" :key="index">
@@ -34,22 +32,22 @@ const props = defineProps<{
   waferInformation: waferInformation[];
 }>();
 
-const emit = defineEmits(["update-wafer"]);
 
+
+const emit = defineEmits(["update-wafer"]);
 const localWaferQuantity = ref(props.waferQuantity);
-const localWaferInformation = ref<waferInformation[]>([
-  ...props.waferInformation,
-]);
+const localWaferInformation = ref<waferInformation[]>([...props.waferInformation]);
+
+
+
 
 const initializeWaferInformation = () => {
-  localWaferInformation.value = Array.from(
-    { length: localWaferQuantity.value },
-    () => ({
+  localWaferInformation.value = Array.from({ length: localWaferQuantity.value }, (_, index) => props.waferInformation[index] || {
       waferName: "",
       waferStatus: "",
       dateOfStart: null,
       dateOfEnd: null,
-    })
+    }
   );
   emit("update-wafer", localWaferQuantity.value, localWaferInformation.value);
 };
@@ -57,7 +55,19 @@ const initializeWaferInformation = () => {
 watch(localWaferQuantity, () => {
   initializeWaferInformation();
 });
+
+watch(() => props.waferInformation, (newVal) => {
+  props.waferInformation
+  localWaferInformation.value = [...newVal];
+}, { deep: true });
+
+watch(() => props.waferQuantity, (newVal) => {
+  localWaferQuantity.value = newVal;
+});
+
+
 </script>
+
 <style scoped>
 .el-form-item {
   margin-bottom: 10px;

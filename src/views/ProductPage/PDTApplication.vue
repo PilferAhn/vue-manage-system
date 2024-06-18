@@ -323,23 +323,27 @@
                 </template>
               </el-table-column> -->
 
-              <el-table-column label="Target" prop="" width="120px">
+              <el-table-column label="System (A)" prop="" width="120px">
                 <template #default="{ row }">
-                  <span v-if="row.useDefaultFreq">{{ row.defaultFreq }}</span>
-                  <span v-else>
-                    {{ Number(row.defaultFreq) + Number(row.offset) }}
-                  </span>
+                  <span>{{ row.defaultFreq }}</span>                  
                 </template>
               </el-table-column>
 
-              <el-table-column label="ΔFreq" prop="offset" width="120px">
+              <el-table-column label="ΔFreq (B)" width="120px">
                 <template #default="{ row }">
                   <el-input
-                    v-model="row.offset"
+                    v-model="row.offset"                    
                     :disabled="row.useDefaultFreq"
-                  ></el-input>
+                  ></el-input>                  
                 </template>
               </el-table-column>
+
+              <el-table-column label="Input Freq (A + B)" prop="offset" width="150px">
+                <template #default="{ row }">
+                  <span> {{ Number(row.defaultFreq) + Number(row.offset)}} </span> 
+                </template>
+              </el-table-column>
+                        
 
               <el-table-column label="직접입력" prop="" width="120px">
                 <template #default="{ row }">
@@ -349,7 +353,7 @@
                 </template>
               </el-table-column>
 
-              <el-table-column label="파일선택" prop="offset" width="120px">
+              <el-table-column label="SPL SnP 파일" prop="offset" width="120px">
                 <!-- 파일 선택 버튼 -->
                 <template #default="{ row }">
                   <el-button
@@ -361,7 +365,7 @@
                 </template>
               </el-table-column>
               <!-- Additional column for displaying file name in next row -->
-              <el-table-column label="S Parameter 파일명" prop="sParaFileName">
+              <el-table-column label="SnP 파일명" prop="sParaFileName">
               </el-table-column>
             </el-table>
           </el-form-item>

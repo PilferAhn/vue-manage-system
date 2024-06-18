@@ -23,7 +23,7 @@
     <el-table-column label="Test Type" prop="measType"></el-table-column>
     <el-table-column label="개발자 / 의뢰자">
       <template #default="scope">
-        <span>{{ scope.row.designer }}</span>
+        <span>{{ scope.row.designer }} / {{ scope.row.requester }}</span>
       </template>
     </el-table-column>
     <el-table-column label="예약일">
@@ -42,12 +42,12 @@
       width="100px"
     ></el-table-column>
     <el-table-column v-if="userType === 'admin'" label="Action">
-      <!-- 추가된 '자세히' 버튼 컬럼 -->
-
+            
       <template #default="scope">
-        <el-button type="primary" @click="viewDetail(scope.row.applicationID)"
+        <el-button type="primary" @click="viewDetail(scope.row.applicationID)" :disabled="scope.row.applicationVersion !== '2'"
           >자세히</el-button
         >
+
       </template>
     </el-table-column>
   </el-table>
@@ -103,7 +103,7 @@ const router = useRouter();
 
 const viewDetail = async (uuid: string) => {
   try {
-    await router.push({ name: "TegApplicationDetail", params: { uuid: uuid } });
+    await router.push({ name: "LoadTegApplication", params: { uuid: uuid } });
   } catch (error) {
     console.error("Routing error:", error);
   }

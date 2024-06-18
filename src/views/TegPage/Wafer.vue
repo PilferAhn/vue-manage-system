@@ -30,6 +30,8 @@ const props = defineProps<{
   }
 }>();
 
+
+
 const emits = defineEmits(['updateActiveShots']);
 
 // Initialize buttonStates without data initially
@@ -47,6 +49,8 @@ watch(() => props.waferInfo, (newVal) => {
     }))
   );
 }, { deep: true });
+
+
 
 const toggleButton = (index: number) => {
   buttonStates[index].active = !buttonStates[index].active;

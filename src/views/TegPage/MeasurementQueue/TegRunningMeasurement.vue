@@ -12,6 +12,7 @@
         </template>        
       </el-table-column>
       <el-table-column label="측정 구분" prop="measType"></el-table-column>      
+      <el-table-column label="측정 장비" prop="machine_name"></el-table-column>      
     </el-table>
   </div>
 </template>

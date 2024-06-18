@@ -50,10 +50,10 @@ const deleteImage = () => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 500px; /* 이미지 컨테이너의 너비 설정 */
+    width: 100%; /* 이미지 컨테이너의 너비 설정 */
     height: 500px; /* 이미지 컨테이너의 높이 설정 */
-    overflow: hidden; /* 컨테이너 크기 초과 시 숨김 */
-    margin-top : 20px;
+    /* overflow: hidden; 컨테이너 크기 초과 시 숨김 */
+    /* margin-top : 20px; */
   }
   
   .image-container img {    

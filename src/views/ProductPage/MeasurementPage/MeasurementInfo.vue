@@ -16,6 +16,7 @@
       <MeasurementSummary
         :uuid="uuid"
         :systemBandInfo="systemBandInfo"
+        :targetPosition = "applicationForm.targetPosition"
         :temperature="'85'"
       ></MeasurementSummary>
     </el-tab-pane>
@@ -35,6 +36,8 @@ import {
 import MeasurementDetail from "./MeasurementDetail.vue";
 import MeasurementSummary from "./MeasurementSummary.vue";
 
+
+
 const route = useRoute();
 const router = useRouter();
 const uuid = ref(route.params.uuid as string);
@@ -43,6 +46,8 @@ const systemBandInfo = ref<string[]>([]);
 
 // 탭 상태를 URL 쿼리에서 가져오기
 const activeTabName = ref(route.query.tab as string || "detail");
+
+
 
 // 라우트 파라미터가 변경될 때 실행할 작업
 watch(

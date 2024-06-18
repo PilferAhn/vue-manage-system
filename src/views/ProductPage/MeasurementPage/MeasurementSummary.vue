@@ -19,24 +19,33 @@
             width="180"
           ></el-table-column>
 
-          <el-table-column prop="dbm3" :label="db3Label"></el-table-column>
-          <el-table-column
-            prop="targetFreq"
-            label="Target Freq"
-          ></el-table-column>
-          <el-table-column label="Δf [MHz]">
+          <!-- <el-table-column prop="dbm3" :label="db3Label"></el-table-column> -->
+
+          <el-table-column label="System Freq (A)">
             <template #default="scope">
-              {{ (scope.row.dbm3 - scope.row.targetFreq).toFixed(2) }}
+               <span> {{ systemBand }} </span>
             </template>
           </el-table-column>
-          <el-table-column prop="p1Input" label="P1 Input"></el-table-column>
-          <el-table-column prop="p2Input" label="P2 Input"></el-table-column>
-          <el-table-column prop="p1Output" label="P1 Output"></el-table-column>
+          
+          <el-table-column label="Δf [MHz] (B)">
+            <template #default="scope">
+              {{ (-1 * (systemBand - scope.row.targetFreq)).toFixed(2) }}
+            </template>
+          </el-table-column>
 
-          <el-table-column prop="rf1" label="RF1 (MHz)"></el-table-column>
+          <el-table-column
+            prop="targetFreq"
+            label="Target Freq (A + B)"
+          ></el-table-column>
+
+          <el-table-column prop="p1Input" label="P1[dBm]"></el-table-column>
+          <el-table-column prop="p2Input" label="P2[dBm]"></el-table-column>
+          <el-table-column prop="p1Output" label="Pout@P1[dBm]"></el-table-column>
+
+          <!-- <el-table-column prop="rf1" label="RF1 (MHz)"></el-table-column>
           <el-table-column prop="lf1" label="LF1 (MHz)"></el-table-column>
           <el-table-column prop="rf2" label="RF2 (MHz)"></el-table-column>
-          <el-table-column prop="lf2" label="LF2 (MHz)"></el-table-column>
+          <el-table-column prop="lf2" label="LF2 (MHz)"></el-table-column> -->
         </el-table>
       </div>
 
@@ -51,17 +60,19 @@
               yAxisName="IL[dBm]"
               v-bind:system-band-info="props.systemBandInfo"
               :target-freq="getTargetFreqArray()"
+              :uuid = props.uuid
             />
           </div>
           <div class="form-box">
             <LinveGraph
               :chartData="chartSPara"
-              chartTitle="SPara"
+              chartTitle="ENA"
               :reverseY="false"
               xAxisName="Frequency [Mhz]"
               yAxisName="IL[dB]"
               v-bind:system-band-info="props.systemBandInfo"
               :target-freq="getTargetFreqArray()"
+              :uuid = props.uuid
             />
           </div>
         </div>
@@ -111,7 +122,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import {
   getSummaryData,
   application_status,
@@ -131,18 +142,41 @@ import ScatterChart from "./ScatterChart.vue";
 const props = defineProps<{
   uuid: string;
   systemBandInfo: Array<string>;
+  targetPosition : string;
   temperature: string;
 }>();
 
-const targetFreq = ref<string[]>([]);
 
+const targetFreq = ref<string[]>([]);
 const db3Label = "𝒇 -3dB @" + props.temperature;
+
+function getSystemBand(){
+
+  let systemBand = 0
+  if(props.targetPosition === "HIGH"){
+    systemBand = Number(props.systemBandInfo[1])
+  }
+  else{
+    systemBand = Number(props.systemBandInfo[0])
+  }
+  return systemBand
+}
+
+const systemBand = ref(0);
+
+// onMounted(() => {
+//   systemBand.value = getSystemBand()
+// });
+
+watch([() => props.systemBandInfo, () => props.targetPosition], () => {
+  systemBand.value = getSystemBand();
+}, { immediate: true });
 
 // Watch for changes in UUID and fetch summary data
 watch(
   () => props.uuid,
   (newUuid, oldUuid) => {
-    getSummaryData(newUuid);
+    getSummaryData(newUuid);  
   },
   { immediate: true }
 );

@@ -182,7 +182,7 @@ interface ApplicationItem {
 const name = localStorage.getItem("ms_username");
 const role: string = name === "admin" ? "RF개발팀" : "RF개발팀";
 
-console.log(localStorage);
+
 
 const allData = ref<ApplicationItem[]>([]);
 const tableData = ref<ApplicationItem[]>([]);

@@ -6,11 +6,49 @@
     label-position="top"
     label-width="100px"
   >
-    <div class="container">
+    <div v-if="role === 'admin'" class="container">
+      <QR :application-uuid="route.params.uuid"></QR>
+    </div>
 
+
+    <div class="container">
       <div class="split-layout">
         <div class="form-box">
           <div class="meas-types-container">
+            <div v-if="role === 'admin'">
+            <el-form-item label="고유 식별 번호">
+              <el-col :span="11">
+                <InputText
+                  v-model="route.params.uuid"
+                  label=""
+                  prop="amin"                  
+                  placeholder="운영자"
+                />
+              </el-col>
+            </el-form-item>
+          </div>
+            <el-form-item label="상태">
+              <el-col :span="11">
+                <ApplicationStatus
+                  v-model="tegApplicationForm.status"
+                  label=""
+                  prop="designer"
+                  :rules="rules.designer"
+                  placeholder="상태"
+                  :wafer-information="tegApplicationForm.waferInformation"
+                />
+              </el-col>
+              <!-- <el-col class="line" :span="2">/</el-col> -->
+              <el-col :span="11">
+                <!-- <InputText
+                  v-model="tegApplicationForm.requester"
+                  label=""
+                  prop="requester"
+                  :rules="rules.requester"
+                  placeholder="의뢰자"
+                /> -->
+              </el-col>
+            </el-form-item>
             <el-form-item label="작성자">
               <el-col :span="11">
                 <InputText
@@ -187,8 +225,21 @@
                 placeholder="Pre TEG 측정 샷 EX) 3_4, 4_3"
               />
             </el-col>
+            <el-col :span="12">
+              <select-option
+                v-model="tegApplicationForm.priority"
+                label="측정 등급"
+                prop="priority"
+                :rules="rules.priority"
+                placeholder="측정 등급"
+                :options="priorityList"
+              ></select-option>
+            </el-col>
           </el-row>
-          <SelectImage @update-file="handleFileUpdate"></SelectImage>
+          <LoadImage
+            :application-uuid="tegApplicationForm.uuid"
+            :image-type="'layout'"
+          ></LoadImage>
         </div>
       </div>
     </div>
@@ -200,8 +251,8 @@
               label="Wafer 매수"
               prop="waferQuantity"
               :rules="rules.waferQuantity"
-              :wafer-quantity="TegApplicationForm.waferQuantity"
-              :wafer-information="TegApplicationForm.waferInformation"
+              :wafer-quantity="tegApplicationForm.waferQuantity"
+              :wafer-information="tegApplicationForm.waferInformation"
               @update-wafer="handleWaferUpdate"
             />
 
@@ -224,18 +275,35 @@
             <MeasType @updateMeasInfo="updateMeasInfo" />
 
             <MeasTemperature
-              :measInfo="TegApplicationForm.measInfo"
+              :measInfo="tegApplicationForm.measInfo"
               @updateTemperature="handleTemperatures"
+              :temperature="tegApplicationForm.temperatures"
             ></MeasTemperature>
 
             <Segmentation
-              :measInfo="TegApplicationForm.measInfo"
+              :measInfo="tegApplicationForm.measInfo"
               @forwardUpdate="handleFinalUpdate"
             />
           </div>
-          <el-button type="primary" @click="handleFormSubmission"
-            >Submit Application</el-button
+          <!-- {{ tegApplicationForm.status }} -->
+          <span v-if="tegApplicationForm.status === 'created'">
+            <el-button
+              type="primary"
+              @click="handleFormSubmission"
+              :disabled="role !== 'admin'"
+              >업데이트</el-button
+            >
+            <span> / </span>
+          </span>
+          <el-button type="success" @click="changeRouter"
+            >비슷한 의뢰서 만들기</el-button
           >
+          <span> / </span>
+          <el-button type="primary" @click="handleDownload"
+            >의뢰서 다운로드</el-button
+          >
+          <span> / </span>
+          <el-button type="danger" @click="handleAppRemove">삭제</el-button>
         </div>
       </div>
     </div>
@@ -245,91 +313,81 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
 import { FormInstance } from "element-plus";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 // type 정의
-import { getWaferInfoBySize, } from "./../../../utils/waferApplicationHelper";
-import { getTegApplicationDetail} from "./../../../utils/waferMeasurementHelper";
+
 import {
-  TempTegApplicationForm,
-  TegApplicationForm,
+  defaultTegApplicationForm,
   applicationPriority,
   maskChanges,
   portOptions,
   waferSizeList,
 } from "./../../../utils/tegTypes";
 import { tegApplicationRules } from "./../../../utils/tegApplicationRules";
-import { submitForm, getNewTegApplicationDetail } from "./../../../utils/tegUtility";
+import {
+  getApplicationDetail,
+  priorityList,
+  sendRemoveRequest,
+  moveToAnotherRoute,
+} from "./LoadTegApplication";
+import { download } from "./../../../utils/tegUtility";
 
 // 하위 component 정의
+import ApplicationStatus from "./ApplicationStatus.vue";
 import InputText from "./InputText.vue"; // assuming generic text input component
 import LongInputText from "./LongInputText.vue"; // assuming generic text input component
 import MeasType from "./MeasType.vue";
-import SelectImage from "./SelectImage.vue";
+import LoadImage from "./LoadImage.vue";
 import SelectOption from "./SelectOption.vue"; // assuming generic text input component
 import Segmentation from "./Segmentation.vue";
-import MeasTemperature from "./MeasTemperature.vue";
+import MeasTemperature from "./LoadMeasTemperature.vue";
 import Wafer from "../Wafer.vue";
-import WaferInformationUpdate from "./WaferInfomation.vue";
+import WaferInformationUpdate from "./WaferInfomationLoad.vue";
+import QR from "./QR.vue";
 
-// useRoute 훅을 사용하여 현재 라우트 정보를 가져옵니다.
 const route = useRoute();
-const applicationID = ref<string>("");
+const router = useRouter();
+// const { tegApplication } = useApplicationUUID(
+//   route.params.uuid
+// );
 
 const applicationForm = ref<FormInstance>();
 const selectedFile = ref<File | null>(null);
-const tegApplicationForm = TegApplicationForm;
+const tegApplicationForm = defaultTegApplicationForm();
 const rules = tegApplicationRules;
+const role = localStorage.getItem("ms_username");
 
-// 타입 체크와 단언을 통해 안전하게 값을 할당합니다.
-
-// `route.params.uuid`의 변화를 감시하고 데이터를 가져오는 함수
-watch(() => route.params.uuid, async (newUuid, oldUuid) => {
-
-  if (newUuid) {
-    applicationID.value = Array.isArray(newUuid) ? newUuid[0] : newUuid as string;
-    try {
-
-      getNewTegApplicationDetail(applicationID.value)
-      // const app = await getTegApplicationDetail(applicationID.value);
-      // tegApplicationForm.modelName = app.productName
-
-    } catch (error) {
-      console.error("Error fetching application details:", error);
+// UUID 변경 감지
+watch(
+  () => route.params.uuid,
+  (newUuid) => {
+    if (newUuid) {
+      getApplicationDetail(newUuid, tegApplicationForm);
     }
-  }
-}, { immediate: true }); // `immediate: true` 옵션은 컴포넌트 마운트 시에도 감시 기능을 즉시 실행합니다.
-
+  },
+  { immediate: true }
+); // immediate: true 옵션으로 컴포넌트 마운트 시 즉시 실행
 
 function handleFormSubmission() {
   if (applicationForm.value) {
-    submitForm(applicationForm.value, tegApplicationForm, selectedFile.value);
-    
-
+    console.log(tegApplicationForm);
+    // submitForm(applicationForm.value, tegApplicationForm, selectedFile.value);
   } else {
     console.error("Form is not yet initialized.");
   }
 }
 
+function handleAppRemove() {
+  sendRemoveRequest(tegApplicationForm.uuid, router);
+}
+
 function handleWaferUpdate(quantity, information) {
-  TegApplicationForm.waferQuantity = quantity;
-  TegApplicationForm.waferInformation = information;
+  tegApplicationForm.waferQuantity = quantity;
+  tegApplicationForm.waferInformation = information;
 }
 
 let activeShots = [];
-
-// Watch for changes in wafer size and call the getWaferInfoBySize function
-watch(
-  () => TegApplicationForm.waferSize,
-  (newSize, oldSize) => {
-    if (newSize) {
-      Object.assign(
-        TegApplicationForm.shotInformation,
-        getWaferInfoBySize(newSize)
-      );      
-    }
-  }
-);
 
 const handleActiveShots = (shots) => {
   activeShots = shots;
@@ -338,21 +396,30 @@ const handleActiveShots = (shots) => {
 
 // 자식 컴포넌트에서 보낸 measInfo 데이터로 form.measInfo 업데이트
 const updateMeasInfo = (newMeasInfo) => {
-  TegApplicationForm.measInfo = newMeasInfo;
+  tegApplicationForm.measInfo = newMeasInfo;
 };
 
 function handleTemperatures(values) {
-  TegApplicationForm.temperatures = values;
+  tegApplicationForm.temperatures = values;
 }
 
 // measInfo 업데이트 핸들러
 const handleFinalUpdate = (updatedMeasInfo, index) => {
-  TegApplicationForm.measInfo[index] = updatedMeasInfo;
-  TegApplicationForm.measInfo = [...TegApplicationForm.measInfo]; // 반응성 유지
+  tegApplicationForm.measInfo[index] = updatedMeasInfo;
+  tegApplicationForm.measInfo = [...tegApplicationForm.measInfo]; // 반응성 유지
 };
 
-const handleFileUpdate = (file: File | null) => {
-  selectedFile.value = file;
+function changeRouter() {
+  const someData = {
+    uuid: tegApplicationForm.uuid,
+  };
+
+  moveToAnotherRoute("CloneTegApplication", tegApplicationForm.uuid, router);
+}
+
+const handleDownload = async () => {
+  const temp = tegApplicationForm.uuid;
+  await download(temp);
 };
 </script>
 

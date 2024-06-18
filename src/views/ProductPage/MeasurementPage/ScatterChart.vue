@@ -84,6 +84,7 @@ const chartCanvas = ref(null);
 let myChart = null;
 
 
+console.log(props.chartData)
 
 const drawChart = () => {
   if (myChart) {
@@ -156,21 +157,21 @@ const drawChart = () => {
         },
       },
       plugins: {
-        zoom: {
-          zoom: {
-            wheel: {
-              enabled: true, // 마우스 휠을 통한 zoom 활성화
-            },
-            pinch: {
-              enabled: true, // 핀치 제스처를 통한 zoom 활성화 (모바일 기기에서 유용)
-            },
-            mode: "y", // x축과 y축 모두에서 zoom을 활성화
-          },
-          pan: {
-            enabled: true, // 드래그를 통한 pan 활성화
-            mode: "y", // x축과 y축 모두에서 pan을 활성화
-          },
-        },
+        // zoom: {
+        //   zoom: {
+        //     wheel: {
+        //       enabled: true, // 마우스 휠을 통한 zoom 활성화
+        //     },
+        //     pinch: {
+        //       enabled: true, // 핀치 제스처를 통한 zoom 활성화 (모바일 기기에서 유용)
+        //     },
+        //     mode: "y", // x축과 y축 모두에서 zoom을 활성화
+        //   },
+        //   pan: {
+        //     enabled: true, // 드래그를 통한 pan 활성화
+        //     mode: "y", // x축과 y축 모두에서 pan을 활성화
+        //   },
+        // },
         title: {
           display: true,
           text: props.chartTitle,
@@ -218,7 +219,7 @@ onMounted(async () => {
   yMax.value = minMax.yMax;
   xMin.value = minMax.xMin;
   yMin.value = minMax.yMin;
-  console.log(minMax);
+  
   // getMinMax의 결과를 받은 후 차트를 그립니다.
   drawChart();
 });

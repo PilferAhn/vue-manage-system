@@ -10,6 +10,8 @@ export const getTargetFreqArray = () => {
   return calculatedSummaries.value.map(summary => summary.targetFreq);
 };
 
+
+
 export const getSummaryData = async (uuid: string) => {
   try {
     const response = await axios.get(
@@ -20,12 +22,12 @@ export const getSummaryData = async (uuid: string) => {
 
     calculatedSummaries.value = response.data.samples.map((item: any) => ({
       sampleNumber: item.sample_number,
-      dbm3: item.dbm_3,
+      dbm3: Number(parseFloat(item.dbm_3).toFixed(2)), 
       p1Input: item.p1_input,
       p2Input: item.p2_input,
       p1Output: item.p1_output,
-      targetFreq: item.target_frequancy,
-
+      // targetFreq: item.target_frequancy,      
+      targetFreq: Number(parseFloat(item.target_frequancy).toFixed(2)), 
       p1_index: item.p1_index,
       p2_index: item.p2_index,
 
@@ -45,14 +47,14 @@ export const getSummaryData = async (uuid: string) => {
       sParaDbm: item.s_para_dbm.split(",").map(Number),
       sParaFreq: item.s_para_freq.split(",").map(Number),
     }));
-
+    
     calculateStatistics();
   } catch (error) {
     console.error("Error fetching data:", error);
   }
 };
 
-function createSParaChartData(xValueKey: string, yValueKey: string, step = 3) {
+function createSParaChartData(xValueKey: string, yValueKey: string, step = 2) {
   const colors = colorList;
 
   return computed(() => {
@@ -77,7 +79,7 @@ function createSParaChartData(xValueKey: string, yValueKey: string, step = 3) {
   });
 }
 
-function createS21ChartData(xValueKey: string, yValueKey: string, step = 1) {
+function createS21ChartData(xValueKey: string, yValueKey: string, step = 2) {
   const colors = colorList;
   return computed(() => {
     return calculatedSummaries.value.map((summary, index) => {

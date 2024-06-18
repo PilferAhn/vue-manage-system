@@ -100,6 +100,7 @@
             class="primary"
             size="small"
             @click="viewAppDetail(scope.row)"
+            disabled
             >자세히 보기</el-button
           >
         </template>
@@ -172,7 +173,7 @@ const writeApplicationForm = () => {
 }
 
 const viewMyApplicationForm = () => {
-  router.push({name : "MyProductApplicationList"})
+  router.push({name : "MyApplications"})
 }
 
 </script>

@@ -13,6 +13,15 @@
           />
         </template>
       </el-tab-pane>
+      <el-tab-pane label="측정 완료" name="main3">
+        <template v-if="activeTabMain === 'main3'">
+          <TegMeasurementTab
+            :category="'finished'"
+            key="finished"
+            :page-size="15"
+          />
+        </template>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>

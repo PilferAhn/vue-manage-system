@@ -380,9 +380,9 @@ import {
 import { drawChart } from "../../utils/chartHelper";
 
 const rules: FormRules = {
-  requestNumber: [
-    { required: true, message: "의뢰번호를 입력해주세요.", trigger: "blur" },
-  ],
+  // requestNumber: [
+  //   { required: true, message: "의뢰번호를 입력해주세요.", trigger: "blur" },
+  // ],
   status: [
     { required: true, message: "진행상황을 입력해주세요.", trigger: "blur" },
   ],
@@ -475,14 +475,13 @@ const onSubmit = () => {
   });
 };
 
-const generateRequstNumber = async(form) => {
+const generateRequstNumber = async (form) => {
   // form.requestNumber =  createRequestNumber();
-  
-  const year = getCurrentYearLastTwoDigits()
-  const response = await getRequestNumber("pdt")
-  
-  form.requestNumber = year.toString() + "-" + response.toString()
-  
+
+  const year = getCurrentYearLastTwoDigits();
+  const response = await getRequestNumber("pdt");
+
+  form.requestNumber = year.toString() + "-" + response.toString();
 };
 
 const formatDate = (dateStr: string): string => {
@@ -549,8 +548,8 @@ const submitData = async () => {
       const_data_dict
     );
 
-    if (response.data.status == false) {
-      ElMessage.error(response.data.message);
+    if (response.status != 200) {
+      ElMessage.error("의뢰서 업데이트에 실패했습니다. 관리자에게 문의하세요");
     } else {
       ElMessage.success("의뢰서가 성공적으로 업데이트 되었습니다.");
     }

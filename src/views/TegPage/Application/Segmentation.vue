@@ -6,7 +6,7 @@
     <div v-else>
       <el-tabs type="card">
         <el-tab-pane
-          v-for="(info, index) in props.measInfo"
+          v-for="(info, index) in internalValue"
           :key="index"
           :label="info.measType"
         >
@@ -22,15 +22,26 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
+import { defineProps, defineEmits, watch, ref } from "vue";
 import FrequancySection from "./FrequancySection.vue";
 import { MeasInfo } from "../../../utils/tegTypes";
 
 const props = defineProps<{ measInfo: MeasInfo[] }>();
+const internalValue = ref(props.measInfo);
 
 const emit = defineEmits(["updateMeasInfo"]);
 
 const handleUpdate = (updatedFreqSections, index) => {
   emit("updateMeasInfo", updatedFreqSections, index);
 };
+
+watch(
+  () => props.measInfo,
+  (newVal) => {
+    // props.measInfo;
+    
+    internalValue.value = [...newVal];
+  },
+  { deep: true }
+);
 </script>
