@@ -11,6 +11,8 @@ export interface SParameterFile {
   freq: number[];
 }
 
+export const optionList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
 // src/interfaces/SParameter.ts
 export interface CalculatedSParameters {
   key?: string;
@@ -27,6 +29,45 @@ export interface CalculatedSParameters {
   txRightVal: number;
   rxLeftVal: number;
   rxRightVal: number;
+}
+
+export interface Coordinate {
+  x: number;
+  y: number;
+}
+
+export interface Graph {
+  graph: Coordinate[];
+}
+
+export interface Graphs {
+  graphName: string;
+  coordinates: Coordinate[][];
+  ilLevel: number;
+  labels: string[];
+}
+
+export interface GraphObj {
+  graph_data: Graphs[];
+}
+
+export interface GraphObjs {}
+
+export interface CalculatedTCFValue {
+  centerTcf: number;
+  leftTcf: number;
+  rightTcf: number;
+  centerArr: number[];
+  leftArr: number[];
+  rightArr: number[];
+  leftCoordinates: Coordinate[];
+  rightCoordinates: Coordinate[];
+  temperatures : number[];
+  graphName: string;
+}
+
+export interface CalculatedTCFValues {
+  tcfValues: CalculatedTCFValue[];
 }
 
 export interface TCFValues {
@@ -76,6 +117,10 @@ export const availableOptions = [
   { value: 3, label: "3" },
   { value: 4, label: "4" },
   { value: 5, label: "5" },
+  { value: 6, label: "6" },
+  { value: 7, label: "7" },
+  { value: 8, label: "8" },
+  { value: 9, label: "9" },
 ];
 
 export async function downloadExcel(

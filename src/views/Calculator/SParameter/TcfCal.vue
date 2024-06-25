@@ -4,10 +4,25 @@
       <div class="split-layout">
         <div class="form-box">
           <el-row :gutter="20">
-            <el-col :span="12">
+            <el-col :span="6">
+              <el-form-item :label="'갯수'">
+                <el-select
+                  v-model="optionCount"
+                  placeholder="Select number of options"
+                >
+                  <el-option
+                    v-for="item in availableOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
               <InputText v-model="roundingPoing" label="소수점 반올림" />
             </el-col>
-            <el-col :span="12">
+            <el-col :span="6">
               <InputText v-model="port" label="Port" />
             </el-col>
           </el-row>
@@ -39,7 +54,7 @@
               <el-button
                 size="default"
                 type="success"
-                @click="downloadExcel"
+                @click="handleDownload"
                 :disabled="sparaFiles.length === 0"
                 >다운로드</el-button
               >
@@ -56,85 +71,39 @@
         </el-table>
       </ul>
 
-      <div v-if="sparaFiles.length >= 0" class="split-layout">
-        <div class="form-box">
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <SelectOption
-                v-model="rxOutput"
-                :options="portNumberList"
-                label="RX Output"
-                :key="`select-rxOutput-${portNumberList.length}`"
-                style="width: 150px"
-              ></SelectOption>
-            </el-col>
-            <el-col :span="12">
-              <SelectOption
-                v-model="rxInput"
-                :options="portNumberList"
-                label="RX Input"
-                :key="`select-rxInput-${portNumberList.length}`"
-                style="width: 150px"
-              ></SelectOption>
-            </el-col>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <SelectOption
-                v-model="txOutput"
-                :options="portNumberList"
-                label="TX Output"
-                :key="`select-txOutput-${portNumberList.length}`"
-                style="width: 150px"
-              ></SelectOption>
-            </el-col>
-            <el-col :span="12">
-              <SelectOption
-                v-model="txInput"
-                :options="portNumberList"
-                label="TX Input"
-                :key="`select-txInput-${portNumberList.length}`"
-                style="width: 150px"
-              ></SelectOption>
-            </el-col>
-          </el-row>
+      <div v-if="sparaFiles.length > 0" class="split-layout">
+        <transition-group name="list" tag="div">
+          <div
+            v-for="(option, index) in options"
+            :key="index"
+            class="list-item"
+          >
+            <Options
+              :index="index + 1"
+              :option="option"
+              :port="parseInt(port)"
+            />
+          </div>
+        </transition-group>
+      </div>
+      <div v-if="numberOfSection > 0">
+        <TCFDataTable :tcfValues="tempTcfValues" />
+      </div>
+      <div class="charts-container" v-if="numberOfSection > 0">
+        <div class="charts-row" v-for="index in numberOfSection" :key="index">
+          <div class="form-box-wide">
+            <SParameterGraph
+              v-if="graphValues[index - 1]"
+              :graph-data="graphValues[index - 1]"
+            ></SParameterGraph>
+          </div>
+          <div class="form-box-wide">
+            <TCFTendancy2
+              v-if="tempTcfValues[index - 1]"
+              :calculated-tcf-values="tempTcfValues[index - 1]"
+            />
+          </div>
         </div>
-        <div class="form-box">
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <InputText
-                v-model="rxIlLevel"
-                label="Target RX IL Level"
-              ></InputText>
-            </el-col>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <InputText
-                v-model="txIlLevel"
-                label="Target TX IL Level"
-              ></InputText>
-            </el-col>
-          </el-row>
-        </div>
-      </div>
-      <div>
-        <TCFGraph
-          :cal-s-para="calSPara"
-          :rx-il-level="tempRxIlLevel"
-          :tx-il-level="tempTxIlLevel"
-          :rounding-point="parseInt(roundingPoing)"
-        />
-      </div>
-      <div>
-        <TCFTendancy
-          :cal-s-para="calSPara"
-          :rx-il-level="rxIlLevel"
-          :tx-il-level="txIlLevel"
-        />
-      </div>
-      <div>
-        <TCFDataTable :cal-s-para="calSPara" :tcf-values="tcfValues" />
       </div>
     </div>
   </el-form>
@@ -142,43 +111,47 @@
 
 <script lang="ts" setup>
 import axios from "axios";
-import { ref, onMounted, reactive, watch, computed } from "vue";
-import { ElUpload, valueEquals } from "element-plus";
+import { ref, reactive, watch } from "vue";
 import {
   SParameterFile,
   sortingFiles,
   findMostFrequentNumber,
-  CalculatedSParameters,
-  createInitialTCFValues,
-  TCFValues,
   availableOptions,
-  downloadExcel
+  CalculatedTCFValue,
+  Graphs,
 } from "./sparameter";
 import InputText from "./../../TegPage/Application/InputText.vue";
-import SelectOption from "../../TegPage/Application/SelectOption.vue";
-import TCFGraph from "./TCFGraph.vue";
-import TCFTendancy from "./TCFTendancy.vue";
-import TCFDataTable from "./TCFDataTable.vue";
-import { colorList } from "../../../utils/utility";
-
-const rxIlLevel = ref<string>("-10");
-const txIlLevel = ref<string>("-10");
-
-const tempRxIlLevel = ref<string>("-10");
-const tempTxIlLevel = ref<string>("-10");
+import TCFTendancy2 from "./TCFTendancyChart2.vue";
+import SParameterGraph from "./SParameterScatterGraph.vue";
+import TCFDataTable from "./TCFDataTable2.vue";
+import Options from "./SelectOption.vue";
+import {createReport} from "./TcfCalculator"
 
 const port = ref<string>("0");
 const roundingPoing = ref<string>("2");
-const rxInput = ref<string>("0");
-const rxOutput = ref<string>("0");
-const txInput = ref<string>("0");
-const txOutput = ref<string>("0");
 const portNumberList = ref<string[]>([]);
 const sparaFiles = reactive<SParameterFile[]>([]);
-const tcfValues: TCFValues = createInitialTCFValues();
-const calSPara = reactive<CalculatedSParameters[]>([]);
 const files = reactive<File[]>([]);
+const optionCount = ref(2); // 초기 값 2개
+const graphValues = reactive<Graphs[]>([]);
+const numberOfSection = ref<number>(0);
+const tempTcfValues = reactive<CalculatedTCFValue[]>([]);
 
+const options = ref<
+  Array<{ name: string; output: number; input: number; ilLevel: number }>
+>([]);
+
+const updateOptions = () => {
+  options.value = Array.from({ length: optionCount.value }, (_, index) => ({
+    name: "",
+    output: parseInt(port.value),
+    input: parseInt(port.value),
+    ilLevel: -10,
+  }));
+};
+
+// 옵션 카운트가 변경될 때마다 옵션 배열을 업데이트
+watch(optionCount, updateOptions, { immediate: true });
 
 function handleFileChange(file, fileList) {
   files.push(file);
@@ -187,66 +160,11 @@ function handleFileChange(file, fileList) {
   sparaFiles.splice(0, sparaFiles.length, ...sortedFiles);
 }
 
-async function downloadExcel() {
-  const formData = new FormData();
-  files.forEach((file) => formData.append("files", file.raw));
-  formData.append("rx_output", rxOutput.value);
-  formData.append("rx_input", rxInput.value);
-  formData.append("tx_output", txOutput.value);
-  formData.append("tx_input", txInput.value);
-  formData.append("rx_il_level", rxIlLevel.value);
-  formData.append("tx_il_level", txIlLevel.value);
-  formData.append("rounding_point", roundingPoing.value);
-
-  try {
-    const response = await axios.post("tcf/create_excel_file", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      responseType: "blob",
-    });
-
-    // Blob 데이터로부터 다운로드 URL 생성
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement("a");
-    link.href = url;
-
-    // Content-Disposition 헤더에서 파일 이름 추출
-    let filename = "default-filename.xlsx"; // 기본 파일 이름 설정
-    const contentDisposition = response.headers["content-disposition"];
-    
-    if (contentDisposition) {
-      const filenameRegex = /filename\*?=['"]?([^;\r\n"]*)['"]?/i;
-      // const filenameRegex = /filename\*?=['"]?UTF-8''([^;'\"]*)['"]?;?/i;
-      const matches = filenameRegex.exec(contentDisposition);
-      if (matches && matches[1]) {
-        // UTF-8 인코딩 해제 및 디코딩
-        filename = decodeURIComponent(matches[1]);
-      }
-    }
-
-    link.setAttribute("download", filename); // 다운로드할 파일 이름 설정
-    document.body.appendChild(link);
-    link.click(); // 프로그래매틱하게 링크 클릭 이벤트 발생
-
-    // 정리 작업
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-  } catch (error) {
-    console.error("Error sending data to server:", error);
-  }
-}
-
 async function calculateTCF() {
   const formData = new FormData();
   files.forEach((file) => formData.append("files", file.raw));
-  formData.append("rx_output", rxOutput.value);
-  formData.append("rx_input", rxInput.value);
-  formData.append("tx_output", txOutput.value);
-  formData.append("tx_input", txInput.value);
-  formData.append("rx_il_level", rxIlLevel.value);
-  formData.append("tx_il_level", txIlLevel.value);
   formData.append("rounding_point", roundingPoing.value);
+  formData.append("values", JSON.stringify(options.value));
 
   try {
     const response = await axios.post("tcf/calculate-tcf", formData, {
@@ -254,44 +172,25 @@ async function calculateTCF() {
         "Content-Type": "multipart/form-data",
       },
     });
-    // console.log("Server response:", response.data);
 
-    const responseData = response.data.values;
-    const colors = colorList;
-    calSPara.length = 0;
-
-    tempRxIlLevel.value = rxIlLevel.value;
-    tempTxIlLevel.value = txIlLevel.value;
-
-    const responsedDataTCF = response.data.tcf_values;
-    console.log(responsedDataTCF);
-    tcfValues.txLfTcf = responsedDataTCF.tx_lf_tcf;
-    tcfValues.txRfTcf = responsedDataTCF.tx_rf_tcf;
-    tcfValues.rxLfTcf = responsedDataTCF.rx_lf_tcf;
-    tcfValues.rxRfTcf = responsedDataTCF.rx_rf_tcf;
-    tcfValues.txCenterTcf = responsedDataTCF.tx_center_tcf;
-    tcfValues.rxCenterTcf = responsedDataTCF.rx_center_tcf;
-
-    responseData.forEach((data, index) => {
-      const tempSpara: CalculatedSParameters = {
-        fileName: data.file_name,
-        temperature: data.temperature,
-        temperatureStr: data.temperatureStr,
-        rxDbm: data.rx_dbm,
-        rxFreq: data.rx_freq,
-        txDbm: data.tx_dbm,
-        txFreq: data.tx_freq,
-        freq: data.freq,
-        txLeftVal: data.tx_left_val,
-        txRightVal: data.tx_right_val,
-        rxLeftVal: data.rx_left_val,
-        rxRightVal: data.rx_right_val,
-      };
-
-      calSPara.push(tempSpara);
-    });
+    tempTcfValues.splice(0, tempTcfValues.length, ...response.data.tcf_data);
+    numberOfSection.value = response.data.tcf_data.length;
+    graphValues.splice(0, tempTcfValues.length, ...response.data.graph_data);
   } catch (error) {
     console.error("Error sending data to server:", error);
+  }
+}
+
+async function handleDownload() {
+  try {
+    await createReport(
+      files.map((file) => file.raw),
+      roundingPoing.value,
+      options.value
+    );
+
+  } catch (error) {
+    console.error("Error during createReport:", error);
   }
 }
 
@@ -348,77 +247,8 @@ watch(
 }
 
 .form-box-wide {
+  flex: 1;
   margin-bottom: 1rem;
+  width: 48%; /* 화면을 반으로 나누기 위해 추가 */
 }
 </style>
-
-
-<!-- <template>
-  <div>
-    <el-select v-model="optionCount" placeholder="Select number of options">
-      <el-option
-        v-for="item in availableOptions"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value"
-      />
-    </el-select>
-
-    <transition-group name="list" tag="div">
-      <div v-for="(option, index) in options" :key="index" class="list-item">
-        <SelectOption :index="index + 1" :option="option" />
-      </div>
-    </transition-group>
-
-    <el-button type="primary" @click="calculate">Calculate</el-button>
-  </div>
-</template>
-
-<script lang="ts" setup>
-import { ref, watch } from 'vue';
-import { ElSelect, ElOption, ElButton } from 'element-plus';
-import 'element-plus/dist/index.css';
-import SelectOption from './SelectOption.vue';
-
-const optionCount = ref(2); // 초기 값 2개
-const availableOptions = [
-  { value: 1, label: '1' },
-  { value: 2, label: '2' },
-  { value: 3, label: '3' },
-  { value: 4, label: '4' },
-  { value: 5, label: '5' }
-];
-
-const options = ref<Array<{ name: string; tx: string; rx: string; ilLevel: number }>>([]);
-
-const updateOptions = () => {
-  options.value = Array.from({ length: optionCount.value }, (_, index) => ({
-    name: '',
-    tx: '',
-    rx: '',
-    ilLevel: -10
-  }));
-};
-
-// 옵션 카운트가 변경될 때마다 옵션 배열을 업데이트
-watch(optionCount, updateOptions, { immediate: true });
-
-const calculate = () => {
-  console.log(options.value);
-};
-
-</script>
-
-<style>
-/* Transition 효과를 위한 스타일 설정 */
-.list-item {
-  transition: all 1s;
-}
-.list-enter-active, .list-leave-active {
-  transition: all 1s;
-}
-.list-enter, .list-leave-to /* .list-leave-active in <2.1.8 */ {
-  opacity: 0;
-  transform: translateY(30px);
-}
-</style> -->

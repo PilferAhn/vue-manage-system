@@ -98,7 +98,7 @@
             <el-col :span="12">
               <InputText
                 v-model="tegApplicationForm.chipQuantity"
-                label="Wafer 1매당 CHIP 수"
+                label="Wafer 1매당 측정 CHIP 수"
                 prop="chipQuantity"
                 :rules="rules.chipQuantity"
                 placeholder="ex) 200"
