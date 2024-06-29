@@ -14,6 +14,7 @@
     teg1_list: number[];
     teg2_list: number[];
     tcf_list: number[];
+    teg15_list : number[];
   }
   
   const testTypes = ref<TestType>({
@@ -21,6 +22,7 @@
     teg1_list: [],
     teg2_list: [],
     tcf_list: [],
+    teg15_list : []
   });
   
   // 차트 설정
@@ -30,6 +32,7 @@
     try {
       const response = await axios.get("wafer/get_wafer_count_by_meas_type");
       testTypes.value = response.data;
+      console.log(testTypes.value)
       updateChartOptions();
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -48,6 +51,10 @@
         {
           label: "TEG1",
           data: testTypes.value.teg1_list,
+        },        
+        {
+          label: "TEG1_5",
+          data: testTypes.value.teg15_list,
         },
         {
           label: "TEG2",

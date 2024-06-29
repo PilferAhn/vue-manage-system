@@ -37,7 +37,7 @@ const fetchData = async () => {
     const response = await axios.get("measurement/get_weekly_progress");
     testTypes.value = response.data;
 
-    console.log(testTypes.value);
+    
   } catch (error) {
     console.error("Error fetching data:", error);
   }

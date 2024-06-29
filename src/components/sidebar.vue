@@ -139,20 +139,32 @@ const items = [
     permiss: "4",
     subs: [
       {
-        index: "/admin/application-list",
-        title: "PDT 측정 의뢰서",
+        index: "/admin/pdt",
+        title: "PDT 측정",
         permiss: "5",
+        subs: [
+          { 
+            index: "/admin/pdt/application-list", 
+            title: "PDT 측정 통계", 
+            permiss: "5" 
+          },
+          { 
+            index: "/admin/pdt/machine-list", 
+            title: "Monitering", 
+            permiss: "5" 
+          },
+        ],
       },
       {
         index: "/admin/teg/teg_application",
         title: "TEG 측정",
         permiss: "5",
         subs: [
-          {
-            index: "/admin/teg/create-teg-application",
-            title: "TEG 의뢰서 작성",
-            permiss: "5",
-          },
+          // {
+          //   index: "/admin/teg/create-teg-application",
+          //   title: "TEG 의뢰서 작성",
+          //   permiss: "5",
+          // },
           {
             index: "/admin/teg/teg-application-list",
             title: "TEG 의뢰서 접수",
@@ -165,16 +177,16 @@ const items = [
           },
         ],
       },
-      {
-        index: '/calculator/s-parameter',
-        title: "TCF계산기",
-        permiss: "5",
-      },
-      {
-        index: '/calculator/s-parameter_ver2',
-        title: "TCF계산기_Ver2",
-        permiss: "5",
-      },
+      // {
+      //   index: "/calculator/s-parameter",
+      //   title: "TCF계산기",
+      //   permiss: "5",
+      // },
+      // {
+      //   index: "/calculator/s-parameter_ver2",
+      //   title: "TCF계산기",
+      //   permiss: "5",
+      // },
 
       // {
       //   index: "/admin/next-function",
@@ -200,18 +212,18 @@ const items = [
       // },
     ],
   },
-  // {
-  //   icon: "Setting",
-  //   index: "/icon",
-  //   title: "Custom Icons",
-  //   permiss: "10",
-  // },
-  // {
-  //   icon: "User",
-  //   index: "/user",
-  //   title: "user",
-  //   permiss: "11",
-  // },
+  {
+    icon: "Setting",
+    index: "/icon",
+    title: "Custom Icons",
+    permiss: "10",
+  },
+  {
+    icon: "User",
+    index: "/calculator/s-parameter_ver2",
+    title: "TCF계산기",
+    permiss: "11",
+  },
   // {
   //   icon: "PieChart",
   //   index: "/charts",

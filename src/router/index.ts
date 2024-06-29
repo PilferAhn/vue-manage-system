@@ -51,22 +51,31 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/MeasurementPage/MeasurementInfo.vue'),
             },
             {
-                path: '/admin/application-list',
+                path: '/admin/pdt/application-list',
                 name: 'ApplicationList',
                 meta: {
                     title: '의뢰서',
-                    permiss: '2',
+                    permiss: '5',
                 },
                 component: () => import(/* webpackChunkName: "table" */ '../views/AdminPage/ApplicationList.vue'),
             },
             {
+                path: '/admin/pdt/machine-list',
+                name: 'MachineList',
+                meta: {
+                    title: '의뢰서',
+                    permiss: '5',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/AdminPage/Machine/MachineList.vue'),
+            },
+            {
                 path: '/admin/application-detail/:uuid',
-                name: 'ApplicationDetail',
+                name: 'ViewApplication',
                 meta: {
                     title: '의뢰서 자세히',
                     permiss: '2',
                 },
-                component: () => import(/* webpackChunkName: "table" */ '../views/AdminPage/ApplicationDetail.vue'),
+                component: () => import(/* webpackChunkName: "table" */ '../views/AdminPage/ViewApplication.vue'),
             },
             {
                 path: '/product/reserved-application-list',
@@ -209,7 +218,7 @@ const routes: RouteRecordRaw[] = [
                 name: 'TcfCal',
                 meta: {
                     title: 'TCF 계산기_Ver',
-                    permiss: '5',
+                    permiss: '11',
                 },
                 component: () => import(/* webpackChunkName: "table" */ '../views/Calculator/SParameter/TcfCal.vue'),
             },    
