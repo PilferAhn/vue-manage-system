@@ -137,8 +137,6 @@ const graphValues = reactive<Graphs[]>([]);
 const numberOfSection = ref<number>(0);
 const tempTcfValues = reactive<CalculatedTCFValue[]>([]);
 
-const userName = localStorage.getItem("ms_username");
-
 const options = ref<
   Array<{ name: string; output: number; input: number; ilLevel: number }>
 >([]);
@@ -151,6 +149,8 @@ const updateOptions = () => {
     ilLevel: -10,
   }));
 };
+
+const userName = localStorage.getItem("ms_username");
 
 // 옵션 카운트가 변경될 때마다 옵션 배열을 업데이트
 watch(optionCount, updateOptions, { immediate: true });
@@ -167,7 +167,7 @@ async function calculateTCF() {
   files.forEach((file) => formData.append("files", file.raw));
   formData.append("rounding_point", roundingPoing.value);
   formData.append("values", JSON.stringify(options.value));
-  formData.append("user_name", userName)
+  formData.append("user_name", userName);
 
   try {
     const response = await axios.post("tcf/calculate-tcf", formData, {
@@ -189,7 +189,6 @@ async function handleDownload() {
     await createReport(
       files.map((file) => file.raw),
       roundingPoing.value,
-      options.value
       userName,
       options.value
     );

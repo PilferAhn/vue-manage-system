@@ -15,9 +15,10 @@ export async function createReport(
 ) {
   const formData = new FormData();
   files.forEach((file) => formData.append("files", file));
+  formData.append("user_name", userName)
   formData.append("rounding_point", roundingPoing);
   formData.append("values", JSON.stringify(options));
-  formData.append("user_name", userName)
+  
 
   try {
     const response = await axios.post("tcf/create_excel", formData, {

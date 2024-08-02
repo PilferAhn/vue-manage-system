@@ -224,12 +224,12 @@ const items = [
     title: "TCF계산기",
     permiss: "11",
   },
-  {
-    icon: "rank",
-    index: "/s-parameter/SnP",
-    title: "S parameter",
-    permiss: "11",
-  },
+  // {
+  //   icon: "rank",
+  //   index: "/s-parameter/SnP",
+  //   title: "S parameter",
+  //   permiss: "11",
+  // },
   // {
   //   icon: "PieChart",
   //   index: "/charts",

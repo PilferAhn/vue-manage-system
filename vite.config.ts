@@ -20,7 +20,7 @@ export default defineConfig({
 		include: ['schart.js']
 	},
 	server: {
-		host: '10.29.11.59',
+		host: '10.29.11.57',
 		port: 40006,
 		proxy : {
 			"/pdt_measurement" : "http://10.29.11.59:40000",
