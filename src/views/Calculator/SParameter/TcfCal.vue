@@ -137,6 +137,8 @@ const graphValues = reactive<Graphs[]>([]);
 const numberOfSection = ref<number>(0);
 const tempTcfValues = reactive<CalculatedTCFValue[]>([]);
 
+const userName = localStorage.getItem("ms_username");
+
 const options = ref<
   Array<{ name: string; output: number; input: number; ilLevel: number }>
 >([]);
@@ -165,6 +167,7 @@ async function calculateTCF() {
   files.forEach((file) => formData.append("files", file.raw));
   formData.append("rounding_point", roundingPoing.value);
   formData.append("values", JSON.stringify(options.value));
+  formData.append("user_name", userName)
 
   try {
     const response = await axios.post("tcf/calculate-tcf", formData, {
@@ -186,6 +189,8 @@ async function handleDownload() {
     await createReport(
       files.map((file) => file.raw),
       roundingPoing.value,
+      options.value
+      userName,
       options.value
     );
 

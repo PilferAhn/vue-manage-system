@@ -1,9 +1,11 @@
 import axios from "axios";
 import { CalculatedTCFValue, Graphs } from "./sparameter";
+import { ElMessageBox, ElMessage } from "element-plus";
 
 export async function createReport(
   files: File[],
   roundingPoing: string,
+  userName : string,
   options: Array<{
     name: string;
     output: number;
@@ -15,6 +17,7 @@ export async function createReport(
   files.forEach((file) => formData.append("files", file));
   formData.append("rounding_point", roundingPoing);
   formData.append("values", JSON.stringify(options));
+  formData.append("user_name", userName)
 
   try {
     const response = await axios.post("tcf/create_excel", formData, {
@@ -50,6 +53,7 @@ export async function createReport(
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
   } catch (error) {
+    ElMessage.error("서버에 요청된 작업양이 많습니다. 1 ~ 2초 후에 다시 클릭해주세요")
     console.error("Error sending data to server:", error);
     throw error;
   }
