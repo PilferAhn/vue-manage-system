@@ -84,7 +84,7 @@ const chartCanvas = ref(null);
 let myChart = null;
 
 
-console.log(props.chartData)
+// console.log(props.chartData)
 
 const drawChart = () => {
   if (myChart) {

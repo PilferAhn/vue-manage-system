@@ -30,7 +30,9 @@ export default defineConfig({
 			"/application" : "http://10.29.11.57:40000",
 			"/user" : "http://10.29.11.59:40000",
 			"/teg_application" : "http://10.29.11.57:40000",
-			"/tcf" : "http://10.29.11.59:8002",
+			"/tcf" : "http://10.29.11.57:8002",
+			"/s-parameter" : "http://10.29.11.57:8002",
+			"/machine" : "http://10.29.11.59:40000",
 		}
 	  },
 });

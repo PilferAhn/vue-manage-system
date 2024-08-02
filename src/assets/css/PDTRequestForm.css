@@ -1,0 +1,25 @@
+.container {
+  width: 85%; /* 기존의 너비 설정을 70%로 변경 */
+}
+
+.form-box {
+  width: 85%; /* 기존의 너비 설정을 70%로 변경 */
+}
+
+.form-item-spacing {
+  margin-bottom: 35px; /* 하단 마진으로 공간 추가 */
+}
+
+.inline-fields {
+  display: flex;
+  gap: 10px; /* Adjust the gap as needed */
+}
+
+.wide-select {
+  flex: 1; /* This will make the select option take as much space as possible */
+}
+
+.flex-item {
+  flex: 1;
+}
+

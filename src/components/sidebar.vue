@@ -145,12 +145,12 @@ const items = [
         subs: [
           { 
             index: "/admin/pdt/application-list", 
-            title: "PDT 측정 통계", 
+            title: "PDT 측정 현황", 
             permiss: "5" 
           },
           { 
             index: "/admin/pdt/machine-list", 
-            title: "Monitering", 
+            title: "측정 장비 현황", 
             permiss: "5" 
           },
         ],
@@ -167,12 +167,12 @@ const items = [
           // },
           {
             index: "/admin/teg/teg-application-list",
-            title: "TEG 의뢰서 접수",
+            title: "TEG 측정 현황",
             permiss: "5",
           },
           {
             index: "/statistic/chart",
-            title: "측정 통계",
+            title: "TEG 측정 통계",
             permiss: "5",
           },
         ],
@@ -222,6 +222,12 @@ const items = [
     icon: "User",
     index: "/calculator/s-parameter_ver2",
     title: "TCF계산기",
+    permiss: "11",
+  },
+  {
+    icon: "rank",
+    index: "/s-parameter/SnP",
+    title: "S parameter",
     permiss: "11",
   },
   // {

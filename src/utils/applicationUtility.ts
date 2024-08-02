@@ -83,8 +83,6 @@ export const createRequestNumber = async () => {
 export function getSystemBand(signalType: string, band: string) {
   const bandInfo: BandInformationDict = bandInformationDict;
 
-  
-
   if (["LTE", "NR", "CW"].includes(signalType)) {
 
     const bandList = Object.keys(bandInfo[signalType]);
@@ -148,7 +146,7 @@ export async function requestApplicationDetailbyUUID(uuid: string, applicationFo
 
     applicationForm.status = response.data.status;
 
-    applicationForm.customerCompany = response.data.customer_company.toUpperCase();
+    applicationForm.customerCompany = response.data.customer_company;
     applicationForm.specTemperature = response.data.spec_temperature;
     applicationForm.specPower = response.data.spec_power;
     applicationForm.isSpecEdit = response.data.is_spec_edit;
@@ -157,7 +155,7 @@ export async function requestApplicationDetailbyUUID(uuid: string, applicationFo
     applicationForm.condition = response.data.condition;
 
     applicationForm.signalType = response.data.signal_type;
-    applicationForm.band = response.data.band.toUpperCase();
+    applicationForm.band = response.data.band;
     applicationForm.duplexMode = response.data.duplex_mode;
     applicationForm.bandwidth = response.data.bandwidth;
 
@@ -176,11 +174,11 @@ export async function requestApplicationDetailbyUUID(uuid: string, applicationFo
     applicationForm.detail = response.data.detail;
 
     applicationForm.testType = response.data.test_type;
-    applicationForm.targetPosition = response.data.target_position.toUpperCase();
+    applicationForm.targetPosition = response.data.target_position;
     applicationForm.temperature = response.data.temperature + "℃";
     applicationForm.samples = response.data.samples;
 
-    applicationForm.sampleQuantity = response.data.samples.length;
+    applicationForm.sampleQuantity = response.data.sample_quantity;
     applicationForm.dateOfCreated = response.data.date_of_created;
 
     return applicationForm

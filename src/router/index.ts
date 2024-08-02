@@ -39,7 +39,7 @@ const routes: RouteRecordRaw[] = [
                     title: '의뢰서 작성',
                     permiss: '2',
                 },
-                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/PDTApplication.vue'),
+                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/ApplicationPage/PDTRequestForm.vue'),
             },
             {
                 path: '/product/meas-info/:uuid',
@@ -69,6 +69,15 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "table" */ '../views/AdminPage/Machine/MachineList.vue'),
             },
             {
+                path: '/admin/pdt/machine-detail/:uuid',
+                name: 'MachineComponent',
+                meta: {
+                    title: 'MachineComponent',
+                    permiss: '5',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/AdminPage/Machine/MachineComponent.vue'),
+            },
+            {
                 path: '/admin/application-detail/:uuid',
                 name: 'ViewApplication',
                 meta: {
@@ -76,6 +85,16 @@ const routes: RouteRecordRaw[] = [
                     permiss: '2',
                 },
                 component: () => import(/* webpackChunkName: "table" */ '../views/AdminPage/ViewApplication.vue'),
+            },
+            {
+                path: '/admin/pdt-application/',
+                name: 'PDTRequestForm',
+                meta: {
+                    title: 'PDTRequestForm',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/ApplicationPage/PDTRequestForm.vue'),
+                
             },
             {
                 path: '/product/reserved-application-list',
@@ -221,6 +240,15 @@ const routes: RouteRecordRaw[] = [
                     permiss: '11',
                 },
                 component: () => import(/* webpackChunkName: "table" */ '../views/Calculator/SParameter/TcfCal.vue'),
+            },    
+            {
+                path: '/s-parameter/SnP',
+                name: 'SParameterList',
+                meta: {
+                    title: 'S parameter',
+                    permiss: '11',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/SparameterPage/SParameterList.vue'),
             },    
             {
                 path: '/table',

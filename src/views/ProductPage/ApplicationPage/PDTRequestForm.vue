@@ -6,27 +6,6 @@
     label-width="100"
   >
     <div class="container">
-      <div class="inline-fields">
-        <inputText
-          v-model="applicationForm.requestNumber"
-          label="의뢰번호"
-          prop="requestNumber"
-          placeholder="의뢰번호를 입력하세요."
-          class="flex-item form-item"
-        ></inputText>
-        <el-button type="success" :disabled="applicationForm.status !== 'created'" @click="updateApplicationNumber(uuid.toString() , applicationForm.requestNumber, applicationForm)">의뢰 접수</el-button>
-      </div>
-      <div class="inline-fields">
-        <el-form-item label="상태" class="flex-item form-item">
-          <el-select v-model="applicationForm.status" placeholder="상태 선택">
-            <el-option label="의뢰서 작성 완료" value="created"></el-option>
-            <el-option label="측정 대기" value="reserved"></el-option>
-            <el-option label="측정 완료" value="finished"></el-option>
-            <el-option label="측정 진행중" value="in progress"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-button type="success" @click="updateApplicationStatus(uuid.toString(), applicationForm.requestNumber, applicationForm.status)">업데이트</el-button>
-      </div>
       <selectOption
         v-model="applicationForm.testType"
         label="테스트 유형"
@@ -161,7 +140,7 @@
           class="wide-select"
         ></inputText>
         <inputText
-          v-model="applicationForm.requester"
+          v-model="requestNumber"
           label=""
           prop="requester"
           placeholder="의뢰자"
@@ -183,8 +162,8 @@
         class="form-item"
         :disable="applicationFormBoolean.temperature"
       ></inputText>
-      
-      <el-form-item label="작성일">
+
+      <el-form-item label="일정">
         <el-col :span="11">
           <el-form-item prop="dateOfCreate">
             <el-date-picker
@@ -192,7 +171,6 @@
               placeholder="샘플 전달일"
               v-model="applicationForm.dateOfCreate"
               style="width: 100%"
-              disabled
             ></el-date-picker>
           </el-form-item>
         </el-col>
@@ -229,7 +207,7 @@
         <selectOption
           v-model="applicationForm.link"
           label=""
-          prop="packageType"
+          prop="link"
           placeholder="Up / Down"
           :options="upAndDown"
           class="wide-select"
@@ -241,7 +219,7 @@
         label="수량"
         prop="sampleQuantity"
         placeholder="1 ~ 30"
-        :options="getSampleQuantityOptionsByAdmin()"
+        :options="getSampleQuantityOptions()"
         class="wide-select"
       ></selectNumberOption>
 
@@ -266,7 +244,7 @@
         <el-form-item label="SPL 정보">
           <div v-if="sampleRequestMode === 'normal'">
             <div v-if="applicationForm.sampleQuantity >= 1">
-              <applicationDetail v-model:samples="applicationForm.samples" />
+              <pdt-sample v-model:samples="applicationForm.samples" />
             </div>
           </div>
           <div v-else>
@@ -287,14 +265,13 @@
         placeholder="세부사항을 입력해주세요."
       ></longInputText>
       <el-form-item>
-        <el-button type="primary" @click="handleUpdate()"
-          >의뢰서 업데이트</el-button
-        >
-
-        <el-button type="danger" @click="handleDelete()">삭제</el-button>
-        <!-- <el-button type="success" @click="handleDownload"
-          >의뢰서 다운로드</el-button
-        > -->
+        <el-button type="primary" @click="handleSubmit">의뢰서 작성</el-button>
+        <el-button type="warning" @click="handleReset">초기화</el-button>
+        
+          <el-button type="success" @click="handleDownload" :disabled="!isDownload"
+            >의뢰서 다운로드</el-button
+          >
+        
       </el-form-item>
     </div>
   </el-form>
@@ -303,84 +280,85 @@
 <script lang="ts" setup>
 import { watch, onMounted, ref } from "vue";
 import { FormInstance } from "element-plus";
-import inputText from "../Common/InputText.vue";
-import inputNumber from "../Common/InputNumber.vue";
-import longInputText from "../Common/LongInputText.vue";
-import selectOption from "../Common/SelectOption.vue";
-import selectNumberOption from "../Common/SelectNumberOption.vue";
-import pdtSample from "../ProductPage/ApplicationPage/PDTSample.vue";
-import pdtSampleTab from "../ProductPage/ApplicationPage/PDTSampleTab.vue";
-import applicationDetail from "./ApplicationDetailSample.vue"
+import inputText from "../../Common/InputText.vue";
+import inputNumber from "../../Common/InputNumber.vue";
+import longInputText from "../../Common/LongInputText.vue";
+import selectOption from "../../Common/SelectOption.vue";
+import selectNumberOption from "../../Common/SelectNumberOption.vue";
+import pdtSample from "./PDTSample.vue";
+import pdtSampleTab from "./PDTSampleTab.vue";
+import { applicationRules, createApplicationRules } from "./ApplicationRules";
 
-import {
-  applicationRules,
-  createApplicationRules,
-} from "../ProductPage/ApplicationPage/ApplicationRules";
-import axios from "axios";
 import {
   usePDTRequestForm,
   usePDTRequestFormBoolean,
+  submitForm,
   testOptions,
   resetForm,
   saveForm,
   loadForm,
   signalList,
+  watchSignalType,
+  watchTestType, // Ensure to import the function
+  watchCustomerCompany,
   packageTypeList,
   waferTypeList,
   customerList,
   bandList,
   dutyList,
   bandwidthList,
-  getSampleQuantityOptionsByAdmin,
+  watchBand,
+  setBandwidthOptions,
+  watchDuplexMode,
+  getSampleQuantityOptions,
+  watchSampleQuantity,
   upAndDown,
   testPostionList,
+  watchLink,
+  watchPosition,
   sampleRequestMode,
   setMode,
-  updateSampleInformation,
-  SampleInformation,
-  getSystemFreq,
-} from "../ProductPage/ApplicationPage/Application";
-import { deleteApplicationByUuid, updateApplicationNumber, updateApplicationStatus } from "./ApplicationDetail";
+  submitPdtApplicationForm,
+  downloadExcel
+} from "./Application";
 
-
-import { useRoute } from "vue-router";
 const { form: applicationForm } = usePDTRequestForm();
 const { form: applicationFormBoolean } = usePDTRequestFormBoolean();
 const requestNumber = localStorage.getItem("ms_username");
 
-// useRoute 훅을 사용하여 현재 라우트 객체를 가져옵니다.
-const route = useRoute();
-
-// route.params에서 uuid 값을 추출합니다.
-const uuid = route.params.uuid;
-
 // Watch for changes in testType and reset the form
-// watch(
-//   () => applicationForm.value.testType,
-//   () => {
-//     resetForm(applicationForm, requestNumber);
-//     applicationRules.value = createApplicationRules(
-//       applicationFormBoolean.value
-//     );
-//     // console.log(applicationFormBoolean.value);
-//   }
-// );
-
-const formRef = ref(null);
-
-// Load form values from localStorage when the component is mounted
-// onMounted(() => {
-//   loadForm(applicationForm);
-// });
-
 watch(
-  () => uuid,
-  (newVal, oldVal) => {
-    if (newVal !== oldVal) {
-      fetchApplicationDetail();
-    }
+  () => applicationForm.value.testType,
+  () => {
+    resetForm(applicationForm, requestNumber);
+    applicationRules.value = createApplicationRules(
+      applicationFormBoolean.value
+    );
+    // console.log(applicationFormBoolean.value);
   }
 );
+
+const formRef = ref(null);
+const isDownload = ref<Boolean>(false)
+
+// Load form values from localStorage when the component is mounted
+onMounted(() => {
+  loadForm(applicationForm);
+  watchSignalType(
+    applicationForm,
+    applicationFormBoolean,
+    bandList,
+    bandwidthList
+  );
+  watchTestType(applicationForm, applicationFormBoolean); // Call watchTestType here
+  watchCustomerCompany(applicationForm, applicationFormBoolean);
+  setBandwidthOptions(applicationForm, applicationFormBoolean, bandwidthList);
+  watchBand(applicationForm, applicationFormBoolean);
+  watchDuplexMode(applicationForm, applicationFormBoolean);
+  watchSampleQuantity(applicationForm, applicationFormBoolean);
+  watchLink(applicationForm);
+  watchPosition(applicationForm);
+});
 
 // Watch for changes in the form and save to localStorage
 watch(
@@ -391,127 +369,33 @@ watch(
   { deep: true }
 );
 
-function handleDelete() {
-  deleteApplicationByUuid(uuid.toString());
-}
+function handleSubmitDetail() {}
 
-function handleUpdate() {
+function handleSubmit() {
+  // console.log(applicationForm.value.samples);
 
   formRef.value.validate((valid: boolean) => {
     if (valid) {
       console.log("Form is valid and ready for submission!");
-      updateSampleInformation(applicationForm.value);
+      submitPdtApplicationForm(applicationForm.value, isDownload);
     } else {
       console.log("Form validation failed");
     }
   });
-  
 }
 
-const fetchApplicationDetail = async () => {
-  try {
-    const response = await axios.post(
-      "pdt_application/get_application_detail2",
-      { uuid: uuid }
-    );
+function handleReset() {
+  resetForm(applicationForm, requestNumber);
+}
 
-    applicationForm.value.applicationUuid = uuid.toString();
-    // 받아온 데이터를 reactive form 객체에 할당합니다.
+function handleDownload() {
+  downloadExcel(applicationForm)
+}
 
-    applicationForm.value.requestNumber = response.data.request_number;
-    applicationForm.value.status = response.data.status;
-
-    applicationForm.value.customerCompany = response.data.customer_company;
-    applicationForm.value.specTemperature = response.data.spec_temperature;
-    applicationForm.value.specPower = response.data.spec_power;
-    applicationForm.value.isSpecEdit = response.data.is_spec_edit;
-
-    applicationForm.value.modelName = response.data.model_name;
-    applicationForm.value.condition = response.data.condition;
-
-    applicationForm.value.signalType = response.data.signal_type;
-    applicationForm.value.band = response.data.band;
-    applicationForm.value.duplexMode = response.data.duplex_mode;
-    applicationForm.value.bandwidth = response.data.bandwidth;
-
-    applicationForm.value.designer = response.data.designer;
-    applicationForm.value.requester = response.data.requester;
-
-    applicationForm.value.purpose = response.data.purpose;
-
-    applicationForm.value.waferType = response.data.wafer_type;
-
-    applicationForm.value.packageType = response.data.package_type;
-    applicationForm.value.temperature = response.data.temperature;
-    applicationForm.value.detail = response.data.detail;
-
-    applicationForm.value.testType = response.data.test_type;
-    applicationForm.value.targetPosition =
-      response.data.target_position.toUpperCase();
-
-    applicationForm.value.dateOfCreate = response.data.date_of_created
-
-    applicationForm.value.samples = response.data.samples;
-    applicationForm.value.sampleQuantity = response.data.sample_quantity;
-
-    if (response.data.link === undefined) {
-      applicationForm.value.link = "Up Link";
-    } else {
-      applicationForm.value.link = response.data.link;
-    }
-
-    const systemFreq = getSystemFreq(applicationForm);
-
-    for (let i = 0; i < applicationForm.value.samples.length; i++) {
-      applicationForm.value.samples[i].defaultFreq = systemFreq;
-      applicationForm.value.samples[i].offset = parseFloat(
-        (
-          Number(applicationForm.value.samples[i].targetFreq) -
-          Number(systemFreq)
-        ).toFixed(3)
-      );
-    }
-
-    // Watch for changes in applicationForm.sampleQuantity after initial load
-    watch(
-      () => applicationForm.value.sampleQuantity,
-      (newQuantity, oldQuantity) => {
-        if (Number(newQuantity) > Number(oldQuantity)) {
-          for (let i = Number(oldQuantity); i < Number(newQuantity); i++) {
-            const newSample: SampleInformation = {
-              sampleNumber: "SPL",
-              defaultFreq: systemFreq,
-              dB3Freq: "",
-              targetFreq: 0,
-              useDefaultFreq: true,
-              isManualInput: false,
-              offset: 0,
-              sParaFileName: "",
-              index: 0,
-              fileContent: "",
-              sInput: "",
-              sOutput: "",
-              ilLevel: "",
-              fc: "",
-              points: [],
-            };
-            applicationForm.value!.samples.push(newSample);
-          }
-        }
-      }
-    );
-    // applicationForm.value.dateOfCreated = response.data.date_of_created;
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-// 컴포넌트가 마운트될 때 HTTP 요청을 보냄
-onMounted(fetchApplicationDetail);
 </script>
 
 <style>
-@import "../../assets/css/PDTRequestForm.css";
+@import "../../../assets/css/PDTRequestForm.css";
 
 .inline-fields {
   display: flex;

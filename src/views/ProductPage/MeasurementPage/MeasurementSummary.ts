@@ -2,6 +2,7 @@ import { ref, computed } from "vue";
 import { CalcuatedSummary } from "../../../utils/types";
 import axios from "axios";
 import { colorList } from "../../../utils/utility";
+import { ElMessage } from "element-plus";
 
 export const application_status = ref("");
 export const calculatedSummaries = ref<CalcuatedSummary[]>([]);
@@ -22,6 +23,7 @@ export const getSummaryData = async (uuid: string) => {
 
     calculatedSummaries.value = response.data.samples.map((item: any) => ({
       sampleNumber: item.sample_number,
+      pdtSampleUuid : item.pdt_sample_uuid,
       dbm3: Number(parseFloat(item.dbm_3).toFixed(2)), 
       p1Input: item.p1_input,
       p2Input: item.p2_input,
@@ -247,3 +249,30 @@ export const downloadReport = async (uuid: string) => {
     }
   }
 };
+
+export async function handleSampleNumberUpdate(pdtSampleUuid : string, sampleNumber : string){
+  
+  try{
+
+    // 모종의 이유로 Sample Number 가 잘못 입력되었을 경우 의뢰서와 Sample 번호를 일치시키기 위해서 pdt sample 의 
+    // 
+
+    const formData = new FormData();
+    formData.append("pdt_sample_uuid", pdtSampleUuid)
+    formData.append("sample_number", sampleNumber)
+    const response = await axios.post("pdt_measurement/update_sample_number", formData)
+
+    if(!response.data.status){      
+      ElMessage.error(response.data.message)
+    }
+    else{
+      ElMessage.success(response.data.message)
+    }
+
+  }
+  catch(error){
+    console.log("Sample 번호를 업데이트 할 수 없습니다:" , error)
+    alert("Sample 번호를 업데이트 할 수 없습니다");
+  }
+
+}

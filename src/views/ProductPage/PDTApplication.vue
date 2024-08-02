@@ -9,7 +9,7 @@
       >
         <el-form-item label="TEST 선택" prop="testType">
           <el-select v-model="form.testType" placeholder="예) Fuse Max">
-            <el-option key="Max Fuse " label="Max Fuse" value="Max Fuse" />
+            <el-option key="Max Fuse" label="Max Fuse" value="Max Fuse" />
             <el-option key="AMR" label="AMR" value="AMR" />
             <el-option key="Life" label="Life" value="Life" />
             <el-option key="Aging" label="Aging" value="Aging" />
@@ -702,6 +702,8 @@ const generateRows = () => {
   }));
 };
 
+
+
 function getTargetFreq(index) {
   // Define logic to return a unique targetFreq based on the index or other criteria
 
@@ -888,7 +890,7 @@ const submitData = async () => {
     data: dataList.value,
     force: false,
   };
-  console.log(const_data_dict);
+
   try {
     const response = await axios.post(
       "/pdt_application/create_pdt_application",

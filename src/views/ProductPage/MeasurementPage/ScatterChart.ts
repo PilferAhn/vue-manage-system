@@ -36,8 +36,6 @@ export function getMinMax(dataset : Dataset[], chartTitle : string){
         const xList = []
         const yList = []
 
-        
-
         points.map((point) => {
 
             xList.push(point.x)
