@@ -11,7 +11,7 @@ export const signalTypeOptions = [];
 
 export const packageTypeList = ["CSP 및 기타", "WLP-Mold", "WLP-Bare"];
 
-export const waferTypeList = ["NS", "TS", "HS"];
+export const waferTypeList = ["NS", "TS", "HS", "Fbar"];
 
 export const dutyList = ref(["40", "50", "60"]);
 
@@ -26,7 +26,7 @@ export const testOptions = [
   "Aging",
   "Self Heating",
   "Drop",
-  "Step",
+  "Step",  
 ];
 
 export const signalList = [

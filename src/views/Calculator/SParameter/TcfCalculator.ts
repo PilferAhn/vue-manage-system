@@ -19,7 +19,6 @@ export async function createReport(
   formData.append("rounding_point", roundingPoing);
   formData.append("values", JSON.stringify(options));
   
-
   try {
     const response = await axios.post("tcf/create_excel", formData, {
       headers: {
