@@ -3,9 +3,7 @@ import axios from "axios";
 
 import { ElMessage, FormInstance } from "element-plus";
 import { bandInformationDict } from "../../../utils/frequancyInfo";
-import { applicationRules } from "./ApplicationRules";
-import type { FormRules } from "element-plus";
-import { ApplicationForm } from "../../../utils/types";
+import { containSPL} from "./ApplicationValidation"
 
 export const signalTypeOptions = [];
 
@@ -82,6 +80,10 @@ export function computeChannelBandwidth(testType: string, duplexMode: string) {
 }
 
 function convertInterfaceToDict(application: PDTRequestFormType) {
+
+
+
+
   const dataDict = {
     uuid: application.applicationUuid,
     customer_company: application.customerCompany,
@@ -790,8 +792,8 @@ export async function submitPdtApplicationForm(
   isDownload: any
 ) {
 
-
   try {
+
     const isValidForm = validateValues(application);
     isDownload.value = false;
     if (isValidForm) {
@@ -805,6 +807,7 @@ export async function submitPdtApplicationForm(
 
       if (response.status === 200) {
         if (response.data.status) {
+
           ElMessage.success("의뢰서가 성공적으로 작성되었습니다.");
           isDownload.value = true;
           application.applicationUuid = response.data.applicationUuid
@@ -896,11 +899,18 @@ function validateValues(application: PDTRequestFormType) {
   }
 
   // duplex mode에서 duty값이 누락되어있는지 확인
-  const dutyStatus = validateDuty(application.duplexMode, application.duty);
+  const dutyStatus = validateDuty(application.duplexMode, application.duty);  
   if (!dutyStatus.status) {
     ElMessage.error(dutyStatus.message);
     isValid = false;
   }
+
+  // if duplex mode is TDD 
+  // add duty information to duplex column
+  if (application.duplexMode === "TDD"){
+    application.duplexMode +=  " (Duty " + application.duty + "%)";
+  }
+
 
   // Port 정보 확인
   const portStatus = validatePort(application.samples);
@@ -957,7 +967,20 @@ function validateSampleNumber(
     }
   }
 
-  console.log(sampleNumberList)
+  // 만약 sample 번호에 spl이 안들어가 있으면 ㅈ매ㅑ더쇄먇ㄱ저
+  for (let i = 0; i < samples.length; i++) {
+    if (containSPL(samples[i]["sampleNumber"])) {
+
+    }
+    else{
+      return {
+        status: false,
+        message: "Sample 번호에는 SPL이 꼭 들어가야합니다",
+      };
+    }
+  }
+
+
   if (hasDuplicates(sampleNumberList)) {
     return {
       status: false,

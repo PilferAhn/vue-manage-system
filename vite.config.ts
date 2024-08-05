@@ -4,6 +4,24 @@ import VueSetupExtend from 'vite-plugin-vue-setup-extend';
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
+import * as os from 'os';
+
+export const getServerIpAddress = (): string => {
+	const networkInterfaces = os.networkInterfaces();
+	for (const interfaceName of Object.keys(networkInterfaces)) {
+	  const networkInterface = networkInterfaces[interfaceName];
+	  if (networkInterface) {
+		for (const interfaceDetails of networkInterface) {
+		  const { family, address, internal } = interfaceDetails;
+		  if (family === 'IPv4' && !internal) {
+			return address;
+		  }
+		}
+	  }
+	}
+	return 'Unable to determine IP address';
+  };
+
 export default defineConfig({
 	base: './',
 	plugins: [
@@ -20,7 +38,7 @@ export default defineConfig({
 		include: ['schart.js']
 	},
 	server: {
-		host: '10.29.11.57',
+		host: getServerIpAddress(),
 		port: 40006,
 		proxy : {
 			"/pdt_measurement" : "http://10.29.11.59:40000",
@@ -36,3 +54,8 @@ export default defineConfig({
 		}
 	  },
 });
+
+
+
+
+
