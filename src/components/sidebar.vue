@@ -223,24 +223,24 @@ const items = [
     title: "TCF계산기",
     permiss: "11",
   },
-  {
-    icon: "Calendar",
-    index: "11",
-    title: "CER",
-    permiss: "2",
-    subs: [
-      {
-        index: "/cer/cer0",
-        title: "CER-0",
-        permiss: "11",
-      },
-      {
-        index: "/cer/cer0-list",
-        title: "CER-0-list",
-        permiss: "11",
-      },
-    ],
-  },
+  // {
+  //   icon: "Calendar",
+  //   index: "11",
+  //   title: "CER",
+  //   permiss: "2",
+  //   subs: [
+  //     {
+  //       index: "/cer/cer0",
+  //       title: "CER-0",
+  //       permiss: "11",
+  //     },
+  //     {
+  //       index: "/cer/cer0-list",
+  //       title: "CER-0-list",
+  //       permiss: "11",
+  //     },
+  //   ],
+  // },
   // {
   //   icon: "rank",
   //   index: "/s-parameter/SnP",
