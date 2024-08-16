@@ -253,24 +253,13 @@
             </el-col>
           </el-form-item>
 
-          <el-form-item label="의뢰일">
-            <el-col :span="11">
-              <el-form-item prop="date1">
-                <el-date-picker
-                  type="date"
-                  placeholder="의뢰일"
-                  v-model="form.dateOfSampleConvey"
-                  style="width: 100%"
-                ></el-date-picker>
-              </el-form-item>
-            </el-col>
-            <el-col class="line" :span="2">/</el-col>
+          <el-form-item label="시작일">
             <el-col :span="11">
               <el-form-item prop="date1">
                 <el-date-picker
                   type="date"
                   placeholder="투입일"
-                  v-model="form.expectedMeasurementDate"
+                  v-model="form.dateOfStart"
                   style="width: 100%"
                 ></el-date-picker>
               </el-form-item>
@@ -282,7 +271,7 @@
                 <el-date-picker
                   type="date"
                   placeholder="완료일"
-                  v-model="form.expectedCompletionDate"
+                  v-model="form.dateOfFinish"
                   style="width: 100%"
                 ></el-date-picker>
               </el-form-item>
@@ -322,6 +311,8 @@ const props = defineProps({
   uuid: String,
   application: Object as () => ApplicationForm,
 });
+
+console.log(props.application)
 
 Chart.register(...registerables);
 let myChart = null; // 그래프 인스턴스를 저장할 변수 선언

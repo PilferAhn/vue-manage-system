@@ -292,9 +292,7 @@
         >
 
         <el-button type="danger" @click="handleDelete()">삭제</el-button>
-        <!-- <el-button type="success" @click="handleDownload"
-          >의뢰서 다운로드</el-button
-        > -->
+        <el-button type="success" @click="handleDownload">의뢰서 다운로드</el-button>
       </el-form-item>
     </div>
   </el-form>
@@ -323,6 +321,7 @@ import {
   testOptions,
   resetForm,
   saveForm,
+  updateNote,
   loadForm,
   signalList,
   packageTypeList,
@@ -341,7 +340,7 @@ import {
   getSystemFreq,
 } from "../ProductPage/ApplicationPage/Application";
 import { deleteApplicationByUuid, updateApplicationNumber, updateApplicationStatus } from "./ApplicationDetail";
-
+import {downloadExcel} from "../ProductPage/ApplicationPage/Application"
 
 import { useRoute } from "vue-router";
 const { form: applicationForm } = usePDTRequestForm();
@@ -373,6 +372,10 @@ const formRef = ref(null);
 //   loadForm(applicationForm);
 // });
 
+function handleDownload() {
+  downloadExcel(applicationForm)
+}
+
 watch(
   () => uuid,
   (newVal, oldVal) => {
@@ -400,7 +403,7 @@ function handleUpdate() {
   formRef.value.validate((valid: boolean) => {
     if (valid) {
       console.log("Form is valid and ready for submission!");
-      updateSampleInformation(applicationForm.value);
+      updateNote(applicationForm.value);
     } else {
       console.log("Form validation failed");
     }

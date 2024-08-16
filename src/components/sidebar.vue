@@ -114,6 +114,11 @@ const items = [
         permiss: "2",
       },
       {
+        index: "/teg/finished-list",
+        title: "Measurement Finished",
+        permiss: "2",
+      },
+      {
         index: "/teg/create-teg-application",
         title: "의뢰서작성",
         permiss: "2",
@@ -125,7 +130,6 @@ const items = [
       //   },
     ],
   },
-
   // {
   //   icon: "DocumentCopy",
   //   index: "/tabs",
@@ -143,15 +147,15 @@ const items = [
         title: "PDT 측정",
         permiss: "5",
         subs: [
-          { 
-            index: "/admin/pdt/application-list", 
-            title: "PDT 측정 현황", 
-            permiss: "5" 
+          {
+            index: "/admin/pdt/application-list",
+            title: "PDT 측정 현황",
+            permiss: "5",
           },
-          { 
-            index: "/admin/pdt/machine-list", 
-            title: "측정 장비 현황", 
-            permiss: "5" 
+          {
+            index: "/admin/pdt/machine-list",
+            title: "측정 장비 현황",
+            permiss: "5",
           },
         ],
       },
@@ -160,11 +164,6 @@ const items = [
         title: "TEG 측정",
         permiss: "5",
         subs: [
-          // {
-          //   index: "/admin/teg/create-teg-application",
-          //   title: "TEG 의뢰서 작성",
-          //   permiss: "5",
-          // },
           {
             index: "/admin/teg/teg-application-list",
             title: "TEG 측정 현황",
@@ -223,6 +222,24 @@ const items = [
     index: "/calculator/s-parameter_ver2",
     title: "TCF계산기",
     permiss: "11",
+  },
+  {
+    icon: "Calendar",
+    index: "11",
+    title: "CER",
+    permiss: "2",
+    subs: [
+      {
+        index: "/cer/cer0",
+        title: "CER-0",
+        permiss: "11",
+      },
+      {
+        index: "/cer/cer0-list",
+        title: "CER-0-list",
+        permiss: "11",
+      },
+    ],
   },
   // {
   //   icon: "rank",

@@ -3,7 +3,8 @@ import axios from "axios";
 
 import { ElMessage, FormInstance } from "element-plus";
 import { bandInformationDict } from "../../../utils/frequancyInfo";
-import { containSPL} from "./ApplicationValidation"
+import { containSPL } from "./ApplicationValidation";
+import PDTRequestForm from "./PDTRequestForm.vue";
 
 export const signalTypeOptions = [];
 
@@ -24,7 +25,7 @@ export const testOptions = [
   "Aging",
   "Self Heating",
   "Drop",
-  "Step",  
+  "Step",
 ];
 
 export const signalList = [
@@ -80,10 +81,6 @@ export function computeChannelBandwidth(testType: string, duplexMode: string) {
 }
 
 function convertInterfaceToDict(application: PDTRequestFormType) {
-
-
-
-
   const dataDict = {
     uuid: application.applicationUuid,
     customer_company: application.customerCompany,
@@ -110,15 +107,14 @@ function convertInterfaceToDict(application: PDTRequestFormType) {
     force: true,
     sample_quantity: application.sampleQuantity,
     request_number: application.requestNumber,
-    link : application.link,
+    link: application.link,
   };
 
   return dataDict;
 }
 
-
 export async function downloadExcel(application: any) {
-  console.log(application.value)
+  console.log(application.value);
   try {
     const response = await axios.get(
       `/pdt_application/download_application_excel/${application.value.applicationUuid}`,
@@ -168,8 +164,6 @@ export async function downloadExcel(application: any) {
 //     callback();
 //   }
 // };
-
-
 
 function extractPortNumber(fileName: string): string | null {
   const regex = /\.s(\d+)p$/i;
@@ -747,7 +741,7 @@ export function watchSampleQuantity(
     () => applicationForm.value.sampleQuantity,
     (newVal: string, oldVal: string) => {
       let systemFreq = findFrequacy(applicationForm);
-      
+
       const cnt = parseInt(applicationForm.value.sampleQuantity);
       applicationForm.value.samples = initializeSampleData(
         cnt,
@@ -762,7 +756,6 @@ export function appendSamples(applicationForm: any) {
   watch(
     () => applicationForm.value.sampleQuantity,
     (newVal: string, oldVal: string) => {
-      
       if (Number(newVal) > Number(oldVal)) {
         for (let i = Number(oldVal); i < Number(newVal); i++) {
           applicationForm.value.samples.push({
@@ -785,15 +778,42 @@ export function getTodayDate() {
   return `${year}-${month}-${day}`;
 }
 
+export async function updateNote(application: PDTRequestFormType) {
+  try {
+    // python 과 데이터를 쉽게 주고 받기 쉽게 하려고
+    // dictionary 로 치환.
+    // const applicationDictData = convertInterfaceToDict(application);
 
+    const formData = new FormData();
+    formData.append("detail", application.detail)
+    formData.append("pdt_application_uuid", application.applicationUuid)
+    
+
+    const response = await axios.post(
+      "/pdt_application/update_detail_by_uuid",
+      formData
+    );
+
+    if (response.status === 200) {
+      if (response.data.status) {
+        ElMessage.success("의뢰서가 성공적으로 작성되었습니다.");        
+      } else {
+        ElMessage.error("의뢰서 작성에 실패했습니다. 잠시 후에 시도하세요");
+      }
+    }
+  } catch (error) {
+    ElMessage.error("알수없는 오류가 발생했습니다. 잠시 후에 시도하세요");
+    console.error("Error:", error);
+  }
+
+  console.log(application);
+}
 
 export async function submitPdtApplicationForm(
   application: PDTRequestFormType,
   isDownload: any
 ) {
-
   try {
-
     const isValidForm = validateValues(application);
     isDownload.value = false;
     if (isValidForm) {
@@ -807,12 +827,9 @@ export async function submitPdtApplicationForm(
 
       if (response.status === 200) {
         if (response.data.status) {
-
           ElMessage.success("의뢰서가 성공적으로 작성되었습니다.");
           isDownload.value = true;
-          application.applicationUuid = response.data.applicationUuid
-          
-          
+          application.applicationUuid = response.data.applicationUuid;
         } else {
           ElMessage.error("의뢰서 작성에 실패했습니다. 잠시 후에 시도하세요");
         }
@@ -820,10 +837,10 @@ export async function submitPdtApplicationForm(
     }
   } catch (error) {
     ElMessage.error("알수없는 오류가 발생했습니다. 잠시 후에 시도하세요");
-    // console.error("Error:", error);
+    console.error("Error:", error);
   }
 
-  console.log(application)
+  console.log(application);
 }
 
 export async function updateApplication(application: PDTRequestFormType) {
@@ -854,16 +871,15 @@ export async function updateApplication(application: PDTRequestFormType) {
   }
 }
 
-
 export async function updateSampleInformation(application: PDTRequestFormType) {
   const applicationDictData = convertInterfaceToDict(application);
   try {
     const isValidForm = validateValues(application);
-    
+
     if (isValidForm) {
       // python 과 데이터를 쉽게 주고 받기 쉽게 하려고
       // dictionary 로 치환.
-      
+
       const response = await axios.post(
         "/pdt_application/update_application_sample",
         applicationDictData
@@ -884,7 +900,6 @@ export async function updateSampleInformation(application: PDTRequestFormType) {
   }
 }
 
-
 function validateValues(application: PDTRequestFormType) {
   let isValid = true;
 
@@ -899,18 +914,17 @@ function validateValues(application: PDTRequestFormType) {
   }
 
   // duplex mode에서 duty값이 누락되어있는지 확인
-  const dutyStatus = validateDuty(application.duplexMode, application.duty);  
+  const dutyStatus = validateDuty(application.duplexMode, application.duty);
   if (!dutyStatus.status) {
     ElMessage.error(dutyStatus.message);
     isValid = false;
   }
 
-  // if duplex mode is TDD 
+  // if duplex mode is TDD
   // add duty information to duplex column
-  if (application.duplexMode === "TDD"){
-    application.duplexMode +=  " (Duty " + application.duty + "%)";
+  if (application.duplexMode === "TDD") {
+    application.duplexMode += " (Duty " + application.duty + "%)";
   }
-
 
   // Port 정보 확인
   const portStatus = validatePort(application.samples);
@@ -968,18 +982,17 @@ function validateSampleNumber(
   }
 
   // 만약 sample 번호에 spl이 안들어가 있으면 ㅈ매ㅑ더쇄먇ㄱ저
-  for (let i = 0; i < samples.length; i++) {
-    if (containSPL(samples[i]["sampleNumber"])) {
+  // for (let i = 0; i < samples.length; i++) {
+  //   if (containSPL(samples[i]["sampleNumber"])) {
 
-    }
-    else{
-      return {
-        status: false,
-        message: "Sample 번호에는 SPL이 꼭 들어가야합니다",
-      };
-    }
-  }
-
+  //   }
+  //   else{
+  //     return {
+  //       status: false,
+  //       message: "Sample 번호에는 SPL이 꼭 들어가야합니다",
+  //     };
+  //   }
+  // }
 
   if (hasDuplicates(sampleNumberList)) {
     return {

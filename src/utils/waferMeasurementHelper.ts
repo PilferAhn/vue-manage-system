@@ -34,6 +34,8 @@ export interface TegRunningMeas {
   shots: string;
   waferID: string;
   measType: string;
+  dateOfUpdate : string
+
 }
 
 // Types for the return object of the function
@@ -169,7 +171,8 @@ export const getRunningMeasurement = async (): Promise<TegRunningMeas[]> => {
         shots: app.shots,
         waferID: app.wafer_id,
         measType: app.meas_type,
-        machine_name : app.machine_name
+        machine_name : app.machine_name,
+        dateOfUpdate : app.date_of_updated
       })
     );
 
@@ -217,3 +220,4 @@ function mapApplicationDetailsToForm(details: any, form: TegFormRuleInterface): 
   form.applicationType = ""; // Determine how to derive this from details
   
 }
+

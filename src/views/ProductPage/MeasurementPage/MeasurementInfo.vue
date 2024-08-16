@@ -73,18 +73,18 @@ watch(activeTabName, (newTab) => {
   router.replace({ query: { ...route.query, tab: newTab } });
 });
 
-onMounted(() => {
-  requestApplicationDetailbyUUID(uuid.value, applicationForm).then(() => {
-    if (applicationForm.signalType && applicationForm.band) {
-      systemBandInfo.value = getSystemBand(
-        applicationForm.signalType,
-        applicationForm.band
-      );
-    } else {
-      systemBandInfo.value = []; // 기본값 설정
-    }
-  });
-});
+// onMounted(() => {
+//   requestApplicationDetailbyUUID(uuid.value, applicationForm).then(() => {
+//     if (applicationForm.signalType && applicationForm.band) {
+//       systemBandInfo.value = getSystemBand(
+//         applicationForm.signalType,
+//         applicationForm.band
+//       );
+//     } else {
+//       systemBandInfo.value = []; // 기본값 설정
+//     }
+//   });
+// });
 </script>
 
 

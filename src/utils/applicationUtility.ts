@@ -180,6 +180,9 @@ export async function requestApplicationDetailbyUUID(uuid: string, applicationFo
 
     applicationForm.sampleQuantity = response.data.sample_quantity;
     applicationForm.dateOfCreated = response.data.date_of_created;
+    applicationForm.dateOfFinish = response.data.date_of_finished
+    applicationForm.dateOfStart = response.data.date_of_start
+    
 
     return applicationForm
     

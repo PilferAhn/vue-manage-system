@@ -77,6 +77,9 @@
         <el-table-column prop="request_number" label="의뢰 번호" align="center">
         </el-table-column>
 
+        <el-table-column prop="date_of_created" label="의뢰서 생성일" align="center" width="200">
+        </el-table-column>
+
         <el-table-column label="Action" width="200" align="center">
           <template #default="scope">
             <el-button
@@ -178,6 +181,7 @@ interface ApplicationItem {
   product_type: string;
   wafer_type: string;
   status: string;
+  date_of_created : string
   sample_quantity: string;
   signal_type: string;
   request_number: string;

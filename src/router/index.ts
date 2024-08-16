@@ -152,6 +152,15 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "table" */ '../views/TegPage/MeasurementQueue/TegMeasurementQue.vue'),
             },
             {
+                path: '/teg/finished-list',
+                name: 'TegMeasurementFinishedQue',
+                meta: {
+                    title: '의뢰서 자세히',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/TegPage/MeasurementQueue/TegMeasurementFinishedQue.vue'),
+            },
+            {
                 path: '/product/application/:uuid',
                 name: 'LoadProductApp',
                 meta: {
@@ -241,6 +250,51 @@ const routes: RouteRecordRaw[] = [
                 },
                 component: () => import(/* webpackChunkName: "table" */ '../views/Calculator/SParameter/TcfCal.vue'),
             },    
+            {
+                path: '/cer/cer0',
+                name: 'CER0',
+                meta: {
+                    title: 'CER0',
+                    permiss: '11',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/CER/CER.vue'),
+            },
+            {
+                path: '/cer/cer0-list',
+                name: 'CER0-list',
+                meta: {
+                    title: 'CER0-list',
+                    permiss: '11',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/CER/Cer0/cer0List.vue'),
+            },
+            {
+                path: '/cer/cer0-list1',
+                name: 'CER0-list1',
+                meta: {
+                    title: 'CER0-list1',
+                    permiss: '11',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/CER/Cer0/cer0List1.vue'),
+            },
+            {
+                path: '/cer/cer0-list2',
+                name: 'CER0-list2',
+                meta: {
+                    title: 'CER0-list2',
+                    permiss: '11',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/CER/Cer0/cer0List2.vue'),
+            },
+            {
+                path: '/cer/cer0-detail/:id',
+                name: 'loadCer0',
+                meta: {
+                    title: 'Cer0 Detail',
+                    permiss: '11',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/CER/Cer0/loadCer0.vue'),
+            },
             {
                 path: '/s-parameter/SnP',
                 name: 'SParameterList',

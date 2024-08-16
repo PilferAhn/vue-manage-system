@@ -92,6 +92,7 @@ export interface ApplicationForm {
   dateOfCreated: string;
   dateOfConfirm: string | null;
   dateOfFinish: string | null;
+  dateOfStart? : string | null;
   expectedMeasurementDate: string | null;
   expectedCompletionDate: string | null;
   desiredCompletionDate: string | null;

@@ -66,8 +66,19 @@
             <span v-else :style="{ color: 'blue' }">측정 종료</span>
           </template>
         </el-table-column>
-
+        
         <el-table-column prop="request_number" label="의뢰 번호" align="center">
+        </el-table-column>      
+        <el-table-column label="시작" align="center">
+          <template #default="scope">
+            <span>{{ moment(scope.row.date_of_created).format('YY/MM/DD') }}</span>            
+          </template>
+        </el-table-column>
+        <el-table-column label="종료" align="center">
+          <template #default="scope">
+            <span v-if="scope.row.status === 'finished'">{{ moment(scope.row.date_of_finished).format('YY/MM/DD') }}</span>            
+            <span v-else>-</span>
+          </template>        
         </el-table-column>
 
         <el-table-column label="Action" width="100" align="center">
@@ -116,6 +127,7 @@ import { ElMessage } from "element-plus";
 import { getLastThursday, formatDate } from "../../../utils/utility";
 import { applicationRules } from "../../../utils/FromRule";
 import { useRouter } from "vue-router";
+import moment from 'moment';
 
 const props = defineProps<{
   testType: string;
@@ -177,6 +189,8 @@ interface ApplicationItem {
   signal_type: string;
   request_number: string;
   target_position: string;
+  date_of_created : string;
+  date_of_finished : string;
 }
 
 const name = localStorage.getItem("ms_username");

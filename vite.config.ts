@@ -51,6 +51,8 @@ export default defineConfig({
 			"/tcf" : "http://10.29.11.57:8002",
 			"/s-parameter" : "http://10.29.11.57:8002",
 			"/machine" : "http://10.29.11.59:40000",
+			"/deembed" : "http://10.29.11.59:40001",
+			"/api" : "http://10.29.11.59:8005",
 		}
 	  },
 });
