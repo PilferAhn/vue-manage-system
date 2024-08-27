@@ -272,13 +272,13 @@ const items = [
     index: "/rules",
     title: "규정집",
     permiss: "2",    
-  }
-  // {
-  //   icon: "rank",
-  //   index: "/s-parameter/SnP",
-  //   title: "S parameter",
-  //   permiss: "11",
-  // },
+  },
+  {
+    icon: "rank",
+    index: "/s-parameter/SnP",
+    title: "S parameter",
+    permiss: "11",
+  },
   // {
   //   icon: "PieChart",
   //   index: "/charts",
