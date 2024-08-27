@@ -12,6 +12,9 @@ interface LoginResponse {
 }
 
 export const userLogin = async (id: string, password: string) => {
+
+  console.log(id)
+
   try {
     const response = await axios.post<LoginResponse>(
       "/user/login",
@@ -29,7 +32,7 @@ export const userLogin = async (id: string, password: string) => {
         status: response.data.status,
         password : response.data.password,
         email : response.data.email,
-        department : response.data.department,                
+        department : response.data.department,                        
       };
     } else {
       return {

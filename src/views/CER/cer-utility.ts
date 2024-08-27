@@ -7,6 +7,33 @@ import type { CER0Form } from "./cer0-types";
  * @returns {string} - Today's date
  */
 
+
+// 데이터 변환 함수 (이미 정의된 것을 사용)
+export function convertToJavaScriptStyle(application: Record<string, any>): CER0Form {
+  return {
+    id: application.id,
+    requesterId: application.requester_id,
+    requesterName: application.requester_name,
+    handlerId: application.handler_id,
+    handlerName: application.handler_name,
+    dateOfCreated: application.date_of_created,
+    dateOfStart: application.date_of_start,
+    dateOfWishToFinish: application.date_of_wish_to_finish,
+    dateOfCompleted: application.date_of_completed,
+    purpose : application.purpose,
+    modelName: application.product_name,
+    version: application.version,
+    m1Thick: application.m1_thick,
+    layerStack: application.layer_stack,
+    lotId: application.lot_id,
+    waferId: application.wafer_id,
+    shot: application.shot,
+    note: application.note,
+    status: application.status,
+  };
+}
+
+
 // Python 스타일로 변수명을 변환하는 함수
 function convertToPythonStyle(application: CER0Form): Record<string, any> {
   return {
@@ -26,8 +53,8 @@ function convertToPythonStyle(application: CER0Form): Record<string, any> {
     wafer_id: application.waferId,
     shot: application.shot,
     note: application.note,
-    handler_id: application.handler_id,
-    handler_name: application.handler_name,
+    handler_id: application.handlerId,
+    handler_name: application.handlerName,
     status: application.status
   };
 }
@@ -55,9 +82,10 @@ export function getTodayDate(): string {
 
 // CER0Form 데이터를 받아서 전송하는 함수
 export async function sendCer0Application(application: CER0Form): Promise<void> {
+
   const pythonStyleData = convertToPythonStyle(application);
   
-  console.log(pythonStyleData)
+  // console.log(pythonStyleData)
   try {
     const response = await axios.post('/api/v1/cer0/send_cer0_application', pythonStyleData);
     console.log('Form submitted successfully:', response.data);

@@ -14,7 +14,7 @@ export interface CER0Form {
   dateOfWishToFinish?: string | null;
   dateOfCompleted?: string | null;
 
-  purpose: string;
+  purpose?: string;
 
   modelName: string;
   version: string;
@@ -26,8 +26,8 @@ export interface CER0Form {
   shot: string;
   note: string;
 
-  handler_id: string | null;
-  handler_name : string | null
+  handlerId: string | null;
+  handlerName : string | null
   status: string | null;
 }
 
@@ -61,8 +61,8 @@ export function initCER0Application(
     shot: "3_7,7_3",
     note: "XM12ATMはScan Speed(50mm/s,125mm/s)ありますが、125mm/sでFittingしてください",
 
-    handler_id: null,
-    handler_name : null,
+    handlerId: null,
+    handlerName : null,
     status: null,
   });
 

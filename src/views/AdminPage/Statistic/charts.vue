@@ -22,6 +22,7 @@
       <WeeklyTEGSummaryGraph></WeeklyTEGSummaryGraph>
     </div>
 
+    <div><LeadTime></LeadTime></div>
     <!-- <div class="schart-box">
 			<div class="content-title">饼状图</div>
 			<schart class="schart" canvasId="pie" :options="options3"></schart>
@@ -45,6 +46,7 @@ import WeeklyTEGSummaryGraph from "./WeeklyTEGSummaryGraph.vue";
 import WeeklyTEGSummaryGraph2 from "./WeeklyTEGSummaryGraph2.vue";
 import MonthlyTegSummaryLineGraph from "./MonthlyTegSummaryLineGraph.vue";
 import WeeklyTegSummaryLineGraph from "./WeeklyTegSummaryLineGraph.vue";
+import LeadTime from "./LeadTime.vue";
 
 </script>
 

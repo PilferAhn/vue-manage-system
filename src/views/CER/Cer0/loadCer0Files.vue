@@ -15,7 +15,7 @@
         ></el-table-column>
         <el-table-column label="Action">
           <template #default="scope">
-            <el-button type="primary" class="download-button">
+            <el-button type="primary" class="download-button" @click="handleFileDownload(scope.row.id)">
               Download
             </el-button>
             <el-button
@@ -61,7 +61,7 @@
 
 <script lang="ts" setup>
 import { ref, watch } from "vue";
-import { uploadCer0Files, deleteFileByFileId } from "./loadCer0Files"; // API 호출 함수 가져오기
+import { uploadCer0Files, deleteFileByFileId, downloadFileByFileId } from "./loadCer0Files"; // API 호출 함수 가져오기
 import { getCer0Files } from "./cer0Files"; // cer0Files 데이터를 불러오는 함수
 import type { cer0File } from "./cer0FilesTypes";
 
@@ -99,6 +99,11 @@ function handleExceed(files: File[], fileList: File[]) {
   this.$message.warning(
     `The limit is 5 files. You selected ${files.length} files this time, but ${fileList.length} files are already selected.`
   );
+}
+
+
+async function handleFileDownload(id : string) {
+  downloadFileByFileId(id)
 }
 
 async function handleRemove(id: string, cer0Id) {

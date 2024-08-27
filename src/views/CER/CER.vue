@@ -31,11 +31,12 @@
           class="wide-select"
         ></inputText>
         <inputText
-          v-model="application.assignTo"
+          v-model="application.handlerName"
           label="Operator"
           prop="assignTo"
           placeholder="Operator"
           class="wide-select"
+          :disable="true"
         ></inputText>
       </div>
       <div class="inline-fields">

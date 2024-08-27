@@ -31,11 +31,12 @@
           class="wide-select"
         ></inputText>
         <inputText
-          v-model="application.assignTo"
+          v-model="application.handlerName"
           label="Operator"
           prop="assignTo"
           placeholder="Operator"
           class="wide-select"
+          :disable="true"
         ></inputText>
       </div>
       <div class="inline-fields">
@@ -115,6 +116,17 @@
         placeholder="Shot"
         class="wide-select"
       ></inputText>
+
+      <selectOptionNew
+        v-model="application.status"
+        label="Status"
+        prop="status"
+        :options="statusOptions"
+        key-field="key"
+        label-field="label"
+        value-field="value"
+      />
+
       <longInputText
         v-model="application.note"
         label="Note"
@@ -123,7 +135,9 @@
       ></longInputText>
       <el-form-item>
         <div class="button-container">
-          <el-button type="primary" @click="handleSubmit">Submit</el-button>
+          <el-button type="primary" @click="handleSubmit">Accept</el-button>
+          <el-button type="success" @click="handleStatus">Complete</el-button>
+          <!-- <el-button type="danger" @click="">Delete</el-button> -->
         </div>
       </el-form-item>
     </div>
@@ -132,7 +146,7 @@
 
 <script setup lang="ts">
 // 1. 외부 라이브러리 임포트
-import { ref } from "vue";
+import { ref, watch, onUnmounted, onMounted } from "vue";
 
 // 2. 타입 임포트
 import type { FormInstance } from "element-plus";
@@ -141,13 +155,93 @@ import type { FormInstance } from "element-plus";
 import inputText from "../../Common/InputText.vue";
 
 import longInputText from "../../Common/LongInputText.vue";
+import selectOptionNew from "../../Common/SelectOptionNew.vue";
 import { initCER0Application, cer0FormRules } from "../cer0-types";
 import { sendCer0Application } from "../cer-utility";
+import { getApplicationById, assignTask, updateStatus } from "./loadCer0Form";
+import type { CER0Form } from "../cer0-types";
 
-// Vue 컴포지션 API를 사용하여 변수 및 함수 선언
-const { form: application } = initCER0Application(
-  localStorage.getItem("ms_username"),
-  localStorage.getItem("email")
+const selectedStatus = ref("");
+
+console.log(localStorage);
+
+// status 옵션을 설정
+const statusOptions = [
+  { key: 1, label: "Created", value: "created" },
+  { key: 2, label: "In Progress", value: "in progress" },
+  { key: 3, label: "Finished", value: "finished" },
+  { key: 4, label: "Error", value: "error" },
+];
+
+const props = defineProps({
+  id: String,
+});
+
+const application = ref<CER0Form>({
+  id: "",
+
+  requesterId: "",
+  requesterName: "",
+
+  dateOfCreated: "",
+  dateOfStart: "",
+  dateOfWishToFinish: "",
+  dateOfCompleted: "",
+
+  purpose: "",
+
+  modelName: "XM71ATH",
+  version: "PS1",
+
+  m1Thick: "Ti/Cu/AlCu/Ti = 40/10/420/10",
+  layerStack: "LT 1050/ SiO2 800 / a-Si 800",
+  lotId: "NCIF40A60",
+  waferId: "'ZEI041, ZEI042, ZEI043",
+  shot: "3_7,7_3",
+  note: "XM12ATMはScan Speed(50mm/s,125mm/s)ありますが、125mm/sでFittingしてください",
+
+  handlerId: null,
+  handlerName: null,
+  status: null,
+});
+
+let id = props.id;
+
+// 컴포넌트 마운트 상태 확인용 플래그
+let isMounted = true;
+
+// 컴포넌트가 마운트될 때 실행
+onMounted(() => {
+  isMounted = true;
+  fetchData(props.id);
+});
+
+// 컴포넌트가 언마운트될 때 실행
+onUnmounted(() => {
+  isMounted = false; // 언마운트 시 플래그를 false로 설정
+});
+
+// 데이터를 가져오는 함수
+async function fetchData(id: string) {
+  if (id !== undefined) {
+    try {
+      const q = await getApplicationById(id);
+      if (isMounted) {
+        application.value = q;
+      }
+    } catch (error) {
+      console.error("Failed to fetch data", error);
+    }
+  }
+}
+
+// Watcher: ID가 변경될 때마다 데이터 로드
+watch(
+  () => props.id,
+  async (newUuid) => {
+    fetchData(newUuid);
+  },
+  { immediate: true }
 );
 
 // FormInstance 타입을 사용하여 ref 선언
@@ -157,8 +251,27 @@ const handleSubmit = () => {
   if (cerApplicationForm.value) {
     cerApplicationForm.value.validate((valid) => {
       if (valid) {
-        // console.log("Form is valid!");
-        sendCer0Application(application.value);
+        assignTask(
+          application.value.id,
+          localStorage.getItem("id"),
+          localStorage.getItem("ms_username")
+        );
+        application.value.handlerId = localStorage.getItem("id");
+        application.value.handlerName = localStorage.getItem("ms_username");
+      } else {
+        console.log("Form is invalid!");
+        return false;
+      }
+    });
+  }
+};
+
+const handleStatus = () => {
+  if (cerApplicationForm.value) {
+    cerApplicationForm.value.validate((valid) => {
+      if (valid) {
+        updateStatus(application.value.id, "finished");
+        application.value.status = "finished"
       } else {
         console.log("Form is invalid!");
         return false;

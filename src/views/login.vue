@@ -117,7 +117,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
           // 로그인 성공 로직
           ElMessage.success("Login successful");
           localStorage.setItem("ms_username", response.user_name);
-          
+          localStorage.setItem("id" , param.username)
           localStorage.setItem("email", response.user_name);
 
           // 기타 사용자 정의 로직

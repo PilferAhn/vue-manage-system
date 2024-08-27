@@ -69,12 +69,12 @@
         
         <el-table-column prop="request_number" label="의뢰 번호" align="center">
         </el-table-column>      
-        <el-table-column label="시작" align="center">
+        <!-- <el-table-column label="시작" align="center">
           <template #default="scope">
             <span>{{ moment(scope.row.date_of_created).format('YY/MM/DD') }}</span>            
           </template>
-        </el-table-column>
-        <el-table-column label="종료" align="center">
+        </el-table-column> -->
+        <el-table-column label="측정 완료" align="center">
           <template #default="scope">
             <span v-if="scope.row.status === 'finished'">{{ moment(scope.row.date_of_finished).format('YY/MM/DD') }}</span>            
             <span v-else>-</span>

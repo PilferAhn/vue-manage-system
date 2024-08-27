@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="cer0-container">
     <h1>CER0 Form Data</h1>
     <el-table
       v-if="cer0Forms && cer0Forms.length"
@@ -7,77 +7,111 @@
       style="width: 100%"
       class="cer0-table"
     >
-      <!-- Expandable Row for Details -->
       <el-table-column type="expand">
         <template #default="scope">
           <el-card class="box-card">
             <div class="clearfix">
-              <span>Details for {{ scope.row.modelName }}</span>
+              <span>{{ scope.row.modelName }}</span>
             </div>
-            <el-descriptions bordered column="2" class="expand-details">
-              <el-descriptions-item label="Date of Wish to Finish">
+
+            <el-divider></el-divider>
+
+            <!-- 사용자 정의 flex 레이아웃을 적용 -->
+            <div class="row">
+              <div class="column">
+                <strong>Date of Wish to Finish:</strong>
                 {{ scope.row.dateOfWishToFinish || "N/A" }}
-              </el-descriptions-item>
-              <el-descriptions-item label="Date of Completed">
+              </div>
+              <div class="column">
+                <strong>Date of Completed:</strong>
                 {{ scope.row.dateOfCompleted || "N/A" }}
-              </el-descriptions-item>
-              <el-descriptions-item label="M1 Thickness">
-                {{ scope.row.m1Thick }}
-              </el-descriptions-item>
-              <el-descriptions-item label="Layer Stack">
-                {{ scope.row.layerStack }}
-              </el-descriptions-item>
-              <el-descriptions-item label="Lot ID">
-                {{ scope.row.lotId }}
-              </el-descriptions-item>
-              <el-descriptions-item label="Wafer ID">
-                {{ scope.row.waferId }}
-              </el-descriptions-item>
-              <el-descriptions-item label="Shot">
-                {{ scope.row.shot }}
-              </el-descriptions-item>
-              <el-descriptions-item label="Note">
-                {{ scope.row.note }}
-              </el-descriptions-item>
-            </el-descriptions>
+              </div>
+            </div>
+
+            <el-divider></el-divider>
+
+            <div class="row">
+              <div class="column">
+                <strong>M1 Thickness:</strong> {{ scope.row.m1Thick }}
+              </div>
+              <div class="column">
+                <strong>Layer Stack:</strong> {{ scope.row.layerStack }}
+              </div>
+            </div>
+
+            <el-divider></el-divider>
+
+            <div class="row">
+              <div class="column">
+                <strong>Lot ID:</strong> {{ scope.row.lotId }}
+              </div>
+              <div class="column">
+                <strong>Wafer ID:</strong> {{ scope.row.waferId }}
+              </div>
+            </div>
+
+            <el-divider></el-divider>
+
+            <div class="row">
+              <div class="column">
+                <strong>Shot:</strong> {{ scope.row.shot }}
+              </div>
+              <div class="column">
+                <strong>Note:</strong> {{ scope.row.note }}
+              </div>
+            </div>
           </el-card>
         </template>
       </el-table-column>
 
-      <!-- Primary Columns -->
-      <el-table-column type="index" label="#" width="50"> </el-table-column>
-      <!-- Action Column -->
-      <el-table-column label="Action" width="120">
-        <template #default="scope">
-          <el-button
-            type="primary"
-            
-            @click="viewDetails(scope.row.id)"
-          >
-            자세히
-          </el-button>
-        </template>
-      </el-table-column>
-      <el-table-column prop="requesterName" label="Requester Name" width="150">
-      </el-table-column>
-      <el-table-column prop="dateOfCreated" label="Date Created" width="180">
-      </el-table-column>
-      <!-- <el-table-column prop="dateOfStart" label="Date of Start" width="180">
-      </el-table-column> -->
-      <el-table-column prop="purpose" label="Purpose" width="200">
-      </el-table-column>
-      <el-table-column prop="modelName" label="Model Name" width="150">
-      </el-table-column>
-      <el-table-column prop="version" label="Version" width="100">
-      </el-table-column>
-      <el-table-column prop="m1Thick" label="M1" width="250"> </el-table-column>
-      <el-table-column prop="layerStack" label="Layer" width="250">
-      </el-table-column>
+      <el-table-column
+        prop="requesterName"
+        label="Requester"
+        width="120"
+      ></el-table-column>
+      <el-table-column
+        prop="handlerName"
+        label="Handler"
+        width="120"
+      ></el-table-column>
+      <el-table-column
+        prop="dateOfCreated"
+        label="Date Created"
+        width="170"
+      ></el-table-column>
+      <el-table-column
+        prop="purpose"
+        label="Purpose"
+        width="190"
+      ></el-table-column>
+      <el-table-column
+        prop="modelName"
+        label="Model Name"
+        width="150"
+      ></el-table-column>
+      <el-table-column
+        prop="version"
+        label="Version"
+        width="100"
+      ></el-table-column>
+      <el-table-column prop="m1Thick" label="M1" width="250"></el-table-column>
+      <el-table-column
+        prop="layerStack"
+        label="Layer"
+        width="250"
+      ></el-table-column>
       <el-table-column prop="status" label="Status" width="120">
         <template #default="scope">
           <el-tag :type="getStatusType(scope.row.status)" effect="dark">
             {{ scope.row.status }}
           </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="Action" width="120">
+        <template #default="scope">
+          <el-button type="primary" round @click="viewDetails(scope.row.id)">
+            자세히
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -91,8 +125,12 @@ import { ref, onMounted } from "vue";
 import type { CER0Form } from "../cer0-types";
 import { fetchCER0FormData } from "./cer0List";
 
+// cer0Forms 초기화
 const cer0Forms = ref<CER0Form[] | null>(null);
+
+// Vue Router 사용
 const router = useRouter();
+
 // 상태에 따른 태그 유형을 반환하는 함수
 function getStatusType(status: string): string {
   switch (status) {
@@ -102,28 +140,15 @@ function getStatusType(status: string): string {
       return "warning";
     case "finished":
       return "success";
+    case "error":
+      return "danger";
     default:
-      return "default";
+      return "info";
   }
 }
 
-// 선택 가능한 컬럼들의 초기 상태
-const selectedColumns = ref<string[]>([
-  "id", // 기본적으로 보여질 컬럼들
-  "requesterId",
-  "handler_id",
-  "handler_name",
-  "status",
-]);
-
-onMounted(async () => {
-  cer0Forms.value = await fetchCER0FormData();
-});
-
-// "자세히" 버튼 클릭 시 라우터 이동
+// "자세히" 버튼 클릭 시 라우터 이동 함수
 const viewDetails = async (id: string) => {
-  // router.push({ name: "cer0List", params: { applicationUuid } });
-  console.log(id)
   try {
     await router.push({
       name: "loadCer0",
@@ -134,15 +159,33 @@ const viewDetails = async (id: string) => {
   }
 };
 
+// 데이터를 가져오는 함수
+async function fetchData() {
+  try {
+    const data = await fetchCER0FormData();
+    cer0Forms.value = data;
+  } catch (error) {
+    console.error("Failed to fetch data", error);
+  }
+}
 
+// 컴포넌트가 마운트될 때 실행
+onMounted(() => {
+  fetchData();
+});
 </script>
 
 <style scoped>
+/* 전역 스타일 초기화 */
+
 .cer0-container {
   padding: 20px;
   background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  /* max-width: 1200px; */
+  /* margin: 0 auto; */
+  width: 100%;
 }
 
 h1 {
@@ -179,16 +222,14 @@ h1 {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 }
 
-.expand-details {
-  margin-top: 10px;
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
 }
 
-.expand-details .el-descriptions__label {
-  font-weight: bold;
-  color: #303133;
-}
-
-.expand-details .el-descriptions__content {
-  color: #606266;
+.column {
+  flex: 1;
+  padding: 0 10px;
 }
 </style>

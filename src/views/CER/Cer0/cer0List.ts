@@ -7,7 +7,7 @@ export async function fetchCER0FormData(): Promise<CER0Form[] | null> {
 
     try {
       const response = await axios.get<CER0Form[]>(url);
-      console.log(response.data)
+      
       return response.data
       
     } catch (error) {

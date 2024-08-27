@@ -251,6 +251,15 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "table" */ '../views/Calculator/SParameter/TcfCal.vue'),
             },    
             {
+                path: '/calculator/rf-limit',
+                name: 'RF Limit',
+                meta: {
+                    title: 'RF Limit',
+                    permiss: '11',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/Calculator/RfLimit/RfLimit.vue'),
+            },    
+            {
                 path: '/cer/cer0',
                 name: 'CER0',
                 meta: {
@@ -304,6 +313,15 @@ const routes: RouteRecordRaw[] = [
                 },
                 component: () => import(/* webpackChunkName: "table" */ '../views/SparameterPage/SParameterList.vue'),
             },    
+            {
+                path: '/rules',
+                name: 'Rules',
+                meta: {
+                    title: 'Rules',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/Rules/PdtRules.vue'),
+            },                
             {
                 path: '/table',
                 name: 'basetable',

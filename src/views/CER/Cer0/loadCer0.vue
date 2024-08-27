@@ -4,14 +4,14 @@
       <el-tab-pane label="의뢰서" name="request">
         <!-- 의뢰서 탭 콘텐츠 -->
         <div v-if="activeTab === 'request'">
-          <loadCer0Form></loadCer0Form>
+          <load_cer0_form
+          :id = "uuid"></load_cer0_form>
         </div>
       </el-tab-pane>
       
       <el-tab-pane label="Files" name="files">
-        <!-- Files 탭 콘텐츠 -->
         <div v-if="activeTab === 'files'">
-          <loadCer0Files :id = "uuid"></loadCer0Files>
+          <load_cer0_files :id="uuid"></load_cer0_files>
         </div>
       </el-tab-pane>
     </el-tabs>
@@ -21,9 +21,8 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-
-import loadCer0Form from './loadCer0Form.vue';
-import loadCer0Files from './loadCer0Files.vue';
+import load_cer0_form from './loadCer0Form.vue';
+import load_cer0_files from './loadCer0Files.vue'
 
 // 현재 라우트 객체를 가져옵니다.
 const route = useRoute();
@@ -31,17 +30,12 @@ const route = useRoute();
 // UUID 추출 및 반응형 관리
 const uuid = ref(route.params.id);
 
-// 현재 탭을 localStorage에서 불러오거나 기본값을 request로 설정
-const activeTab = ref(localStorage.getItem('activeTab') || 'request');
+// 현재 탭을 'request'로 기본 설정
+const activeTab = ref('request');
 
 // 탭 클릭 시 호출되는 함수
 function handleTabClick(tab: any) {
   activeTab.value = tab.name;
-  localStorage.setItem('activeTab', tab.name); // 현재 탭 상태를 localStorage에 저장
-  
-  if (tab.name === 'files') {
-    loadFiles();
-  }
 }
 
 // 의뢰서 탭 관련 기능
@@ -55,14 +49,18 @@ function loadFiles() {
   // Files 관련 데이터 로드 또는 기능 호출
 }
 
-// applicationUuid 변경 감지 및 초기화
-watch(() => route.params.applicationUuid, (newUuid) => {
-  uuid.value = newUuid;
-  console.log('Application UUID changed:', newUuid);
+watch(
+  () => route.params.id,
+  async (newUuid) => {
+    uuid.value = newUuid; // id 값을 직접 업데이트
+    
+  },
+  { immediate: true }
+);
 
-  // applicationUuid가 변경되면 request 탭으로 이동
-  activeTab.value = 'request';
-  localStorage.setItem('activeTab', 'request');
+
+// applicationUuid 변경 감지 및 초기화
+watch(() => route.params.applicationUuid, (newUuid) => {  
   loadRequestDetails();
 });
 

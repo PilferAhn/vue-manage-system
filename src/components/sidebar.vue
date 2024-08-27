@@ -218,29 +218,61 @@ const items = [
     permiss: "10",
   },
   {
-    icon: "User",
-    index: "/calculator/s-parameter_ver2",
-    title: "TCF계산기",
-    permiss: "11",
-  },
-  {
     icon: "Calendar",
-    index: "11",
-    title: "CER",
-    permiss: "2",
+    index: "4",
+    title: "Tools",
+    permiss: "11",
     subs: [
-      {
-        index: "/cer/cer0",
-        title: "CER-0",
+      {       
+        index: "/calculator/s-parameter_ver2",
+        title: "TCF계산기",
         permiss: "11",
       },
-      {
-        index: "/cer/cer0-list",
-        title: "CER-0-list",
-        permiss: "11",
-      },
+      // {        
+      //   index: "/calculator/rf-limit",
+      //   title: "RF Limit",
+      //   permiss: "11",
+      // },
     ],
   },
+
+  // {
+  //   icon: "Calendar",
+  //   index: "5",
+  //   title: "CER",
+  //   permiss: "2",
+  //   subs: [
+  //     {
+  //       index: "/cer",
+  //       title: "CER0",
+  //       permiss: "11",
+  //       subs: [
+  //         {
+  //           index: "/cer/cer0-list2",
+  //           title: "CER 0 List",
+  //           permiss: "11",
+  //         },
+  //         {
+  //           index: "/cer/cer0",
+  //           title: "CER-0",
+  //           permiss: "11",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       title: "CER1",
+  //     },
+  //     {
+  //       title: "CER2",
+  //     },
+  //   ],
+  // },
+  {
+    icon: "search",
+    index: "/rules",
+    title: "규정집",
+    permiss: "2",    
+  }
   // {
   //   icon: "rank",
   //   index: "/s-parameter/SnP",
