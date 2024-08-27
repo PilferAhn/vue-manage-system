@@ -223,12 +223,12 @@ const items = [
     title: "Tools",
     permiss: "11",
     subs: [
-      {       
+      {
         index: "/calculator/s-parameter_ver2",
         title: "TCF계산기",
         permiss: "11",
       },
-      // {        
+      // {
       //   index: "/calculator/rf-limit",
       //   title: "RF Limit",
       //   permiss: "11",
@@ -269,10 +269,18 @@ const items = [
   // },
   {
     icon: "search",
+    // index: "/rules",
     index: "/rules",
     title: "규정집",
-    permiss: "2",    
-  }
+    permiss: "2",
+    subs: [
+          {
+            index: "/rules/pdt",
+            title: "내 전 력",
+            permiss: "2",
+          },
+    ],
+  },
   // {
   //   icon: "rank",
   //   index: "/s-parameter/SnP",

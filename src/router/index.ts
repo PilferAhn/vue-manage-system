@@ -314,7 +314,7 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "table" */ '../views/SparameterPage/SParameterList.vue'),
             },    
             {
-                path: '/rules',
+                path: '/rules/pdt',
                 name: 'Rules',
                 meta: {
                     title: 'Rules',
