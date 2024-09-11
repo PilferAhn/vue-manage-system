@@ -1,261 +1,191 @@
 <template>
-  <el-form>
-    <div class="container">
-      <div class="split-layout">
-        <div class="form-box">
-          <el-row :gutter="20">
-            <el-col :span="6">
-              <el-form-item :label="'갯수'">
-                <el-select
-                  v-model="optionCount"
-                  placeholder="Select number of options"
-                >
-                  <el-option
-                    v-for="item in availableOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="6">
-              <InputText v-model="roundingPoing" label="소수점 반올림" />
-            </el-col>
-            <el-col :span="6">
-              <InputText v-model="port" label="Port" />
-            </el-col>
-          </el-row>
-        </div>
-        <div class="form-box">
-          <el-row :gutter="20">
-            <el-col :span="3">
-              <el-upload
-                ref="upload"
-                :auto-upload="false"
-                :on-change="handleFileChange"
-                multiple
-                :show-file-list="false"
-                class="upload-demo"
-              >
-                <el-button size="default" type="primary">파일 선택</el-button>
-              </el-upload>
-            </el-col>
-            <el-col :span="3">
-              <el-button
-                size="default"
-                type="success"
-                @click="calculateTCF"
-                :disabled="sparaFiles.length === 0"
-                >TCF 계산</el-button
-              >
-            </el-col>
-            <el-col :span="3">
-              <el-button
-                size="default"
-                type="success"
-                @click="handleDownload"
-                :disabled="sparaFiles.length === 0"
-                >다운로드</el-button
-              >
-            </el-col>
-          </el-row>
-        </div>
-      </div>
+  <div class="container">
+    <el-table
+      :data="tableData"
+      style="width: 100%"
+      :cell-style="cellStyle"
+      :header-cell-style="headerCellStyle"
+      height="150"
+    >
+      <!-- File Name Column -->
+      <el-table-column prop="fileName" label="File Name">
+        <template #default="scope">
+          <span>{{ scope.row.fileName }}</span>
+        </template>
+      </el-table-column>
 
-      <ul style="margin-bottom: 20px">
-        <el-table v-if="sparaFiles.length >= 1" :data="sparaFiles">
-          <el-table-column prop="fileName" label="파일명"></el-table-column>
-          <el-table-column prop="port" label="Port"></el-table-column>
-          <el-table-column prop="temperature" label="온도"></el-table-column>
-        </el-table>
-      </ul>
+      <!-- Type Column (Dropdown) -->
+      <el-table-column prop="type" label="Type" width="120px">
+        <template #default="scope">
+          <el-select v-model="scope.row.type" placeholder="Type" size="small">
+            <el-option label="JIG" value="JIG"></el-option>
+            <el-option label="SOLDER" value="SOLDER"></el-option>
+          </el-select>
+        </template>
+      </el-table-column>
 
-      <div v-if="sparaFiles.length > 0" class="split-layout">
-        <transition-group name="list" tag="div">
-          <div
-            v-for="(option, index) in options"
-            :key="index"
-            class="list-item"
+      <!-- Port Out Column -->
+      <el-table-column prop="portOut" label="Port Out" width="120px">
+        <template #default="scope">
+          <el-input
+            v-model="scope.row.portOut"
+            placeholder="Port Out"
+            size="small"
+          />
+        </template>
+      </el-table-column>
+
+      <!-- Port In Column -->
+      <el-table-column prop="portIn" label="Port In" width="120px">
+        <template #default="scope">
+          <el-input
+            v-model="scope.row.portIn"
+            placeholder="Port In"
+            size="small"
+          />
+        </template>
+      </el-table-column>
+
+      <!-- File Upload Column -->
+      <el-table-column label="Select File" width="150px">
+        <template #default="scope">
+          <el-upload
+            :auto-upload="false"
+            :show-file-list="false"
+            :on-change="(file) => onFileSelect(file, scope.row)"
+            action=""
           >
-            <Options
-              :index="index + 1"
-              :option="option"
-              :port="parseInt(port)"
-            />
-          </div>
-        </transition-group>
-      </div>
-      <div v-if="numberOfSection > 0">
-        <TCFDataTable :tcfValues="tempTcfValues" />
-      </div>
-      <div class="charts-container" v-if="numberOfSection > 0">
-        <div class="charts-row" v-for="index in numberOfSection" :key="index">
-          <div class="form-box-wide">
-            <SParameterGraph
-              v-if="graphValues[index - 1]"
-              :graph-data="graphValues[index - 1]"
-            ></SParameterGraph>
-          </div>
-          <div class="form-box-wide">
-            <TCFTendancy2
-              v-if="tempTcfValues[index - 1]"
-              :calculated-tcf-values="tempTcfValues[index - 1]"
-            />
-          </div>
-        </div>
+            <el-button type="primary" size="small">Select File</el-button>
+          </el-upload>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <!-- Buttons Section -->
+    <div class="buttons">
+      <el-button type="primary" size="small" @click="addRow">Add Row</el-button>
+      <el-button type="danger" size="small" @click="resetTable"
+        >Reset</el-button
+      >
+    </div>
+
+  </div>
+  <div class="app-container">
+      <div class="grid-container">
+        <!-- 4개의 그래프 컴포넌트 호출 -->
+        <Graph :dataSets="scatterDataSet1" />
+        <Graph :dataSets="scatterDataSet2" />
+        <Graph :dataSets="scatterDataSet3" />
+        <Graph :dataSets="scatterDataSet4" />
       </div>
     </div>
-  </el-form>
 </template>
 
 <script lang="ts" setup>
-import axios from "axios";
-import { ref, reactive, watch } from "vue";
+import { ref } from "vue";
+import Graph from "./Graph.vue";
 import {
-  SParameterFile,
-  sortingFiles,
-  findMostFrequentNumber,
-  availableOptions,
-  CalculatedTCFValue,
-  Graphs,
-} from "./sparameter";
-import InputText from "./../../TegPage/Application/InputText.vue";
-import TCFTendancy2 from "./TCFTendancyChart2.vue";
-import SParameterGraph from "./SParameterScatterGraph.vue";
-import TCFDataTable from "./TCFDataTable2.vue";
-import Options from "./SelectOption.vue";
-import {createReport} from "./TcfCalculator"
+  scatterDataSet1,
+  scatterDataSet2,
+  scatterDataSet3,
+  scatterDataSet4,
+} from "./demoData";
+import type { UploadFile } from "element-plus";
 
-const port = ref<string>("0");
-const roundingPoing = ref<string>("2");
-const portNumberList = ref<string[]>([]);
-const sparaFiles = reactive<SParameterFile[]>([]);
-const files = reactive<File[]>([]);
-const optionCount = ref(2); // 초기 값 2개
-const graphValues = reactive<Graphs[]>([]);
-const numberOfSection = ref<number>(0);
-const tempTcfValues = reactive<CalculatedTCFValue[]>([]);
+// Table row interface
+interface TableRow {
+  fileName: string;
+  type: string;
+  portOut: string;
+  portIn: string;
+  file: UploadFile | null;
+}
 
-const options = ref<
-  Array<{ name: string; output: number; input: number; ilLevel: number }>
->([]);
+// Initial data for the table
+const initialData: TableRow[] = [
+  { fileName: "", type: "", portOut: "", portIn: "", file: null },
+  { fileName: "", type: "", portOut: "", portIn: "", file: null },
+];
 
-const updateOptions = () => {
-  options.value = Array.from({ length: optionCount.value }, (_, index) => ({
-    name: "",
-    output: parseInt(port.value),
-    input: parseInt(port.value),
-    ilLevel: -10,
-  }));
+// Reactive table data
+const tableData = ref<TableRow[]>([...initialData]);
+
+// Add row function
+const addRow = () => {
+  if (tableData.value.length <= 4) {
+    tableData.value.push({
+      fileName: "",
+      type: "",
+      portOut: "",
+      portIn: "",
+      file: null,
+    });
+  }
 };
 
-const userName = localStorage.getItem("ms_username");
+// File selection handler
+const onFileSelect = (file: UploadFile, row: TableRow) => {
+  row.file = file;
+  row.fileName = file.name;
+};
 
-// 옵션 카운트가 변경될 때마다 옵션 배열을 업데이트
-watch(optionCount, updateOptions, { immediate: true });
+// Reset table to initial state
+const resetTable = () => {
+  tableData.value = [...initialData]; // Reset table to initial data
+};
 
-function handleFileChange(file, fileList) {
-  
-  files = []
+const cellStyle = {
+  padding: "8px",
+  fontSize: "14px",
+};
 
-  files.push(file);
-  const sortedFiles = sortingFiles(fileList);
-  port.value = findMostFrequentNumber(sortedFiles).toString();
-  sparaFiles.splice(0, sparaFiles.length, ...sortedFiles);
-}
-
-async function calculateTCF() {
-  const formData = new FormData();
-  files.forEach((file) => formData.append("files", file.raw));
-  formData.append("rounding_point", roundingPoing.value);
-  formData.append("values", JSON.stringify(options.value));
-  formData.append("user_name", userName);
-
-  try {
-    const response = await axios.post("tcf/calculate-tcf", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    tempTcfValues.splice(0, tempTcfValues.length, ...response.data.tcf_data);
-    numberOfSection.value = response.data.tcf_data.length;
-    graphValues.splice(0, tempTcfValues.length, ...response.data.graph_data);
-  } catch (error) {
-    console.error("Error sending data to server:", error);
-  }
-}
-
-async function handleDownload() {
-  try {
-    await createReport(
-      files.map((file) => file.raw),
-      roundingPoing.value,
-      userName,
-      options.value
-    );
-
-  } catch (error) {
-    console.error("Error during createReport:", error);
-  }
-}
-
-watch(
-  () => port.value,
-  (newSize) => {
-    const tempNum = parseInt(newSize);
-    portNumberList.value = [];
-    for (let i = tempNum; i > 0; i--) {
-      portNumberList.value.push(i.toString());
-    }
-  }
-);
+const headerCellStyle = {
+  padding: "8px",
+  fontSize: "14px",
+};
 </script>
 
 <style scoped>
-.split-layout {
+.container {
+  margin: 10px;
+}
+
+.buttons {
   display: flex;
-  flex-wrap: nowrap;
+  justify-content: flex-end;
+  margin-top: 10px;
 }
 
-.form-box {
-  flex: 1;
-  margin-right: 20px;
+.buttons > .el-button {
+  margin-left: 10px;
 }
 
-.form-box:last-child {
-  margin-right: 0;
+.el-table th,
+.el-table td {
+  padding: 8px !important;
 }
 
-.el-form-item {
-  margin-bottom: 20px;
+.el-input,
+.el-select,
+.el-button {
+  font-size: 14px;
 }
 
-.charts-container {
-  display: flex;
-  flex-direction: column;
-  margin-top: 1.5cm;
+.app-container {
+  padding: 20px;
 }
 
-.charts-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 1rem;
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 20px;
+  width: 100%;
+  height: 100%;
 }
 
-.form-box {
-  margin-right: 20px;
-}
-
-.form-box:last-child,
-.form-box-wide:last-child {
-  margin-right: 0;
-}
-
-.form-box-wide {
-  flex: 1;
-  margin-bottom: 1rem;
-  width: 48%; /* 화면을 반으로 나누기 위해 추가 */
+.grid-container > * {
+  aspect-ratio: 1 / 1; /* 정사각형 유지 */
+  background-color: #f5f5f5;
 }
 </style>

@@ -86,22 +86,14 @@
           </div>
         </transition-group>
       </div>
-      <div v-if="numberOfSection > 0">
-        <TCFDataTable :tcfValues="tempTcfValues" />
-      </div>
       <div class="charts-container" v-if="numberOfSection > 0">
-        <div class="charts-row" v-for="index in numberOfSection" :key="index">
-          <div class="form-box-wide">
-            <SParameterGraph
-              v-if="graphValues[index - 1]"
-              :graph-data="graphValues[index - 1]"
-            ></SParameterGraph>
-          </div>
-          <div class="form-box-wide">
-            <TCFTendancy2
-              v-if="tempTcfValues[index - 1]"
-              :calculated-tcf-values="tempTcfValues[index - 1]"
-            />
+        <div class="charts-row">
+          <div
+            v-for="(graph, index) in graphValues"
+            :key="index"
+            class="form-box-wide"
+          >
+            <SParameterGraph v-if="graph" :graph-data="graph"></SParameterGraph>
           </div>
         </div>
       </div>
@@ -120,12 +112,12 @@ import {
   CalculatedTCFValue,
   Graphs,
 } from "./sparameter";
-import InputText from "./../../TegPage/Application/InputText.vue";
+import InputText from "../../TegPage/Application/InputText.vue";
 import TCFTendancy2 from "./TCFTendancyChart2.vue";
 import SParameterGraph from "./SParameterScatterGraph.vue";
 import TCFDataTable from "./TCFDataTable2.vue";
 import Options from "./SelectOption.vue";
-import {createReport} from "./TcfCalculator"
+import { createReport } from "./TcfCalculator";
 
 const port = ref<string>("0");
 const roundingPoing = ref<string>("2");
@@ -155,30 +147,52 @@ const userName = localStorage.getItem("ms_username");
 // 옵션 카운트가 변경될 때마다 옵션 배열을 업데이트
 watch(optionCount, updateOptions, { immediate: true });
 
+function resetState() {
+  port.value = "0";
+  roundingPoing.value = "2";
+  portNumberList.value = [];
+  sparaFiles.splice(0, sparaFiles.length);
+  files.splice(0, files.length);
+  optionCount.value = 2;
+  graphValues.splice(0, graphValues.length);
+  numberOfSection.value = 0;
+  tempTcfValues.splice(0, tempTcfValues.length);
+  updateOptions();
+}
+
 function handleFileChange(file, fileList) {
+  // resetState();
   files.push(file);
   const sortedFiles = sortingFiles(fileList);
+  // console.log(sortedFiles)
   port.value = findMostFrequentNumber(sortedFiles).toString();
   sparaFiles.splice(0, sparaFiles.length, ...sortedFiles);
 }
 
 async function calculateTCF() {
   const formData = new FormData();
+
+  // TCF 계산 전에 그래프 및 섹션 수 초기화
+  graphValues.splice(0, graphValues.length);
+  numberOfSection.value = 0;
+
   files.forEach((file) => formData.append("files", file.raw));
+  console.log(files)
   formData.append("rounding_point", roundingPoing.value);
   formData.append("values", JSON.stringify(options.value));
   formData.append("user_name", userName);
 
   try {
-    const response = await axios.post("tcf/calculate-tcf", formData, {
+    const response = await axios.post("rf-limit/calcuate_rf_limit", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
-
-    tempTcfValues.splice(0, tempTcfValues.length, ...response.data.tcf_data);
+    
+    // tempTcfValues.splice(0, tempTcfValues.length, ...response.data.tcf_data);
     numberOfSection.value = response.data.tcf_data.length;
     graphValues.splice(0, tempTcfValues.length, ...response.data.graph_data);
+    console.log(graphValues)
   } catch (error) {
     console.error("Error sending data to server:", error);
   }
@@ -192,7 +206,6 @@ async function handleDownload() {
       userName,
       options.value
     );
-
   } catch (error) {
     console.error("Error during createReport:", error);
   }
@@ -237,22 +250,12 @@ watch(
 
 .charts-row {
   display: flex;
+  flex-wrap: wrap; /* 여러 줄로 나열할 수 있게 wrap을 사용 */
   justify-content: space-between;
-  margin-bottom: 1rem;
-}
-
-.form-box {
-  margin-right: 20px;
-}
-
-.form-box:last-child,
-.form-box-wide:last-child {
-  margin-right: 0;
 }
 
 .form-box-wide {
-  flex: 1;
+  flex: 0 0 48%; /* 한 줄에 두 개의 그래프가 들어가게 48%로 설정 */
   margin-bottom: 1rem;
-  width: 48%; /* 화면을 반으로 나누기 위해 추가 */
 }
 </style>

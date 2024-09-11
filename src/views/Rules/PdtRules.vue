@@ -19,12 +19,14 @@
           prop="content"
           label="내용"
           min-width="120"
+          sortable
           align="center"
         ></el-table-column>
         <el-table-column
           prop="lteNrWifi"
-          label="LTE/NR/WiFi"
+          label="Signal Type"
           min-width="150"
+          sortable
           align="center"
         ></el-table-column>
         <el-table-column label="Spec." align="center">

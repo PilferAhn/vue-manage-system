@@ -71,6 +71,7 @@
 import { computed } from "vue";
 import { useSidebarStore } from "../store/sidebar";
 import { useRoute } from "vue-router";
+import { permission, title } from "process";
 
 const items = [
   {
@@ -130,6 +131,29 @@ const items = [
       //   },
     ],
   },
+  {
+    icon : "Pear",
+    index : "/4",
+    title : "기타 의뢰서",
+    permiss: "4",
+    subs : [
+      {        
+        index : "4/Solder",
+        title : "Solder",
+        permiss : "4",
+        subs : [
+          {
+            index : "4/Solder/create-application",
+            title : "의뢰서 작성"
+          },
+          {
+            index : "4/Solder/application-list",
+            title : "의뢰 현황"
+          }
+        ]
+      }
+    ]
+  },
   // {
   //   icon: "DocumentCopy",
   //   index: "/tabs",
@@ -155,6 +179,11 @@ const items = [
           {
             index: "/admin/pdt/machine-list",
             title: "측정 장비 현황",
+            permiss: "5",
+          },
+          {
+            index: "/admin/pdt/statistic",
+            title: "PDT 측정 통계",
             permiss: "5",
           },
         ],
@@ -223,16 +252,21 @@ const items = [
     title: "Tools",
     permiss: "11",
     subs: [
-      {       
+      {
         index: "/calculator/s-parameter_ver2",
-        title: "TCF계산기",
+        title: "TCF 계산기",
         permiss: "11",
       },
-      // {        
-      //   index: "/calculator/rf-limit",
-      //   title: "RF Limit",
-      //   permiss: "11",
-      // },
+      {
+        index: "/calculator/rf-limit",
+        title: "RF Limit",
+        permiss: "11",
+      },
+      {
+        index: "/calculator/rf-limit2",
+        title: "RF Limit2",
+        permiss: "11",
+      },
     ],
   },
 
@@ -269,9 +303,22 @@ const items = [
   // },
   {
     icon: "search",
+    // index: "/rules",
     index: "/rules",
     title: "규정집",
-    permiss: "2",    
+    permiss: "2",
+    subs: [
+          // {
+          //   index: "/rules/pdt",
+          //   title: "내 전 력",
+          //   permiss: "2",
+          // },
+          {
+            index: "/rules/pdt2",
+            title: "내 전 력",
+            permiss: "2",
+          },
+    ],
   },
   {
     icon: "rank",

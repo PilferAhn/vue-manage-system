@@ -37,6 +37,11 @@ export default defineConfig({
 	optimizeDeps: {
 		include: ['schart.js']
 	},
+	resolve: {
+		alias: {
+			'vue': 'vue/dist/vue.esm-bundler.js', // 이 부분이 추가되었습니다.
+		},
+	},
 	server: {
 		host: getServerIpAddress(),
 		port: 40006,
@@ -53,6 +58,7 @@ export default defineConfig({
 			"/machine" : "http://10.29.11.59:40000",
 			"/deembed" : "http://10.29.11.59:40001",
 			"/api" : "http://10.29.11.59:8005",
+			"/rf-limit" : "http://10.29.11.59:8002",
 		}
 	  },
 });

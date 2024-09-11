@@ -1,6 +1,6 @@
 import { ref } from "vue";
 
-interface TableData {
+export interface TableData {
     customer: string;
     content: string;
     lteNrWifi: string;

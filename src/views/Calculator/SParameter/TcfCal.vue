@@ -179,6 +179,9 @@ async function calculateTCF() {
     tempTcfValues.splice(0, tempTcfValues.length, ...response.data.tcf_data);
     numberOfSection.value = response.data.tcf_data.length;
     graphValues.splice(0, tempTcfValues.length, ...response.data.graph_data);
+
+    console.log(graphValues)
+
   } catch (error) {
     console.error("Error sending data to server:", error);
   }

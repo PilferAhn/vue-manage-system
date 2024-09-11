@@ -397,20 +397,6 @@ function handleDownload() {
 <style>
 @import "../../../assets/css/PDTRequestForm.css";
 
-.inline-fields {
-  display: flex;
-  gap: 10px; /* Adjust the gap as needed */
-}
 
-.flex-item {
-  flex: 1;
-}
-
-.button-container {
-  display: flex;
-  justify-content: center;
-  gap: 10px; /* 버튼 사이의 간격 설정 */
-  margin-bottom: 20px; /* 아래쪽 여백 설정 */
-}
 </style>
 ./Application1

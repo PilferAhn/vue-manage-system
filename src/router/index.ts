@@ -179,6 +179,15 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "table" */ '../views/ProductPage/PDTApplication.vue'),
             },
             {
+                path: '/admin/pdt/statistic',
+                name: 'PdtStatistic',
+                meta: {
+                    title: '측정 완료 항목',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/AdminPage/PDT/Statistic/PdtStatistic.vue'),
+            },
+            {
                 path: "/teg/create-teg-application",
                 name: 'TegApplication2',
                 meta: {
@@ -257,7 +266,16 @@ const routes: RouteRecordRaw[] = [
                     title: 'RF Limit',
                     permiss: '11',
                 },
-                component: () => import(/* webpackChunkName: "table" */ '../views/Calculator/RfLimit/RfLimit.vue'),
+                component: () => import(/* webpackChunkName: "table" */ '../views/Calculator/RfLimit/test.vue'),
+            },    
+            {
+                path: '/calculator/rf-limit2',
+                name: 'RF Limit2',
+                meta: {
+                    title: 'RF Limit2',
+                    permiss: '11',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/Calculator/RfLimit/TcfCal.vue'),
             },    
             {
                 path: '/cer/cer0',
@@ -314,13 +332,22 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "table" */ '../views/SparameterPage/SParameterList.vue'),
             },    
             {
-                path: '/rules',
+                path: '/rules/pdt',
                 name: 'Rules',
                 meta: {
                     title: 'Rules',
                     permiss: '2',
                 },
                 component: () => import(/* webpackChunkName: "table" */ '../views/Rules/PdtRules.vue'),
+            },                
+            {
+                path: '/rules/pdt2',
+                name: 'Rules2',
+                meta: {
+                    title: 'Rules2',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/Rules/PdtRulesNew.vue'),
             },                
             {
                 path: '/table',
@@ -439,6 +466,15 @@ const routes: RouteRecordRaw[] = [
                 },
                 component: () => import(/* webpackChunkName: "import" */ '../views/import.vue'),
             },
+            {
+                path: '4/Solder/create-application',
+                name: 'Solder Application',
+                meta: {
+                    title: 'Solder Application',
+                    permiss: '4',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/Solder/Application/SolderApplication.vue'),
+            },  
         ],
     },
     {

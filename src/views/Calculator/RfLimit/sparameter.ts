@@ -62,7 +62,7 @@ export interface CalculatedTCFValue {
   rightArr: number[];
   leftCoordinates: Coordinate[];
   rightCoordinates: Coordinate[];
-  temperatures : number[];
+  temperatures: number[];
   graphName: string;
 }
 
@@ -217,34 +217,44 @@ export function sortingFiles(fileList: ElUploadFile[]): SParameterFile[] {
   let files: SParameterFile[] = [];
   const portList = [];
 
+  let tempTemperature = 25
   fileList.forEach((f) => {
     const extension = f.name.split(".").pop();
+    const newFile: SParameterFile = {
+      key: f.name,
+      fileName: f.name,
+      port: extension.replace(/[^\d]/g, ""),
+      temperature: tempTemperature.toString(),
+    };
+    tempTemperature += 25
+    files.push(newFile);
+    portList.push(parseInt(newFile.port));
 
-    if (extension && validExtension.test(extension)) {
-      const parts = f.name.split("_");
-      let temperature = 25; // 기본 온도 설정
-      const tempIndex = parts.findIndex((part) => part.includes("DEGC"));
-      if (tempIndex !== -1) {
-        const tempPart = parts[tempIndex];
-        const matches = tempPart.match(/(-?\d+)DEGC/);
-        if (matches && matches[1]) {
-          temperature = parseInt(matches[1]);
+    // if (extension && validExtension.test(extension)) {
+    //   const parts = f.name.split("_");
+    //   let temperature = 25; // 기본 온도 설정
+    //   const tempIndex = parts.findIndex((part) => part.includes("DEGC"));
+    //   if (tempIndex !== -1) {
+    //     const tempPart = parts[tempIndex];
+    //     const matches = tempPart.match(/(-?\d+)DEGC/);
+    //     if (matches && matches[1]) {
+    //       temperature = parseInt(matches[1]);
 
-          const newFile: SParameterFile = {
-            key: f.name,
-            fileName: f.name,
-            port: extension.replace(/[^\d]/g, ""),
-            temperature: temperature.toString(),
-          };
+    //       const newFile: SParameterFile = {
+    //         key: f.name,
+    //         fileName: f.name,
+    //         port: extension.replace(/[^\d]/g, ""),
+    //         temperature: temperature.toString(),
+    //       };
 
-          files.push(newFile);
-          portList.push(parseInt(newFile.port));
-        }
-      }
-    }
+    //       files.push(newFile);
+    //       portList.push(parseInt(newFile.port));
+    //     }
+    //   }
+    // }
   });
 
   // 온도에 따라 파일 목록 정렬
-  files.sort((a, b) => parseInt(a.temperature) - parseInt(b.temperature));
+  // files.sort((a, b) => parseInt(a.temperature) - parseInt(b.temperature));
   return files;
 }
