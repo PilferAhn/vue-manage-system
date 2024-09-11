@@ -257,16 +257,16 @@ const items = [
         title: "TCF 계산기",
         permiss: "11",
       },
-      {
-        index: "/calculator/rf-limit",
-        title: "RF Limit",
-        permiss: "11",
-      },
-      {
-        index: "/calculator/rf-limit2",
-        title: "RF Limit2",
-        permiss: "11",
-      },
+      // {
+      //   index: "/calculator/rf-limit",
+      //   title: "RF Limit",
+      //   permiss: "11",
+      // },
+      // {
+      //   index: "/calculator/rf-limit2",
+      //   title: "RF Limit2",
+      //   permiss: "11",
+      // },
     ],
   },
 

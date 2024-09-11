@@ -72,6 +72,7 @@ const chartOptions = computed<ChartOptions<"scatter">>(() => {
         title: {
           display: true,
           text: "LF[MHz]",
+          showLine: true,
         },
       },
       yRight: {
@@ -80,6 +81,7 @@ const chartOptions = computed<ChartOptions<"scatter">>(() => {
         title: {
           display: true,
           text: "RF[MHz]",
+          showLine: true,
         },
         grid: {
           drawOnChartArea: false, // yRight 축의 그리드 라인을 차트 영역에 그리지 않음
