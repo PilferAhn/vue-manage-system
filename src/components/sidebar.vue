@@ -72,6 +72,7 @@ import { computed } from "vue";
 import { useSidebarStore } from "../store/sidebar";
 import { useRoute } from "vue-router";
 import { permission, title } from "process";
+import Icon from "../views/icon.vue";
 
 const items = [
   {
@@ -132,37 +133,59 @@ const items = [
     ],
   },
   {
-    icon : "Pear",
-    index : "/4",
-    title : "기타 의뢰서",
-    permiss: "4",
-    subs : [
-      {        
-        index : "4/Solder",
-        title : "Solder",
-        permiss : "4",
-        subs : [
-          {
-            index : "4/Solder/create-application",
-            title : "의뢰서 작성"
-          },
-          {
-            index : "4/Solder/application-list",
-            title : "의뢰 현황"
-          }
-        ]
-      }
-    ]
+    icon: "DocumentAdd",
+    index: "3",
+    title: "개발 SPL",
+    permiss: "11",
+    subs: [
+      {
+        index: "/fab/create-application",
+        title: "투입 계획서 작성",
+        permiss: "11",
+      },
+      {
+        index: "/fab/my-application-status",
+        title: "투입 계획서 현황",
+        permiss: "11",
+      },
+      {
+        index: "/fab/feb-application-list",
+        title: "투입 계획서 검토",
+        permiss: "11",
+      },
+      {
+        index: "/fab/sample_status",
+        title: "개발 SPL 현황",
+        permiss: "11",
+      },
+    ],
   },
-  // {
-  //   icon: "DocumentCopy",
-  //   index: "/tabs",
-  //   title: "Excel",
-  //   permiss: "3",
-  // },
+  {
+    icon: "Pear",
+    index: "4",
+    title: "WHC 의뢰",
+    permiss: "11",
+    subs: [
+      {
+        index: "/whc/create-application",
+        title: "의뢰서 작성",
+        permiss: "11",
+      },
+      {
+        index: "/whc/application-list",
+        title: "의뢰 현황",
+        permiss: "11",
+      },
+      {
+        index: "/whc/network-analyzer",
+        title: "TEST",
+        permiss: "11",
+      },
+    ],
+  },
   {
     icon: "Edit",
-    index: "3",
+    index: "5",
     title: "Admin Function",
     permiss: "4",
     subs: [
@@ -203,8 +226,14 @@ const items = [
             title: "TEG 측정 통계",
             permiss: "5",
           },
+          {
+            index: "/admin/teg/teg-waiting-list",
+            title: "TEG 대기 현황",
+            permiss: "5",
+          },
         ],
       },
+
       // {
       //   index: "/calculator/s-parameter",
       //   title: "TCF계산기",
@@ -240,15 +269,10 @@ const items = [
       // },
     ],
   },
-  {
-    icon: "Setting",
-    index: "/icon",
-    title: "Custom Icons",
-    permiss: "10",
-  },
+
   {
     icon: "Calendar",
-    index: "4",
+    index: "6",
     title: "Tools",
     permiss: "11",
     subs: [
@@ -262,11 +286,46 @@ const items = [
       //   title: "RF Limit",
       //   permiss: "11",
       // },
-      // {
-      //   index: "/calculator/rf-limit2",
-      //   title: "RF Limit2",
-      //   permiss: "11",
-      // },
+      {
+        index: "/calculator/rf-limit2",
+        title: "RF Limit",
+        permiss: "11",
+      },
+    ],
+  },
+  {
+    icon: "Calendar",
+    index: "7",
+    title: "MDR",
+    permiss: "4",
+    subs: [
+      {
+        index: "/mdr/mdr-regular",
+        title: "정규 MDR",
+        permiss: "4",
+        subs: [
+          {
+            index: "/mdr/mdr-regular/create-application",
+            title: "일정 작성",
+            permiss: "4",
+          },
+          {
+            index: "/mdr/mdr-regular/my-application-list",
+            title: "일정 현황",
+            permiss: "4",
+          },
+          {
+            index: "/mdr/mdr-regular/mdr",
+            title: "MDR",
+            permiss: "4",
+          },
+        ],
+      },
+      {
+        index: "/mdr/mdr-china",
+        title: "중화 MDR",
+        permiss: "4",
+      },
     ],
   },
 
@@ -308,16 +367,16 @@ const items = [
     title: "규정집",
     permiss: "2",
     subs: [
-          // {
-          //   index: "/rules/pdt",
-          //   title: "내 전 력",
-          //   permiss: "2",
-          // },
-          {
-            index: "/rules/pdt2",
-            title: "내 전 력",
-            permiss: "2",
-          },
+      // {
+      //   index: "/rules/pdt",
+      //   title: "내 전 력",
+      //   permiss: "2",
+      // },
+      {
+        index: "/rules/pdt2",
+        title: "내 전 력",
+        permiss: "2",
+      },
     ],
   },
   {

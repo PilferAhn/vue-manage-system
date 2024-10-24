@@ -9,9 +9,9 @@
           <TegMeasurementTab
             :category="'created'"
             key="created"
-            :page-size="15"
-          />
-        </template>
+            :page-size="5"
+          />          
+        </template>        
       </el-tab-pane>
       <el-tab-pane label="측정 완료" name="main3">
         <template v-if="activeTabMain === 'main3'">

@@ -16,14 +16,18 @@ Chart.register(...registerables);
 interface TestType {
   month_list: string[];
   teg1_list: number[];
+  teg15_list : number[];
   teg2_list: number[];
+  teg3_list : number[];
   tcf_list: number[];
 }
 
 const testTypes = ref<TestType>({
   month_list: [],
   teg1_list: [],
+  teg15_list : [],
   teg2_list: [],
+  teg3_list : [],
   tcf_list: [],
 });
 
@@ -52,17 +56,27 @@ onMounted(async () => {
         datasets: [
           {
             label: "TEG1",
-            backgroundColor: "rgba(241, 89, 74, 0.8)",
+            backgroundColor: "rgba(241, 89, 74, 0.8)",   /* 빨강 */
             data: testTypes.value.teg1_list,
           },
           {
+            label: "TEG1.5",
+            backgroundColor: "rgba(76, 175, 80, 0.8)", /* 주황 */
+            data: testTypes.value.teg15_list,
+          },
+          {
             label: "TEG2",
-            backgroundColor: "rgba(76, 175, 80, 0.8)",
+            backgroundColor: "rgba(63, 81, 181, 0.8)", /* 노랑 */
             data: testTypes.value.teg2_list,
           },
           {
+            label: "TEG3",
+            backgroundColor: "rgba(255, 193, 7, 0.8)",   /* 주황 계열 */
+            data: testTypes.value.teg3_list,
+          },
+          {
             label: "TCF",
-            backgroundColor: "rgba(63, 81, 181, 0.8)",
+            backgroundColor: "rgba(3, 169, 244, 0.8)" ,   /* 파랑 계열 */
             data: testTypes.value.tcf_list,
           },
         ],
@@ -72,6 +86,9 @@ onMounted(async () => {
           title: {
             display: true,
             text: 'TEG 측정 월간 의뢰 비율 (Wafer 기준)',
+            font : {
+              size : 25
+            }          
           },
           // 데이터 포인트 위에 값을 표시하는 커스텀 플러그인 추가
           datalabels: {

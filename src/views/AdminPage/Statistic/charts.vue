@@ -48,6 +48,7 @@ import MonthlyTegSummaryLineGraph from "./MonthlyTegSummaryLineGraph.vue";
 import WeeklyTegSummaryLineGraph from "./WeeklyTegSummaryLineGraph.vue";
 import LeadTime from "./LeadTime.vue";
 
+
 </script>
 
 <style scoped>

@@ -17,7 +17,8 @@ interface TestType {
   date_list: string[];
   TEG1: number[];
   TEG2: number[];
-  TEG1_5: number[];
+  TEG3: number[];
+  TEG1_5 : number[];
   TCF: number[];
 }
 
@@ -25,7 +26,8 @@ const testTypes = ref<TestType>({
   date_list: [],
   TEG1: [],
   TEG2: [],
-  TEG1_5: [],
+  TEG3: [],
+  TEG1_5 : [],
   TCF: [],
 });
 
@@ -49,23 +51,24 @@ onMounted(async () => {
   const sumTEG2 = testTypes.value.TEG2.reduce((acc, cur) => acc + cur, 0);
   const sumTEG1_5 = testTypes.value.TEG1_5.reduce((acc, cur) => acc + cur, 0);
   const sumTCF = testTypes.value.TCF.reduce((acc, cur) => acc + cur, 0);
-
-  const totalWafer = sumTCF + sumTEG1 + sumTEG1_5 + sumTEG2;
+  const sumTEG3  = testTypes.value.TEG3.reduce((acc, cur) => acc + cur, 0);
+  const totalWafer = sumTCF + sumTEG1 + sumTEG1_5 + sumTEG2 + sumTEG3;
 
   const ctx = document.getElementById("pieChart2") as HTMLCanvasElement;
   if (ctx) {
     myChart = new Chart(ctx, {
       type: "pie",
       data: {
-        labels: ["TEG1", "TEG1_5", "TEG2", "TCF"],
+        labels: ["TEG1", "TEG1_5", "TEG2", "TEG3", "TCF"],
         datasets: [
           {
-            data: [sumTEG1, sumTEG1_5, sumTEG2, sumTCF],
+            data: [sumTEG1, sumTEG1_5, sumTEG2, sumTEG3 ,sumTCF],
             backgroundColor: [
               "rgba(241, 89, 74, 0.8)",
               "rgba(255, 215, 0, 0.8)",
               "rgba(76, 175, 80, 0.8)",
               "rgba(63, 81, 181, 0.8)",
+              "rgba(3, 169, 244, 0.8)" 
             ],
           },
         ],

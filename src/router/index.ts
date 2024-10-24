@@ -214,6 +214,15 @@ const routes: RouteRecordRaw[] = [
                 },
                 component: () => import(/* webpackChunkName: "table" */ '../views/AdminPage/TEG/TegApplicationListPage.vue'),
             },
+            {                
+                path: '/admin/teg/teg-waiting-list',
+                name: 'TegWaitingList',
+                meta: {
+                    title: 'TEG 대기 현황',
+                    permiss: '5',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/AdminPage/TEG/TegWaitingList.vue'),
+            },
             {
                 path: '/teg/teg-queue',
                 name: 'TegMeasurementQueue',
@@ -275,7 +284,7 @@ const routes: RouteRecordRaw[] = [
                     title: 'RF Limit2',
                     permiss: '11',
                 },
-                component: () => import(/* webpackChunkName: "table" */ '../views/Calculator/RfLimit/TcfCal.vue'),
+                component: () => import(/* webpackChunkName: "table" */ '../views/Calculator/RfLimit/TestRfLimit.vue'),
             },    
             {
                 path: '/cer/cer0',
@@ -348,7 +357,52 @@ const routes: RouteRecordRaw[] = [
                     permiss: '2',
                 },
                 component: () => import(/* webpackChunkName: "table" */ '../views/Rules/PdtRulesNew.vue'),
+            },          
+            {
+                path: '/fab/create-application',
+                name: 'FabApplication',
+                meta: {
+                    title: '의뢰서 작성',
+                    permiss: '11',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/FAB/Application/CreateApplication.vue'),
             },                
+            {
+                path: '/fab/feb-application-list',
+                name: 'FabApplicationList',
+                meta: {
+                    title: '작성된 의뢰 목록',
+                    permiss: '11',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/FAB/ApplicationList/ApplicationList.vue'),
+            },                
+            {
+                path: '/fab/my-application-status',
+                name: 'MyApplicationStatus',
+                meta: {
+                    title: '투입 계획서 현황',
+                    permiss: '11',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/FAB/MyApplicationStatus/MyApplicationStatus.vue'),
+            },                
+            {
+                path: '/fab/load_application/:uuid',
+                name: 'LoadApplication',
+                meta: {
+                    title: 'LoadApplication',
+                    permiss: '11',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/FAB/Application/LoadApplication.vue'),
+            },
+            {
+                path: '/fab/sample_status',
+                name: 'SampleStatus',
+                meta: {
+                    title: 'SampleStatus',
+                    permiss: '11',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/FAB/SampleStatus/SampleStatus.vue'),
+            },
             {
                 path: '/table',
                 name: 'basetable',
@@ -467,14 +521,59 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "import" */ '../views/import.vue'),
             },
             {
-                path: '4/Solder/create-application',
+                path: '/whc/create-application',
                 name: 'Solder Application',
                 meta: {
                     title: 'Solder Application',
-                    permiss: '4',
+                    permiss: '11',
                 },
                 component: () => import(/* webpackChunkName: "table" */ '../views/Solder/Application/SolderApplication.vue'),
             },  
+            {
+                path: '/whc/application-list',
+                name: 'measurement list',
+                meta: {
+                    title: 'Solder Measurement List',
+                    permiss: '11',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/Solder/ApplicationList/SolderApplicationList.vue'),
+            },  
+            {
+                path: '/whc/load-application/:applicationUuid',
+                name: 'loadSolderApplication',
+                meta: {
+                    title: 'Solder Application',
+                    permiss: '11',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/Solder/Application/LoadSolderApplication.vue'),
+            },  
+            {
+                path: '/whc/network-analyzer',
+                name: 'NetworkAnalyzer',
+                meta: {
+                    title: 'NetWork',
+                    permiss: '11',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/Solder/Application/NetworkAnalyzer.vue'),
+            },  
+            {
+                path: '/mdr/mdr-regular/create-application',
+                name: 'MdrRegular',
+                meta: {
+                    title: 'MdrRegular',
+                    permiss: '4',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/Mdr/General/Application/CreateApplication.vue'),
+            },
+            {
+                path: '/mdr/mdr-regular/my-application-list',
+                name: 'MyMdrApplicationList',
+                meta: {
+                    title: 'MdrRegular',
+                    permiss: '4',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/Mdr/General/ApplicationList/MyApplicationList.vue'),
+            },
         ],
     },
     {

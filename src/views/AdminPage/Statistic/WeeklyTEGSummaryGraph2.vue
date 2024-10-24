@@ -19,6 +19,7 @@ interface TestType {
   date_list: string[];
   TEG1: number[];
   TEG2: number[];
+  TEG3: number[];
   TEG1_5 : number[];
   TCF: number[];
 }
@@ -27,6 +28,7 @@ const testTypes = ref<TestType>({
   date_list: [],
   TEG1: [],
   TEG2: [],
+  TEG3: [],
   TEG1_5 : [],
   TCF: [],
 });
@@ -51,6 +53,7 @@ onMounted(async () => {
     ...testTypes.value.TEG1,
     ...testTypes.value.TEG2,
     ...testTypes.value.TEG1_5,
+    ...testTypes.value.TEG3,
     ...testTypes.value.TCF,
   ];
   const max = Math.max(...maxValues) + 2;
@@ -60,6 +63,7 @@ onMounted(async () => {
       ...testTypes.value.TEG1,
       ...testTypes.value.TEG2,
       ...testTypes.value.TEG1_5,
+      ...testTypes.value.TEG3,
       ...testTypes.value.TCF,
     ].reduce((acc, cur) => acc + cur, 0);
     return totalSum.toString();
@@ -74,22 +78,27 @@ onMounted(async () => {
         datasets: [
           {
             label: "TEG1",
-            backgroundColor: "rgba(241, 89, 74, 0.8)",
+            backgroundColor: "rgba(241, 89, 74, 0.8)",   /* 빨강 */
             data: testTypes.value.TEG1,
           },
           {
             label: "TEG1_5",
-            backgroundColor: "rgba(255, 215, 0, 0.8)",
+            backgroundColor: "rgba(76, 175, 80, 0.8)", /* 주황 */
             data: testTypes.value.TEG1_5,
           },        
           {
             label: "TEG2",
-            backgroundColor: "rgba(76, 175, 80, 0.8)",
+            backgroundColor: "rgba(63, 81, 181, 0.8)", /* 노랑 */
             data: testTypes.value.TEG2,
           },
           {
+            label: "TEG3",
+            backgroundColor: "rgba(255, 193, 7, 0.8)",   /* 주황 계열 */
+            data: testTypes.value.TEG3,
+          },
+          {
             label: "TCF",
-            backgroundColor: "rgba(63, 81, 181, 0.8)",
+            backgroundColor: "rgba(3, 169, 244, 0.8)" ,   /* 파랑 계열 */
             data: testTypes.value.TCF,
           },
         ],

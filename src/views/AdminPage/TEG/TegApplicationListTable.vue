@@ -7,7 +7,7 @@
         placeholder="QR Code를 스켄하세요"
       ></el-input>
       <el-button @click="filterTable">Search</el-button>
-      <el-button type="warning" @click="sendToServer">접수</el-button>
+
       <!-- 접수 버튼 추가 -->
     </div>
   </div>
@@ -49,10 +49,13 @@
       prop="priority"
       width="100px"
     ></el-table-column>
-    <el-table-column v-if="userType === 'admin'" label="Action" width="200">
+    <el-table-column v-if="userType === 'admin'" label="Action" width="300">
       <!-- 추가된 '자세히' 버튼 컬럼 -->
 
       <template #default="scope">
+        <el-button type="success" @click="sendToServer(scope.row.applicationID)"
+          >접수</el-button
+        >
         <el-button
           type="primary"
           @click="
@@ -68,9 +71,8 @@
           "
           :disabled="scope.row.applicationVersion === '1'"
           >삭제</el-button
-        >        
+        >
       </template>
-      
     </el-table-column>
   </el-table>
   <el-pagination
@@ -80,6 +82,93 @@
     v-model:current-page="currentPage"
     class="pagination-margin"
   ></el-pagination>
+  <div style="margin-top: 30px">
+    <div class="search-panel">
+      <div class="search-box">
+        <el-input
+          v-model="searchQuery"
+          class="search-input mr10"
+          placeholder="QR Code를 스켄하세요"
+        ></el-input>
+        <el-button @click="filterTable">Search</el-button>
+
+        <!-- 접수 버튼 추가 -->
+      </div>
+    </div>
+    <el-table
+      :data="
+        filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+      "
+      border
+      class="table"
+      header-cell-class-name="table-header"
+      :row-class-name="getRowClass"
+    >
+      <el-table-column label="UUID" prop="applicationID"></el-table-column>
+      <el-table-column label="Model Name" prop="productName"></el-table-column>
+      <el-table-column label="LOT ID" prop="lotId"></el-table-column>
+      <el-table-column label="Test Type" prop="measType"></el-table-column>
+      <el-table-column label="개발자 / 의뢰자">
+        <template #default="scope">
+          <span>{{ scope.row.designer }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="의뢰서 작성일">
+        <template #default="scope">
+          <span>{{ formatTime(scope.row.dateOfCreated) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="완료일">
+        <template #default="scope">
+          <span>{{ formatTime(scope.row.dateOfFinished) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="진행도">
+        <template #default="scope">
+          <span>{{ scope.row.progress }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="우선순위"
+        prop="priority"
+        width="100px"
+      ></el-table-column>
+      <el-table-column v-if="userType === 'admin'" label="Action" width="300">
+        <!-- 추가된 '자세히' 버튼 컬럼 -->
+
+        <template #default="scope">
+          <el-button
+            type="success"
+            @click="sendToServer(scope.row.applicationID)"
+            >접수</el-button
+          >
+          <el-button
+            type="primary"
+            @click="
+              viewDetail(scope.row.applicationID, scope.row.applicationType)
+            "
+            :disabled="scope.row.applicationVersion === '1'"
+            >자세히</el-button
+          >
+          <el-button
+            type="danger"
+            @click="
+              viewDetail(scope.row.applicationID, scope.row.applicationType)
+            "
+            :disabled="scope.row.applicationVersion === '1'"
+            >삭제</el-button
+          >
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-pagination
+      layout="prev, pager, next"
+      :total="filteredData.length"
+      :page-size="pageSize"
+      v-model:current-page="currentPage"
+      class="pagination-margin"
+    ></el-pagination>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -89,7 +178,7 @@ import { useRouter } from "vue-router";
 import { getNewTegApplication } from "../../../utils/tegUtility";
 import { TegApplication as newTegApplications } from "../../../utils/tegTypes";
 // import { logSearchQuery } from "./TegApplicationListTable";
-import { logSearchQuery } from "./TegApplicationListTable";
+import { updateApplicationStatus } from "./TegApplicationListTable";
 
 import {
   TegApplication,
@@ -110,10 +199,8 @@ const pageSize = props.pageSize;
 const applications = ref<TegApplication[]>([]);
 const newApplications = ref<TegApplication[]>([]);
 
-console.log(applications);
-
-async function sendToServer() {
-  logSearchQuery(searchQuery.value, "reserved");
+async function sendToServer(uuid: string) {
+  updateApplicationStatus(uuid, "reserved");
 }
 
 onMounted(async () => {
@@ -132,8 +219,12 @@ onMounted(async () => {
 });
 
 const filteredData = computed(() => {
-  return applications.value.filter((item) =>
-    item.applicationID.toLowerCase().includes(searchQuery.value.toLowerCase())
+  return applications.value.filter(
+    (item) =>
+      item.applicationID
+        .toLowerCase()
+        .includes(searchQuery.value.toLowerCase()) ||
+      item.lotId.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
 });
 

@@ -11,6 +11,7 @@ function checkMeasTypes(measInfo: MeasInfo[]): boolean {
   let tempBool = false;
   const validTypes: string[] = [
     "TCF",
+    "TEG-P",
     "TEG-1",
     "TEG-1.5",
     "TEG-2",
@@ -28,8 +29,9 @@ function checkMeasTypes(measInfo: MeasInfo[]): boolean {
   }
 
   if (!tempBool) {
-    ElMessage.error(
-      "측정종류에는 TCF , TEG-1, TEG-1.5, TEG-2, TEG-3, PDT 중 하나는 선택되어야 합니다"
+    ElMessage.error(      
+      "측정종류에는 TCF , TEG-P, TEG-1, TEG-1.5, TEG-2, TEG-3, PDT 중 하나는 선택되어야 합니다"
+
     );
   }
 

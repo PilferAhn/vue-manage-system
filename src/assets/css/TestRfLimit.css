@@ -1,0 +1,19 @@
+.container {
+  padding: 20px;
+}
+
+.spec-section {
+  border: 2px solid #2ecc71; /* 초록색 테두리 */
+  padding: 20px;
+  margin-top: 20px;
+  background-color: #e9f7ef; /* 밝은 초록색 배경 */
+  border-radius: 8px;
+}
+
+.files-section {
+  border: 2px solid #3498db; /* 파란색 테두리 */
+  padding: 20px;
+  margin-top: 20px;
+  background-color: #f0f8ff; /* 밝은 파란색 배경 */
+  border-radius: 8px;
+}

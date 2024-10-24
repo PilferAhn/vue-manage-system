@@ -1,0 +1,871 @@
+{
+    "k1": {
+        "직접 입력" : [],
+        "Band28+20": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 620,
+                "step": 5,
+                "points": 114,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 2,
+                "start": 620,
+                "stop": 925,
+                "step": 0.1,
+                "points": 3050,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 3,
+                "start": 925,
+                "stop": 6000,
+                "step": 5,
+                "points": 1015,
+                "IFBW": "10kHz"
+            }
+        ],
+        "B1+3+41": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 1650,
+                "step": 5,
+                "points": 320,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 2,
+                "start": 1650,
+                "stop": 2850,
+                "step": 0.1,
+                "points": 12000,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 3,
+                "start": 2850,
+                "stop": 8500,
+                "step": 5,
+                "points": 1130,
+                "IFBW": "10kHz"
+            }
+        ],
+        "B71": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 500,
+                "step": 5,
+                "points": 90,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 2,
+                "start": 500,
+                "stop": 900,
+                "step": 0.1,
+                "points": 4000,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 3,
+                "start": 900,
+                "stop": 6000,
+                "step": 5,
+                "points": 1020,
+                "IFBW": "10kHz"
+            }
+        ],
+        "B34+30": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 1816,
+                "step": 5,
+                "points": 353,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 2,
+                "start": 1817,
+                "stop": 2555,
+                "step": 0.1,
+                "points": 7380,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 3,
+                "start": 2556,
+                "stop": 6000,
+                "step": 5,
+                "points": 688,
+                "IFBW": "10kHz"
+            }
+        ],
+        "B71(ZX71AUH)": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 550,
+                "step": 5,
+                "points": 100,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 2,
+                "start": 550,
+                "stop": 750,
+                "step": 0.1,
+                "points": 2000,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 3,
+                "start": 750,
+                "stop": 6000,
+                "step": 5,
+                "points": 1050,
+                "IFBW": "10kHz"
+            }
+        ],
+        "B2//B7": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 1599,
+                "step": 5,
+                "points": 309,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 2,
+                "start": 1600,
+                "stop": 3000,
+                "step": 0.1,
+                "points": 14000,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 3,
+                "start": 3001,
+                "stop": 6000,
+                "step": 5,
+                "points": 599,
+                "IFBW": "10kHz"
+            }
+        ],
+        "Band28B": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 619,
+                "step": 5,
+                "points": 113,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 2,
+                "start": 620,
+                "stop": 820,
+                "step": 0.1,
+                "points": 2000,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 3,
+                "start": 821,
+                "stop": 6000,
+                "step": 5,
+                "points": 1035,
+                "IFBW": "10kHz"
+            }
+        ],
+        "B66+3+7": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 1700,
+                "step": 5,
+                "points": 330,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 2,
+                "start": 1700,
+                "stop": 2800,
+                "step": 0.1,
+                "points": 11000,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 3,
+                "start": 2800,
+                "stop": 6000,
+                "step": 5,
+                "points": 640,
+                "IFBW": "10kHz"
+            }
+        ],
+        "B14": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 600,
+                "step": 5,
+                "points": 110,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 2,
+                "start": 600,
+                "stop": 900,
+                "step": 0.1,
+                "points": 3000,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 3,
+                "start": 900,
+                "stop": 6000,
+                "step": 5,
+                "points": 1020,
+                "IFBW": "10kHz"
+            }
+        ],
+        "LB,L5,HB": [
+            {
+                "number": 1,
+                "start": 300,
+                "stop": 999,
+                "step": 5,
+                "points": 139,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 2,
+                "start": 1000,
+                "stop": 1299,
+                "step": 0.1,
+                "points": 2990,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 3,
+                "start": 1300,
+                "stop": 6000,
+                "step": 5,
+                "points": 940,
+                "IFBW": "10kHz"
+            }
+        ],
+        "Band26": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 759,
+                "step": 5,
+                "points": 141,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 2,
+                "start": 760,
+                "stop": 960,
+                "step": 0.1,
+                "points": 2000,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 3,
+                "start": 961,
+                "stop": 6000,
+                "step": 5,
+                "points": 1007,
+                "IFBW": "10kHz"
+            }
+        ],
+        "N75N76": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 1200,
+                "step": 5,
+                "points": 230,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 2,
+                "start": 1201,
+                "stop": 2000,
+                "step": 0.1,
+                "points": 7990,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 3,
+                "start": 2001,
+                "stop": 6000,
+                "step": 5,
+                "points": 799,
+                "IFBW": "10kHz"
+            }
+        ],
+        "B66+3+25": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 1650,
+                "step": 5,
+                "points": 320,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 2,
+                "start": 1650,
+                "stop": 2450,
+                "step": 0.1,
+                "points": 8000,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 3,
+                "start": 2450,
+                "stop": 6000,
+                "step": 5,
+                "points": 710,
+                "IFBW": "10kHz"
+            }
+        ],
+        "B12": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 599,
+                "step": 5,
+                "points": 109,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 2,
+                "start": 600,
+                "stop": 900,
+                "step": 0.1,
+                "points": 3000,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 3,
+                "start": 901,
+                "stop": 6000,
+                "step": 5,
+                "points": 1019,
+                "IFBW": "10kHz"
+            }
+        ],
+        "B7+41": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 2199,
+                "step": 5,
+                "points": 429,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 2,
+                "start": 2200,
+                "stop": 3000,
+                "step": 0.1,
+                "points": 8000,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 3,
+                "start": 3001,
+                "stop": 6000,
+                "step": 5,
+                "points": 599,
+                "IFBW": "10kHz"
+            }
+        ],
+        "B39+40": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 1700,
+                "step": 5,
+                "points": 330,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 2,
+                "start": 1750,
+                "stop": 2050,
+                "step": 0.1,
+                "points": 3000,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 3,
+                "start": 2050,
+                "stop": 2200,
+                "step": 5,
+                "points": 30,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 4,
+                "start": 2200,
+                "stop": 2500,
+                "step": 0.1,
+                "points": 3000,
+                "IFBW": "10kHz"
+            },
+            {
+                "number": 5,
+                "start": 2500,
+                "stop": 6000,
+                "step": 5,
+                "points": 700,
+                "IFBW": "10kHz"
+            }
+        ]
+    },
+    "normal": {
+        "Band28+20": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 620,
+                "step": 2.864321608040201,
+                "points": 199,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 2,
+                "start": 620,
+                "stop": 925,
+                "step": 0.5083333333333333,
+                "points": 600,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 3,
+                "start": 925,
+                "stop": 6000,
+                "step": 6.351689612015019,
+                "points": 799,
+                "IFBW": "20kHz"
+            }
+        ],
+        "B1+3+41": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 1650,
+                "step": 6.956521739130435,
+                "points": 230,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 2,
+                "start": 1650,
+                "stop": 2850,
+                "step": 1.0909090909090908,
+                "points": 1100,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 3,
+                "start": 2850,
+                "stop": 8500,
+                "step": 21.082089552238806,
+                "points": 268,
+                "IFBW": "20kHz"
+            }
+        ],
+        "B71": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 500,
+                "step": 2.2613065326633164,
+                "points": 199,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 2,
+                "start": 500,
+                "stop": 900,
+                "step": 0.4,
+                "points": 1000,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 3,
+                "start": 900,
+                "stop": 6000,
+                "step": 12.781954887218046,
+                "points": 399,
+                "IFBW": "20kHz"
+            }
+        ],
+        "B34+30": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 1816,
+                "step": 5.906354515050167,
+                "points": 299,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 2,
+                "start": 1817,
+                "stop": 2555,
+                "step": 0.9225,
+                "points": 800,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 3,
+                "start": 2556,
+                "stop": 6000,
+                "step": 6.901803607214429,
+                "points": 499,
+                "IFBW": "20kHz"
+            }
+        ],
+        "B71(ZX71AUH)": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 550,
+                "step": 10,
+                "points": 50,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 2,
+                "start": 550,
+                "stop": 750,
+                "step": 0.2,
+                "points": 1000,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 3,
+                "start": 750,
+                "stop": 6000,
+                "step": 10,
+                "points": 525,
+                "IFBW": "20kHz"
+            }
+        ],
+        "B2//B7": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 1599,
+                "step": 5.1806020066889635,
+                "points": 299,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 2,
+                "start": 1600,
+                "stop": 3000,
+                "step": 1.4,
+                "points": 1000,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 3,
+                "start": 3001,
+                "stop": 6000,
+                "step": 10.03010033444816,
+                "points": 299,
+                "IFBW": "20kHz"
+            }
+        ],
+        "Band28B": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 619,
+                "step": 2.85929648241206,
+                "points": 199,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 2,
+                "start": 620,
+                "stop": 820,
+                "step": 0.5,
+                "points": 400,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 3,
+                "start": 821,
+                "stop": 6000,
+                "step": 5.1841841841841845,
+                "points": 999,
+                "IFBW": "20kHz"
+            }
+        ],
+        "B66+3+7": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 1700,
+                "step": 6.626506024096385,
+                "points": 249,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 2,
+                "start": 1700,
+                "stop": 2800,
+                "step": 1,
+                "points": 1100,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 3,
+                "start": 2800,
+                "stop": 6000,
+                "step": 12.85140562248996,
+                "points": 249,
+                "IFBW": "20kHz"
+            }
+        ],
+        "B14": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 600,
+                "step": 1.839464882943144,
+                "points": 299,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 2,
+                "start": 600,
+                "stop": 900,
+                "step": 0.375,
+                "points": 800,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 3,
+                "start": 900,
+                "stop": 6000,
+                "step": 10.220440881763528,
+                "points": 498,
+                "IFBW": "20kHz"
+            }
+        ],
+        "LB,L5,HB": [
+            {
+                "number": 1,
+                "start": 300,
+                "stop": 999,
+                "step": 4.992857142857143,
+                "points": 140,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 2,
+                "start": 1000,
+                "stop": 1299,
+                "step": 0.49833333333333335,
+                "points": 600,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 3,
+                "start": 1300,
+                "stop": 6000,
+                "step": 5.477855477855478,
+                "points": 858,
+                "IFBW": "20kHz"
+            }
+        ],
+        "Band26": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 759,
+                "step": 3.562814070351759,
+                "points": 199,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 2,
+                "start": 760,
+                "stop": 960,
+                "step": 0.25,
+                "points": 800,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 3,
+                "start": 961,
+                "stop": 6000,
+                "step": 8.412353923205343,
+                "points": 599,
+                "IFBW": "20kHz"
+            }
+        ],
+        "N75N76": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 1200,
+                "step": 5,
+                "points": 230,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 2,
+                "start": 1201,
+                "stop": 2000,
+                "step": 0.99875,
+                "points": 800,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 3,
+                "start": 2001,
+                "stop": 6000,
+                "step": 9.9975,
+                "points": 400,
+                "IFBW": "20kHz"
+            }
+        ],
+        "B66+3+25": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 1650,
+                "step": 6.42570281124498,
+                "points": 249,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 2,
+                "start": 1650,
+                "stop": 2450,
+                "step": 0.7272727272727273,
+                "points": 1100,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 3,
+                "start": 2450,
+                "stop": 6000,
+                "step": 14.257028112449799,
+                "points": 249,
+                "IFBW": "20kHz"
+            }
+        ],
+        "B12": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 599,
+                "step": 5.545454545454546,
+                "points": 98,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 2,
+                "start": 600,
+                "stop": 900,
+                "step": 0.6,
+                "points": 500,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 3,
+                "start": 901,
+                "stop": 6000,
+                "step": 5.104104104104104,
+                "points": 998,
+                "IFBW": "20kHz"
+            }
+        ],
+        "B7+41": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 2199,
+                "step": 7.187290969899665,
+                "points": 299,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 2,
+                "start": 2200,
+                "stop": 3000,
+                "step": 0.8,
+                "points": 1000,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 3,
+                "start": 3001,
+                "stop": 6000,
+                "step": 10.03010033444816,
+                "points": 299,
+                "IFBW": "20kHz"
+            }
+        ],
+        "B39+40": [
+            {
+                "number": 1,
+                "start": 50,
+                "stop": 1700,
+                "step": 11.073825503355705,
+                "points": 149,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 2,
+                "start": 1750,
+                "stop": 2050,
+                "step": 0.5,
+                "points": 600,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 3,
+                "start": 2050,
+                "stop": 2200,
+                "step": 3.125,
+                "points": 48,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 4,
+                "start": 2200,
+                "stop": 2500,
+                "step": 0.5,
+                "points": 600,
+                "IFBW": "20kHz"
+            },
+            {
+                "number": 5,
+                "start": 2500,
+                "stop": 6000,
+                "step": 17.587939698492463,
+                "points": 199,
+                "IFBW": "20kHz"
+            }
+        ]
+    }
+}

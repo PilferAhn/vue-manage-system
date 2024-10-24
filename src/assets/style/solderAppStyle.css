@@ -37,3 +37,8 @@
 .el-select {
   width: 100%;
 }
+
+/* input의 placeholder 텍스트를 오른쪽 정렬 */
+:deep(.right-placeholder input::placeholder) {
+  text-align: right;
+}

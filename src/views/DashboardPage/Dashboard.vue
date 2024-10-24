@@ -78,7 +78,7 @@
     <el-row :gutter="20">
       <el-col :span="12">
         <el-card shadow="hover">
-          <WeeklyTEGSummaryGraph> </WeeklyTEGSummaryGraph>
+          <WeeklyTEGSummaryGraph2> </WeeklyTEGSummaryGraph2>
         </el-card>
       </el-col>
       <el-col :span="12">
@@ -105,6 +105,7 @@ import imgurl from "../../assets/img/img.jpg";
 import chipIcon from "../../assets/img/chipIcon.webp";
 import waferIcone from "../../assets/img/waferIcon.webp";
 import nonLinearIcone from "../../assets/img/nonLinearIcon.webp";
+import WeeklyTEGSummaryGraph2 from "../AdminPage/Statistic/WeeklyTEGSummaryGraph2.vue"
 
 // 현재 날짜
 const now = new Date();
