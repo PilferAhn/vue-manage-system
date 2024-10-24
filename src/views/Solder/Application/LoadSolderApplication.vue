@@ -65,6 +65,10 @@
                       value="DUAL (2X1/1X2)"
                     ></el-option>
                     <el-option
+                      label="DDPX (6 Port)"
+                      value="DDPX (6 Port)"
+                    ></el-option>
+                    <el-option
                       label="DUAL (2X2)"
                       value="DUAL (2X2)"
                     ></el-option>
@@ -191,28 +195,33 @@
                   <el-input v-model="scope.row.detail"></el-input>
                 </template>
               </el-table-column>
-              <!-- <el-table-column prop="status" label="status" :align="'center'">
-                <template #default="scope" >
-                  <el-select
-                    v-model="scope.row.status"
-                    placeholder="Select Filter Type"
-                  >
-                    <el-option label="측정 대기" value="created"></el-option>
-                    <el-option label="측정중" value="in progress"></el-option>
-                    <el-option label="측정 완료" value="finished"></el-option>                    
-                  </el-select>                  
-                </template>
-              </el-table-column> -->
-              <el-table-column prop="Action" label="Action" :align="'center'">
+              <el-table-column label="UPDATE" :align="'center'" width="230">
                 <template #default="scope">
-                  <el-button
-                    type="primary"
-                    size="small"
-                    @click="
-                      handleUpdateStatus(scope.row.uuid, scope.row.status)
-                    "
-                    >Delete</el-button
-                  >
+                  <div style="display: flex; align-items: center; gap: 10px">
+                    <el-select
+                      class="m-4"
+                      v-model="scope.row.status"
+                      placeholder="Select"
+                      size="small"
+                      style="width: 130px"
+                      :align="'center'"
+                    >
+                      <el-option
+                        v-for="item in statusList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      /> </el-select
+                    ><el-button
+                      type="primary"
+                      size="small"
+                      :align="'center'"
+                      :disabled="!scope.row.isMeasured"
+                      @click="handleUpdate(scope.row)"
+                    >
+                      Update
+                    </el-button>
+                  </div>
                 </template>
               </el-table-column>
             </el-table>
@@ -378,17 +387,22 @@
 import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 
-import { sendApplicationData } from "./SolderApplication";
+import { sendApplicationData, updateStatusByUuid } from "./SolderApplication";
 import inputText from "../../Common/InputText.vue";
 import longInputText from "../../Common/LongInputText.vue";
+import { statusList } from "../ApplicationList/SolderApplicationList";
 import { reactive } from "vue";
 import { solderApplicationRules } from "./SolderApplicationRules";
 import {
   initializeApplicationData2,
   downloadFileByUrl,
 } from "./LoadSolderApplication";
-import { useApplicationData } from "./LoadSolderApplication"; // 방금 만든 훅 불러오기
+import {
+  useApplicationData,
+  fetchApplicationData,
+} from "./LoadSolderApplication"; // 방금 만든 훅 불러오기
 import { sortMeasurementByNumber } from "../ApplicationList/SolderApplicationList"; // 방금 만든 훅 불러오기
+import type { ApplicationData } from "../../../interface/solderAppInterface";
 // useRoute 훅을 사용하여 현재 라우트 객체를 가져옵니다.
 const route = useRoute();
 
@@ -485,7 +499,14 @@ const updateMeasurements = () => {
   );
 };
 
-// // Function to update the measurements array based on the selected quantity
+const emit = defineEmits(["status-updated"]);
+function handleUpdate(row: ApplicationData) {
+  updateStatusByUuid(uuid, row.uuid, row.status);  
+  // fetchApplicationData(row, uuid);
+
+}
+
+// Function to update the measurements array based on the selected quantity
 const updateSegments = () => {
   const selectedQuantity = applicationData.segmentQuantity;
   // segments 배열을 선택된 수량만큼 초기화
@@ -496,7 +517,7 @@ const updateSegments = () => {
       start: "",
       stop: "",
       points: "",
-      ifwb: "10",
+      ifbw: "20",
     })
   );
 };

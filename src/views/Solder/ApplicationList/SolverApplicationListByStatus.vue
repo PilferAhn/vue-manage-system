@@ -12,19 +12,15 @@
 
       <div class="legend">
         <div class="legend-item">
-          <el-button class="btn-in-progress" size="mini" disabled
-            >진행 중</el-button
-          >
+          <el-button class="btn-in-progress" disabled>진행 중</el-button>
           <span>진행 중</span>
         </div>
         <div class="legend-item">
-          <el-button class="btn-finished" size="mini" disabled>완료</el-button>
+          <el-button class="btn-finished" disabled>완료</el-button>
           <span>완료</span>
         </div>
         <div class="legend-item">
-          <el-button class="btn-waiting" size="mini" disabled
-            >대기 중</el-button
-          >
+          <el-button class="btn-waiting" disabled>대기 중</el-button>
           <span>대기 중</span>
         </div>
       </div>
@@ -40,28 +36,28 @@
       <el-table-column
         prop="modelName"
         label="Product Name"
-        align="center"
+        :align="'center'"
       ></el-table-column>
 
       <el-table-column
         prop="lotId"
         label="Lot ID"
-        align="center"
+        :align="'center'"
       ></el-table-column>
 
       <el-table-column
         prop="designer"
         label="개발자"
-        align="center"
+        :align="'center'"
       ></el-table-column>
 
       <el-table-column
         prop="requester"
         label="의뢰자"
-        align="center"
+        :align="'center'"
       ></el-table-column>
 
-      <el-table-column label="진행도" align="center" width="400">
+      <el-table-column label="진행도" :align="'center'" width="400">
         <template #default="scope">
           <div>
             <el-button
@@ -87,21 +83,17 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Action" align="center" width="250">
+      <!-- <div v-if="!isIdIncluded "> -->
+       
+      <!-- </div> -->
+      <el-table-column label="Detail" :align="'center'" width="100">
         <template #default="scope">
           <el-button
-            type="primary"
+            type="success"
             size="small"
             @click="handleDetail(scope.row)"
           >
             Details
-          </el-button>
-          <el-button
-            type="success"
-            size="small"
-            @click="handleUpdate(scope.row)"
-          >
-            Complete
           </el-button>
         </template>
       </el-table-column>
@@ -113,7 +105,9 @@
 import { ref, computed } from "vue";
 import type { ApplicationData } from "../../../interface/solderAppInterface";
 import { useRouter } from "vue-router";
-import { updateStatusToComplete } from "../Application/SolderApplication";
+import { updateStatusByUuid } from "../Application/SolderApplication";
+import SelectOptions from "../../Common/SelectOptions.vue";
+import { statusList } from "./SolderApplicationList";
 
 const props = defineProps<{
   applicationData: ApplicationData[];
@@ -150,6 +144,13 @@ function getStatusClass(status: string) {
   }
 }
 
+// w2150704, admin // wh2409001
+
+const name = localStorage.getItem("ms_username");
+const idArray = ["w2150704", "admin", "wh2409001"];
+// id가 배열에 포함되어 있는지 확인
+const isIdIncluded = idArray.includes(localStorage.id);
+
 const router = useRouter();
 function handleDetail(row: ApplicationData) {
   router.push({
@@ -159,8 +160,8 @@ function handleDetail(row: ApplicationData) {
 }
 const emit = defineEmits(["status-updated"]);
 function handleUpdate(row: ApplicationData) {
-  updateStatusToComplete(row.uuid).then(() => {
-    row.status = "finished";
+  updateStatusByUuid(row.uuid, row.status).then(() => {
+    // row.status = "finished";
     emit("status-updated");
   });
 }

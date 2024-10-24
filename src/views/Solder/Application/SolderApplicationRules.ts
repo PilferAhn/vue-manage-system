@@ -19,9 +19,6 @@ export const solderApplicationRules = {
   evbType: [
     { required: true, message: 'EVB Type은 필수 입력입니다.', trigger: 'blur' },
   ],
-  shipmentInfo: [
-    { required: true, message: 'EVB 출하정보는 필수 입력입니다.', trigger: 'blur' },
-  ],
   deembedMode: [
     { required: true, message: 'Deembed Mode 출하정보는 필수 입력입니다.', trigger: 'blur' },
   ],

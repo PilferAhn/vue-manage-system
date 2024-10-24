@@ -35,7 +35,7 @@ export async function downloadFileByUrl(fileUuid: string, fileName: string) {
 }
 
 // 함수: uuid에 따라 데이터를 가져오는 함수
-async function fetchApplicationData(
+export async function fetchApplicationData(
   applicationData: ApplicationData,
   uuid: string
 ) {
@@ -62,8 +62,7 @@ export function useApplicationData(
   watch(
     () => uuid,
     async (newUuid) => {
-      if (newUuid) {
-        console.log("New UUID");
+      if (newUuid) {        
         const fetchedData = await fetchApplicationData(
           applicationData,
           newUuid

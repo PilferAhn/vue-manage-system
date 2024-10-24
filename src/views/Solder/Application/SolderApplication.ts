@@ -10,12 +10,13 @@ import fs from "fs/promises";
 import path from "path";
 
 export async function downloadSolderApplicationXlsx(
-  applicationData: ApplicationData
+  applicationData: ApplicationData,
+  destinationUrl: string
 ) {
   try {
     const requestData = convertToPep8(applicationData);
 
-    const template_url = `/solder/send_template`;
+    const template_url = destinationUrl;
 
     const response = await axios({
       url: template_url,
@@ -228,13 +229,18 @@ function updateMeasurementStatus(applicationData: ApplicationData) {
   }
 }
 
-export async function updateStatusToComplete(uuid: string) {
+export async function updateStatusByUuid(
+  application_uuid: string,
+  uuid: string,
+  status: string
+) {
   try {
-    const url = `/solder/update_status`; // uuid를 포함한 URL을 정의
+    const url = `/solder/update_measurement_status`; // uuid를 포함한 URL을 정의
 
     const formData = new FormData();
+    formData.append("application_uuid", application_uuid);
     formData.append("uuid", uuid); // UUID 추가
-    formData.append("status", "finished");
+    formData.append("status", status);
 
     axios.post(url, formData);
   } catch (error) {

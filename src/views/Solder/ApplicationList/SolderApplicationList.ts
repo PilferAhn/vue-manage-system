@@ -1,6 +1,12 @@
 import axios from "axios";
 import type { ApplicationData } from "../../../interface/solderAppInterface";
 
+export const statusList = [
+  {key : "created", value : "created", label : "Waiting"},
+  {key : "in progress", value : "in progress", label : "In Progress"},  
+  {key : "finished", value : "finished", label : "FINISH"},
+]
+
 // 서버에서 받아온 데이터를 저장할 타입 지정
 export async function get_application_list_by_status(
   status: string
@@ -125,3 +131,4 @@ export function convertKeysToCamelCase(data: any): any {
   }
   return data; // 기본값(primitive)은 그대로 반환
 }
+

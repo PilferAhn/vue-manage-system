@@ -3,7 +3,7 @@
     <el-tabs v-model="activeTab">
       <el-tab-pane label="Created" name="created">
         <SolverApplicationListByStatus
-          :applicationData="createdData"
+          :applicationData="progressData"
           @status-updated="refreshData"
         />
       </el-tab-pane>
@@ -28,13 +28,25 @@ const activeTab = ref("created");
 
 // Data for each status
 const finishedData = ref<ApplicationData[]>([]);
+const progressData = ref<ApplicationData[]>([]);
 const createdData = ref<ApplicationData[]>([]);
 
 // Function to fetch the data again
 async function refreshData() {
   try {
     createdData.value = await get_application_list_by_status("created");
+    progressData.value = await get_application_list_by_status("in progress");
     finishedData.value = await get_application_list_by_status("finished");
+
+    progressData.value = [...progressData.value, ...createdData.value];
+    // console.log(finishedData.value);
+    // console.log(createdData.value);
+
+    const matchingItems = finishedData.value.filter((item1) =>
+      createdData.value.some((item2) => item2.uuid === item1.uuid)
+    );
+
+    console.log(matchingItems);
 
     // Filter data based on status
     // finishedData.value = data.filter((item) => item.status === "finished");

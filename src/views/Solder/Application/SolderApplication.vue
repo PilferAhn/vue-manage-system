@@ -61,6 +61,10 @@
                     <el-option label="RX" value="RX"></el-option>
                     <el-option label="TRX" value="TRX"></el-option>
                     <el-option
+                      label="DDPX (6 Port)"
+                      value="DDPX (6 Port)"
+                    ></el-option>
+                    <el-option
                       label="DUAL (2X1/1X2)"
                       value="DUAL (2X1/1X2)"
                     ></el-option>
@@ -93,28 +97,6 @@
 
             <el-row :gutter="20">
               <el-col :span="12">
-                <inputText
-                  v-model="applicationData.evbType"
-                  label="EVB Type"
-                  prop="evbType"
-                  placeholder="ex) 1612_Rev5_W200"
-                />
-              </el-col>
-
-              <el-col :span="12">
-                <inputText
-                  v-model="applicationData.evbInfo"
-                  label="EVB name for external deembeding"
-                  prop="evbInfo"
-                  placeholder="ex) EVB name for external deembeding"
-                  :disabled="
-                    applicationData.deembedMode === 'Port Extention'
-                  "
-                />
-              </el-col>
-            </el-row>
-            <el-row :gutter="20">
-              <el-col :span="12">
                 <el-form-item label="Band">
                   <el-select
                     v-model="applicationData.band"
@@ -129,7 +111,7 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :span="12">
+              <el-col :span="6">
                 <!-- Change EVB 출하정보 to use el-date-picker -->
                 <el-form-item label="EVB 출하정보" prop="shipmentInfo">
                   <el-date-picker
@@ -156,6 +138,79 @@
                     <el-option label="HQ" value="HQ"></el-option>
                   </el-select>
                 </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item
+                  label="WHC EVB List Excel 다운로드"
+                  prop="matchingComponentType"
+                >
+                  <el-button
+                    type="primary"
+                    @click="getEvbListExcel"                    
+                  >
+                    WHC EVB LIST EXCEL
+                  </el-button>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <!-- Same column for checkbox and the evbType select/input -->
+              <el-col :span="8">
+                <div style="display: flex; align-items: center">
+                  <!-- Form item that displays either inputText or el-select depending on isManualInput -->
+                  <el-form-item label="EVB Type" style="flex-grow: 1">
+                    <!-- Show inputText if manual input is enabled -->
+                    <template v-if="isManualInput">
+                      <inputText
+                        v-model="applicationData.evbType"
+                        label=""
+                        prop="evbType"
+                        placeholder="Enter custom EVB Type"
+                        style="width: 100%"
+                      />
+                    </template>
+
+                    <!-- Otherwise show the el-select dropdown -->
+                    <template v-else>
+                      <el-select
+                        v-model="applicationData.evbType"
+                        placeholder="EVB Type 선택"
+                      >
+                        <el-option
+                          v-for="item in evbTypeList"
+                          :key="item.key"
+                          :label="item.label"
+                          :value="item.value"
+                        ></el-option>
+                      </el-select>
+                    </template>
+                  </el-form-item>
+                </div>
+              </el-col>
+
+              <el-col :span="4">
+                <!-- Checkbox to toggle between manual input or dropdown -->
+                <el-form-item label="Action">
+                  <el-button
+                    @click="toggleManualInput"
+                    type="primary"
+                    :plain="!isManualInput"
+                    style="margin-right: 10px"
+                  >
+                    {{ isManualInput ? "EVB Type 선택" : "수동 입력 전환" }}
+                  </el-button>
+                </el-form-item>
+              </el-col>
+
+              <!-- EVB info input text field -->
+              <el-col :span="12">
+                <inputText
+                  v-model="applicationData.evbInfo"
+                  label="EVB name for external deembeding"
+                  prop="evbInfo"
+                  placeholder="ex) EVB name for external deembeding"
+                  :disabled="applicationData.deembedMode === 'Port Extention'"
+                />
               </el-col>
             </el-row>
           </el-card>
@@ -368,6 +423,7 @@ import {
   // updateMeasurements,
   // updateSegments,
 } from "../../../utils/solderApplicationUtil";
+import { evbTypeList } from "./Application";
 import {
   sendApplicationData,
   downloadSolderApplicationXlsx,
@@ -379,6 +435,13 @@ import { reactive } from "vue";
 import { solderApplicationRules } from "./SolderApplicationRules";
 import { bandInformationDict } from "../../../utils/frequancyInfo";
 
+// Toggle function for switching between manual input and select dropdown
+const toggleManualInput = () => {
+  isManualInput.value = !isManualInput.value;
+};
+
+// Determine if manual input should be used
+const isManualInput = ref(false);
 const isForSubmission = ref(true);
 
 // Initialize application data as reactive
@@ -395,6 +458,13 @@ const bandList = Object.keys(bandInformationDict.LTE);
 // Function to handle file selection
 const handleFileChange = (file: any, fileList: File[]) => {
   selectedFiles.value = fileList; // 선택된 파일들의 배열을 저장
+};
+
+// Handle selection change
+const handleEvbTypeChange = (value: string) => {
+  if (value === "수동 입력") {
+    isManualInput.value = true;
+  }
 };
 
 const segmentData = ref<any>(null);
@@ -415,8 +485,12 @@ const handleExceed = () => {
   console.warn("File limit exceeded");
 };
 
+function getEvbListExcel() {
+  downloadSolderApplicationXlsx(applicationData, `/solder/send_evb`); // Pass the ApplicationData object
+}
+
 function downloadFile() {
-  downloadSolderApplicationXlsx(applicationData); // Pass the ApplicationData object
+  downloadSolderApplicationXlsx(applicationData, `/solder/send_template`); // Pass the ApplicationData object
 }
 
 // Submit handler with form validation
