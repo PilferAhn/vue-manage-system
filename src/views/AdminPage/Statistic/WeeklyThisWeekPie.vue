@@ -77,7 +77,7 @@ onMounted(async () => {
         plugins: {
           title: {
             display: true,
-            text: "TEG 측정 일간 측정 현황 (Wafer 기준) - " + totalWafer + "장",
+            text: "TEG 일간 측정 현황 (Wafer 기준) - " + totalWafer + "장",
             font : {
               size : 25
             }

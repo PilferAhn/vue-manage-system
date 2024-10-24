@@ -85,7 +85,7 @@ onMounted(async () => {
         plugins: {
           title: {
             display: true,
-            text: 'TEG 측정 월간 의뢰 비율 (Wafer 기준)',
+            text: 'TEG 월간 측정 현황 (Wafer 기준)',
             font : {
               size : 25
             }          

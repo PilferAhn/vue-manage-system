@@ -115,7 +115,7 @@ onMounted(async () => {
           title: {
             display: true,
             text:
-              "TEG 측정 일간 측정 현황 (Wafer 기준) - " +
+              "TEG 일간 측정 현황 (Wafer 기준) - " +
               sumAllNumbersAsString() +
               "장",
             font: {

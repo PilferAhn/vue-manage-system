@@ -132,34 +132,34 @@ const items = [
       //   },
     ],
   },
-  {
-    icon: "DocumentAdd",
-    index: "3",
-    title: "개발 SPL",
-    permiss: "11",
-    subs: [
-      {
-        index: "/fab/create-application",
-        title: "투입 계획서 작성",
-        permiss: "11",
-      },
-      {
-        index: "/fab/my-application-status",
-        title: "투입 계획서 현황",
-        permiss: "11",
-      },
-      {
-        index: "/fab/feb-application-list",
-        title: "투입 계획서 검토",
-        permiss: "11",
-      },
-      {
-        index: "/fab/sample_status",
-        title: "개발 SPL 현황",
-        permiss: "11",
-      },
-    ],
-  },
+  // {
+  //   icon: "DocumentAdd",
+  //   index: "3",
+  //   title: "개발 SPL",
+  //   permiss: "11",
+  //   subs: [
+  //     {
+  //       index: "/fab/create-application",
+  //       title: "투입 계획서 작성",
+  //       permiss: "11",
+  //     },
+  //     {
+  //       index: "/fab/my-application-status",
+  //       title: "투입 계획서 현황",
+  //       permiss: "11",
+  //     },
+  //     {
+  //       index: "/fab/feb-application-list",
+  //       title: "투입 계획서 검토",
+  //       permiss: "11",
+  //     },
+  //     {
+  //       index: "/fab/sample_status",
+  //       title: "개발 SPL 현황",
+  //       permiss: "11",
+  //     },
+  //   ],
+  // },
   {
     icon: "Pear",
     index: "4",
