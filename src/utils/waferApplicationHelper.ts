@@ -8,18 +8,17 @@ export const waferSizeList: string[] = [
 ];
 
 export const measTypes: string[] = [    
-  "Pre-TEG",
+  // "Pre-TEG",
   "TEG-P(0)",
   "TEG-0.5",
   "TEG-1",
   "TEG-1.5",
   "TEG-2",
-  "TEG-3",
-  "CPW",
+  "TEG-3",  
   "TCF",    
   "PDT",
-  "Delay Line",
-  "Harmonic",
+  "CPW",
+  "Delay Line",  
 ];
 
 // Types for the return object of the function
