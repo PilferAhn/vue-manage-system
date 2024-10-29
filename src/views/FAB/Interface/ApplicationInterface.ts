@@ -19,21 +19,24 @@ export interface ProcessData {
   machineName?: string; // machine name
   condition?: string;
 
-  designer_confirm?: string;
+  designerConfirm?: string;
 
-  expect_start_date?: string;
-  expect_finish_date?: string;
+  expectStartDate?: string;
+  expectFinishDate?: string;
 
-  wanted_start_date?: string;
-  wanted_finish_date?: string;
+  wantedFabStartDate?: string;
+  wantedFabFinishDate?: string;
 
-  real_start_date?: string;
-  real_finish_date?: string;
+  realStartDate?: string;
+  realFinishDate?: string;
 
   designer? : string;
   designerId? : string;
 
   requester? : string;
   requesterId? : string;
+
+  status? : string;
+  note? : string;
 
 }

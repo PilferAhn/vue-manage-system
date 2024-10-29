@@ -32,35 +32,104 @@
       :data="paginatedData"
       style="width: 100%"
       @sort-change="handleSortChange"
+      :row-class-name="tableRowClassName"
+      :lazy="true"
     >
-      <el-table-column prop="idx" label="Index" width="80" sortable="custom" />
-     
       <el-table-column
-        prop="fabGroup"
-        label="Fab Group"
+        prop="idx"
+        label="Index"
+        width="100"
+        sortable="custom"
+        :align="'center'"
+      />
+      <el-table-column
+        prop="week"
+        label="Week"
+        width="100"
+        sortable="custom"
+        :align="'center'"
+      />
+      <el-table-column
+        prop="separation"
+        label="구분"
         width="150"
         sortable="custom"
+        :align="'center'"
+      />
+      <el-table-column
+        prop="band"
+        label="BAND"
+        width="170"
+        sortable="custom"
+        :align="'center'"
+      />
+      <el-table-column
+        prop="fabGroup"
+        label="그룹"
+        width="100"
+        sortable="custom"
+        :align="'center'"
       />
       <el-table-column
         prop="productName"
         label="Product Name"
         width="200"
         sortable="custom"
+        :align="'center'"
       />
-      <el-table-column prop="pl" label="PL" width="100" sortable="custom" />
-      <el-table-column prop="spl" label="SPL" width="100" sortable="custom" />
+      <el-table-column
+        prop="stepNumber"
+        label="차수"
+        width="80"
+        sortable="custom"
+        :align="'center'"
+      />
+      <el-table-column
+        prop="pl"
+        label="PL"
+        width="100"
+        sortable="custom"
+        :align="'center'"
+      />
+      <el-table-column
+        prop="spl"
+        label="SPL"
+        width="100"
+        sortable="custom"
+        :align="'center'"
+      />
+      <el-table-column label="일정계획" width="200" :align="'center'">
+        <el-table-column
+          prop="fabIn"
+          label="IN"
+          width="100"
+          :align="'center'"
+        ></el-table-column>
+        <el-table-column
+          prop="fabOut"
+          label="OUT"
+          width="100"
+          :align="'center'"
+        ></el-table-column>
+      </el-table-column>
       <el-table-column
         prop="lotId"
         label="Lot ID"
         width="150"
         sortable="custom"
+        :align="'center'"
       />
-      <el-table-column
-        prop="nowProcessPosition"
-        label="Process Position"
-        width="200"
-        sortable="custom"
-      />
+      <el-table-column label="공정" :align="'center'">
+        <el-table-column
+          prop="nowProcessPosition"
+          label="Process Position"
+          width="200"
+          sortable="custom"
+          :align="'center'"
+        />
+        <el-table-column label="소요시간" width="200" :align="'center'">
+        </el-table-column>
+      </el-table-column>
     </el-table>
 
     <!-- 페이지네이션 컴포넌트 -->
@@ -77,7 +146,7 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from "vue";
 import type { FabData } from "./SampleStatusInterface";
-import { getTodayAsString, getPastDateString } from "./SampleStatus";
+import { getTodayAsString, getPrevious30DaysAsString } from "./SampleStatus";
 import axios from "axios";
 
 const fabData = ref<FabData[]>([]); // 전체 데이터를 저장
@@ -87,7 +156,7 @@ const endDate = ref<Date | null>(null); // 끝 날짜
 
 // 페이지네이션 관련 변수
 const currentPage = ref(1);
-const pageSize = ref(20); // 한 페이지에 표시할 항목 수
+const pageSize = ref(100); // 한 페이지에 표시할 항목 수
 // 정렬 처리 함수
 const handleSortChange = ({ prop, order }: { prop: string; order: string }) => {
   if (order === "ascending") {
@@ -96,9 +165,15 @@ const handleSortChange = ({ prop, order }: { prop: string; order: string }) => {
     paginatedData.value.sort((a, b) => (a[prop] < b[prop] ? 1 : -1));
   }
 };
+
+const finalDateDate = getTodayAsString();
+const startingDate = getPrevious30DaysAsString(finalDateDate);
+
 const url =
-  "http://10.20.10.114/bfsm2/splPlanOfCommitment?hideCheck=false&searchStartTime=2024-09-18&searchEndTime=" +
-  getTodayAsString();
+  "/bfsm2/splPlanOfCommitment?hideCheck=false&searchStartTime=" +
+  startingDate +
+  "&searchEndTime=" +
+  finalDateDate;
 
 // 현재 날짜와 한 달 전 날짜를 설정하는 함수
 const setInitialDates = () => {
@@ -127,26 +202,29 @@ const filterFabData = () => {
     const start = new Date(startDate.value).getTime();
     const end = new Date(endDate.value).getTime();
 
-    // 먼저 realFabIn이 null인 항목을 먼저 찾고 idx로 내림차순 정렬
+    // 먼저 realFabIn이 null인 항목을 찾고 separation이 '연구소'가 아닌 항목을 필터링하여 idx로 내림차순 정렬
     const nullRealFabIn = fabData.value
-      .filter((item) => item.realFabIn === null)
+      .filter((item) => item.realFabIn === null && item.separation !== "연구소")
       .sort((a, b) => b.idx - a.idx);
 
-    // realFabIn이 null이 아닌 항목을 startDate와 endDate로 필터링 후 idx로 내림차순 정렬
+    // realFabIn이 null이 아닌 항목을 startDate와 endDate로 필터링 후 separation이 '연구소'가 아닌 항목을 idx로 내림차순 정렬
     const filteredByDate = fabData.value
       .filter(
         (item) =>
           item.realFabIn !== null &&
           new Date(item.realFabIn).getTime() >= start &&
-          new Date(item.realFabIn).getTime() <= end
+          new Date(item.realFabIn).getTime() <= end &&
+          item.separation !== "연구소"
       )
       .sort((a, b) => b.idx - a.idx);
 
     // 두 배열을 합쳐서 필터링된 데이터를 생성
     filteredFabData.value = [...nullRealFabIn, ...filteredByDate];
   } else {
-    // 날짜가 선택되지 않으면 모든 데이터를 표시하고 정렬
-    filteredFabData.value = fabData.value.sort((a, b) => b.idx - a.idx);
+    // 날짜가 선택되지 않으면 separation이 '연구소'가 아닌 모든 데이터를 표시하고 정렬
+    filteredFabData.value = fabData.value
+      .filter((item) => item.separation !== "연구소")
+      .sort((a, b) => b.idx - a.idx);
   }
 };
 
@@ -167,10 +245,48 @@ onMounted(() => {
   setInitialDates(); // 시작 날짜와 끝 날짜를 설정
   fetchFabData(); // 데이터를 가져온 후 필터링을 자동으로 실행
 });
+
+const today = new Date();
+today.setHours(0, 0, 0, 0); // 시간을 00:00:00으로 초기화
+
+const tableRowClassName = ({
+  row,
+  rowIndex,
+}: {
+  row: FabData;
+  rowIndex: number;
+}) => {
+  const targetDate = new Date(row.fabOut);
+  targetDate.setHours(0, 0, 0, 0); // 시간을 00:00:00으로 설정
+  if (row.currentHoldingFlag >= 1) {
+    return "warning-row";
+  } else if (targetDate.getTime() <= today.getTime()) {
+    return "danger-row";
+  } else if (row.importance === "★") {
+    return "important-row";
+  }
+  // else if (row.importance === "C" || row.importance === "H") {
+  //   return "success-row";
+  // }
+  return "";
+};
 </script>
 
 <style>
 .container {
   padding: 20px;
+}
+/* scoped 제거 후 전역 스타일로 지정 */
+
+.el-table__row.important-row {
+  background-color: rgb(0, 255, 0);
+}
+
+.el-table__row.warning-row {
+  background-color: rgb(255, 165, 0);
+}
+
+.el-table__row.danger-row {
+  background-color: rgb(250, 88, 88);
 }
 </style>

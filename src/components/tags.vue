@@ -1,7 +1,8 @@
 <template>
-	<div class="tags" v-if="tags.show">
+	<div></div>
+	<!-- <div class="tags" v-if="tags.show">
 		<ul>
-			<!-- <li
+			<li
 				class="tags-li"
 				v-for="(item, index) in tags.list"
 				:class="{ active: isActive(item.path) }"
@@ -9,9 +10,9 @@
 			>
 				<router-link :to="item.path" class="tags-li-title">{{ item.title }}</router-link>
 				<el-icon @click="closeTags(index)"><Close /></el-icon>
-			</li> -->
+			</li>
 		</ul>
-		<!-- <div class="tags-close-box">
+		<div class="tags-close-box">
 			<el-dropdown @command="handleTags">
 				<el-button size="small" type="primary">
 					标签选项
@@ -26,8 +27,8 @@
 					</el-dropdown-menu>
 				</template>
 			</el-dropdown>
-		</div> -->
-	</div>
+		</div>
+	</div> -->
 </template>
 
 <script setup lang="ts">

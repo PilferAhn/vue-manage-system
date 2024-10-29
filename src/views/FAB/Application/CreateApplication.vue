@@ -13,7 +13,7 @@ import type { ProcessData } from '../Interface/ApplicationInterface';
 import {processData} from "../Common/Application"
 import Application from './Application.vue';
 
-console.log(processData)
+
 
 </script>
 

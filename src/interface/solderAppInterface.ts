@@ -41,6 +41,7 @@ export interface ApplicationData {
   band?: string;
   designer?: string;
   files? : [];
+  createdDate? : string;
   designerId?: string;
   requester?: string; // 의뢰인 (requester)
   requesterId?: string;

@@ -1,120 +1,3 @@
-<!-- <template>
-  <div class="container">
-    
-    <el-table
-      :data="processData"
-      class="custom-table"
-      style="width: 100%"
-      @row-click="handleRowClick"
-    >
-      <el-table-column
-        prop="group"
-        label="Group"
-        width="100"
-        :align="'center'"
-      />
-      
-      <el-table-column
-        prop="process"
-        label="Process"
-        width="100"
-        :align="'center'"
-      >
-        <template #default="scope">
-          <span class="uppercase">{{ scope.row.process }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="priority"
-        label="Priority"
-        width="80"
-        :align="'center'"
-      />
-      <el-table-column
-        prop="packageType"
-        label="Package Type"
-        width="150"
-        :align="'center'"
-      />
-      <el-table-column
-        prop="modelName"
-        label="Model Name"
-        width="150"
-        :align="'center'"
-      />
-      <el-table-column
-        prop="purpose"
-        label="목적"
-        width="400"
-        :align="'center'"
-      />
-      <el-table-column prop="is_aoi" label="AOI" width="80">
-        <template #default="scope">
-          <el-tag v-if="scope.row.is_aoi" type="success">Yes</el-tag>
-          <el-tag v-else type="danger">No</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="quantity"
-        label="수량"
-        width="100"
-        :align="'center'"
-      />
-      <el-table-column
-        prop="destination"
-        label="출하"
-        width="150"
-        :align="'center'"
-      />
-      <el-table-column prop="code" label="Code" width="80" :align="'center'" />
-      
-      <el-table-column label="FAB Insert Date" width="150" :align="'center'">
-        <template #default="scope">
-          <span>{{ formatDate(scope.row.fabInsertDate) }}</span>
-        </template>
-      </el-table-column>
-
-      
-      <el-table-column label="FAB Finish Date" width="150" :align="'center'">
-        <template #default="scope">
-          <span>{{ formatDate(scope.row.fabFinishDate) }}</span>
-        </template> </el-table-column
-      >lumn prop="wafer_company" label="Wafer Company" width="150"
-      :align="'center'" />
-      <el-table-column
-        prop="waferAngle"
-        label="Wafer Angle"
-        width="150"
-        :align="'center'"
-      />
-      <el-table-column
-        prop="waferThickness"
-        label="Wafer Thickness"
-        width="150"
-        :align="'center'"
-      />
-      <el-table-column
-        prop="waferType"
-        label="Wafer Type"
-        width="100"
-        :align="'center'"
-      />
-      <el-table-column
-        prop="machineName"
-        label="Machine Name"
-        width="150"
-        :align="'center'"
-      />
-      <el-table-column
-        prop="condition"
-        label="Condition"
-        width="500"
-        :align="'center'"
-      />
-    </el-table>
-  </div>
-</template> -->
-
 <template>
   <div class="container">
     <!-- Tabs for This Week, Last Week, and Next Week -->
@@ -167,16 +50,16 @@ const fetchProcessData = async () => {
     const formData = new FormData();
     formData.append("order_by", "id");
     formData.append("order_dir", "asc");
-    formData.append("limit", "0");
-    formData.append("page", "1");
-    formData.append("designer_confirm", "true");
+    // formData.append("limit", "0");
+    // formData.append("page", "1");
+    formData.append("designer_confirm", "false");
 
 
     const url = "/fab_monitoring/get_fab_request_list";
     const response = await axios.post(url, formData);
 
     processData.value = convertToCamelCase(response.data); // Convert fetched data to camelCase
-    console.log(processData.value)
+    
 
     processDataArray.value = processData.value;
   } catch (error) {

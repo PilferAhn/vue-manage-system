@@ -38,20 +38,17 @@ async function refreshData() {
     progressData.value = await get_application_list_by_status("in progress");
     finishedData.value = await get_application_list_by_status("finished");
 
+    // progressData.value = [...progressData.value.reverse(), ...createdData.value.reverse()];
     progressData.value = [...progressData.value, ...createdData.value];
-    // console.log(finishedData.value);
-    // console.log(createdData.value);
+    // finishedData.value = finishedData.value
 
-    const matchingItems = finishedData.value.filter((item1) =>
-      createdData.value.some((item2) => item2.uuid === item1.uuid)
-    );
+    // const matchingItems = finishedData.value.filter((item1) =>
+    //   createdData.value.some((item2) => item2.uuid === item1.uuid)
+    // );
 
-    console.log(matchingItems);
+    // console.log(matchingItems);
 
-    // Filter data based on status
-    // finishedData.value = data.filter((item) => item.status === "finished");
-    // createdData.value = data.filter((item) => item.status === "created");
-    // console.log(finishedData.value)
+
   } catch (error) {
     console.error("Error loading application data:", error);
   }

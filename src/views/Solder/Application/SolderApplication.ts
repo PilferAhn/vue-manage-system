@@ -5,7 +5,7 @@ import {
   ApplicationData,
   Measurement,
 } from "../../../interface/solderAppInterface";
-import { ElMessageBox, ElNotification } from "element-plus";
+import { ElMessage, ElMessageBox, ElNotification } from "element-plus";
 import fs from "fs/promises";
 import path from "path";
 
@@ -50,6 +50,21 @@ export async function downloadSolderApplicationXlsx(
     document.body.removeChild(link);
   } catch (error) {
     console.error("Error downloading file:", error);
+  }
+}
+
+export function getMeasurementLabel(measurementType: string): string {
+  switch (measurementType) {
+    case '비선형':
+      return '비선형 (Non-Linearity)';
+    case 'PS 신뢰성':
+      return 'PS 신뢰성 (ESD)';
+    case '내전력':
+      return '내전력 (PDT)';
+    case '특성 평가':
+      return '특성 평가 (Solder Measurement)';
+    default:
+      return measurementType; // 기본적으로 한글만 출력
   }
 }
 
@@ -124,21 +139,36 @@ function toPep8Recursive(obj: any): any {
   return newObj;
 }
 
-export function removeApplicationByUuid(uuid: string) {
-  const url = `/api/application/${uuid}`; // uuid를 포함한 URL을 정의
+export async function removeApplicationByUuid(uuid: string) {
+  const url = `/solder/remove/${uuid}`; // uuid를 포함한 URL 정의
 
-  console.log(uuid);
-  // GET 요청을 보냅니다.
-  // axios
-  //   .get(url)
-  //   .then((response) => {
-  //     console.log("데이터 전송 성공:", response.data);
-  //     // 성공 후 다른 동작을 수행할 수 있습니다. 예: 리스트 갱신 등
-  //   })
-  //   .catch((error) => {
-  //     console.error("데이터 전송 실패:", error);
-  //     // 실패 시 처리할 동작
-  //   });
+  try {
+    // GET 요청을 통해 서버에서 데이터를 삭제
+    const response = await axios.get(url);
+
+    if (response.status === 200) {
+      // 요청이 성공한 경우, 성공 메시지 표시
+      ElMessage({
+        type: "success",
+        message: "데이터가 성공적으로 삭제되었습니다.",
+      });
+    } else {
+      // 요청이 성공했지만 상태 코드가 200이 아닌 경우
+      ElNotification({
+        title: "에러",
+        message: `서버에서 예상치 못한 응답을 받았습니다: ${response.status}`,
+        type: "warning",
+      });
+    }
+  } catch (error) {
+    // 요청이 실패한 경우
+    console.error("Error removing data:", error);
+    ElNotification({
+      title: "삭제 실패",
+      message: `요청 중 에러가 발생했습니다: ${error.message}`,
+      type: "error",
+    });
+  }
 }
 
 export async function sendApplicationData(
@@ -247,3 +277,4 @@ export async function updateStatusByUuid(
     console.error("Error update status of application:", error);
   }
 }
+

@@ -1,11 +1,13 @@
 import axios from "axios";
 import type { ApplicationData } from "../../../interface/solderAppInterface";
+import { ElMessageBox, ElMessage } from "element-plus";
+import { removeApplicationByUuid } from "../Application/SolderApplication";
 
 export const statusList = [
-  {key : "created", value : "created", label : "Waiting"},
-  {key : "in progress", value : "in progress", label : "In Progress"},  
-  {key : "finished", value : "finished", label : "FINISH"},
-]
+  { key: "created", value: "created", label: "Waiting" },
+  { key: "in progress", value: "in progress", label: "In Progress" },
+  { key: "finished", value: "finished", label: "FINISH" },
+];
 
 // 서버에서 받아온 데이터를 저장할 타입 지정
 export async function get_application_list_by_status(
@@ -14,18 +16,8 @@ export async function get_application_list_by_status(
   try {
     // 서버의 API 엔드포인트 호출
 
-    
-    const url = `/solder/get_solder_application_list_by_status/${status},model_name`;
+    const url = `/solder/get_solder_application_list_by_status/${status},created_date`;
 
-    // const formData = new FormData();
-    // formData.append('order_by', "id");
-    // formData.append('order_dir', "asc");
-    // formData.append('limit', "0");
-    // formData.append('page', "1");
-
-    // const url =
-    //   "/fab_monitoring/get_fab_request_list";
-    // const response = await axios.post(url, formData);
     const response = await axios.get(url);
     // 응답 데이터를 CamelCase 형식으로 변환
     const convertedData = convertKeysToCamelCase(response.data);
@@ -53,7 +45,6 @@ export function sortMeasurementByNumber(
     });
   }
 
-  
   if (application.segments) {
     // segments 배열을 number 필드를 기준으로 정렬
     application.segments = application.segments.sort((a, b) => {
@@ -61,7 +52,6 @@ export function sortMeasurementByNumber(
       const numB = parseInt(b.number, 10); // `number`를 숫자로 변환
       return numA - numB; // 오름차순 정렬
     });
-    
   }
 
   if (application.matching) {
@@ -132,3 +122,29 @@ export function convertKeysToCamelCase(data: any): any {
   return data; // 기본값(primitive)은 그대로 반환
 }
 
+// 삭제 확인 메시지 출력 함수
+export function confirmDelete(
+  row: ApplicationData,
+  deleteCallback: (uuid: string) => void
+) {
+  ElMessageBox.confirm("정말로 삭제하시겠습니까?", "삭제 확인", {
+    confirmButtonText: "예",
+    cancelButtonText: "아니오",
+    type: "warning",
+  })
+    .then(() => {
+      // 삭제 확인 후 콜백을 통해 삭제 처리
+      removeApplicationByUuid(row.uuid);
+      deleteCallback(row.uuid);
+      ElMessage({
+        type: "success",
+        message: "삭제되었습니다.",
+      });
+    })
+    .catch(() => {
+      ElMessage({
+        type: "info",
+        message: "삭제가 취소되었습니다.",
+      });
+    });
+}

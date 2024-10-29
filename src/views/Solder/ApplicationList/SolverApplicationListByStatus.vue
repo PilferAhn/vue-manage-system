@@ -57,7 +57,13 @@
         :align="'center'"
       ></el-table-column>
 
-      <el-table-column label="진행도" :align="'center'" width="400">
+      <el-table-column label="작성일" :align="'center'">
+        <template #default="scope">
+          {{ convertPythonTimeToVue(scope.row.createdDate) }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="진행도" :align="'center'" width="500">
         <template #default="scope">
           <div>
             <el-button
@@ -77,16 +83,26 @@
                 v-if="measurement.status === 'finished'"
                 class="el-icon-check mr5"
               ></i>
-              {{ measurement.measurementType.toUpperCase() }}
+              {{
+                measurement.measurementType.toUpperCase() === "비선형"
+                  ? "Non-Linearity"
+                  : measurement.measurementType.toUpperCase() === "PS 신뢰성"
+                  ? "ESD"
+                  : measurement.measurementType.toUpperCase() === "내전력"
+                  ? "PDT"
+                  : measurement.measurementType.toUpperCase() === "특성 평가"
+                  ? "Solder Measurement"
+                  : measurement.measurementType.toUpperCase()
+              }}
             </el-button>
           </div>
         </template>
       </el-table-column>
 
       <!-- <div v-if="!isIdIncluded "> -->
-       
+
       <!-- </div> -->
-      <el-table-column label="Detail" :align="'center'" width="100">
+      <el-table-column label="Detail" :align="'center'" width="200">
         <template #default="scope">
           <el-button
             type="success"
@@ -94,6 +110,14 @@
             @click="handleDetail(scope.row)"
           >
             Details
+          </el-button>
+          <el-button
+            type="danger"
+            size="small"
+            @click="handleDelete(scope.row)"
+            :disabled="!isIdIncluded"
+          >
+            삭제
           </el-button>
         </template>
       </el-table-column>
@@ -107,7 +131,8 @@ import type { ApplicationData } from "../../../interface/solderAppInterface";
 import { useRouter } from "vue-router";
 import { updateStatusByUuid } from "../Application/SolderApplication";
 import SelectOptions from "../../Common/SelectOptions.vue";
-import { statusList } from "./SolderApplicationList";
+import { statusList, confirmDelete } from "./SolderApplicationList";
+import { convertPythonTimeToVue } from "../../Common/utility";
 
 const props = defineProps<{
   applicationData: ApplicationData[];
@@ -129,6 +154,13 @@ function handleSearch() {
 // Clear the search input
 function handleClear() {
   searchTerm.value = ""; // Reset search term
+}
+
+function handleDelete(row: ApplicationData) {
+  // 삭제 확인 팝업을 띄운 후 콜백으로 삭제 처리를 넘깁니다
+  confirmDelete(row, (uuid: string) => {
+    emit("status-updated", uuid); // 삭제 처리
+  });
 }
 
 function getStatusClass(status: string) {
@@ -159,12 +191,6 @@ function handleDetail(row: ApplicationData) {
   });
 }
 const emit = defineEmits(["status-updated"]);
-function handleUpdate(row: ApplicationData) {
-  updateStatusByUuid(row.uuid, row.status).then(() => {
-    // row.status = "finished";
-    emit("status-updated");
-  });
-}
 </script>
 
 <style scoped>

@@ -172,7 +172,9 @@
               <el-table-column prop="measurementType" label="측정 종류">
                 <template #default="scope">
                   <el-input
-                    v-model="scope.row.measurementType"
+                    :model-value="
+                      getMeasurementLabel(scope.row.measurementType)
+                    "
                     disabled
                   ></el-input>
                 </template>
@@ -387,7 +389,11 @@
 import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 
-import { sendApplicationData, updateStatusByUuid } from "./SolderApplication";
+import {
+  sendApplicationData,
+  updateStatusByUuid,
+  getMeasurementLabel,
+} from "./SolderApplication";
 import inputText from "../../Common/InputText.vue";
 import longInputText from "../../Common/LongInputText.vue";
 import { statusList } from "../ApplicationList/SolderApplicationList";
@@ -501,9 +507,8 @@ const updateMeasurements = () => {
 
 const emit = defineEmits(["status-updated"]);
 function handleUpdate(row: ApplicationData) {
-  updateStatusByUuid(uuid, row.uuid, row.status);  
+  updateStatusByUuid(uuid, row.uuid, row.status);
   // fetchApplicationData(row, uuid);
-
 }
 
 // Function to update the measurements array based on the selected quantity

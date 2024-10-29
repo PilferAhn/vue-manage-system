@@ -10,11 +10,11 @@
       unique-opened
       router
     >
-      <template v-for="item in items">
+      <template v-for="item in items" :key="item.index + '_item'">
         <template v-if="item.subs">
           <el-sub-menu
             :index="item.index"
-            :key="item.index"
+            :key="item.index + '_submenu'"
             v-permiss="item.permiss"
           >
             <template #title>
@@ -23,43 +23,50 @@
               </el-icon>
               <span>{{ item.title }}</span>
             </template>
-            <template v-for="subItem in item.subs">
+
+            <template
+              v-for="subItem in item.subs"
+              :key="subItem.index + '_subItem'"
+            >
               <el-sub-menu
                 v-if="subItem.subs"
                 :index="subItem.index"
-                :key="subItem.index"
-                v-permiss="item.permiss"
+                :key="subItem.index + '_submenu'"
+                v-permiss="subItem.permiss"
               >
                 <template #title>{{ subItem.title }}</template>
                 <el-menu-item
-                  v-for="(threeItem, i) in subItem.subs"
-                  :key="i"
+                  v-for="threeItem in subItem.subs"
+                  :key="threeItem.index + '_threeItem'"
                   :index="threeItem.index"
+                  v-permiss="threeItem.permiss"
                 >
                   {{ threeItem.title }}
                 </el-menu-item>
               </el-sub-menu>
+
               <el-menu-item
                 v-else
-                :key="subItem.index"
+                :key="subItem.index + '_menuitem'"
                 :index="subItem.index"
-                v-permiss="item.permiss"
+                v-permiss="subItem.permiss"
               >
                 {{ subItem.title }}
               </el-menu-item>
             </template>
           </el-sub-menu>
         </template>
+
         <template v-else>
           <el-menu-item
             :index="item.index"
-            :key="item.index"
+            :key="item.index + '_menuitem'"
             v-permiss="item.permiss"
           >
             <el-icon>
               <component :is="item.icon"></component>
             </el-icon>
-            <template #title>{{ item.title }}</template>
+            <span>{{ item.title }}</span>
           </el-menu-item>
         </template>
       </template>
@@ -132,34 +139,34 @@ const items = [
       //   },
     ],
   },
-  // {
-  //   icon: "DocumentAdd",
-  //   index: "3",
-  //   title: "개발 SPL",
-  //   permiss: "11",
-  //   subs: [
-  //     {
-  //       index: "/fab/create-application",
-  //       title: "투입 계획서 작성",
-  //       permiss: "11",
-  //     },
-  //     {
-  //       index: "/fab/my-application-status",
-  //       title: "투입 계획서 현황",
-  //       permiss: "11",
-  //     },
-  //     {
-  //       index: "/fab/feb-application-list",
-  //       title: "투입 계획서 검토",
-  //       permiss: "11",
-  //     },
-  //     {
-  //       index: "/fab/sample_status",
-  //       title: "개발 SPL 현황",
-  //       permiss: "11",
-  //     },
-  //   ],
-  // },
+  {
+    icon: "DocumentAdd",
+    index: "3",
+    title: "개발 SPL",
+    permiss: "11",
+    subs: [
+      {
+        index: "/fab/create-application",
+        title: "투입 계획서 작성",
+        permiss: "11",
+      },
+      {
+        index: "/fab/my-application-status",
+        title: "투입 계획서 현황",
+        permiss: "11",
+      },
+      {
+        index: "/fab/feb-application-list",
+        title: "투입 계획서 검토",
+        permiss: "12",
+      },
+      {
+        index: "/fab/sample_status",
+        title: "개발 SPL 현황",
+        permiss: "11",
+      },
+    ],
+  },
   {
     icon: "Pear",
     index: "4",
@@ -176,11 +183,11 @@ const items = [
         title: "의뢰 현황",
         permiss: "11",
       },
-      {
-        index: "/whc/network-analyzer",
-        title: "TEST",
-        permiss: "11",
-      },
+      // {
+      //   index: "/whc/network-analyzer",
+      //   title: "TEST",
+      //   permiss: "11",
+      // },
     ],
   },
   {

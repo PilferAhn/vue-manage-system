@@ -7,15 +7,16 @@ export const waferSizeList: string[] = [
   "6 Inch",
 ];
 
-export const measTypes: string[] = [
-  "TCF",
-  "TEP-P",
+export const measTypes: string[] = [    
   "Pre-TEG",
-  "CPW",
+  "TEG-P(0)",
+  "TEG-0.5",
   "TEG-1",
   "TEG-1.5",
   "TEG-2",
   "TEG-3",
+  "CPW",
+  "TCF",    
   "PDT",
   "Delay Line",
   "Harmonic",

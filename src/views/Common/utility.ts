@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { ref } from 'vue';
+import dayjs from "dayjs";
 
 // Define the structure of the returned data
 interface UserData {
@@ -37,3 +38,7 @@ export function useUserOptions() {
     userOptions
   };
 }
+
+export const convertPythonTimeToVue = (date: string | undefined) => {  
+  return date ? dayjs(date).format("YYYY-MM-DD") : "N/A";
+};

@@ -24,7 +24,7 @@
               <el-input v-model="scope.row.sampleNumber"></el-input>
             </template>
           </el-table-column>
-
+          
           <!-- <el-table-column prop="dbm3" :label="db3Label"></el-table-column> -->
 
           <el-table-column label="System Freq (A)">
@@ -92,7 +92,7 @@
           <div class="form-box">
             <ScatterChart
               :chartData="chartDataRfLfDifference"
-              chartTitle="Input vs BW [Mhz]"
+              chartTitle="Input vs BW [MHz]"
               :reverseY="true"
               xAxisName="Input Power[dBm]"
               yAxisName="BW [Mhz]"

@@ -117,8 +117,8 @@ const fetchProcessData = async () => {
   try {
     
     const formData = new FormData();
-    formData.append("name", "admin");
-    
+    formData.append("name", localStorage.getItem("ms_username"));
+    console.log(localStorage.getItem("ms_username"))
     const response =await axios.post(
         "/fab_monitoring/get_fab_request_list_person", formData);
 
@@ -152,6 +152,8 @@ onMounted(() => {
 });
 
 const router = useRouter(); // Access the Vue Router
+const name = localStorage.getItem("ms_username");
+console.log(localStorage)
 
 </script>
 

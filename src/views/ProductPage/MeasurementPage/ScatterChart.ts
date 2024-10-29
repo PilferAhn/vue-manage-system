@@ -1,4 +1,4 @@
-const graphList = ["Input vs BW [Mhz]", "Input vs Output", "Input vs LF [MHz] @ -10dB", "Input vs RF [MHz] @ -10dB"]
+const graphList = ["Input vs BW [MHz]", "Input vs Output", "Input vs LF [MHz] @ -10dB", "Input vs RF [MHz] @ -10dB"]
 interface scaleInfo {
     xMax : number, 
     xMin : number, 

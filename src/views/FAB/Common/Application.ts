@@ -268,7 +268,7 @@ export const groupList = [
 ];
 
 export const processList = [
-  { key: "normal", label: "Normal", value: "normal" },
+  { key: "ns", label: "NS", value: "ns" },
   { key: "tc", label: "TC", value: "tc" },
   { key: "hs", label: "HS", value: "hs" },
 ];

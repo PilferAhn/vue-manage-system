@@ -144,10 +144,7 @@
                   label="WHC EVB List Excel 다운로드"
                   prop="matchingComponentType"
                 >
-                  <el-button
-                    type="primary"
-                    @click="getEvbListExcel"                    
-                  >
+                  <el-button type="primary" @click="getEvbListExcel">
                     WHC EVB LIST EXCEL
                   </el-button>
                 </el-form-item>
@@ -225,21 +222,23 @@
               <el-table-column
                 prop="measurementType"
                 label="측정 종류"
-                width="150"
+                width="280"
               >
                 <template #default="scope">
                   <el-input
-                    v-model="scope.row.measurementType"
+                    :model-value="
+                      getMeasurementLabel(scope.row.measurementType)
+                    "
                     disabled
                   ></el-input>
                 </template>
               </el-table-column>
-              <el-table-column prop="isMeasured" label="측정 여부" width="100">
+              <el-table-column prop="isMeasured" label="측정 여부" width="90" :align="'center'">
                 <template #default="scope">
                   <el-checkbox v-model="scope.row.isMeasured"></el-checkbox>
                 </template>
               </el-table-column>
-              <el-table-column prop="quantity" label="수량" width="100">
+              <el-table-column prop="quantity" label="수량" width="100" :align="'center'">
                 <template #default="scope">
                   <el-input
                     v-model="scope.row.quantity"
@@ -247,12 +246,12 @@
                   ></el-input>
                 </template>
               </el-table-column>
-              <el-table-column prop="기타" label="기타" width="600">
+              <el-table-column prop="기타" label="기타" width="500">
                 <template #default="scope">
                   <el-input v-model="scope.row.detail"></el-input>
                 </template>
               </el-table-column>
-              <el-table-column prop="기타" label="유의사항">
+              <el-table-column prop="기타" label="유의사항" width="450">
                 <template #default="scope">
                   <el-input v-model="scope.row.placeHolder" disabled></el-input>
                 </template>
@@ -428,6 +427,7 @@ import {
   sendApplicationData,
   downloadSolderApplicationXlsx,
   loadApplicationData,
+  getMeasurementLabel
 } from "./SolderApplication";
 import inputText from "../../Common/InputText.vue";
 import longInputText from "../../Common/LongInputText.vue";
