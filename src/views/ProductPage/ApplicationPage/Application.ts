@@ -47,7 +47,7 @@ export const bandList = ref([]); // Define the bandList as a reactive variable
 export function getSampleQuantityOptions() {
   const quantityOptions = [];
 
-  for (let i = 0; i <= 10; i++) {
+  for (let i = 0; i <= 20; i++) {
     quantityOptions.push(i);
   }
 
@@ -72,9 +72,9 @@ export function computeChannelBandwidth(testType: string, duplexMode: string) {
       return ["1.4Mhz"];
     }
   } else if (testType === "AMR") {
-    return ["5Mhz"];
+    return ["5Mhz"];    
   } else if (["Life", "Max Fuse", "Step Stress"].includes(testType)) {
-    return ["1.4Mhz", "5Mhz", "10Mhz"];
+    return ["1.4Mhz", "5Mhz", "10Mhz", "20Mhz"];
   } else {
     return [];
   }
@@ -510,10 +510,18 @@ export function watchCustomerCompany(
         applicationForm.value.specTemperature = "";
         applicationForm.value.specPower = "";
       } else if (newVal === "중화") {
-        applicationForm.value.specTemperature = "50";
-        applicationForm.value.specPower = "31dBm";
-        applicationFormBoolean.value.specTemperature = true;
+
+        // if(applicationForm.value.signal_type === "WIFI"){
+          
+        // }
+        // else{
+        //   applicationForm.value.specPower = "31dBm";
+        // }
+        applicationForm.value.specPower = "25dBm";
+        applicationForm.value.specTemperature = "50";        
+        applicationFormBoolean.value.specTemperature = true;        
         applicationFormBoolean.value.specPower = true;
+
       } else if (newVal === "K1") {
         applicationForm.value.specTemperature = "85";
         applicationForm.value.specPower = "29dBm";
@@ -537,6 +545,7 @@ export function setBandwidthOptions(
       applicationForm.value.bandwidth = "";
       applicationForm.value.duty = "";
 
+      
       if (applicationForm.value.testType === "Aging") {
         if (applicationForm.duplexMode === "TDD") {
           bandwidthList.value = ["5Mhz"];
@@ -550,7 +559,7 @@ export function setBandwidthOptions(
           applicationForm.value.testType
         )
       ) {
-        bandwidthList.value = ["1.4Mhz", "5Mhz", "10Mhz"];
+        bandwidthList.value = ["1.4Mhz", "5Mhz", "10Mhz", "20Mhz"];
       } else {
         applicationForm.value.bandwidth = "None";
         bandwidthList.value = ["None"];
