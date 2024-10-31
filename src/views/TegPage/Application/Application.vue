@@ -10,25 +10,46 @@
       <div class="split-layout">
         <div class="form-box">
           <div class="meas-types-container">
-            <el-form-item label="작성자">
+            <el-form-item label="작성자 / 의뢰자" :rules="rules.designer">
               <el-col :span="11">
-                <InputText
+                <!-- <InputText
                   v-model="tegApplicationForm.designer"
                   label=""
                   prop="designer"
                   :rules="rules.designer"
                   placeholder="개발자"
-                />
+                /> -->
+                <el-form-item>
+                  <el-autocomplete
+                    v-model="tegApplicationForm.designer"
+                    placeholder="개발자를 입력하세요"
+                    :fetch-suggestions="
+                      (queryString, cb) =>
+                        querySearch(queryString, cb, 'designer')
+                    "
+                    @select="(item) => handleSelect(item, 'designer')"
+                    value-key="label"
+                    :style="{ width: '100%' }"
+                  ></el-autocomplete>
+                </el-form-item>
+                <!-- 의뢰자 입력 -->
               </el-col>
               <el-col class="line" :span="2">/</el-col>
               <el-col :span="11">
-                <InputText
-                  v-model="tegApplicationForm.requester"
-                  label=""
-                  prop="requester"
-                  :rules="rules.requester"
-                  placeholder="의뢰자"
-                />
+                <el-form-item>
+                  <el-autocomplete
+                    v-model="tegApplicationForm.requester"
+                    placeholder="의뢰자를 입력하세요"
+                    :fetch-suggestions="
+                      (queryString, cb) =>
+                        querySearch(queryString, cb, 'requester')
+                    "
+                    @select="(item) => handleSelect(item, 'requester')"
+                    value-key="label"
+                    class="wide-select"
+                    :style="{ width: '100%' }"
+                  ></el-autocomplete>
+                </el-form-item>
               </el-col>
             </el-form-item>
             <select-option
@@ -60,7 +81,7 @@
               v-model="tegApplicationForm.purpose"
               label="의뢰 목적"
               prop="purpose"
-              :rules="rules.purpose"
+              :rules="null"
               placeholder="ex) 신뢰성 테스트"
             />
 
@@ -68,7 +89,7 @@
               v-model="tegApplicationForm.note"
               label="특이 사항"
               prop="note"
-              :rules="rules.note"
+              :rules="null"
               placeholder="ex) 특 이 사 항"
             />
           </div>
@@ -142,7 +163,7 @@
                 v-model="tegApplicationForm.isAOI"
                 label="AOI 여부"
                 prop="isAOI"
-                :rules="rules.isAOI"
+                :rules="null"
                 placeholder="AOI 여부"
                 :options="maskChanges"
               ></select-option>
@@ -194,7 +215,7 @@
                 v-model="tegApplicationForm.preTegPatternMeasShot"
                 label="Pre-Teg Pattern Meas Shot"
                 prop="preTegPatternMeasShot"
-                :rules="rules.preTegPatternMeasShot"
+                :rules="null"
                 placeholder="Pre TEG 측정 샷 EX) 3_4, 4_3"
               />
             </el-col>
@@ -220,7 +241,7 @@
               v-model="tegApplicationForm.waferSize"
               label="Wafer Size"
               prop="waferSize"
-              :rules="rules.waferSize"
+              :rules="rules.waferSize || []"
               :options="waferSizeList"
               placeholder=""
             ></SelectOption>
@@ -236,6 +257,7 @@
 
             <MeasTemperature
               :measInfo="tegApplicationForm.measInfo"
+              :tegTypes="tegTypes"
               @updateTemperature="handleTemperatures"
             ></MeasTemperature>
 
@@ -270,17 +292,25 @@ import { ref, watch } from "vue";
 import { FormInstance } from "element-plus";
 
 // type 정의
-import { getWaferInfoBySize } from "./../../../utils/waferApplicationHelper";
 import {
-  defaultTegApplicationForm,
-  tegApplicationForm,
   applicationPriority,
   maskChanges,
   portOptions,
   waferSizeList,
 } from "./../../../utils/tegTypes";
+
+import { getWaferInfoBySize } from "./../../../utils/waferApplicationHelper";
+import type {
+  TegApplication as TegApplicationInterface,
+  TestTypeOptions as TestTypeOptionsInterface,
+} from "../Common/ApplicationTypes";
 import { tegApplicationRules } from "./../../../utils/tegApplicationRules";
 import { submitForm, download } from "./../../../utils/tegUtility";
+
+// 기능
+
+import { tegTypes } from "../Common/utility";
+import { useUserOptions } from "../../Common/utility";
 
 // 하위 component 정의
 import InputText from "./InputText.vue"; // assuming generic text input component
@@ -293,12 +323,48 @@ import MeasTemperature from "./MeasTemperature.vue";
 import Wafer from "../Wafer.vue";
 import WaferInformationUpdate from "./WaferInfomation.vue";
 
+// Define props to receive processData
+const props = defineProps<{
+  applicationData: TegApplicationInterface;
+  applicationType: string;
+}>();
+
+const { userOptions } = useUserOptions();
+// 사용자의 입력을 기준으로 필터링된 결과를 반환하는 공통 함수
+const querySearch = (
+  queryString: string,
+  cb: (suggestions: { value: string; label: string; key: string }[]) => void,
+  fieldType: string // 'designer' 또는 'requester'로 구분
+) => {
+  const results = userOptions.value.filter((user) =>
+    user.label.toLowerCase().includes(queryString.toLowerCase())
+  );
+  cb(results);
+};
+
+// 개발자와 의뢰자 선택 시 처리하는 공통 함수
+const handleSelect = (
+  item: { value: string; label: string },
+  fieldType: string
+) => {
+  const selectedUser = userOptions.value.find(
+    (user) => user.label === item.label
+  );
+  if (selectedUser) {
+    if (fieldType === "designer") {
+      props.applicationData.designerId = selectedUser.value; // 개발자 ID 할당
+    } else if (fieldType === "requester") {
+      props.applicationData.requesterId = selectedUser.value; // 의뢰자 ID 할당
+    }
+  }
+};
+
 const activateDownload = ref(false);
 const applicationUuid = ref("");
 const applicationForm = ref<FormInstance>();
 const selectedFile = ref<File | null>(null);
 
-const tegApplicationForm = defaultTegApplicationForm();
+const tegApplicationForm = props.applicationData;
 // const tegApplicationForm = tegApplicationForm;
 const requesterName = localStorage.getItem("ms_username");
 tegApplicationForm.requester = requesterName;
@@ -313,7 +379,8 @@ function handleFormSubmission() {
       tegApplicationForm,
       selectedFile.value,
       activateDownload,
-      applicationUuid
+      applicationUuid,
+      tegTypes
     );
   } else {
     console.error("Form is not yet initialized.");
@@ -373,35 +440,9 @@ const handleFileUpdate = (file: File | null) => {
 </script>
 
 <style>
-.container {
-  width: 90%;
-  max-width: 90%;
-}
-
-.split-layout {
-  display: flex;
-  flex-wrap: nowrap;
-}
-
-.form-box {
-  flex: 1;
-  margin-right: 20px; /* 폼 박스 간의 간격 조정 */
-}
-
-.form-box:last-child {
-  margin-right: 0;
-}
-
-.el-form-item {
-  margin-bottom: 20px;
-}
-
-.meas-types-container {
-  max-width: 100%;
-  margin: 10px 0;
-  background-color: #fff; /* Light background for better visibility */
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-}
+@import "../../../assets/css/TegApplication.css";
 </style>
+
+<script lang="ts">
+export default {};
+</script>

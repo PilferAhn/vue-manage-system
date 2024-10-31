@@ -32,15 +32,92 @@
       </el-row>
     </el-form-item>
   </div>
+  <div v-else>
+    <el-form-item label="">
+      <el-table :data="props.tegTypes" style="width: 100%" :border="true">
+        <!-- Index Column -->
+        <!-- <el-table-column prop="index" label="Index" width="100">
+                <template #default="scope">
+                  <span>{{ scope.row.index }}</span>
+                </template>
+              </el-table-column> -->
+
+        <!-- Name Column -->
+        <el-table-column prop="name" label="Name" width="150" :align="'center'">
+          <template #default="scope">
+            <span>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+
+        <!-- TestTypeOptions Buttons -->
+        <el-table-column label="측정" width="100" :align="'center'">
+          <template #default="scope">
+            <!-- Meas Button -->
+            <el-button
+              :type="scope.row.options.needMeas ? 'primary' : 'default'"
+              @click="toggleOption(scope.row, 'needMeas')"
+              size="small"
+            >
+              측정
+            </el-button>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column label="개발자 확인" width="100" :align="'center'">
+          <template #default="scope">
+            
+            <el-button
+              :type="scope.row.options.needSkip ? 'primary' : 'default'"
+              @click="toggleOption(scope.row, 'needSkip')"
+              size="small"
+            >
+              Skip
+            </el-button>
+            
+          </template>
+        </el-table-column> -->
+        <el-table-column label="Option Measurement" :align="'center'">
+          <template #default="scope">
+            <el-button
+              :type="scope.row.options.needCPW ? 'primary' : 'default'"
+              @click="toggleOption(scope.row, 'needCPW')"
+              size="small"
+            >
+              CPW
+            </el-button>
+
+            <!-- Delay Button -->
+            <el-button
+              :type="scope.row.options.needDelay ? 'primary' : 'default'"
+              @click="toggleOption(scope.row, 'needDelay')"
+              size="small"
+            >
+              Delay
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-form-item>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import { MeasInfo } from "../../../utils/waferApplicationHelper";
+// import { tegTypes } from "../Common/utility";
+import type { TestTypeOptions as TestTypeOptionsInterface } from "../Common/ApplicationTypes";
+const props = defineProps<{
+  measInfo: MeasInfo[];
+  tegTypes: any;
+}>();
 
-const props = defineProps<{ measInfo: MeasInfo[] }>();
-console.log(props)
 const emit = defineEmits(["updateTemperature"]);
+
+const toggleOption = (
+  row: { options: TestTypeOptionsInterface },
+  option: keyof TestTypeOptionsInterface
+) => {
+  row.options[option] = !row.options[option]; // 옵션 값을 반전시킴 (true <-> false)
+};
 
 const selectedCount = ref(1);
 const temperatureInputs = ref(Array(1).fill("")); // 초기값 설정
@@ -95,3 +172,7 @@ const calculateSpan = (length) => {
   margin-top: 2px; /* 에러 메시지와 입력 필드 간의 간격 */
 }
 </style>
+
+<script lang="ts">
+export default {};
+</script>

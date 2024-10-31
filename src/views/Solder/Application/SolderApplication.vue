@@ -141,11 +141,14 @@
               </el-col>
               <el-col :span="12">
                 <el-form-item
-                  label="WHC EVB List Excel 다운로드"
+                  label="WHC EVB 자제 리스트"
                   prop="matchingComponentType"
                 >
                   <el-button type="primary" @click="getEvbListExcel">
                     WHC EVB LIST EXCEL
+                  </el-button>
+                  <el-button type="primary" @click="getEvbListExcel" disabled>
+                    WHC IND LIST EXCEL
                   </el-button>
                 </el-form-item>
               </el-col>

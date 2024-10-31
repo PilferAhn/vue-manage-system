@@ -61,7 +61,8 @@ export default defineConfig({
 			"/rf-limit" : "http://10.29.11.59:8002",
 			"/solder" : "http://10.29.11.57:40000",
 			"/fab_monitoring" : "http://10.29.11.57:40000",
-			"/bfsm2" : "http://10.20.10.114"
+			"/bfsm2" : "http://10.20.10.114",
+			"/mes" : "http://10.29.11.57:40000"
 		}
 	  },
 });

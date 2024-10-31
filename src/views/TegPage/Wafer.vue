@@ -110,3 +110,6 @@ const buttonStyle = computed(() => {
   opacity: 0.5; /* Less emphasis on disabled buttons */
 }
 </style>
+<script lang="ts">
+export default {};
+</script>

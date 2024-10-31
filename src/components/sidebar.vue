@@ -127,23 +127,18 @@ const items = [
         title: "Measurement Finished",
         permiss: "2",
       },
-      {
-        index: "/teg/create-teg-application",
-        title: "의뢰서작성",
-        permiss: "2",
-      },
-      //   {
-      //     index: "/export",
-      //     title: "Create Reqeust",
-      //     permiss: "2",
-      //   },
+        {
+          index: "/teg/create-teg-application2",
+          title: "의뢰서 작성",
+          permiss: "2",
+        },
     ],
   },
   {
     icon: "DocumentAdd",
     index: "3",
     title: "개발 SPL",
-    permiss: "11",
+    permiss: "4",
     subs: [
       {
         index: "/fab/create-application",
@@ -158,11 +153,16 @@ const items = [
       {
         index: "/fab/feb-application-list",
         title: "투입 계획서 검토",
-        permiss: "12",
+        permiss: "11",
       },
       {
         index: "/fab/sample_status",
         title: "개발 SPL 현황",
+        permiss: "11",
+      },
+      {
+        index: "/fab/mes_sample_status",
+        title: "개발 SPL 현황 (MES)",
         permiss: "11",
       },
     ],
@@ -233,11 +233,11 @@ const items = [
             title: "TEG 측정 통계",
             permiss: "5",
           },
-          {
-            index: "/admin/teg/teg-waiting-list",
-            title: "TEG 대기 현황",
-            permiss: "5",
-          },
+          // {
+          //   index: "/admin/teg/teg-waiting-list",
+          //   title: "TEG 대기 현황",
+          //   permiss: "5",
+          // },
         ],
       },
 

@@ -14,7 +14,6 @@ import {processData} from "../Common/Application"
 import Application from './Application.vue';
 
 
-
 </script>
 
 <style>

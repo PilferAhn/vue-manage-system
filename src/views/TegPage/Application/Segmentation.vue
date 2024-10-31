@@ -39,9 +39,13 @@ watch(
   () => props.measInfo,
   (newVal) => {
     // props.measInfo;
-    
+
     internalValue.value = [...newVal];
   },
   { deep: true }
 );
+</script>
+
+<script lang="ts">
+export default {};
 </script>

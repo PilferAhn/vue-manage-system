@@ -9,7 +9,7 @@
           <TegMeasurementTab
             :category="'created'"
             key="created"
-            :page-size="5"
+            :page-size="7"
           />          
         </template>        
       </el-tab-pane>

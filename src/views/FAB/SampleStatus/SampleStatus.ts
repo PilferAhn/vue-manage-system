@@ -1,4 +1,6 @@
-import type { FabData } from "../SampleStatusInterface";
+import axios from "axios";
+import type { FabData } from "./SampleStatusInterface";
+import type { ProcessData } from "../Interface/ApplicationInterface";
 // 오늘 날짜로부터 특정 일수를 뺀 날짜를 반환하는 함수
 export function getPastDateString(days: number): string {
   const date = new Date();
@@ -31,6 +33,36 @@ export const getPrevious30DaysAsString = (dateString: string): string => {
   return `${year}-${month}-${day}`;
 };
 
+// 날짜를 특정 형식(YYYY-MM-DD HH:mm:ss)으로 변환하는 함수
+function formatDateToTimestampString(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+// 오늘과 30일 전 날짜를 문자열로 반환하는 함수
+export function getTodayAnd30DaysAgoDates(): {
+  startDate: string;
+  lastDate: string;
+} {
+  const today = new Date();
+  const formattedToday = formatDateToTimestampString(today);
+
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(today.getDate() - 30);
+  const formattedThirtyDaysAgo = formatDateToTimestampString(thirtyDaysAgo);
+
+  return {
+    startDate: formattedThirtyDaysAgo,
+    lastDate: formattedToday,
+  };
+}
+
 export const tableRowClassName = ({
   row,
   rowIndex,
@@ -38,13 +70,11 @@ export const tableRowClassName = ({
   row: FabData;
   rowIndex: number;
 }) => {
-
-  if (row.waitTime >= 10){
+  if (row.waitTime >= 10) {
     return "success-row";
   }
 
   if (row.importance === "★") {
-    
     return "success-row";
   } else if (row.importance === "C" || row.importance === "H") {
     return "success-row";
@@ -52,3 +82,33 @@ export const tableRowClassName = ({
   return "";
 };
 
+// MES 데이터를 가져오는 함수
+export async function fetchMesDataForDateRange(
+  applications : ProcessData[],
+  startDate : string , lastDate : string) {
+
+  let matId = ""
+  applications.forEach((application , index) => {
+    matId += application.modelName + ","
+  })
+  
+  const formData = new FormData();
+  formData.append("materials_id", matId)
+  // formData.append("min_original_date", startDate)
+  // formData.append("max_original_date", lastDate)
+
+  try {
+    const response = await axios.post("/mes/get_materials_by_id", formData);
+
+    if (response.status === 200) {
+      console.log("MES Data:", response.data);
+      return response.data;
+    } else {
+      console.error("Failed to fetch MES data:", response.status);
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching MES data:", error);
+    return null;
+  }
+}

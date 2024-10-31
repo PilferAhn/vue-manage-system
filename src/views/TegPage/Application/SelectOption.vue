@@ -18,15 +18,16 @@
 <script lang="ts" setup>
 import { defineProps, defineEmits, ref, watch } from "vue";
 import { ElSelect, ElOption } from "element-plus";
+import type { FormItemRule } from "element-plus"; // Element Plus의 FormItemRule 타입 가져오기
 
-const props = defineProps({
-  modelValue: String,
-  label: String,
-  prop: String,
-  rules: Array,
-  placeholder: String,
-  options: Array, // 추가: 옵션 리스트
-});
+const props = defineProps<{
+  modelValue: string;
+  label: string;
+  prop: string;
+  rules: FormItemRule | FormItemRule[] | null;  // FormItemRule 또는 FormItemRule 배열로 지정
+  placeholder: string;
+  options: string[]; // options는 문자열 배열로 지정
+}>();
 
 const emit = defineEmits(["update:modelValue"]);
 const internalValue = ref(props.modelValue);
@@ -43,4 +44,8 @@ watch(
     internalValue.value = newVal;
   }
 );
+</script>
+
+<script lang="ts">
+export default {};
 </script>

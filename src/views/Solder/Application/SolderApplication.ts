@@ -189,30 +189,30 @@ export async function sendApplicationData(
     const pep8Data = toPep8Recursive(applicationData);
 
     // 데이터 전송
+    console.log(pep8Data)
+    // const response = await fetch(apiUrl, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify(pep8Data),
+    // });
 
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(pep8Data),
-    });
+    // if (!response.ok) {
+    //   const errorData = await response.json();
+    //   console.error("Error response from server:", errorData);
+    //   throw new Error(`Server responded with status: ${response.status}`);
+    // }
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Error response from server:", errorData);
-      throw new Error(`Server responded with status: ${response.status}`);
-    }
-
-    const result = await response.json();
-    const uuid = result.uuid;
+    // const result = await response.json();
+    // const uuid = result.uuid;
 
     // 파일이 있을 경우에만 파일 전송
-    if (selectedFiles && selectedFiles.length > 0) {
-      await sendFilesWithUuid(uuid, selectedFiles);
-    } else {
-      console.log("No files to upload.");
-    }
+    // if (selectedFiles && selectedFiles.length > 0) {
+    //   await sendFilesWithUuid(uuid, selectedFiles);
+    // } else {
+    //   console.log("No files to upload.");
+    // }
 
     // 성공 시 el-message-box로 메시지 출력
     ElMessageBox.alert("의뢰서가 정상적으로 작성되었습니다.", "성공", {

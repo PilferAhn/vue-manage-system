@@ -1,7 +1,7 @@
 // Application.ts
 import { useRouter } from "vue-router";
 import { ElMessageBox } from "element-plus";
-import {TegApplication} from "./../../../utils/tegTypes"
+import type { TegApplication as TegApplicationInterface } from "../Common/ApplicationTypes";
 import axios from "axios";
 
 export const priorityList = [1, 2, 3, 4, 5];
@@ -24,7 +24,7 @@ export async function getApplicationDetail(uuid, tegApplication) {
   }
 }
 
-export async function cloneApplicationDetail(uuid, tegApplication) {
+export async function cloneApplicationDetail(uuid : string, tegApplication : TegApplicationInterface) {
   if (uuid) {
     try {
       const response = await axios.get(

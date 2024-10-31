@@ -57,9 +57,15 @@
         :align="'center'"
       ></el-table-column>
 
-      <el-table-column label="작성일" :align="'center'">
+      <el-table-column label="의뢰서 작성일" :align="'center'">
         <template #default="scope">
           {{ convertPythonTimeToVue(scope.row.createdDate) }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="SPL 입고일" :align="'center'">
+        <template #default="scope">
+          -
         </template>
       </el-table-column>
 
