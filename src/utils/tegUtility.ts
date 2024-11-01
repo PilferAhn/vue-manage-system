@@ -209,7 +209,9 @@ export async function submitForm(
         }
       });
 
+      console.log(isTCF);
       if (!isTCF) {
+        console.log("here");
         if (!Array.isArray(tegTypes?.value)) {
           console.error("tegTypes is not a valid array:", tegTypes);
           return false;
@@ -253,11 +255,44 @@ export async function submitForm(
         });
 
         await nextTick();
-
+        console.log(formDataCopies);
         // 복사된 formData를 돌면서 요청을 보내는 함수
         async function sendRequestForCopies() {
           try {
             for (const copy of formDataCopies) {
+              // 서버로 개별 데이터 전송
+              const response = await axios.post(
+                "/teg_application/create-teg-application",
+                copy
+              );
+
+              // 파일 업로드
+              if (file && response.status === 200) {
+                await uploadImage(file, response.data.applicationUUID);
+              }
+
+              // 성공 처리
+              if (response.status === 200) {
+                applicationUuid.value = response.data.applicationUUID;
+                // console.log(applicationUuid.value);
+
+                // 엑셀 파일 생성
+                const excel_response = await create_teg_application_excel(
+                  response.data.applicationUUID
+                );
+
+                // 성공 메시지 표시
+                ElMessage.success({
+                  message:
+                    "의뢰서 작성이 완료되었습니다.<br>버튼이 활성화되면 의뢰서를 다운로드 받을 수 있습니다.",
+                  dangerouslyUseHTMLString: true,
+                });
+
+                // 다운로드 버튼 활성화
+                setTimeout(() => {
+                  activateDownload.value = true;
+                }, 3000);
+              }
             }
           } catch (error) {
             console.error("Error during request for copies:", error);
