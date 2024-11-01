@@ -86,8 +86,8 @@ export const getNewTegApplication = async (
       dateOfFinished: app.date_of_finish,
       applicationType: app.application_type,
     }));
-    
-    console.log(applications)
+
+    console.log(applications);
     return applications;
   } catch (error) {
     console.error("Failed to fetch applications:", error);
@@ -179,6 +179,8 @@ export async function submitForm(
   form?.validate(async (valid: boolean) => {
     activateDownload.value = false;
 
+    console.log(formData);
+
     if (valid) {
       // Wafer 이름 중복 확인
       if (hasDuplicateWaferName(formData.waferInformation)) {
@@ -200,105 +202,113 @@ export async function submitForm(
       // 우선순위 설정
       formData.priority = setPriority(formData.applicationType, formData.isAOI);
 
-      // 1. tegTypes가 배열인지 확인
-      if (!Array.isArray(tegTypes?.value)) {
-        console.error("tegTypes is not a valid array:", tegTypes);
-        return false;
-      }
-
-      // 2. needMeas가 true인 항목 필터링
-      const needMeasTrueTypes = tegTypes.value.filter(
-        (type: any) => type.options.needMeas === true
-      );
-
-      let step : string = ""
-      needMeasTrueTypes.forEach((type: any, index: number) => {
-        step += needMeasTrueTypes[index].name + "->"
+      let isTCF = false;
+      formData.measInfo.forEach((val, index) => {
+        if (val.measType === "TCF") {
+          isTCF = true;
+        }
       });
 
-      formData.note = formData.note + "\n" + step
-      // 3. needMeasTrueTypes 갯수만큼 formData 복사본 생성
-      // 3. needMeasTrueTypes 갯수만큼 formData 깊은 복사본 생성
-      const formDataCopies = needMeasTrueTypes.map(() => cloneDeep(formData));      
-
-      // 4. 복사본에 measType 할당
-      needMeasTrueTypes.forEach((type: any, index: number) => {
-
-        if (!needMeasTrueTypes[index]["options"].needDelay) {
-          formDataCopies[index].measInfo.forEach((measInfo, i) => {
-            if (measInfo.measType === "Delay Line") {
-              formDataCopies[index].measInfo.splice(i, 1); // 해당 요소 제거
-            }
-          });
-        }        
-
-        if (!needMeasTrueTypes[index]["options"].needCPW) {
-          formDataCopies[index].measInfo.forEach((measInfo, i) => {
-            if (measInfo.measType === "CPW") {
-              formDataCopies[index].measInfo.splice(i, 1); // 해당 요소 제거
-            }
-          });
+      if (!isTCF) {
+        if (!Array.isArray(tegTypes?.value)) {
+          console.error("tegTypes is not a valid array:", tegTypes);
+          return false;
         }
 
-        formDataCopies[index].measInfo[0].measType =
-          needMeasTrueTypes[index].name;
+        // 2. needMeas가 true인 항목 필터링
+        const needMeasTrueTypes = tegTypes.value.filter(
+          (type: any) => type.options.needMeas === true
+        );
 
-      });
+        let step: string = "";
+        needMeasTrueTypes.forEach((type: any, index: number) => {
+          step += needMeasTrueTypes[index].name + "->";
+        });
 
-      await nextTick();
-      
+        formData.note = formData.note + "\n" + step;
+        // 3. needMeasTrueTypes 갯수만큼 formData 복사본 생성
+        // 3. needMeasTrueTypes 갯수만큼 formData 깊은 복사본 생성
+        const formDataCopies = needMeasTrueTypes.map(() => cloneDeep(formData));
 
-      // 복사된 formData를 돌면서 요청을 보내는 함수
-      async function sendRequestForCopies() {
-        try {
-          for (const copy of formDataCopies) {
-            try {
-              // 서버로 개별 데이터 전송
-              const response = await axios.post(
-                "/teg_application/create-teg-application",
-                copy
-              );
-
-              // 파일 업로드
-              if (file && response.status === 200) {
-                await uploadImage(file, response.data.applicationUUID);
+        // 4. 복사본에 measType 할당
+        needMeasTrueTypes.forEach((type: any, index: number) => {
+          if (!needMeasTrueTypes[index]["options"].needDelay) {
+            formDataCopies[index].measInfo.forEach((measInfo, i) => {
+              if (measInfo.measType === "Delay Line") {
+                formDataCopies[index].measInfo.splice(i, 1); // 해당 요소 제거
               }
-
-              // 성공 처리
-              if (response.status === 200) {
-                applicationUuid.value = response.data.applicationUUID;
-                // console.log(applicationUuid.value);
-
-                // 엑셀 파일 생성
-                const excel_response = await create_teg_application_excel(
-                  response.data.applicationUUID
-                );
-
-                // 성공 메시지 표시
-                ElMessage.success({
-                  message:
-                    "의뢰서 작성이 완료되었습니다.<br>버튼이 활성화되면 의뢰서를 다운로드 받을 수 있습니다.",
-                  dangerouslyUseHTMLString: true,
-                });
-
-                // 다운로드 버튼 활성화
-                setTimeout(() => {
-                  activateDownload.value = true;
-                }, 3000);
-              }
-            } catch (copyError) {
-              console.error("Error during copy request:", copyError);
-              ElMessage.error("데이터 전송 중 오류가 발생했습니다.");
-            }
+            });
           }
-        } catch (error) {
-          console.error("Error during request for copies:", error);
-          ElMessage.error("복사본 요청 중 오류가 발생했습니다.");
+
+          if (!needMeasTrueTypes[index]["options"].needCPW) {
+            formDataCopies[index].measInfo.forEach((measInfo, i) => {
+              if (measInfo.measType === "CPW") {
+                formDataCopies[index].measInfo.splice(i, 1); // 해당 요소 제거
+              }
+            });
+          }
+
+          formDataCopies[index].measInfo[0].measType =
+            needMeasTrueTypes[index].name;
+        });
+
+        await nextTick();
+
+        // 복사된 formData를 돌면서 요청을 보내는 함수
+        async function sendRequestForCopies() {
+          try {
+            for (const copy of formDataCopies) {
+            }
+          } catch (error) {
+            console.error("Error during request for copies:", error);
+            ElMessage.error("복사본 요청 중 오류가 발생했습니다.");
+          }
+        }
+
+        // 요청 실행
+        await sendRequestForCopies();
+      } else {
+        try {
+          // 서버로 개별 데이터 전송
+          const response = await axios.post(
+            "/teg_application/create-teg-application",
+            formData
+          );
+
+          // 파일 업로드
+          if (file && response.status === 200) {
+            await uploadImage(file, response.data.applicationUUID);
+          }
+
+          // 성공 처리
+          if (response.status === 200) {
+            applicationUuid.value = response.data.applicationUUID;
+            // console.log(applicationUuid.value);
+
+            // 엑셀 파일 생성
+            const excel_response = await create_teg_application_excel(
+              response.data.applicationUUID
+            );
+
+            // 성공 메시지 표시
+            ElMessage.success({
+              message:
+                "의뢰서 작성이 완료되었습니다.<br>버튼이 활성화되면 의뢰서를 다운로드 받을 수 있습니다.",
+              dangerouslyUseHTMLString: true,
+            });
+
+            // 다운로드 버튼 활성화
+            setTimeout(() => {
+              activateDownload.value = true;
+            }, 3000);
+          }
+        } catch (copyError) {
+          console.error("Error during copy request:", copyError);
+          ElMessage.error("데이터 전송 중 오류가 발생했습니다.");
         }
       }
 
-      // 요청 실행
-      await sendRequestForCopies();
+      // 1. tegTypes가 배열인지 확인
     } else {
       ElMessage.error("입력되지 않은 항목이 남아있습니다.");
       console.error("Validation failed.");
