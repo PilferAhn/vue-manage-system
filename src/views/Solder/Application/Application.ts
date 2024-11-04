@@ -1,4 +1,14 @@
 import { ref, watch } from "vue";
+import { chipPackageList } from "../../../utils/ChipPackageList";
+
+export const getSuggestions = (queryString: string, cb: (suggestions: any[]) => void) => {
+  // `value` 필드에서 `queryString`과 일치하는 항목을 검색
+  const suggestions = chipPackageList.filter(item => 
+    item.value.toLowerCase().includes(queryString.toLowerCase())
+  );
+  // 검색된 항목을 콜백을 통해 반환
+  cb(suggestions);
+};
 
 export interface PDTRequestFormType {
   applicationUuid: string;

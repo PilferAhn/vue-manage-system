@@ -43,26 +43,6 @@
         </el-form-item>
       </div>
 
-      <!-- <div class="inline-fields">
-        <SelectOptions
-          v-model="props.processData.designerId"
-          label="개발자"
-          prop="designerId"
-          placeholder="개발자를 선택하세요"
-          :options="userOptions"
-          :disable="false"
-          class="wide-select"
-        ></SelectOptions>
-        <SelectOptions
-          v-model="props.processData.requesterId"
-          label="의뢰자"
-          prop="requesterId"
-          placeholder="의뢰자를 선택하세요"
-          :options="userOptions"
-          :disable="false"
-          class="wide-select"
-        ></SelectOptions>
-      </div> -->
       <div class="inline-fields">
         <SelectOptions
           v-model="props.processData.group"
@@ -111,6 +91,16 @@
           label="용도 / 목적"
           prop="purpose"
           placeholder="EX ) 1109 B40 TRx Filter VE 특성확인"
+          class="wide-select"
+        ></inputText>
+      </div>
+
+      <div>
+        <inputText
+          v-model="props.processData.idtThickness"
+          label="막두께(nm)"
+          prop="idtThickness"
+          placeholder="EX ) Cr / Cu / Cr = 5 / 350 / 5"
           class="wide-select"
         ></inputText>
       </div>
@@ -211,6 +201,33 @@
           class="wide-select"
         ></SelectOptions>
       </div>
+      <el-row :gutter="20">
+        <el-col :span="9">
+          <InputText
+            v-model="props.processData.moldingName"
+            label="Molding"
+            prop="machineName"
+            placeholder="0103W00180T - FILM MOLDING ; 90MM*90MM,180T, A2029"
+            class="wide-select"
+          ></InputText>
+        </el-col>
+        <el-col :span="6"
+          ><el-button type="info" @click="dialogVisible = true">
+            Show Molding Data Table
+          </el-button>
+        </el-col>
+      </el-row>
+
+      <el-form-item label="Package">
+        <el-col :span="15">
+          <el-autocomplete
+            v-model="props.processData.packageName"
+            :fetch-suggestions="suggestPackageList"
+            placeholder="Enter value (e.g., 'Q')"
+            clearable            
+          />
+        </el-col>
+      </el-form-item>
 
       <div class="inline-fields">
         <el-form-item
@@ -221,7 +238,7 @@
           <el-date-picker
             type="date"
             placeholder="FAB 투입일"
-            v-model="props.processData.fabInsertDate"
+            v-model="props.processData.wantedFabStartDate"
           ></el-date-picker>
         </el-form-item>
 
@@ -233,7 +250,7 @@
           <el-date-picker
             type="date"
             placeholder="FAB 종료일"
-            v-model="props.processData.fabFinishDate"
+            v-model="props.processData.wantedFabFinishDate"
           ></el-date-picker>
         </el-form-item>
       </div>
@@ -258,6 +275,61 @@
           >의뢰서 삭제</el-button
         >
       </el-form-item>
+      <!-- Dialog with Table -->
+      <!-- Dialog with Table -->
+      <!-- Dialog with Table -->
+      <el-dialog
+        title="Molding Data Table"
+        v-model="dialogVisible"
+        width="820px"
+        @close="handleClose"
+      >
+        <!-- Table to display molding data -->
+        <el-table :data="moldingData" border style="width: 100%">
+          <el-table-column
+            prop="epoxyCode"
+            label="Epoxy Code"
+            width="130"
+          ></el-table-column>
+          <el-table-column
+            prop="thickness"
+            label="두께"
+            width="100"
+          ></el-table-column>
+          <el-table-column
+            prop="type"
+            label="구분"
+            width="200"
+          ></el-table-column>
+          <el-table-column
+            prop="filmType"
+            label="필름구분"
+            width="150"
+          ></el-table-column>
+          <el-table-column
+            prop="company"
+            label="업체"
+            width="120"
+          ></el-table-column>
+
+          <!-- Action column with Select button -->
+          <el-table-column label="Action" width="100">
+            <template #default="scope">
+              <el-button type="primary" @click="selectRow(scope.row)">
+                Select
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <!-- Dialog footer with actions -->
+        <template>
+          <el-button @click="dialogVisible = false">Cancel</el-button>
+          <el-button type="primary" @click="dialogVisible = false"
+            >Confirm</el-button
+          >
+        </template>
+      </el-dialog>
     </el-form>
   </div>
 </template>
@@ -286,6 +358,29 @@ import {
 import type { ProcessData } from "../Interface/ApplicationInterface";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { useUserOptions } from "../../Common/utility";
+import { getSuggestions } from "../Common/Application";
+import { chipMoldingList, moldingData } from "../../../utils/ChipMoldingList";
+
+const dialogVisible = ref(false);
+// Function to handle selecting a row
+const selectRow = (row) => {
+  console.log(row);
+  props.processData.moldingName = `${row.thickness} - ${row.type} - ${row.filmType} - ${row.company} - (${row.epoxyCode})`;
+  props.processData.moldingCode = row.epoxyCode;
+  dialogVisible.value = false; // Close the dialog after selection
+};
+
+const handleClose = () => {
+  console.log("Dialog closed");
+};
+
+// fetch-suggestions를 호출할 때 getSuggestions를 사용
+const suggestPackageList = (
+  queryString: string,
+  cb: (suggestions: any[]) => void
+) => {
+  getSuggestions(queryString, cb);
+};
 
 // 사용자의 입력을 기준으로 필터링된 결과를 반환하는 공통 함수
 const querySearch = (
@@ -323,20 +418,14 @@ const props = defineProps<{
 }>();
 
 const { userOptions } = useUserOptions();
-console.log(userOptions)
-// const props = defineProps<{
-//   processData: ProcessData;
-//   anotherProp: string;
-//   isEditable: boolean;
-// }>();
 
 // Handle sending form data to the server in PEP8 style (snake_case)
 const handleSendFormData = () => {
-  sendFormData("/fab/create_application", props.processData); // Automatically converts to PEP8 (snake_case) in Application.ts
+  sendFormData("/fab_monitoring/create_fab_request", props.processData); // Automatically converts to PEP8 (snake_case) in Application.ts
 };
 
 const handleUpdateFormData = () => {
-  sendFormData("/fab/update_application", props.processData); // Automatically converts to PEP8 (snake_case) in Application.ts
+  sendFormData("/fab_monitoring/update_fab_request", props.processData); // Automatically converts to PEP8 (snake_case) in Application.ts
 };
 
 const handleDeleteFormData = () => {

@@ -76,3 +76,45 @@ export interface FabData {
   fabCardId: number;
   fabCardCheck: boolean;
 }
+
+
+
+// Operation Interface
+interface Operation {
+  site_id: string;
+  operation_id: string;
+  name: string;
+}
+
+// Cassettes Member Interface
+interface CassetteMember {
+  lot_id: string;
+  lot_type: string;
+  material_id: string;
+  tx_user_id: string;
+  tx_user_name: string;
+  tx_comment: string;
+  cassette_id: string;
+  original_date: string;
+  creation_date: string;
+  original_due_date: string;
+  schedule_due_date: string;
+  operation: Operation;
+  history: any[]; // Define this type based on your actual data structure in history
+}
+
+// Main Data Interface
+export interface MaterialData {
+  material_id: string;
+  site_id: string;
+  name: string;
+  category: string;
+  package_type: string;
+  process_type: string;
+  band: string;
+  creator_id: string;
+  modifier_id: string | null;
+  creation_date: string;
+  modify_date: string | null;
+  cassettes_member: CassetteMember[];
+}

@@ -40,7 +40,7 @@
       <el-table-column
         prop="purpose"
         label="목적"
-        width="350"
+        width="250"
         :align="'center'"
       />
 
@@ -56,8 +56,18 @@
         width="150"
         :align="'center'"
       />
+      <el-table-column
+        prop="createdDate"
+        label="작성일"
+        width="150"
+        :align="'center'"
+      >
+        <template #default="scope">
+          {{ formatDate(scope.row.createdDate) }}</template
+        >
+      </el-table-column>
       <!-- New Column for Status Buttons -->
-      <el-table-column label="Status" width="100" :align="'center'">
+      <!-- <el-table-column label="Status" width="100" :align="'center'">
         <template #default="scope">
           <el-button
             :type="scope.row.status === 'confirmed' ? 'primary' : ''"
@@ -65,34 +75,41 @@
             :style="{ color: scope.row.status === 'created' ? '#808080' : '' }"
             size="small"
           >
-            {{ scope.row.status === "confirmed" ? "confirmed" : "created" }}
+            {{ scope.row.status === "confirmed" ? "확정" : "확정 대기" }}
           </el-button>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <!-- New Column for Confirm/Delete Buttons -->
       <el-table-column label="Action" width="300" :align="'center'">
         <template #default="scope">
           <el-button
-            type="info"
+            type="primary"
             size="small"
-            @click="handleRowClick(scope.row.uuid)"
-            >자세히</el-button
+            @click="handleRowClick(scope.row.id)"
+            >의뢰서 등록</el-button
           >
           <!-- Confirm Button -->
           <el-button
             type="primary"
             size="small"
+            :disabled="scope.row.status !== 'confirmed'"
             @click="confirmAction(scope.row.id)"
-            >확정</el-button
+            >FAB 카드 작성</el-button
+          >
+          <el-button
+            type="info"
+            :size="'small'"
+            @click="handleRowClick(scope.row.id)"
+            >자세히</el-button
           >
           <!-- Delete Button -->
-          <el-button
+          <!-- <el-button
             type="danger"
             size="small"
             @click="deleteAction(scope.row.uuid)"
             disabled
             >삭제</el-button
-          >
+          > -->
         </template>
       </el-table-column>
     </el-table>
@@ -108,6 +125,7 @@ import {
   deleteApplication,
 } from "../Common/Application"; // Assuming the utility is stored here
 import type { ProcessData } from "../Interface/ApplicationInterface";
+import { formatDate } from "../Common/Application";
 
 // Reactive array to hold processData
 const processData = ref<ProcessData[]>([]);
@@ -115,17 +133,17 @@ const processData = ref<ProcessData[]>([]);
 // Fetch data when the component is mounted
 const fetchProcessData = async () => {
   try {
-    
     const formData = new FormData();
     formData.append("name", localStorage.getItem("ms_username"));
-    console.log(localStorage.getItem("ms_username"))
-    const response =await axios.post(
-        "/fab_monitoring/get_fab_request_list_person", formData);
+    console.log(localStorage.getItem("ms_username"));
+    const response = await axios.post(
+      "/fab_monitoring/get_fab_request_list_person",
+      formData
+    );
 
     // processData.value = convertToCamelCase(response.data["data"]); // Convert fetched data to camelCase
     // console.log(processData.value);
     processData.value = convertToCamelCase(response.data); // Convert fetched data to camelCase
-    
   } catch (error) {
     console.error("Failed to fetch process data:", error);
   }
@@ -133,7 +151,11 @@ const fetchProcessData = async () => {
 
 // Use the imported functions for Confirm/Delete Actions
 const confirmAction = (id: string) => {
-  confirmApplication(id);
+  // confirmApplication(id);
+
+  const url = "fabcard://";
+
+  window.location.href = url;
 };
 
 const deleteAction = (id: string) => {
@@ -143,9 +165,10 @@ const deleteAction = (id: string) => {
 // Function to handle row clicks and navigate to a new page
 const handleRowClick = (id: string) => {
   // For example, navigate to a detailed page with the row's UUID
-  router.push({ name: "LoadApplication", params: { uuid: id } });
+  router.push({ name: "LoadSolderApplication", params: { id: id } });
+  
 };
-
+console.log(processData)
 // Call fetchProcessData when the component is mounted
 onMounted(() => {
   fetchProcessData();
@@ -153,7 +176,6 @@ onMounted(() => {
 
 const router = useRouter(); // Access the Vue Router
 const name = localStorage.getItem("ms_username");
-console.log(localStorage)
 
 </script>
 

@@ -23,7 +23,7 @@
               <el-col :span="12">
                 <inputText
                   v-model="applicationData.lotId"
-                  label="WHC LOT ID"
+                  label="FAB LOT ID"
                   prop="lotId"
                   placeholder="ex) NCIFE0A30"
                 />
@@ -213,6 +213,60 @@
                 />
               </el-col>
             </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Inductor">
+                  <el-select
+                    v-model="applicationData.band"
+                    placeholder="ex) LQP03TN0N6B02D"
+                  >
+                    <el-option
+                      v-for="key in chipInductorList"
+                      :key="key.key"
+                      :label="key.label"
+                      :value="key.value"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <!-- Change EVB 출하정보 to use el-date-picker
+                <el-form-item label="EVB 출하정보" prop="shipmentInfo">
+                  <el-date-picker
+                    v-model="applicationData.shipmentInfo"
+                    type="date"
+                    placeholder="Select Date"
+                    format="YYYY-MM-DD"
+                    value-format="YYYY-MM-DD"
+                  ></el-date-picker>
+                </el-form-item> -->
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Package">
+                  <el-autocomplete
+                    v-model="applicationData.pkgType"
+                    :fetch-suggestions="suggestPackageList"
+                    placeholder="Enter value (e.g., 'Q')"
+                    @select="handle"
+                    clearable
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <!-- Change EVB 출하정보 to use el-date-picker
+                <el-form-item label="EVB 출하정보" prop="shipmentInfo">
+                  <el-date-picker
+                    v-model="applicationData.shipmentInfo"
+                    type="date"
+                    placeholder="Select Date"
+                    format="YYYY-MM-DD"
+                    value-format="YYYY-MM-DD"
+                  ></el-date-picker>
+                </el-form-item> -->
+              </el-col>
+            </el-row>
           </el-card>
         </el-col>
       </el-row>
@@ -236,12 +290,22 @@
                   ></el-input>
                 </template>
               </el-table-column>
-              <el-table-column prop="isMeasured" label="측정 여부" width="90" :align="'center'">
+              <el-table-column
+                prop="isMeasured"
+                label="측정 여부"
+                width="90"
+                :align="'center'"
+              >
                 <template #default="scope">
                   <el-checkbox v-model="scope.row.isMeasured"></el-checkbox>
                 </template>
               </el-table-column>
-              <el-table-column prop="quantity" label="수량" width="100" :align="'center'">
+              <el-table-column
+                prop="quantity"
+                label="수량"
+                width="100"
+                :align="'center'"
+              >
                 <template #default="scope">
                   <el-input
                     v-model="scope.row.quantity"
@@ -425,20 +489,35 @@ import {
   // updateMeasurements,
   // updateSegments,
 } from "../../../utils/solderApplicationUtil";
-import { evbTypeList } from "./Application";
+import { evbTypeList, getSuggestions } from "./Application";
 import {
   sendApplicationData,
   downloadSolderApplicationXlsx,
   loadApplicationData,
-  getMeasurementLabel
+  getMeasurementLabel,
 } from "./SolderApplication";
+import { chipInductorList } from "../../../utils/ChipInductorList";
 import inputText from "../../Common/InputText.vue";
 import longInputText from "../../Common/LongInputText.vue";
 import { reactive } from "vue";
 import { solderApplicationRules } from "./SolderApplicationRules";
 import { bandInformationDict } from "../../../utils/frequancyInfo";
 
+
+
+// fetch-suggestions를 호출할 때 getSuggestions를 사용
+const suggestPackageList = (queryString: string, cb: (suggestions: any[]) => void) => {
+  getSuggestions(queryString, cb);
+};
+
+// 추천 항목 선택 시 처리
+const handle = (item: { key: string; value: string; label: string }) => {
+  console.log("Selected item:", item);
+  // 추가 처리 로직을 이곳에 구현
+};
+
 // Toggle function for switching between manual input and select dropdown
+
 const toggleManualInput = () => {
   isManualInput.value = !isManualInput.value;
 };
@@ -456,7 +535,7 @@ const selectedFileNames = ref<string[]>([]);
 const selectedFiles = ref<File[]>([]); // 선택된 파일들을 저장하는 변수
 
 const applicationForm = ref();
-const bandList = Object.keys(bandInformationDict.LTE);
+// const bandList = Object.keys(bandInformationDict.LTE);
 
 // Function to handle file selection
 const handleFileChange = (file: any, fileList: File[]) => {

@@ -101,7 +101,7 @@ export async function fetchMesDataForDateRange(
     const response = await axios.post("/mes/get_materials_by_id", formData);
 
     if (response.status === 200) {
-      console.log("MES Data:", response.data);
+      // console.log("MES Data:", response.data);
       return response.data;
     } else {
       console.error("Failed to fetch MES data:", response.status);

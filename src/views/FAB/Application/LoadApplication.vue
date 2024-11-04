@@ -17,9 +17,9 @@ import { useRoute } from "vue-router";
 const route = useRoute(); // Access the route
 
 // Function to fetch the application data from the server
-const fetchApplication = async (uuid: string) => {
+const fetchApplication = async (id: string) => {
   try {
-    const response = await axios.get(`/fab/get_application/${uuid}`);
+    const response = await axios.get(`/fab/get_application/${id}`);
 
     const convertedData = convertToCamelCase(response.data["data"]);
     // Assign the converted data to processData
@@ -31,10 +31,10 @@ const fetchApplication = async (uuid: string) => {
 
 // Watch the `uuid` route parameter, fetch data immediately and when it changes
 watch(
-  () => route.params.uuid, // Watching route parameter change
-  (newUuid) => {
-    if (newUuid) {
-      fetchApplication(newUuid); // Fetch data when uuid changes
+  () => route.params.id, // Watching route parameter change
+  (id) => {
+    if (id) {
+      fetchApplication(id); // Fetch data when uuid changes
     }
   },
   { immediate: true } // Trigger immediately on component mount

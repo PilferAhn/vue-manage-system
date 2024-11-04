@@ -18,9 +18,13 @@ export interface ProcessData {
   waferType?: string; // Wafer type
   machineName?: string; // machine name
   condition?: string;
-
+  idtThickness? : string;
+  packageName? : string;
+  moldingName? : string;
+  moldingCode? : string
   designerConfirm?: string;
 
+  createdData? : string;
   expectStartDate?: string;
   expectFinishDate?: string;
 
@@ -38,5 +42,7 @@ export interface ProcessData {
 
   status? : string;
   note? : string;
+  result? : string;
+
 
 }

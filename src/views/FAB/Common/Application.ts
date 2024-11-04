@@ -2,6 +2,7 @@ import { reactive } from "vue";
 import type { ProcessData } from "../Interface/ApplicationInterface";
 import { ElMessageBox, ElMessage } from "element-plus";
 import axios from "axios";
+import { chipPackageList } from "../../../utils/ChipPackageList";
 
 // Reactive initialization
 export const processData = reactive<ProcessData>({
@@ -15,9 +16,10 @@ export const processData = reactive<ProcessData>({
   isAoi: true,
   destination: "",
   quantity: 0,
+  idtThickness: "",
   code: "",
-  fabInsertDate: "",
-  fabFinishDate: "",
+  wantedFabStartDate: "",
+  wantedFabFinishDate: "",
   waferCompany: "",
   waferAngle: "",
   waferThickness: "",
@@ -26,38 +28,81 @@ export const processData = reactive<ProcessData>({
   condition: "",
 });
 
+// Reactive initialization
+export const applicationDemoData = reactive<ProcessData>({
+  uuid: "",
+  group: "양산 개발",
+  process: "TC",
+  priority: "A",
+  packageType: "CSP",
+  modelName: "HM08AA4@M1B",
+  purpose: "11/30 SPL 대응, DVR2",
+  isAoi: true,
+  destination: "WHC_CSP",
+  quantity: 6,
+  idtThickness: "Cr/Cu/Cr=5/244/5",
+  code: "C",
+  wantedFabStartDate: "2024-10-25",
+  wantedFabFinishDate: "2024-11-07",
+  waferCompany: "S",
+  waferAngle: "128",
+  waferThickness: "350",
+  waferType: "BLN",
+  machineName: "신크론",
+  condition: "",
+  moldingName: "",
+  packageName: "",
+  designer: "",
+  requester: "",
+  note: "",
+});
+
+export const getSuggestions = (
+  queryString: string,
+  cb: (suggestions: any[]) => void
+) => {
+  // `value` 필드에서 `queryString`과 일치하는 항목을 검색
+  const suggestions = chipPackageList.filter((item) =>
+    item.value.toLowerCase().includes(queryString.toLowerCase())
+  );
+  // 검색된 항목을 콜백을 통해 반환
+  cb(suggestions);
+};
+
 // Confirm Application Function
 export const confirmApplication = async (id: string) => {
   try {
     // Show a confirmation dialog before confirming
     await ElMessageBox.confirm(
-      '의뢰서 작성을 확정하시겠습니까?', // The confirmation message
-      '확정 확인', // The title of the confirmation dialog
+      "의뢰서 작성을 확정하시겠습니까?", // The confirmation message
+      "확정 확인", // The title of the confirmation dialog
       {
-        confirmButtonText: 'Yes', // The label of the confirm button
-        cancelButtonText: 'No', // The label of the cancel button
-        type: 'warning', // The type (which will affect the color and icon)
+        confirmButtonText: "Yes", // The label of the confirm button
+        cancelButtonText: "No", // The label of the cancel button
+        type: "warning", // The type (which will affect the color and icon)
       }
     );
-    
+
     const formData = new FormData();
-    formData.append("id" , id)
+    formData.append("id", id);
     // If the user confirms, send the confirm request
-    const response = await axios.post(`/fab_monitoring/set_designer_confirm`, formData);
+    const response = await axios.post(
+      `/fab_monitoring/set_designer_confirm`,
+      formData
+    );
 
     ElMessage({
-      type: 'success',
-      message: '의뢰서가 성공적으로 확정되었습니다.',
+      type: "success",
+      message: "의뢰서가 성공적으로 확정되었습니다.",
     });
     console.log("Confirm response:", response.data);
-    
   } catch (error) {
-    if (error !== 'cancel') {
+    if (error !== "cancel") {
       console.error("Failed to confirm application:", error);
     } else {
       ElMessage({
-        type: 'info',
-        message: '확정이 취소되었습니다.',
+        type: "info",
+        message: "확정이 취소되었습니다.",
       });
     }
   }
@@ -68,29 +113,29 @@ export const deleteApplication = async (id: string) => {
   try {
     // Show a confirmation dialog before deleting
     await ElMessageBox.confirm(
-      '정말로 의뢰서를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.', // The confirmation message
-      '삭제 확인', // The title of the confirmation dialog
+      "정말로 의뢰서를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.", // The confirmation message
+      "삭제 확인", // The title of the confirmation dialog
       {
-        confirmButtonText: 'Yes', // The label of the confirm button
-        cancelButtonText: 'No', // The label of the cancel button
-        type: 'warning', // The type (which will affect the color and icon)
+        confirmButtonText: "Yes", // The label of the confirm button
+        cancelButtonText: "No", // The label of the cancel button
+        type: "warning", // The type (which will affect the color and icon)
       }
     );
 
     // If the user confirms, send the delete request
     const response = await axios.get(`/fab/delete_application?id=${id}`);
     ElMessage({
-      type: 'success',
-      message: '의뢰서가 성공적으로 삭제되었습니다.',
+      type: "success",
+      message: "의뢰서가 성공적으로 삭제되었습니다.",
     });
     console.log("Delete response:", response.data);
   } catch (error) {
-    if (error !== 'cancel') {
+    if (error !== "cancel") {
       console.error("Failed to delete application:", error);
     } else {
       ElMessage({
-        type: 'info',
-        message: '삭제가 취소되었습니다.',
+        type: "info",
+        message: "삭제가 취소되었습니다.",
       });
     }
   }
@@ -115,18 +160,21 @@ export function getCurrentWeekNumber(): number {
   // Set the date to the nearest Thursday (ISO standard)
   const firstDayOfYear = new Date(now.getFullYear(), 0, 1);
   const dayOfWeek = firstDayOfYear.getDay();
-  const nearestThursday = firstDayOfYear.getTime() + ((4 - (dayOfWeek === 0 ? 7 : dayOfWeek)) * 86400000);
+  const nearestThursday =
+    firstDayOfYear.getTime() +
+    (4 - (dayOfWeek === 0 ? 7 : dayOfWeek)) * 86400000;
   const firstThursday = new Date(nearestThursday);
 
   // Calculate the difference between the current date and the first Thursday
   const millisecondsPerDay = 86400000;
   const differenceInMilliseconds = now.getTime() - firstThursday.getTime();
-  const dayDifference = Math.floor(differenceInMilliseconds / millisecondsPerDay);
+  const dayDifference = Math.floor(
+    differenceInMilliseconds / millisecondsPerDay
+  );
 
   // Calculate the week number (ISO week starts from week 1)
   return Math.ceil((dayDifference + 1) / 7) + 1;
 }
-
 
 // Utility function to convert snake_case to camelCase
 function toCamelCase(key: string): string {
@@ -224,17 +272,16 @@ export const showFormData = (processData: ProcessData) => {
 };
 
 // Function to send a POST request to a server with the form data
-export const sendFormData = async (url : string, processData: ProcessData) => {
+export const sendFormData = async (url: string, processData: ProcessData) => {
   try {
-    
     // Format the dates before sending them
     const formattedData = {
       ...processData,
-      fabInsertDate: processData.fabInsertDate
-        ? formatDateForServer(processData.fabInsertDate)
+      wantedFabStartDate: processData.wantedFabStartDate
+        ? formatDateForServer(processData.wantedFabStartDate)
         : null,
-      fabFinishDate: processData.fabFinishDate
-        ? formatDateForServer(processData.fabFinishDate)
+        wantedFabFinishDate: processData.wantedFabFinishDate
+        ? formatDateForServer(processData.wantedFabFinishDate)
         : null,
     };
     const convertedData = convertToPep8(formattedData);

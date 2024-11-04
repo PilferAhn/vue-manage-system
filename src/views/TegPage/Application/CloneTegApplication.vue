@@ -322,7 +322,7 @@ watch(
   },
   { immediate: true }
 ); // immediate: true 옵션으로 컴포넌트 마운트 시 즉시 실행
-
+const tegTypes = ""
 function handleFormSubmission() {
   if (applicationForm.value) {
     activateDownload.value = false;
@@ -331,7 +331,8 @@ function handleFormSubmission() {
       tegApplicationForm,
       selectedFile.value,
       activateDownload,
-      applicationUuid
+      applicationUuid,
+      tegTypes
     );
   } else {
     console.error("Form is not yet initialized.");

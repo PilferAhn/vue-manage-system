@@ -127,18 +127,18 @@ const items = [
         title: "Measurement Finished",
         permiss: "2",
       },
-        {
-          index: "/teg/create-teg-application2",
-          title: "의뢰서 작성",
-          permiss: "2",
-        },
+      {
+        index: "/teg/create-teg-application2",
+        title: "의뢰서 작성",
+        permiss: "2",
+      },
     ],
   },
   {
     icon: "DocumentAdd",
     index: "3",
     title: "개발 SPL",
-    permiss: "4",
+    permiss: "11",
     subs: [
       {
         index: "/fab/create-application",
@@ -156,9 +156,26 @@ const items = [
         permiss: "11",
       },
       {
-        index: "/fab/sample_status",
+        index: "/fab/mes",
         title: "개발 SPL 현황",
         permiss: "11",
+        subs: [
+          {
+            index: "/fab/mes/sample_status",
+            title: "개발 SPL 현황 - HQ",
+            permiss: "11",
+          },
+          {
+            index: "/fab/sample_status",
+            title: "개발 SPL 현황 - WHC(WLP)",
+            permiss: "11",
+          },
+          {
+            index: "/fab/sample_status",
+            title: "개발 SPL 현황 - WHC(CSP)",
+            permiss: "11",
+          },
+        ],
       },
       {
         index: "/fab/mes_sample_status",
@@ -183,11 +200,11 @@ const items = [
         title: "의뢰 현황",
         permiss: "11",
       },
-      // {
-      //   index: "/whc/network-analyzer",
-      //   title: "TEST",
-      //   permiss: "11",
-      // },
+      {
+        index: "/whc/network-analyzer",
+        title: "TEST",
+        permiss: "11",
+      },
     ],
   },
   {

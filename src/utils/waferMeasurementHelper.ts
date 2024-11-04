@@ -122,7 +122,7 @@ export const getTegApplication = async (
     const url = "application/get_application_by_category";
     const response = await axios.post(url, { category: category });
     let wafers = [];
-
+    console.log(response.data)
     const applications: TegApplication[] = response.data.map((app: any) => ({
       applicationID: app.application_id,
       productName: app.product_name,

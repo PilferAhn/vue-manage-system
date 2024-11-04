@@ -2,7 +2,7 @@
     <div class="container">
         
       <!-- Pass processData to the child component -->
-      <Application :processData="processData"
+      <Application :processData="applicationDemoData"
       :applicationType="'create'" />
     </div>
   </template>
@@ -10,7 +10,7 @@
 <script lang="ts" setup>
 import type { ProcessData } from '../Interface/ApplicationInterface';
 
-import {processData} from "../Common/Application"
+import {processData, applicationDemoData} from "../Common/Application"
 import Application from './Application.vue';
 
 

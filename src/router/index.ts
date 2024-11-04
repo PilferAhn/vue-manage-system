@@ -256,7 +256,7 @@ const routes: RouteRecordRaw[] = [
         name: "TegApplication3",
         meta: {
           title: "신규 TEG 의뢰서 작성",
-          permiss: "2",
+          permiss: "4",
         },
         component: () =>
           import(
@@ -524,7 +524,7 @@ const routes: RouteRecordRaw[] = [
           ),
       },
       {
-        path: "/fab/sample_status",
+        path: "/fab/mes/sample_status",
         name: "SampleStatus",
         meta: {
           title: "SampleStatus",
