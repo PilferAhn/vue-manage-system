@@ -38,6 +38,7 @@ export interface ApplicationData {
   completionDate?: string; // 측정 완료일 (date)
   modelName?: string; // 기종명 (model name)
   lotId?: string; // Lot ID
+  assayLotId? : string;
   band?: string;
   designer?: string;
   files? : [];
@@ -47,6 +48,7 @@ export interface ApplicationData {
   requesterId?: string;
   filterType?: string;
   deembedMode? : string;
+  isSampleAvailable? : boolean
   matchingComponentType? : string;
   evbType?: string; // EVB Type  
   shipmentInfo?: string; // 출하정보 (shipment details)
@@ -62,4 +64,5 @@ export interface ApplicationData {
   segments?: Segment[];
   matchingQuantity? : number ;
   matching? : Matching[];
+  
 }

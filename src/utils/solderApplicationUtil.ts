@@ -27,6 +27,8 @@ export const initializeApplicationData = () => {
     shipmentInfo: "",
     detail: "",
 
+    isSampleAvailable : false,
+    
     deembedMode : "",
     matchingComponentType : "",
             

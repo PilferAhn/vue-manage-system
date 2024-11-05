@@ -15,7 +15,7 @@
               <el-col :span="12">
                 <inputText
                   v-model="applicationData.modelName"
-                  label="기 종 명"
+                  label="Model Name"
                   prop="modelName"
                   placeholder="ex) XMN5CTV@1A"
                 />
@@ -34,17 +34,17 @@
               <el-col :span="12">
                 <inputText
                   v-model="applicationData.designer"
-                  label="개 발 자"
+                  label="Designer"
                   prop="designer"
-                  placeholder="ex) 개 발 자"
+                  placeholder="ex) Designer"
                 />
               </el-col>
               <el-col :span="12">
                 <inputText
                   v-model="applicationData.requester"
-                  label="의 뢰 자"
+                  label="Requester"
                   prop="requester"
-                  placeholder="ex) 의 뢰 자"
+                  placeholder="ex) Requester"
                 />
               </el-col>
             </el-row>
@@ -113,7 +113,7 @@
               </el-col>
               <el-col :span="6">
                 <!-- Change EVB 출하정보 to use el-date-picker -->
-                <el-form-item label="EVB 출하정보" prop="shipmentInfo">
+                <el-form-item label="EVB Shipment Date" prop="shipmentInfo">
                   <el-date-picker
                     v-model="applicationData.shipmentInfo"
                     type="date"
@@ -127,7 +127,7 @@
             <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item
-                  label="Matching 소자 Type"
+                  label="Matching Component Type"
                   prop="matchingComponentType"
                 >
                   <el-select
@@ -141,7 +141,7 @@
               </el-col>
               <el-col :span="12">
                 <el-form-item
-                  label="WHC EVB 자제 리스트"
+                  label="WHC EVB Material List"
                   prop="matchingComponentType"
                 >
                   <el-button type="primary" @click="getEvbListExcel">
@@ -213,6 +213,20 @@
                 />
               </el-col>
             </el-row>
+
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Sample 보유 여부">
+                  <el-switch
+                    v-model="applicationData.isSampleAvailable"
+                    active-text="Yes"
+                    inactive-text="No"
+                  ></el-switch>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6"> </el-col>
+            </el-row>
+
             <!-- <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item label="Inductor">
@@ -468,10 +482,11 @@ import { reactive } from "vue";
 import { solderApplicationRules } from "./SolderApplicationRules";
 import { bandInformationDict } from "../../../utils/frequancyInfo";
 
-
-
 // fetch-suggestions를 호출할 때 getSuggestions를 사용
-const suggestPackageList = (queryString: string, cb: (suggestions: any[]) => void) => {
+const suggestPackageList = (
+  queryString: string,
+  cb: (suggestions: any[]) => void
+) => {
   getSuggestions(queryString, cb);
 };
 

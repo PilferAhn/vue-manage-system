@@ -32,44 +32,78 @@
       ref="multipleTable"
       header-cell-class-name="table-header"
       style="width: 100%"
+      height="700px"
     >
       <el-table-column
         prop="modelName"
         label="Product Name"
+        width="150"
         :align="'center'"
       ></el-table-column>
 
       <el-table-column
         prop="lotId"
-        label="Lot ID"
+        label="FAB Lot ID"
+        :align="'center'"
+        width="150"
+      ></el-table-column>
+
+      <el-table-column        
+        prop="assayLotId"
+        label="Assay LOT ID"
+        width="150"
         :align="'center'"
       ></el-table-column>
 
       <el-table-column
+        v-if="isIdIncluded"
         prop="designer"
-        label="개발자"
+        label="Assay LOT ID"
+        width="300"
+        :align="'center'"
+      >
+        <template #default="scope">
+          <div style="display: flex; align-items: center">
+            <el-input
+              v-model="scope.row.assayLotId"
+              placeholder="Enter Assay LOT ID"
+              width="150"
+            ></el-input>
+            <el-button
+              type="primary"
+              @click="handleUpdate(scope.row.uuid, scope.row.assayLotId)"
+            >
+              Update
+            </el-button>
+          </div>
+        </template>
+      </el-table-column>
+
+      <el-table-column
+        prop="designer"
+        label="Designer"
+        width="150"
         :align="'center'"
       ></el-table-column>
 
       <el-table-column
         prop="requester"
-        label="의뢰자"
+        label="Requester"
+        width="150"
         :align="'center'"
       ></el-table-column>
 
-      <el-table-column label="의뢰서 작성일" :align="'center'">
+      <el-table-column label="Date Of Reqeust" width="150" :align="'center'">
         <template #default="scope">
           {{ convertPythonTimeToVue(scope.row.createdDate) }}
         </template>
       </el-table-column>
 
-      <el-table-column label="SPL 입고일" :align="'center'">
-        <template #default="scope">
-          -
-        </template>
+      <el-table-column label="Date Of Received" width="150" :align="'center'">
+        <template #default="scope"> - </template>
       </el-table-column>
 
-      <el-table-column label="진행도" :align="'center'" width="500">
+      <el-table-column label="Stage" :align="'center'" width="500">
         <template #default="scope">
           <div>
             <el-button
@@ -139,6 +173,7 @@ import { updateStatusByUuid } from "../Application/SolderApplication";
 import SelectOptions from "../../Common/SelectOptions.vue";
 import { statusList, confirmDelete } from "./SolderApplicationList";
 import { convertPythonTimeToVue } from "../../Common/utility";
+import axios from "axios";
 
 const props = defineProps<{
   applicationData: ApplicationData[];
@@ -197,6 +232,22 @@ function handleDetail(row: ApplicationData) {
   });
 }
 const emit = defineEmits(["status-updated"]);
+
+const handleUpdate = async (uuid, assayLotId) => {
+
+  const form = new FormData()
+  form.append("application_uuid", uuid)
+  form.append("assay_lot_id", assayLotId)
+
+  try {
+    const response = await axios.post('/solder/update_assay_lot_id', form);
+    console.log('Update successful:', response.data);
+    // 성공 메시지 표시 또는 다른 후속 작업 수행
+  } catch (error) {
+    console.error('Error updating data:', error);
+    // 에러 메시지 표시
+  }
+};
 </script>
 
 <style scoped>

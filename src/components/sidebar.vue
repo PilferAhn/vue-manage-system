@@ -177,11 +177,11 @@ const items = [
           },
         ],
       },
-      {
-        index: "/fab/mes_sample_status",
-        title: "개발 SPL 현황 (MES)",
-        permiss: "11",
-      },
+      // {
+      //   index: "/fab/mes_sample_status",
+      //   title: "개발 SPL 현황 (MES)",
+      //   permiss: "11",
+      // },
     ],
   },
   {
