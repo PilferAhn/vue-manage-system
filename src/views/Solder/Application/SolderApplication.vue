@@ -213,7 +213,7 @@
                 />
               </el-col>
             </el-row>
-            <el-row :gutter="20">
+            <!-- <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item label="Inductor">
                   <el-select
@@ -230,43 +230,8 @@
                 </el-form-item>
               </el-col>
               <el-col :span="6">
-                <!-- Change EVB 출하정보 to use el-date-picker
-                <el-form-item label="EVB 출하정보" prop="shipmentInfo">
-                  <el-date-picker
-                    v-model="applicationData.shipmentInfo"
-                    type="date"
-                    placeholder="Select Date"
-                    format="YYYY-MM-DD"
-                    value-format="YYYY-MM-DD"
-                  ></el-date-picker>
-                </el-form-item> -->
               </el-col>
-            </el-row>
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <el-form-item label="Package">
-                  <el-autocomplete
-                    v-model="applicationData.pkgType"
-                    :fetch-suggestions="suggestPackageList"
-                    placeholder="Enter value (e.g., 'Q')"
-                    @select="handle"
-                    clearable
-                  />
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <!-- Change EVB 출하정보 to use el-date-picker
-                <el-form-item label="EVB 출하정보" prop="shipmentInfo">
-                  <el-date-picker
-                    v-model="applicationData.shipmentInfo"
-                    type="date"
-                    placeholder="Select Date"
-                    format="YYYY-MM-DD"
-                    value-format="YYYY-MM-DD"
-                  ></el-date-picker>
-                </el-form-item> -->
-              </el-col>
-            </el-row>
+            </el-row> -->
           </el-card>
         </el-col>
       </el-row>

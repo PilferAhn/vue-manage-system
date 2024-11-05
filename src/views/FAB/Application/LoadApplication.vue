@@ -19,7 +19,7 @@ const route = useRoute(); // Access the route
 // Function to fetch the application data from the server
 const fetchApplication = async (id: string) => {
   try {
-    const response = await axios.get(`/fab/get_application/${id}`);
+    const response = await axios.post(`/fab/fab_request_by_id`);
 
     const convertedData = convertToCamelCase(response.data["data"]);
     // Assign the converted data to processData
