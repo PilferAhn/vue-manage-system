@@ -33,7 +33,7 @@ const fetchApplication = async (id: string) => {
 watch(
   () => route.params.id, // Watching route parameter change
   (id) => {
-    if (id) {
+    if (id) {``
       fetchApplication(id); // Fetch data when uuid changes
     }
   },

@@ -11,6 +11,7 @@ import {
 
 // 특정 URL로 파일 다운로드 요청을 보내는 함수
 export async function downloadFileByUrl(fileUuid: string, fileName: string) {
+  
   try {
     const url = `/solder/download_solder_application_file/${fileUuid}`;
     const response = await axios.get(url, {
@@ -61,8 +62,11 @@ export function useApplicationData(
   // uuid가 변경될 때마다 데이터를 요청
   watch(
     () => uuid,
-    async (newUuid) => {
-      if (newUuid) {        
+    async (newUuid, oldUuid) => {
+      if (newUuid && newUuid !== oldUuid) {
+        console.log("Old UUID:", oldUuid);
+        console.log("New UUID:", newUuid);
+
         const fetchedData = await fetchApplicationData(
           applicationData,
           newUuid
@@ -73,21 +77,9 @@ export function useApplicationData(
           Object.assign(applicationData, fetchedData); // 정렬된 데이터를 할당
         }
       }
-    }
+    },
+    { immediate: true } // watch가 처음 실행될 때도 트리거
   );
-
-  // 페이지가 처음 로딩될 때 데이터를 가져오는 로직
-  onMounted(async () => {
-    if (uuid) {
-      console.log("Mounted");
-      const fetchedData = await fetchApplicationData(applicationData, uuid); // 객체 속성만 갱신
-      console.log(fetchedData)
-      if (fetchedData) {
-        sortApplicationDataByNumber(fetchedData);
-        Object.assign(applicationData, fetchedData); // 정렬된 데이터를 할당
-      }
-    }
-  });
 
   // 데이터를 number로 정렬하는 함수
   function sortApplicationDataByNumber(data: ApplicationData) {
@@ -248,7 +240,7 @@ export function initializeApplicationData2() {
         start: "",
         stop: "",
         points: "",
-        ifwb: "",
+        ifbw: "",
       },
     ],
     matchingQuantity: 0,

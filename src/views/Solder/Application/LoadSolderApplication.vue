@@ -415,6 +415,8 @@ const route = useRoute();
 // route.params에서 uuid 값을 추출합니다.
 const uuid = route.params.applicationUuid;
 
+
+
 // Initialize application data as reactive
 const initData = reactive(initializeApplicationData2());
 const rules = solderApplicationRules;
@@ -426,7 +428,9 @@ const selectedFiles = ref<File[]>([]); // 선택된 파일들을 저장하는 �
 const applicationForm = ref();
 
 // useApplicationData를 호출하여 데이터를 가져옴
-const { applicationData } = useApplicationData(initData, uuid);
+const { applicationData } = useApplicationData(initData, uuid as string);
+
+
 
 // computed를 사용해 segment를 정렬하여 sortedSegments로 반환
 const sortedSegments = computed(() => {

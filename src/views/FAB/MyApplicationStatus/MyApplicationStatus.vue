@@ -85,7 +85,7 @@
           <el-button
             type="primary"
             size="small"
-            @click="handleRowClick(scope.row.id)"
+            @click="handleConfirm(scope.row.id)"
             >의뢰서 등록</el-button
           >
           <!-- Confirm Button -->
@@ -93,7 +93,7 @@
             type="primary"
             size="small"
             :disabled="scope.row.status !== 'confirmed'"
-            @click="confirmAction(scope.row.id)"
+            @click="writeFabcard(scope.row.id)"
             >FAB 카드 작성</el-button
           >
           <el-button
@@ -150,7 +150,7 @@ const fetchProcessData = async () => {
 };
 
 // Use the imported functions for Confirm/Delete Actions
-const confirmAction = (id: string) => {
+const writeFabcard = (id: string) => {
   // confirmApplication(id);
 
   const url = "fabcard://";
@@ -168,6 +168,11 @@ const handleRowClick = (id: string) => {
   router.push({ name: "LoadSolderApplication", params: { id: id } });
   
 };
+
+const handleConfirm = (id : string) => {
+  confirmApplication(id)
+}
+
 console.log(processData)
 // Call fetchProcessData when the component is mounted
 onMounted(() => {

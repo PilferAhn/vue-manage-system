@@ -2,7 +2,7 @@
     <div class="container">
         
       <!-- Pass processData to the child component -->
-      <Application :processData="applicationDemoData"
+      <Application :processData="processData"
       :applicationType="'create'" />
     </div>
   </template>

@@ -23,11 +23,11 @@ export interface ProcessData {
   moldingName? : string;
   moldingCode? : string
   designerConfirm?: string;
-
+  weekNumber? : number;
   createdData? : string;
   expectStartDate?: string;
   expectFinishDate?: string;
-
+  hsWaferInfo? : string;
   wantedFabStartDate?: string;
   wantedFabFinishDate?: string;
 
@@ -39,6 +39,8 @@ export interface ProcessData {
 
   requester? : string;
   requesterId? : string;
+
+
 
   status? : string;
   note? : string;

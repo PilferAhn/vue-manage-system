@@ -55,14 +55,14 @@ export async function downloadSolderApplicationXlsx(
 
 export function getMeasurementLabel(measurementType: string): string {
   switch (measurementType) {
-    case '비선형':
-      return '비선형 (Non-Linearity)';
-    case 'PS 신뢰성':
-      return 'PS 신뢰성 (ESD)';
-    case '내전력':
-      return '내전력 (PDT)';
-    case '특성 평가':
-      return '특성 평가 (Solder Measurement)';
+    case "비선형":
+      return "비선형 (Non-Linearity)";
+    case "PS 신뢰성":
+      return "PS 신뢰성 (ESD)";
+    case "내전력":
+      return "내전력 (PDT)";
+    case "특성 평가":
+      return "특성 평가 (Solder Measurement)";
     default:
       return measurementType; // 기본적으로 한글만 출력
   }
@@ -171,6 +171,63 @@ export async function removeApplicationByUuid(uuid: string) {
   }
 }
 
+export async function sendApplicationData2(
+  applicationData: ApplicationData,
+  selectedFiles: File[] | null, // 배열 또는 null일 수 있음
+  url: string,
+  buttonType: string
+) {
+
+  console.log(applicationData)
+  // selectedFiles가 null 또는 빈 배열일 경우를 처리
+  if (!selectedFiles || selectedFiles.length === 0) {
+    console.log("No files selected.");
+  } else {
+    console.log("Selected files:", selectedFiles);
+  }
+
+  try {
+    updateMeasurementStatus(applicationData);
+
+    const apiUrl = url; // FastAPI 엔드포인트
+    const pep8Data = toPep8Recursive(applicationData);
+
+    const response = await axios.post(apiUrl, pep8Data);
+
+    // axios는 성공 시 자동으로 status code 200-299을 처리하므로 따로 ok 체크는 필요 없음
+    const result = response.data; // response의 data가 서버의 JSON 응답을 나타냄
+    const uuid = result.uuid;
+
+    // 파일이 있을 경우에만 파일 전송
+    if (selectedFiles && selectedFiles.length > 0) {
+      await sendFilesWithUuid(uuid, selectedFiles);
+    } else {
+      console.log("No files to upload.");
+    }
+
+    if (buttonType === "load") {
+      ElMessageBox.alert("의뢰서가 정상적으로 업데이트 되었습니다.", "성공", {
+        confirmButtonText: "확인",
+        type: "success",
+      });
+    } else {
+      // 성공 시 el-message-box로 메시지 출력
+      ElMessageBox.alert("의뢰서가 정상적으로 작성되었습니다.", "성공", {
+        confirmButtonText: "확인",
+        type: "success",
+      });
+    }
+  } catch (error) {
+    console.error("Error sending request to server:", error);
+    // 실패 시 el-notification으로 에러 메시지 출력
+    ElNotification({
+      title: "에러",
+      message: `요청 중 에러가 발생했습니다: ${error.message}`,
+      type: "error",
+    });
+  }
+}
+
 export async function sendApplicationData(
   applicationData: ApplicationData,
   selectedFiles: File[] | null // 배열 또는 null일 수 있음
@@ -189,7 +246,7 @@ export async function sendApplicationData(
     const pep8Data = toPep8Recursive(applicationData);
 
     // 데이터 전송
-    console.log(pep8Data)
+    console.log(pep8Data);
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
@@ -277,4 +334,3 @@ export async function updateStatusByUuid(
     console.error("Error update status of application:", error);
   }
 }
-

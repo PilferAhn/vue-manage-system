@@ -34,6 +34,8 @@
       @sort-change="handleSortChange"
       :row-class-name="tableRowClassName"
       :lazy="true"
+      @cell-mouse-enter="handleRowMouseEnter"
+      @cell-mouse-leave="handleRowMouseLeave"
     >
       <el-table-column
         prop="idx"
@@ -249,6 +251,19 @@ onMounted(() => {
 const today = new Date();
 today.setHours(0, 0, 0, 0); // 시간을 00:00:00으로 초기화
 
+const hoveredRow = ref<number | null>(null); // 현재 호버된 행의 인덱스
+
+// 마우스가 행에 올라갔을 때 호출되는 함수
+const handleRowMouseEnter = (row: FabData, rowIndex: number) => {
+  console.log(rowIndex)
+  hoveredRow.value = rowIndex;
+};
+
+// 마우스가 행에서 떠났을 때 호출되는 함수
+const handleRowMouseLeave = () => {
+  hoveredRow.value = null;
+};
+
 const tableRowClassName = ({
   row,
   rowIndex,
@@ -258,7 +273,10 @@ const tableRowClassName = ({
 }) => {
   const targetDate = new Date(row.fabOut);
   targetDate.setHours(0, 0, 0, 0); // 시간을 00:00:00으로 설정
-  if (row.currentHoldingFlag >= 1) {
+  if (rowIndex == hoveredRow.value){
+    return "custom-hover-row";
+  } 
+  else if (row.currentHoldingFlag >= 1) {
     return "warning-row";
   } else if (targetDate.getTime() <= today.getTime()) {
     return "danger-row";
@@ -268,11 +286,15 @@ const tableRowClassName = ({
   // else if (row.importance === "C" || row.importance === "H") {
   //   return "success-row";
   // }
+  
   return "";
 };
+
+
 </script>
 
 <style>
+/* Hover 효과 제거 */
 .container {
   padding: 20px;
 }
@@ -288,5 +310,12 @@ const tableRowClassName = ({
 
 .el-table__row.danger-row {
   background-color: rgb(250, 88, 88);
+}
+
+/* custom-hover-row 클래스를 사용하여 hover 효과 정의 */
+.el-table__row.custom-hover-row {
+  background-color: rgb(250, 88, 88);
+  border: 2px solid #000000 !important;
+  border-radius: 10px;
 }
 </style>

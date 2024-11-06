@@ -690,7 +690,7 @@ const routes: RouteRecordRaw[] = [
         },
         component: () =>
           import(
-            /* webpackChunkName: "table" */ "../views/Solder/Application/SolderApplication.vue"
+            /* webpackChunkName: "table" */ "../views/Solder/Application/CreateSolderApplication.vue"
           ),
       },
       {
@@ -715,6 +715,18 @@ const routes: RouteRecordRaw[] = [
         component: () =>
           import(
             /* webpackChunkName: "table" */ "../views/Solder/Application/LoadSolderApplication.vue"
+          ),
+      },
+      {
+        path: "/whc/call-application/:applicationUuid",
+        name: "CallSolderApplication",
+        meta: {
+          title: "Solder Application",
+          permiss: "11",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "table" */ "../views/Solder/Application/CallSolderApplication.vue"
           ),
       },
       {

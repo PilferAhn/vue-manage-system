@@ -16,6 +16,7 @@ export async function get_application_list_by_status(
   try {
     // 서버의 API 엔드포인트 호출
 
+    //const url = `/solder/get_solder_application_list_by_status/${status},created_date`;
     const url = `/solder/get_solder_application_list_by_status/${status},created_date`;
 
     const response = await axios.get(url);

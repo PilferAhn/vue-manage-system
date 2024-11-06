@@ -3,10 +3,11 @@
     <div class="search-box">
       <el-input
         v-model="searchTerm"
-        placeholder="Lot ID 검색"
+        placeholder="Ex) Lot ID, Assary Lot ID, Name, Product Name"
         class="search-input mr10"
         clearable
         @clear="handleClear"
+        style="width: 350px"
       ></el-input>
       <el-button type="primary" @click="handleSearch">검색</el-button>
 
@@ -27,83 +28,19 @@
     </div>
     <el-table
       :data="filteredApplicationData"
-      border
       class="table"
       ref="multipleTable"
       header-cell-class-name="table-header"
-      style="width: 100%"
+      :row-class-name="tableRowClassName"
       height="700px"
     >
       <el-table-column
         prop="modelName"
         label="Product Name"
-        width="150"
+        width="120"
         :align="'center'"
       ></el-table-column>
-
-      <el-table-column
-        prop="lotId"
-        label="FAB Lot ID"
-        :align="'center'"
-        width="150"
-      ></el-table-column>
-
-      <el-table-column        
-        prop="assayLotId"
-        label="Assay LOT ID"
-        width="150"
-        :align="'center'"
-      ></el-table-column>
-
-      <el-table-column
-        v-if="isIdIncluded"
-        prop="designer"
-        label="Assay LOT ID"
-        width="300"
-        :align="'center'"
-      >
-        <template #default="scope">
-          <div style="display: flex; align-items: center">
-            <el-input
-              v-model="scope.row.assayLotId"
-              placeholder="Enter Assay LOT ID"
-              width="150"
-            ></el-input>
-            <el-button
-              type="primary"
-              @click="handleUpdate(scope.row.uuid, scope.row.assayLotId)"
-            >
-              Update
-            </el-button>
-          </div>
-        </template>
-      </el-table-column>
-
-      <el-table-column
-        prop="designer"
-        label="Designer"
-        width="150"
-        :align="'center'"
-      ></el-table-column>
-
-      <el-table-column
-        prop="requester"
-        label="Requester"
-        width="150"
-        :align="'center'"
-      ></el-table-column>
-
-      <el-table-column label="Date Of Reqeust" width="150" :align="'center'">
-        <template #default="scope">
-          {{ convertPythonTimeToVue(scope.row.createdDate) }}
-        </template>
-      </el-table-column>
-
-      <el-table-column label="Date Of Received" width="150" :align="'center'">
-        <template #default="scope"> - </template>
-      </el-table-column>
-
-      <el-table-column label="Stage" :align="'center'" width="500">
+      <el-table-column label="Stage" :align="'center'" width="670">
         <template #default="scope">
           <div>
             <el-button
@@ -139,11 +76,105 @@
         </template>
       </el-table-column>
 
+      <el-table-column label="Reqeust" width="86" :align="'center'">
+        <template #default="scope">
+          {{ convertPythonTimeToVue(scope.row.createdDate) }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="Received" width="170" :align="'center'">
+        <template #default="scope">
+          <el-date-picker
+            v-model="scope.row.receivedDate"
+            type="date"
+            placeholder="Select Date"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DDTHH:mm:ss"
+            
+            style="width: 140px"
+          />
+        </template>
+      </el-table-column>
+
+      <el-table-column
+        prop="lotId"
+        label="FAB Lot ID"
+        :align="'center'"
+        width="110"
+      ></el-table-column>
+
+      <!-- <el-table-column
+        prop="assayLotId"
+        label="Assay LOT ID"
+        width="130"
+        :align="'center'"
+      ></el-table-column> -->
+
+      <el-table-column label="Assay LOT ID" width="170" :align="'center'">
+        <template #default="scope">
+          <div>
+            <el-input
+              v-model="scope.row.assayLotId"
+              placeholder="Enter Assay LOT ID"
+              style="width: 150px"
+            ></el-input>
+          </div>
+        </template>
+      </el-table-column>
+
+      <el-table-column
+        prop="designer"
+        label="Designer"
+        width="150"
+        :align="'center'"
+      >
+        <template #default="scope"> {{ scope.row.designer }} / {{ scope.row.requester }}</template>
+      </el-table-column>
+
+      <el-table-column label="Measurer" width="150" :align="'center'">
+        <template #default="scope">
+          <div>
+            <el-input
+              v-model="scope.row.measurer"
+              placeholder=""
+              style="width: 150px"
+            ></el-input>
+          </div>
+        </template>
+      </el-table-column>
+
       <!-- <div v-if="!isIdIncluded "> -->
 
-      <!-- </div> -->
-      <el-table-column label="Detail" :align="'center'" width="200">
+      <el-table-column
+        label="Detail"
+        fixed="right"
+        :align="'center'"
+        width="290"
+      >
         <template #default="scope">
+          <el-button
+            type="primary"
+            size="small"
+            @click="
+              downloadFileByUrl(
+                scope.row.files[0].uuid,
+                scope.row.files[0].name
+              )
+            "
+            :disabled="scope.row.files.length == 0"
+          >
+            Excel
+          </el-button>
+          <el-button
+            type="warning"
+            size="small"
+            @click="
+              sendApplicationData2(scope.row , [] , '/solder/update', 'load')
+            "
+            :disabled="!isIdIncluded"
+          >
+            Update
+          </el-button>
           <el-button
             type="success"
             size="small"
@@ -155,7 +186,6 @@
             type="danger"
             size="small"
             @click="handleDelete(scope.row)"
-            :disabled="!isIdIncluded"
           >
             삭제
           </el-button>
@@ -166,26 +196,70 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import type { ApplicationData } from "../../../interface/solderAppInterface";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
+import { downloadFileByUrl } from "../Application/LoadSolderApplication";
 import { updateStatusByUuid } from "../Application/SolderApplication";
 import SelectOptions from "../../Common/SelectOptions.vue";
 import { statusList, confirmDelete } from "./SolderApplicationList";
 import { convertPythonTimeToVue } from "../../Common/utility";
+import { sendApplicationData2 } from "../Application/SolderApplication";
 import axios from "axios";
 
 const props = defineProps<{
   applicationData: ApplicationData[];
 }>();
 
-// Search term for filtering Lot ID
+// 라우터 및 현재 경로 가져오기
 const searchTerm = ref("");
-const filteredApplicationData = computed(() =>
-  props.applicationData.filter((data) =>
-    data.lotId.toLowerCase().includes(searchTerm.value.toLowerCase())
-  )
-);
+const route = useRoute();
+
+onMounted(() => {
+  // 쿼리 파라미터에 값이 있으면 사용, 없으면 localStorage 값 사용
+  if (route.query.search) {
+    searchTerm.value = route.query.search as string;
+  } else if (localStorage.getItem("searchTerm")) {
+    searchTerm.value = localStorage.getItem("searchTerm") as string;
+  }
+});
+
+// 검색어가 변경될 때마다 `localStorage`에 저장
+watch(searchTerm, (newTerm) => {
+  localStorage.setItem("searchTerm", newTerm);
+});
+
+// Search term for filtering Lot ID
+
+// props.applicationData.filter((application, index) => {
+//   console.log(application.receivedDate)
+// });
+
+// 필터링 로직
+// Lot ID, Designer, 또는 Requester로 검색 기능 추가
+const filteredApplicationData = computed(() => {
+  let data = props.applicationData;
+
+  // // idArray에 현재 사용자가 포함되어 있지 않다면 requester 또는 designer로 필터링
+  // if (!isIdIncluded) {
+  //   data = data.filter((d) => d.requester === name || d.designer === name);
+  // }
+
+  // // Lot ID, Designer, 또는 Requester 검색 적용
+  // if (searchTerm.value) {
+  //   const term = searchTerm.value.toLowerCase();
+  //   data = data.filter(
+  //     (d) =>
+  //       d.lotId.toLowerCase().includes(term) ||
+  //       d.designer.toLowerCase().includes(term) ||
+  //       d.requester.toLowerCase().includes(term)
+  //     // d.modelName.toLowerCase().includes(term) ||
+  //     // d.assayLotId.toLowerCase().includes(term)
+  //   );
+  // }
+
+  return data;
+});
 
 // Method to handle the search button click
 function handleSearch() {
@@ -220,45 +294,84 @@ function getStatusClass(status: string) {
 // w2150704, admin // wh2409001
 
 const name = localStorage.getItem("ms_username");
+const userId = localStorage.getItem("id");
 const idArray = ["w2150704", "admin", "wh2409001"];
 // id가 배열에 포함되어 있는지 확인
 const isIdIncluded = idArray.includes(localStorage.id);
 
+// 내가 이 Application 의 주인인지 아닌지를 결정
+function isMyApplication(row: ApplicationData) {
+  if (name === row.requester || name === row.designer) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 const router = useRouter();
 function handleDetail(row: ApplicationData) {
   router.push({
-    name: "loadSolderApplication",
+    name: "CallSolderApplication",
     params: { applicationUuid: row.uuid },
   });
 }
 const emit = defineEmits(["status-updated"]);
 
 const handleUpdate = async (uuid, assayLotId) => {
-
-  const form = new FormData()
-  form.append("application_uuid", uuid)
-  form.append("assay_lot_id", assayLotId)
+  const form = new FormData();
+  form.append("application_uuid", uuid);
+  form.append("assay_lot_id", assayLotId);
 
   try {
-    const response = await axios.post('/solder/update_assay_lot_id', form);
-    console.log('Update successful:', response.data);
+    const response = await axios.post("/solder/update_assay_lot_id", form);
+    console.log("Update successful:", response.data);
     // 성공 메시지 표시 또는 다른 후속 작업 수행
   } catch (error) {
-    console.error('Error updating data:', error);
+    console.error("Error updating data:", error);
     // 에러 메시지 표시
   }
 };
+
+const tableRowClassName = ({
+  row,
+  rowIndex,
+}: {
+  row: ApplicationData;
+  rowIndex: number;
+}) => {
+
+  if(row.isSampleAvailable){
+    return "warning-row";
+  }
+  return 
+  
+};
+
+
 </script>
 
-<style scoped>
+<style>
 /* Add any additional styles here */
+
+.el-table__row.warning-row {
+  background-color: rgb(192, 228, 107);
+}
+
+
 .table {
   min-height: 300px;
 }
 </style>
 
-<style scoped>
+<style>
 /* Adjusted styles */
+
+.el-table__cell {
+  font-size: 12px; /* 원하는 크기로 조정 */
+  border: 1px solid #dcdfe6; /* 셀에 경계선 추가 */
+  font-weight: 600; /* 글씨를 더 두껍게 설정 */
+}
+
 .container {
   margin: 20px;
   min-height: 400px;

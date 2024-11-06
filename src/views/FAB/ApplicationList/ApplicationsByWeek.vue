@@ -93,6 +93,9 @@
       />
       <el-table-column prop="code" label="Code" width="80" :align="'center'" />
       <!-- FAB Insert Date를 날짜 선택기로 수정 -->
+      <el-table-column label="담당자" width="150" :align="'center'">
+        <template #default="scope"> {{ scope.row.designer }} / {{ scope.row.requester }} </template>
+      </el-table-column>
       <el-table-column label="FAB Insert Date" width="150" :align="'center'">
         <template #default="scope">
           <el-date-picker
@@ -142,16 +145,14 @@
         :align="'center'"
       />
       <el-table-column
-        prop="condition"
-        label="Condition"
+        prop="idtThickness"
+        label="막두께"
         width="300"
         :align="'center'"
       />
-      <el-table-column label="Note" width="300" :align="'center'">
-        <template #default="scope">
-          <el-input v-model="scope.row.note"> </el-input>
-        </template>
-      </el-table-column>
+
+      <el-table-column label="비고" prop="note" width="300" :align="'center'"/>
+      <el-table-column label="HS W/F 조건" prop="hsWaferInfo" width="300" :align="'center'"/>
       <el-table-column
         fixed="right"
         label="Action"
@@ -247,12 +248,9 @@ const tableRowClassName = ({ row }: { row: ProcessData }) => {
 // };
 
 const groupCounts = computed(() => {
+  console.log("groupCounts computed triggered");
   return props.processData.reduce((acc, item) => {
-    if (acc[item.group]) {
-      acc[item.group]++;
-    } else {
-      acc[item.group] = 1;
-    }
+    acc[item.group] = (acc[item.group] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 });

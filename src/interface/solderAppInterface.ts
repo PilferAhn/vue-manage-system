@@ -30,6 +30,13 @@ export interface Matching {
   cap : MatchingComponent
 }
 
+export interface SolderFile {
+  uuid? : string
+  applicationUuid? : string
+  name? : string
+  ext? : string
+}
+
 // solder application entity
 export interface ApplicationData {
   uuid?: string; // Unique identifier for the application
@@ -41,11 +48,13 @@ export interface ApplicationData {
   assayLotId? : string;
   band?: string;
   designer?: string;
-  files? : [];
+  files? : SolderFile[];
   createdDate? : string;
+  receivedDate? : string;
   designerId?: string;
   requester?: string; // 의뢰인 (requester)
   requesterId?: string;
+  
   filterType?: string;
   deembedMode? : string;
   isSampleAvailable? : boolean

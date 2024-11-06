@@ -2,15 +2,15 @@
   <div class="container">
     <!-- Tabs for This Week, Last Week, and Next Week -->
     <el-tabs v-model="activeTab" type="card" @tab-click="handleTabClick">
-      <el-tab-pane label="이번 주" name="thisWeek">
-        <ApplicationsByWeek :processData="processDataArray" />
+      <el-tab-pane :label="currentWeekLabel" name="thisWeek">
+        <ApplicationsByWeek :processData="thisWeekDataArray" />
       </el-tab-pane>
 
-      <el-tab-pane label="지난 주" name="lastWeek">
+      <el-tab-pane :label="priviousWeekLabel" name="lastWeek">
         <ApplicationsByWeek :processData="lastWeekDataArray" />
       </el-tab-pane>
 
-      <el-tab-pane label="다음 주" name="nextWeek">
+      <el-tab-pane :label="nextWeekLabel" name="nextWeek">
         <ApplicationsByWeek :processData="nextWeekDataArray" />
       </el-tab-pane>
     </el-tabs>
@@ -20,12 +20,28 @@
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
-import {
-  convertToCamelCase,
-  getCurrentWeekNumber,
-} from "../Common/Application"; // Assuming the utility is stored here
+import { convertToCamelCase } from "../Common/Application"; // Assuming the utility is stored here
+import { getCurrentWeekNumber } from "../../../utils/date-utils";
+import { fetchProcessData } from "./ApplicationList";
 import ApplicationsByWeek from "./ApplicationsByWeek.vue";
 import type { ProcessData } from "../Interface/ApplicationInterface";
+
+const currentWeekNumber: number = getCurrentWeekNumber();
+const currentWeekLabel =
+  currentWeekNumber.toString() +
+  "주 - (" +
+  (currentWeekNumber + 1).toString() +
+  "투입)";
+const priviousWeekLabel =
+  (currentWeekNumber - 1).toString() +
+  "주 - (" +
+  currentWeekNumber.toString() +
+  "투입)";
+const nextWeekLabel =
+  (currentWeekNumber + 1).toString() +
+  "주 - (" +
+  (currentWeekNumber + 1).toString() +
+  "투입)";
 
 // Define the active tab, default is 'thisWeek'
 const activeTab = ref("thisWeek");
@@ -36,40 +52,25 @@ const handleTabClick = (tab: any) => {
 
 // Define processData arrays for different tabs
 const processDataArray = ref<ProcessData[]>([]); // For this week's data
+const thisWeekDataArray = ref<ProcessData[]>([]); // For this week's data
 const lastWeekDataArray = ref<ProcessData[]>([]); // For last week's data
 const nextWeekDataArray = ref<ProcessData[]>([]); // For next week's data
 
-// Reactive array to hold processData
-const processData = ref<ProcessData[]>([]);
+onMounted(async () => {
+  // fetchProcessData 함수로 데이터 가져오기
+  processDataArray.value = await fetchProcessData();
 
-// Fetch data when the component is mounted
-const fetchProcessData = async () => {
-  try {
-    // const response = await axios.get("/fab/get_all_application"); // Replace with your API endpoint
-
-    const formData = new FormData();
-    formData.append("order_by", "id");
-    formData.append("order_dir", "asc");
-    // formData.append("limit", "0");
-    // formData.append("page", "1");
-    formData.append("designer_confirm", "false");
-
-
-    const url = "/fab_monitoring/get_fab_request_list";
-    const response = await axios.post(url, formData);
-
-    processData.value = convertToCamelCase(response.data); // Convert fetched data to camelCase
-    
-
-    processDataArray.value = processData.value;
-  } catch (error) {
-    console.error("Failed to fetch process data:", error);
+  for (let i = 0; i < processDataArray.value.length; i++) {
+    const item = processDataArray.value[i];
+    if (item.weekNumber === currentWeekNumber) {
+      thisWeekDataArray.value.push(item);
+    } else if (item.weekNumber === currentWeekNumber - 1) {
+      lastWeekDataArray.value.push(item);
+    } else if (item.weekNumber === currentWeekNumber + 1) {
+      // 다음 주 데이터 조건 수정
+      nextWeekDataArray.value.push(item);
+    }
   }
-};
-
-// Call fetchProcessData when the component is mounted
-onMounted(() => {
-  fetchProcessData();
 });
 </script>
 

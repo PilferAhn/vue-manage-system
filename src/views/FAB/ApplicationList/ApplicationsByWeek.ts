@@ -3,7 +3,7 @@ import type { ProcessData } from "../Interface/ApplicationInterface";
 import { ElMessageBox } from "element-plus";
 
 export const handleDateChange = (processData: ProcessData) => {
-  console.log(processData);  
+
   updateFinishedData(processData);
 };
 

@@ -108,6 +108,8 @@ export const confirmApplication = async (id: string) => {
   }
 };
 
+
+
 // Delete Application Function
 export const deleteApplication = async (id: string) => {
   try {
@@ -364,3 +366,5 @@ export const machineList = [
   { key: "아넬바#2", label: "아넬바#2", value: "아넬바#2" },
   { key: "신크론", label: "신크론", value: "신크론" },
 ];
+
+

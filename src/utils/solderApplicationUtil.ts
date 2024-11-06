@@ -46,7 +46,16 @@ export const initializeApplicationData = () => {
       },
       {
         number : "2",
-        measurementType: "내전력", // 빈 문자열
+        measurementType: "PDT(SMT)", // 빈 문자열
+        isMeasured: false, // 초기값 false
+        quantity: 0, // 초기값 '0' 문자열로 설정
+        status : "",
+        placeHolder : "", 
+        detail : "",
+      },
+      {
+        number : "3",
+        measurementType: "PDT(Manual_수탑)", // 빈 문자열
         isMeasured: false, // 초기값 false
         quantity: 0, // 초기값 '0' 문자열로 설정
         placeHolder : "메탈 마스크 WHC 보유 여부 확인, 없다면 의뢰 必", 
@@ -55,7 +64,7 @@ export const initializeApplicationData = () => {
         detail : "",
       },
       {
-        number : "3",
+        number : "4",
         measurementType: "PS 신뢰성", // 빈 문자열
         isMeasured: false, // 초기값 false
         quantity: 0, // 초기값 '0' 문자열로 설정
@@ -64,7 +73,7 @@ export const initializeApplicationData = () => {
         detail : "",
       },
       {
-        number : "4",
+        number : "5",
         measurementType: "TCF", // 빈 문자열
         isMeasured: false, // 초기값 false
         quantity: 0, // 초기값 '0' 문자열로 설정
@@ -73,7 +82,7 @@ export const initializeApplicationData = () => {
         detail : "",
       },
       {
-        number : "5",
+        number : "6",
         measurementType: "비선형", // 빈 문자열
         isMeasured: false, // 초기값 false
         quantity: 0, // 초기값 '0' 문자열로 설정
@@ -126,7 +135,7 @@ export function updateSegments(applicationData: any) {
       start: "",
       stop: "",
       points: "",
-      ifwb: "10",      
+      ifwb: "20",      
     })
   );
 }

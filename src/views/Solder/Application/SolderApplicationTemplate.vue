@@ -216,11 +216,14 @@
 
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form-item label="WHC 개발팀 Sample 보유 여부" prop="isSampleAvailable">
+                <el-form-item
+                  label="WHC 개발팀 Sample 보유 여부"
+                  prop="isSampleAvailable"
+                >
                   <el-switch
                     v-model="applicationData.isSampleAvailable"
                     active-text="Yes"
-                    inactive-text="No"                    
+                    inactive-text="No"
                   ></el-switch>
                 </el-form-item>
               </el-col>
@@ -228,24 +231,24 @@
             </el-row>
 
             <!-- <el-row :gutter="20">
-              <el-col :span="12">
-                <el-form-item label="Inductor">
-                  <el-select
-                    v-model="applicationData.band"
-                    placeholder="ex) LQP03TN0N6B02D"
-                  >
-                    <el-option
-                      v-for="key in chipInductorList"
-                      :key="key.key"
-                      :label="key.label"
-                      :value="key.value"
-                    ></el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-              </el-col>
-            </el-row> -->
+                <el-col :span="12">
+                  <el-form-item label="Inductor">
+                    <el-select
+                      v-model="applicationData.band"
+                      placeholder="ex) LQP03TN0N6B02D"
+                    >
+                      <el-option
+                        v-for="key in chipInductorList"
+                        :key="key.key"
+                        :label="key.label"
+                        :value="key.value"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                </el-col>
+              </el-row> -->
           </el-card>
         </el-col>
       </el-row>
@@ -258,16 +261,16 @@
               <el-table-column
                 prop="measurementType"
                 label="측정 종류"
-                width="280"
+                width="250"
               >
                 <template #default="scope">
                   {{ getMeasurementLabel(scope.row.measurementType) }}
                   <!-- <el-input
-                    :model-value="
-                      getMeasurementLabel(scope.row.measurementType)
-                    "
-                    disabled
-                  ></el-input> -->
+                      :model-value="
+                        getMeasurementLabel(scope.row.measurementType)
+                      "
+                      disabled
+                    ></el-input> -->
                 </template>
               </el-table-column>
               <el-table-column
@@ -290,13 +293,16 @@
                   <el-input
                     v-model="scope.row.quantity"
                     type="number"
-                    :disabled = !scope.row.isMeasured
+                    :disabled="!scope.row.isMeasured"
                   ></el-input>
                 </template>
               </el-table-column>
               <el-table-column prop="기타" label="기타" width="500">
                 <template #default="scope">
-                  <el-input v-model="scope.row.detail" :disabled = !scope.row.isMeasured></el-input>
+                  <el-input
+                    v-model="scope.row.detail"
+                    :disabled="!scope.row.isMeasured"
+                  ></el-input>
                 </template>
               </el-table-column>
               <el-table-column prop="기타" label="유의사항" width="450">
@@ -304,12 +310,51 @@
                   <el-input v-model="scope.row.placeHolder" disabled></el-input>
                 </template>
               </el-table-column>
+              <el-table-column
+                v-if="props.applicationType === 'load'"
+                label="UPDATE"
+                fixed="right"
+                :align="'center'"
+                width="230"
+              >
+                <template #default="scope">
+                  <div style="display: flex; align-items: center; gap: 10px">
+                    <el-select
+                      class="m-4"
+                      v-model="scope.row.status"
+                      placeholder="Select"
+                      size="small"
+                      style="width: 130px"
+                      :align="'center'"
+                    >
+                      <el-option
+                        v-for="item in statusList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      /> </el-select
+                    ><el-button
+                      type="primary"
+                      size="small"
+                      :align="'center'"
+                      :disabled="!scope.row.isMeasured"
+                      @click="handleUpdate(scope.row)"
+                    >
+                      Update
+                    </el-button>
+                  </div>
+                </template>
+              </el-table-column>
             </el-table>
           </el-card>
         </el-col>
       </el-row>
 
-      <el-row :gutter="20" style="margin-top: 20px">
+      <el-row
+        v-if="props.applicationType === 'created'"
+        :gutter="20"
+        style="margin-top: 20px"
+      >
         <el-col :span="24">
           <el-card>
             <el-divider content-position="center">File Upload</el-divider>
@@ -341,6 +386,32 @@
           </el-card>
         </el-col>
       </el-row>
+
+      <el-divider
+        v-if="props.applicationType === 'load'"
+        content-position="center"
+        >의뢰서</el-divider
+      >
+      <el-table :data="applicationData.files" style="width: 100%">
+        <el-table-column prop="name" label="파일 이름" align="center">
+          <template #default="scope">
+            <span>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="ext" label="파일 형식" align="center">
+          <template #default="scope">
+            <span>{{ scope.row.ext }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="Action" :align="'center'">
+          <template #default="scope">
+            <el-button type="primary" size="small" @click="downloadCreatedFile(scope.row.uuid, scope.row.name)">
+              다운로드
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
       <el-divider content-position="center">Segment Information</el-divider>
       <el-row :gutter="20">
         <el-col :span="9">
@@ -454,11 +525,27 @@
           </el-table>
         </el-col>
       </el-row>
-      <el-row :gutter="20" style="margin-top: 20px">
+      <el-row
+        v-if="props.applicationType === 'load'"
+        :gutter="20"
+        style="margin-top: 20px"
+      >
         <el-col :span="24">
-          <el-button type="primary" @click="onSubmit">제출</el-button>
+          <el-button type="primary" @click="onSubmit(props.applicationType)"
+            >Update Application</el-button
+          >
+          <!-- <el-button type="danger" @click="onSubmit"
+            >Delete Application</el-button
+          > -->
         </el-col>
       </el-row>
+      <el-row v-else :gutter="20" style="margin-top: 20px"
+        ><el-col :span="24">
+          <el-button type="primary" @click="onSubmit(props.applicationType)"
+            >Create Application</el-button
+          >
+        </el-col></el-row
+      >
     </div>
   </el-form>
 </template>
@@ -472,33 +559,29 @@ import {
 } from "../../../utils/solderApplicationUtil";
 import { evbTypeList, getSuggestions } from "./Application";
 import {
-  sendApplicationData,
+  sendApplicationData2,
   downloadSolderApplicationXlsx,
   loadApplicationData,
   getMeasurementLabel,
+  updateStatusByUuid,
 } from "./SolderApplication";
+import { statusList } from "../ApplicationList/SolderApplicationList";
 import { chipInductorList } from "../../../utils/ChipInductorList";
 import inputText from "../../Common/InputText.vue";
 import longInputText from "../../Common/LongInputText.vue";
 import { reactive } from "vue";
 import { solderApplicationRules } from "./SolderApplicationRules";
 import { bandInformationDict } from "../../../utils/frequancyInfo";
-
-// fetch-suggestions를 호출할 때 getSuggestions를 사용
-const suggestPackageList = (
-  queryString: string,
-  cb: (suggestions: any[]) => void
-) => {
-  getSuggestions(queryString, cb);
-};
-
-// 추천 항목 선택 시 처리
-const handle = (item: { key: string; value: string; label: string }) => {
-  console.log("Selected item:", item);
-  // 추가 처리 로직을 이곳에 구현
-};
+import type { ApplicationData } from "../../../interface/solderAppInterface";
+import { downloadFileByUrl } from "./LoadSolderApplication";
 
 // Toggle function for switching between manual input and select dropdown
+
+// Define props to receive processData
+const props = defineProps<{
+  applicationData: ApplicationData;
+  applicationType: string;
+}>();
 
 const toggleManualInput = () => {
   isManualInput.value = !isManualInput.value;
@@ -509,7 +592,8 @@ const isManualInput = ref(false);
 const isForSubmission = ref(true);
 
 // Initialize application data as reactive
-const applicationData = reactive(initializeApplicationData());
+
+const applicationData = props.applicationData;
 const rules = solderApplicationRules;
 
 // 선택한 파일들의 이름을 저장하는 변수
@@ -532,16 +616,21 @@ const handleEvbTypeChange = (value: string) => {
 };
 
 const segmentData = ref<any>(null);
-const keys = ref<string[]>([]);
+const keys = ref<string[]>([]); // keys를 빈 배열로 초기화
 const selectedKey = ref<string | null>(null);
 
 onMounted(async () => {
-  // JSON 데이터를 로드하고, key 값을 배열로 추출
-  const { keys: loadedKeys, vals } = await loadApplicationData(
-    isForSubmission.value
-  );
-  keys.value = loadedKeys;
-  segmentData.value = vals;
+  try {
+    const { keys: loadedKeys, vals } = await loadApplicationData(
+      isForSubmission.value
+    );
+
+    keys.value = loadedKeys; // 데이터 로드 후 keys에 값 할당
+
+    segmentData.value = vals;
+  } catch (error) {
+    console.error("Failed to load application data:", error);
+  }
 });
 
 // Function to handle file upload limit exceed
@@ -557,18 +646,32 @@ function downloadFile() {
   downloadSolderApplicationXlsx(applicationData, `/solder/send_template`); // Pass the ApplicationData object
 }
 
+const downloadCreatedFile = (uuid: string, fileName: string) => {
+  downloadFileByUrl(uuid, fileName);
+};
+
 // Submit handler with form validation
-const onSubmit = () => {
+const onSubmit = (buttonType: string) => {
   // Validate form data using the validate method of el-form component
-  
+
+  const url = ref("");
+  if (buttonType === "load") {
+    url.value = "/solder/update";
+  } else {
+    url.value = "/solder/submit";
+  }
+
   applicationForm.value.validate(async (valid: boolean) => {
     if (valid) {
       try {
         // Call the sendApplicationData function to send the POST request
-        const result = await sendApplicationData(
+        const result = await sendApplicationData2(
           applicationData,
-          selectedFiles.value
+          selectedFiles.value,
+          url.value,
+          buttonType
         );
+
         // console.log("Form submitted successfully:", result);
       } catch (error) {
         console.error("Error submitting form:", error);
@@ -579,30 +682,39 @@ const onSubmit = () => {
   });
 };
 
-// `band` 값 변경 감지
+function handleUpdate(row: ApplicationData) {
+  updateStatusByUuid(props.applicationData.uuid, row.uuid, row.status);
+  // fetchApplicationData(row, uuid);
+}
+
 watch(
   () => applicationData.band,
   (newBand, oldBand) => {
-    // TODO: Band 변경 시 실행될 로직을 이곳에 추가하세요.
     let tempType = "normal";
     if (isForSubmission) {
       tempType = "k1";
     }
 
-    applicationData.segmentQuantity = segmentData.value[newBand].length;
-    const selectedQuantity = applicationData.segmentQuantity;
-    // segments 배열을 선택된 수량만큼 초기화
+    // segmentData.value[newBand]가 존재하는지 확인
+    if (segmentData.value && segmentData.value[newBand]) {
+      applicationData.segmentQuantity = segmentData.value[newBand].length;
+      const selectedQuantity = applicationData.segmentQuantity;
 
-    applicationData.segments = Array.from(
-      { length: selectedQuantity },
-      (_, index) => ({
-        number: (index + 1).toString(), // number를 1부터 시작하여 증가시키기
-        start: segmentData.value[newBand][index]["start"],
-        stop: segmentData.value[newBand][index]["stop"],
-        points: segmentData.value[newBand][index]["points"],
-        ifbw: segmentData.value[newBand][index]["IFBW"],
-      })
-    );
+      applicationData.segments = Array.from(
+        { length: selectedQuantity },
+        (_, index) => ({
+          number: (index + 1).toString(),
+          start: segmentData.value[newBand][index]["start"],
+          stop: segmentData.value[newBand][index]["stop"],
+          points: segmentData.value[newBand][index]["points"],
+          ifbw: segmentData.value[newBand][index]["ifbw"],
+        })
+      );
+    } else {
+      //   console.warn(`No segment data available for band: ${newBand}`);
+      applicationData.segmentQuantity = 0;
+      applicationData.segments = []; // 초기화
+    }
   }
 );
 
