@@ -174,7 +174,7 @@
                     <template v-else>
                       <el-select
                         v-model="applicationData.evbType"
-                        placeholder="EVB Type 선택"
+                        placeholder="Select EVB Type"
                       >
                         <el-option
                           v-for="item in evbTypeList"
@@ -214,6 +214,56 @@
               </el-col>
             </el-row>
 
+            <!-- <el-row :gutter="20">
+              
+              <el-col :span="8">
+                <div style="display: flex; align-items: center">
+                  
+                  <el-form-item label="Inductor Type" style="flex-grow: 1">
+                    
+                    <template v-if="isManualInput">
+                      <inputText
+                        v-model="applicationData.evbType"
+                        label=""
+                        prop="evbType"
+                        placeholder="Enter custom EVB Type"
+                        style="width: 100%"
+                      />
+                    </template>
+
+                    
+                    <template v-else>
+                      <el-select
+                        v-model="applicationData.evbType"
+                        placeholder="EVB Type 선택"
+                      >
+                        <el-option
+                          v-for="item in evbTypeList"
+                          :key="item.key"
+                          :label="item.label"
+                          :value="item.value"
+                        ></el-option>
+                      </el-select>
+                    </template>
+                  </el-form-item>
+                </div>
+              </el-col>
+
+              <el-col :span="4">
+                
+                <el-form-item label="Action">
+                  <el-button
+                    @click="toggleManualInput"
+                    type="primary"
+                    :plain="!isManualInput"
+                    style="margin-right: 10px"
+                  >
+                    {{ isManualInput ? "EVB Type 선택" : "수동 입력 전환" }}
+                  </el-button>
+                </el-form-item>
+              </el-col>
+            </el-row> -->
+
             <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item
@@ -229,26 +279,6 @@
               </el-col>
               <el-col :span="6"> </el-col>
             </el-row>
-
-            <!-- <el-row :gutter="20">
-                <el-col :span="12">
-                  <el-form-item label="Inductor">
-                    <el-select
-                      v-model="applicationData.band"
-                      placeholder="ex) LQP03TN0N6B02D"
-                    >
-                      <el-option
-                        v-for="key in chipInductorList"
-                        :key="key.key"
-                        :label="key.label"
-                        :value="key.value"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                </el-col>
-              </el-row> -->
           </el-card>
         </el-col>
       </el-row>
@@ -405,7 +435,11 @@
         </el-table-column>
         <el-table-column label="Action" :align="'center'">
           <template #default="scope">
-            <el-button type="primary" size="small" @click="downloadCreatedFile(scope.row.uuid, scope.row.name)">
+            <el-button
+              type="primary"
+              size="small"
+              @click="downloadCreatedFile(scope.row.uuid, scope.row.name)"
+            >
               다운로드
             </el-button>
           </template>

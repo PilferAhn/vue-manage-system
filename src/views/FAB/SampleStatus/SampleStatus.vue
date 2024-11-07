@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div>
     <!-- 시작 날짜와 끝 날짜 입력 필드 -->
     <el-form :inline="true">
       <el-row :gutter="20">
@@ -21,8 +21,10 @@
             />
           </el-form-item>
         </el-col>
-        <el-col :span="1">
-          <el-button type="primary" @click="filterFabData">Filter</el-button>
+        <el-col :span="1.5">
+          <el-button type="primary" @click="filterFabData" style="width: 77px"
+            >Filter</el-button
+          >
         </el-col>
         <el-col :span="4">
           <el-button
@@ -32,6 +34,46 @@
             {{ isCN69Filter ? "Disable CN69 Filter" : "Enable CN69 Filter" }}
           </el-button>
         </el-col>
+        <div class="legend">
+          <div class="legend-item">
+            <el-button class="el-button--success" disabled>중요도 ★</el-button>
+            <!-- <span>진행 중</span> -->
+          </div>
+          <div class="legend-item">
+            <el-button class="el-button--warning" disabled>Holding</el-button>
+            <!-- <span>완료</span> -->
+          </div>
+          <div class="legend-item">
+            <el-button class="el-button--danger" disabled>납기 초과</el-button>
+            <!-- <span>대기 중</span> -->
+          </div>
+        </div>
+      </el-row>
+    </el-form>
+    <el-form :inline="true" class="search-form">
+      <el-row :gutter="20">
+        <el-col :span="5">
+          <el-form-item label="Product Name">
+            <el-input
+              v-model="searchModelName"
+              placeholder="Enter model name"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="4">
+          <el-form-item label="Designer">
+            <el-input
+              v-model="searchPL"
+              placeholder="Enter Designer"
+              style="width: 195px"
+            ></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="2">
+          <el-button type="primary" @click="filterBySearchTerms"
+            >Search</el-button
+          >
+        </el-col>
       </el-row>
     </el-form>
 
@@ -39,7 +81,7 @@
     <el-table
       :data="paginatedData"
       style="width: 100%"
-      height="700"
+      height="750"
       @sort-change="handleSortChange"
       :row-class-name="tableRowClassName"
       :lazy="true"
@@ -171,6 +213,30 @@ const endDate = ref<Date | null>(null); // 끝 날짜
 // 페이지네이션 관련 변수
 const currentPage = ref(1);
 const pageSize = ref(100); // 한 페이지에 표시할 항목 수
+
+// 검색어 입력 필드
+const searchModelName = ref("");
+const searchPL = ref("");
+
+// 검색 기능을 구현한 함수
+const filterBySearchTerms = () => {
+  // modelName과 PL 필드를 기준으로 필터링
+  filteredFabData.value = fabData.value.filter((item) => {
+    const matchesModelName = searchModelName.value
+      ? item.productName
+          .toLowerCase()
+          .includes(searchModelName.value.toLowerCase())
+      : true;
+    const matchesPL = searchPL.value
+      ? item.pl.toLowerCase().includes(searchPL.value.toLowerCase())
+      : true;
+    return matchesModelName && matchesPL;
+  });
+
+  // 필터링된 데이터를 페이지네이션에 맞게 반영
+  currentPage.value = 1; // 검색 시 첫 페이지로 이동
+};
+
 // 정렬 처리 함수
 const handleSortChange = ({ prop, order }: { prop: string; order: string }) => {
   if (order === "ascending") {
@@ -238,21 +304,29 @@ const filterFabData = () => {
     );
 
     if (isCN69Filter.value) {
-      filteredByDate.forEach((item) => {
-        const splitValue = item.productName.split("@")[0].toLowerCase();
-      });
+      // filteredByDate.forEach((item) => {
+      //   const splitValue = item.productName.split("@")[0].toLowerCase();
+      // });
 
       filteredFabData.value = filteredByDate.filter((item) =>
         cn69ModelNames.includes(item.productName.split("@")[0].toLowerCase())
       );
 
+      
       NonefilteredByDate.value = nullRealFabIn.filter((item) =>
         cn69ModelNames.includes(item.productName.split("@")[0].toLowerCase())
       );
 
-      filteredFabData.value = [...NonefilteredByDate.value, ...filteredFabData.value].sort(
-        (a, b) => b.idx - a.idx
-      );
+      filteredFabData.value = [
+        ...NonefilteredByDate.value,
+        ...filteredFabData.value,
+      ].sort((a, b) => b.idx - a.idx);
+
+      // let nameListTemp = ""
+      // filteredFabData.value.filter((item) => {
+      //   nameListTemp += item.productName + ","
+      // })
+      // console.log(filteredFabData.value.length)
 
     } else {
       filteredFabData.value = [...nullRealFabIn, ...filteredByDate].sort(
@@ -290,17 +364,6 @@ const today = new Date();
 today.setHours(0, 0, 0, 0); // 시간을 00:00:00으로 초기화
 
 const hoveredRow = ref<number | null>(null); // 현재 호버된 행의 인덱스
-
-// 마우스가 행에 올라갔을 때 호출되는 함수
-const handleRowMouseEnter = (row: FabData, rowIndex: number) => {
-  console.log(rowIndex);
-  hoveredRow.value = rowIndex;
-};
-
-// 마우스가 행에서 떠났을 때 호출되는 함수
-const handleRowMouseLeave = () => {
-  hoveredRow.value = null;
-};
 
 const tableRowClassName = ({
   row,
@@ -358,11 +421,29 @@ const tableRowClassName = ({
 /* styled 상태에 따른 효과 */
 .el-button--danger {
   background-color: #ff4d4f !important;
-  color: white !important;
+  
 }
 
 .el-button--success {
   background-color: #52c41a !important;
-  color: white !important;
+  
 }
+
+.el-button--warning {
+  background-color: rgb(255, 165, 0) !important;
+}
+
+.legend {
+  display: flex;
+  margin-left: auto; /* Pushes the legend to the right side */
+  align-items: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+
 </style>
