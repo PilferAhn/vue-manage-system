@@ -76,7 +76,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Reqeust" width="86" :align="'center'">
+      <el-table-column label="Reqeust" width="87" :align="'center'">
         <template #default="scope">
           {{ convertPythonTimeToVue(scope.row.createdDate) }}
         </template>
@@ -131,7 +131,7 @@
         <template #default="scope"> {{ scope.row.designer }} / {{ scope.row.requester }}</template>
       </el-table-column>
 
-      <el-table-column label="Measurer" width="150" :align="'center'">
+      <el-table-column label="Measurer" width="180" :align="'center'">
         <template #default="scope">
           <div>
             <el-input
@@ -152,19 +152,32 @@
         width="290"
       >
         <template #default="scope">
-          <el-button
+          <el-button v-if = "scope.row.files.length != 0"
             type="primary"
             size="small"
             @click="
               downloadFileByUrl(
-                scope.row.files[0].uuid,
-                scope.row.files[0].name
+                scope.row.uuid,
+                scope.row.files[0].uuid,                
               )
-            "
-            :disabled="scope.row.files.length == 0"
+            "            
           >
             Excel
           </el-button>
+          <el-button v-else
+            type="primary"
+            size="small"
+            @click="
+              downloadFileByUrl(
+                scope.row.uuid,
+                null,                
+              )
+            "            
+          >
+            Excel
+          </el-button>
+
+
           <el-button
             type="warning"
             size="small"
@@ -240,23 +253,23 @@ watch(searchTerm, (newTerm) => {
 const filteredApplicationData = computed(() => {
   let data = props.applicationData;
 
-  // // idArray에 현재 사용자가 포함되어 있지 않다면 requester 또는 designer로 필터링
-  // if (!isIdIncluded) {
-  //   data = data.filter((d) => d.requester === name || d.designer === name);
-  // }
+  // idArray에 현재 사용자가 포함되어 있지 않다면 requester 또는 designer로 필터링
+  if (!isIdIncluded) {
+    data = data.filter((d) => d.requester === name || d.designer === name);
+  }
 
-  // // Lot ID, Designer, 또는 Requester 검색 적용
-  // if (searchTerm.value) {
-  //   const term = searchTerm.value.toLowerCase();
-  //   data = data.filter(
-  //     (d) =>
-  //       d.lotId.toLowerCase().includes(term) ||
-  //       d.designer.toLowerCase().includes(term) ||
-  //       d.requester.toLowerCase().includes(term)
-  //     // d.modelName.toLowerCase().includes(term) ||
-  //     // d.assayLotId.toLowerCase().includes(term)
-  //   );
-  // }
+  // Lot ID, Designer, 또는 Requester 검색 적용
+  if (searchTerm.value) {
+    const term = searchTerm.value.toLowerCase();
+    data = data.filter(
+      (d) =>
+        d.lotId.toLowerCase().includes(term) ||
+        d.designer.toLowerCase().includes(term) ||
+        d.requester.toLowerCase().includes(term)
+      // d.modelName.toLowerCase().includes(term) ||
+      // d.assayLotId.toLowerCase().includes(term)
+    );
+  }
 
   return data;
 });
@@ -340,7 +353,7 @@ const tableRowClassName = ({
   rowIndex: number;
 }) => {
 
-  if(row.isSampleAvailable){
+  if(row.receivedDate){
     return "warning-row";
   }
   return 
@@ -354,7 +367,7 @@ const tableRowClassName = ({
 /* Add any additional styles here */
 
 .el-table__row.warning-row {
-  background-color: rgb(192, 228, 107);
+  background-color: rgb(240, 198, 108);
 }
 
 

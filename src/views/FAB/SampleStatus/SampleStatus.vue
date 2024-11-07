@@ -3,7 +3,7 @@
     <!-- 시작 날짜와 끝 날짜 입력 필드 -->
     <el-form :inline="true">
       <el-row :gutter="20">
-        <el-col :span="8">
+        <el-col :span="5">
           <el-form-item label="Start Date">
             <el-date-picker
               v-model="startDate"
@@ -12,7 +12,7 @@
             />
           </el-form-item>
         </el-col>
-        <el-col :span="8">
+        <el-col :span="4">
           <el-form-item label="End Date">
             <el-date-picker
               v-model="endDate"
@@ -21,8 +21,16 @@
             />
           </el-form-item>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="1">
           <el-button type="primary" @click="filterFabData">Filter</el-button>
+        </el-col>
+        <el-col :span="4">
+          <el-button
+            :type="isCN69Filter ? 'warning' : 'success'"
+            @click="toggleCN69Filter"
+          >
+            {{ isCN69Filter ? "Disable CN69 Filter" : "Enable CN69 Filter" }}
+          </el-button>
         </el-col>
       </el-row>
     </el-form>
@@ -31,12 +39,14 @@
     <el-table
       :data="paginatedData"
       style="width: 100%"
+      height="700"
       @sort-change="handleSortChange"
       :row-class-name="tableRowClassName"
       :lazy="true"
-      @cell-mouse-enter="handleRowMouseEnter"
-      @cell-mouse-leave="handleRowMouseLeave"
     >
+      <!-- Index 열 추가 -->
+      <el-table-column type="index" label="#" width="50" :align="'center'" />
+
       <el-table-column
         prop="idx"
         label="Index"
@@ -150,9 +160,11 @@ import { ref, computed, onMounted } from "vue";
 import type { FabData } from "./SampleStatusInterface";
 import { getTodayAsString, getPrevious30DaysAsString } from "./SampleStatus";
 import axios from "axios";
+import { cn69ModelNames } from "./Cn69List";
 
 const fabData = ref<FabData[]>([]); // 전체 데이터를 저장
 const filteredFabData = ref<FabData[]>([]); // 필터링된 데이터를 저장
+const NonefilteredByDate = ref<FabData[]>([]); // 필터링된 데이터를 저장
 const startDate = ref<Date | null>(null); // 시작 날짜
 const endDate = ref<Date | null>(null); // 끝 날짜
 
@@ -166,6 +178,13 @@ const handleSortChange = ({ prop, order }: { prop: string; order: string }) => {
   } else if (order === "descending") {
     paginatedData.value.sort((a, b) => (a[prop] < b[prop] ? 1 : -1));
   }
+};
+
+const isCN69Filter = ref(false); // CN69 필터 활성화 여부
+// CN69 버튼 클릭 시 필터 활성화/비활성화
+const toggleCN69Filter = () => {
+  isCN69Filter.value = !isCN69Filter.value;
+  filterFabData();
 };
 
 const finalDateDate = getTodayAsString();
@@ -210,18 +229,37 @@ const filterFabData = () => {
       .sort((a, b) => b.idx - a.idx);
 
     // realFabIn이 null이 아닌 항목을 startDate와 endDate로 필터링 후 separation이 '연구소'가 아닌 항목을 idx로 내림차순 정렬
-    const filteredByDate = fabData.value
-      .filter(
-        (item) =>
-          item.realFabIn !== null &&
-          new Date(item.realFabIn).getTime() >= start &&
-          new Date(item.realFabIn).getTime() <= end &&
-          item.separation !== "연구소"
-      )
-      .sort((a, b) => b.idx - a.idx);
+    const filteredByDate = fabData.value.filter(
+      (item) =>
+        item.realFabIn !== null &&
+        new Date(item.realFabIn).getTime() >= start &&
+        new Date(item.realFabIn).getTime() <= end &&
+        item.separation !== "연구소"
+    );
 
+    if (isCN69Filter.value) {
+      filteredByDate.forEach((item) => {
+        const splitValue = item.productName.split("@")[0].toLowerCase();
+      });
+
+      filteredFabData.value = filteredByDate.filter((item) =>
+        cn69ModelNames.includes(item.productName.split("@")[0].toLowerCase())
+      );
+
+      NonefilteredByDate.value = nullRealFabIn.filter((item) =>
+        cn69ModelNames.includes(item.productName.split("@")[0].toLowerCase())
+      );
+
+      filteredFabData.value = [...NonefilteredByDate.value, ...filteredFabData.value].sort(
+        (a, b) => b.idx - a.idx
+      );
+
+    } else {
+      filteredFabData.value = [...nullRealFabIn, ...filteredByDate].sort(
+        (a, b) => b.idx - a.idx
+      );
+    }
     // 두 배열을 합쳐서 필터링된 데이터를 생성
-    filteredFabData.value = [...nullRealFabIn, ...filteredByDate];
   } else {
     // 날짜가 선택되지 않으면 separation이 '연구소'가 아닌 모든 데이터를 표시하고 정렬
     filteredFabData.value = fabData.value
@@ -255,7 +293,7 @@ const hoveredRow = ref<number | null>(null); // 현재 호버된 행의 인덱�
 
 // 마우스가 행에 올라갔을 때 호출되는 함수
 const handleRowMouseEnter = (row: FabData, rowIndex: number) => {
-  console.log(rowIndex)
+  console.log(rowIndex);
   hoveredRow.value = rowIndex;
 };
 
@@ -273,10 +311,10 @@ const tableRowClassName = ({
 }) => {
   const targetDate = new Date(row.fabOut);
   targetDate.setHours(0, 0, 0, 0); // 시간을 00:00:00으로 설정
-  if (rowIndex == hoveredRow.value){
-    return "custom-hover-row";
-  } 
-  else if (row.currentHoldingFlag >= 1) {
+  // if (rowIndex == hoveredRow.value){
+  //   return "custom-hover-row";
+  // }
+  if (row.currentHoldingFlag >= 1) {
     return "warning-row";
   } else if (targetDate.getTime() <= today.getTime()) {
     return "danger-row";
@@ -286,11 +324,9 @@ const tableRowClassName = ({
   // else if (row.importance === "C" || row.importance === "H") {
   //   return "success-row";
   // }
-  
+
   return "";
 };
-
-
 </script>
 
 <style>
@@ -317,5 +353,16 @@ const tableRowClassName = ({
   background-color: rgb(250, 88, 88);
   border: 2px solid #000000 !important;
   border-radius: 10px;
+}
+
+/* styled 상태에 따른 효과 */
+.el-button--danger {
+  background-color: #ff4d4f !important;
+  color: white !important;
+}
+
+.el-button--success {
+  background-color: #52c41a !important;
+  color: white !important;
 }
 </style>

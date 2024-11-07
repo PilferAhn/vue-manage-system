@@ -56,7 +56,7 @@ async function refreshData() {
     // );
 
     // console.log(matchingItems);
-    console.log("여기서 발생? ")
+    
 
   } catch (error) {
     console.error("Error loading application data:", error);

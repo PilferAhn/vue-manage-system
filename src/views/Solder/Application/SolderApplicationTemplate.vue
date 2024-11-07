@@ -351,7 +351,7 @@
       </el-row>
 
       <el-row
-        v-if="props.applicationType === 'created'"
+        v-if="props.applicationType === 'create'"
         :gutter="20"
         style="margin-top: 20px"
       >

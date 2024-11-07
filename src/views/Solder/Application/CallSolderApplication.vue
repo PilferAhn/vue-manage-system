@@ -11,7 +11,6 @@ import {
   useApplicationData,
   initializeApplicationData2,
   fetchApplicationData,  
-  
 } from "./LoadSolderApplication";
 import type { ApplicationData } from "../../../interface/solderAppInterface";
 import { useRoute } from "vue-router";

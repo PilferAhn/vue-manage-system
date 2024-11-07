@@ -5,16 +5,24 @@ import {
   convertKeysToCamelCase,
   sortMeasurementByNumber,
 } from "../ApplicationList/SolderApplicationList";
+import Form from "../../form.vue";
 
 // applicationData를 초기화
 // const applicationData = reactive<ApplicationData>(initializeApplicationData2());
 
 // 특정 URL로 파일 다운로드 요청을 보내는 함수
-export async function downloadFileByUrl(fileUuid: string, fileName: string) {
-  
+// 특정 URL로 파일 다운로드 요청을 보내는 함수
+export async function downloadFileByUrl(
+  application_uuid: string,
+  fileUuid: string
+) {
+  const formData = new FormData();
+  formData.append("application_uuid", application_uuid);
+  formData.append("file_uuid", fileUuid);
+
   try {
-    const url = `/solder/download_solder_application_file/${fileUuid}`;
-    const response = await axios.get(url, {
+    const url = `/solder/download_solder_application_file2`;
+    const response = await axios.post(url, formData, {
       responseType: "blob", // 파일을 blob 형태로 다운로드
     });
 
@@ -26,7 +34,22 @@ export async function downloadFileByUrl(fileUuid: string, fileName: string) {
     const link = document.createElement("a");
     link.href = downloadUrl;
 
-    link.setAttribute("download", fileName); // 다운로드할 파일 이름 설정
+    let filename = "default-filename.xlsx"; // 기본 파일 이름 설정
+    const contentDisposition = response.headers["content-disposition"];
+    console.log(contentDisposition);
+    if (contentDisposition) {
+      // filename* 및 filename 모두를 처리하는 정규식
+      const filenameMatch = contentDisposition.match(
+        /filename\*?=(?:UTF-8'')?["']?([^;'\"]*)["']?/i
+      );
+      if (filenameMatch && filenameMatch[1]) {
+        filename = decodeURIComponent(filenameMatch[1]); // 파일명 디코딩
+      }
+    }
+    // 다운로드할 파일 이름을 설정
+
+    link.setAttribute("download", filename);
+
     document.body.appendChild(link);
     link.click();
     link.remove(); // 링크 제거
@@ -171,14 +194,14 @@ export function initializeApplicationData(): ApplicationData {
         start: "50",
         stop: "250",
         points: "10",
-        ifwb: "20",
+        ifbw: "10",
       },
       {
         number: "2",
         start: "250",
         stop: "1250",
         points: "1000",
-        ifwb: "20",
+        ifbw: "10",
       },
     ], // Initialize as an empty array
     matchingQuantity: 2,
