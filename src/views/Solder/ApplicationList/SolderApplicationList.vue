@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-tabs v-model="activeTab">
-      <el-tab-pane label="Created" name="created">
+      <el-tab-pane label="Ongoing" name="created">
         <SolverApplicationListByStatus
           :applicationData="progressData"
           @status-updated="refreshData"

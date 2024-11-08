@@ -79,7 +79,7 @@ import { computed } from "vue";
 import { useSidebarStore } from "../store/sidebar";
 import { useRoute } from "vue-router";
 import { permission, title } from "process";
-import Icon from "../views/icon.vue";
+
 
 const items = [
   {
@@ -175,6 +175,12 @@ const items = [
             title: "개발 SPL 현황 - WHC(CSP)",
             permiss: "11",
           },
+          {
+            index : "/fab/china69",
+            title : "중화69과제(테스트)",
+            permiss: "11",
+          }
+      
         ],
       },
       // {

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ref, watch } from "vue";
-
+import { convertKeysToPEP8, convertKeysToCamelCase} from "../../../utils/key-converter";
 import {
   ApplicationData,
   Measurement,
@@ -171,6 +171,32 @@ export async function removeApplicationByUuid(uuid: string) {
   }
 }
 
+export async function updateMeasurement(solderMeasurement: Measurement) {
+  const url = "/solder/update_solder_measurement";
+
+  try {
+    const vals = convertKeysToPEP8(solderMeasurement);
+    const response = await axios.post(url, vals);
+    // 성공 시 el-message-box로 메시지 출력
+    ElMessageBox.alert("측정정보가 성공적으로 업데이트 되었습니다.", "성공", {
+      confirmButtonText: "확인",
+      type: "success",
+    });
+
+    // solderMeasurement 객체의 프로퍼티를 직접 camelCase 스타일로 업데이트
+    Object.assign(solderMeasurement, convertKeysToCamelCase(response.data));
+
+  } catch (error) {
+    console.error("Error sending request to server:", error);
+    // 실패 시 el-notification으로 에러 메시지 출력
+    ElNotification({
+      title: "에러",
+      message: `요청 중 에러가 발생했습니다: ${error.message}`,
+      type: "error",
+    });
+  }
+}
+
 export async function sendApplicationData2(
   applicationData: ApplicationData,
   selectedFiles: File[] | null, // 배열 또는 null일 수 있음
@@ -178,13 +204,6 @@ export async function sendApplicationData2(
   buttonType: string
 ) {
 
-  console.log(applicationData)
-  // selectedFiles가 null 또는 빈 배열일 경우를 처리
-  if (!selectedFiles || selectedFiles.length === 0) {
-    console.log("No files selected.");
-  } else {
-    console.log("Selected files:", selectedFiles);
-  }
 
   try {
     updateMeasurementStatus(applicationData);
@@ -308,7 +327,7 @@ function updateMeasurementStatus(applicationData: ApplicationData) {
   if (applicationData.measurements && applicationData.measurements.length > 0) {
     applicationData.measurements.forEach((measurement) => {
       if (measurement.isMeasured) {
-        measurement.status = "created";
+        
       } else {
         measurement.status = ""; // Reset to an empty string if not measured
       }

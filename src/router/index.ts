@@ -548,6 +548,18 @@ const routes: RouteRecordRaw[] = [
           ),
       },
       {
+        path: "/fab/china69",
+        name: "China69List",
+        meta: {
+          title: "China69List",
+          permiss: "11",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "table" */ "../views/FAB/SampleStatus/China69List.vue"
+          ),
+      },
+      {
         path: "/table",
         name: "basetable",
         meta: {

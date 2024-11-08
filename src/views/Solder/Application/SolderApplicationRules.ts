@@ -19,17 +19,19 @@ export const solderApplicationRules = {
   evbType: [
     { required: true, message: "EVB Type은 필수 입력입니다.", trigger: "blur" },
   ],
+  filterType: [
+    { required: true, message: "Filter Type은 필수 입력입니다.", trigger: "blur" },
+  ],
+  band: [
+    { required: true, message: "Band 정보는 필수 입력입니다.", trigger: "blur" },
+  ],
+  matchingComponentType: [
+    { required: true, message: "Matching Component Type 정보는 필수 입력입니다.", trigger: "blur" },
+  ],
   deembedMode: [
     {
       required: true,
       message: "Deembed Mode 출하정보는 필수 입력입니다.",
-      trigger: "blur",
-    },
-  ],
-  band: [
-    {
-      required: true,
-      message: "Band 선택은 필수 입력입니다.",
       trigger: "blur",
     },
   ],

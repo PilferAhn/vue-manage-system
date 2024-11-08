@@ -17,6 +17,8 @@ Chart.register(...registerables);
 
 interface TestType {
   date_list: string[];
+  TEG0: number[];
+  TEGP: number[];
   TEG1: number[];
   TEG2: number[];
   TEG3: number[];
@@ -26,6 +28,8 @@ interface TestType {
 
 const testTypes = ref<TestType>({
   date_list: [],
+  TEG0: [],
+  TEGP: [],
   TEG1: [],
   TEG2: [],
   TEG3: [],
@@ -50,6 +54,8 @@ onMounted(async () => {
 
   // Calculate the maximum value from all the lists and add 2
   const maxValues = [
+    ...testTypes.value.TEG0,
+    ...testTypes.value.TEGP,
     ...testTypes.value.TEG1,
     ...testTypes.value.TEG2,
     ...testTypes.value.TEG1_5,
@@ -60,6 +66,8 @@ onMounted(async () => {
   // Function to sum all numbers in the teg1_list, teg2_list, and tcf_list arrays and return the result as a string
   const sumAllNumbersAsString = (): string => {
     const totalSum = [
+      ...testTypes.value.TEG0,
+      ...testTypes.value.TEGP,
       ...testTypes.value.TEG1,
       ...testTypes.value.TEG2,
       ...testTypes.value.TEG1_5,
@@ -78,28 +86,38 @@ onMounted(async () => {
         labels: testTypes.value.date_list,
         datasets: [
           {
+            label: "TEG0",
+            backgroundColor: "rgba(255, 99, 132, 0.9)", // 빨강 계열
+            data: testTypes.value.TEG0,
+          },
+          {
+            label: "TEGP",
+            backgroundColor: "rgba(255, 159, 64, 0.9)", // 밝은 주황 계열
+            data: testTypes.value.TEGP,
+          },
+          {
             label: "TEG1",
-            backgroundColor: "rgba(241, 89, 74, 0.8)" /* 빨강 */,
+            backgroundColor: "rgba(255, 205, 86, 0.9)", // 노랑 계열
             data: testTypes.value.TEG1,
           },
           {
             label: "TEG1_5",
-            backgroundColor: "rgba(76, 175, 80, 0.8)" /* 주황 */,
+            backgroundColor: "rgba(75, 192, 192, 0.9)", // 민트 계열
             data: testTypes.value.TEG1_5,
           },
           {
             label: "TEG2",
-            backgroundColor: "rgba(63, 81, 181, 0.8)" /* 노랑 */,
+            backgroundColor: "rgba(54, 162, 235, 0.9)", // 파랑 계열
             data: testTypes.value.TEG2,
           },
           {
             label: "TEG3",
-            backgroundColor: "rgba(255, 193, 7, 0.8)" /* 주황 계열 */,
+            backgroundColor: "rgba(153, 102, 255, 0.9)", // 보라 계열
             data: testTypes.value.TEG3,
           },
           {
             label: "TCF",
-            backgroundColor: "rgba(3, 169, 244, 0.8)" /* 파랑 계열 */,
+            backgroundColor: "rgba(201, 203, 207, 0.9)", // 회색 계열
             data: testTypes.value.TCF,
           },
         ],

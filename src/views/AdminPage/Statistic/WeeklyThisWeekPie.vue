@@ -15,19 +15,23 @@ Chart.register(...registerables);
 
 interface TestType {
   date_list: string[];
+  TEG0: number[];
+  TEGP: number[];
   TEG1: number[];
   TEG2: number[];
   TEG3: number[];
-  TEG1_5 : number[];
+  TEG1_5: number[];
   TCF: number[];
 }
 
 const testTypes = ref<TestType>({
   date_list: [],
+  TEG0: [],
+  TEGP: [],
   TEG1: [],
   TEG2: [],
   TEG3: [],
-  TEG1_5 : [],
+  TEG1_5: [],
   TCF: [],
 });
 
@@ -51,24 +55,28 @@ onMounted(async () => {
   const sumTEG2 = testTypes.value.TEG2.reduce((acc, cur) => acc + cur, 0);
   const sumTEG1_5 = testTypes.value.TEG1_5.reduce((acc, cur) => acc + cur, 0);
   const sumTCF = testTypes.value.TCF.reduce((acc, cur) => acc + cur, 0);
-  const sumTEG3  = testTypes.value.TEG3.reduce((acc, cur) => acc + cur, 0);
-  const totalWafer = sumTCF + sumTEG1 + sumTEG1_5 + sumTEG2 + sumTEG3;
+  const sumTEG3  = testTypes.value.TEG3.reduce((acc, cur) => acc + cur, 0);  
+  const sumTEG0 = testTypes.value.TEG0.reduce((acc, cur) => acc + cur, 0);
+  const sumTEGP = testTypes.value.TEGP.reduce((acc, cur) => acc + cur, 0);
+  const totalWafer = sumTCF + sumTEG1 + sumTEG1_5 + sumTEG2 + sumTEG3 + sumTEG0 + sumTEGP;
 
   const ctx = document.getElementById("pieChart2") as HTMLCanvasElement;
   if (ctx) {
     myChart = new Chart(ctx, {
       type: "pie",
       data: {
-        labels: ["TEG1", "TEG1_5", "TEG2", "TEG3", "TCF"],
+        labels: ["TEG0", "TEGP", "TEG1", "TEG1_5", "TEG2", "TEG3", "TCF"],
         datasets: [
           {
-            data: [sumTEG1, sumTEG1_5, sumTEG2, sumTEG3 ,sumTCF],
+            data: [sumTEG0, sumTEGP, sumTEG1, sumTEG1_5, sumTEG2, sumTEG3 ,sumTCF],
             backgroundColor: [
-              "rgba(241, 89, 74, 0.8)",
-              "rgba(255, 215, 0, 0.8)",
-              "rgba(76, 175, 80, 0.8)",
-              "rgba(63, 81, 181, 0.8)",
-              "rgba(3, 169, 244, 0.8)" 
+              "rgba(255, 99, 132, 0.9)",
+              "rgba(255, 159, 64, 0.9)", // 밝은 주황 계열
+              "rgba(255, 205, 86, 0.9)", // 노랑 계열
+              "rgba(75, 192, 192, 0.9)", // 민트 계열
+              "rgba(54, 162, 235, 0.9)", // 파랑 계열
+              "rgba(153, 102, 255, 0.9)", // 보라 계열
+              "rgba(201, 203, 207, 0.9)", // 회색 계열
             ],
           },
         ],

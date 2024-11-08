@@ -1,13 +1,26 @@
 <template>
   <div>
     <div class="search-box">
+      <el-select
+        v-model="searchCategory"
+        placeholder="검색 기준"
+        class="search-dropdown"
+        style="width: 150px"
+      >
+        <el-option label="Lot ID" value="lotId"></el-option>
+        <el-option label="Designer" value="designer"></el-option>
+        <el-option label="Requester" value="requester"></el-option>
+        <el-option label="Product Name" value="modelName"></el-option>
+      </el-select>
+
+      <!-- 검색어 입력 필드 -->
       <el-input
         v-model="searchTerm"
-        placeholder="Ex) Lot ID, Assary Lot ID, Name, Product Name"
+        :placeholder="`검색할 ${searchCategory} 입력`"
         class="search-input mr10"
         clearable
         @clear="handleClear"
-        style="width: 350px"
+        style="width: 300px"
       ></el-input>
       <el-button type="primary" @click="handleSearch">검색</el-button>
 
@@ -40,15 +53,15 @@
         width="120"
         :align="'center'"
       ></el-table-column>
-      <el-table-column label="Stage" :align="'center'" width="670">
+      <el-table-column label="Stage" :align="'center'" width="460">
         <template #default="scope">
-          <div>
+          <div class="button-grid-container">
             <el-button
               v-for="(measurement, index) in scope.row.measurements"
               :key="index"
               :class="getStatusClass(measurement.status)"
               size="small"
-              class="mr5"
+              class="fixed-size"
               disabled
               plain
             >
@@ -90,7 +103,6 @@
             placeholder="Select Date"
             format="YYYY-MM-DD"
             value-format="YYYY-MM-DDTHH:mm:ss"
-            
             style="width: 140px"
           />
         </template>
@@ -128,7 +140,9 @@
         width="150"
         :align="'center'"
       >
-        <template #default="scope"> {{ scope.row.designer }} / {{ scope.row.requester }}</template>
+        <template #default="scope">
+          {{ scope.row.designer }} / {{ scope.row.requester }}</template
+        >
       </el-table-column>
 
       <el-table-column label="Measurer" width="180" :align="'center'">
@@ -152,37 +166,28 @@
         width="290"
       >
         <template #default="scope">
-          <el-button v-if = "scope.row.files.length != 0"
+          <el-button
+            v-if="scope.row.files.length != 0"
             type="primary"
             size="small"
-            @click="
-              downloadFileByUrl(
-                scope.row.uuid,
-                scope.row.files[0].uuid,                
-              )
-            "            
+            @click="downloadFileByUrl(scope.row.uuid, scope.row.files[0].uuid)"
           >
             Excel
           </el-button>
-          <el-button v-else
+          <el-button
+            v-else
             type="primary"
             size="small"
-            @click="
-              downloadFileByUrl(
-                scope.row.uuid,
-                null,                
-              )
-            "            
+            @click="downloadFileByUrl(scope.row.uuid, null)"
           >
             Excel
           </el-button>
-
 
           <el-button
             type="warning"
             size="small"
             @click="
-              sendApplicationData2(scope.row , [] , '/solder/update', 'load')
+              sendApplicationData2(scope.row, [], '/solder/update', 'load')
             "
             :disabled="!isIdIncluded"
           >
@@ -226,6 +231,7 @@ const props = defineProps<{
 
 // 라우터 및 현재 경로 가져오기
 const searchTerm = ref("");
+const searchCategory = ref("lotId"); // 기본 검색 기준을 "Lot ID"로 설정
 const route = useRoute();
 
 onMounted(() => {
@@ -250,28 +256,14 @@ watch(searchTerm, (newTerm) => {
 
 // 필터링 로직
 // Lot ID, Designer, 또는 Requester로 검색 기능 추가
+// 필터링 로직 - 선택된 검색 기준에 따라 필터링
 const filteredApplicationData = computed(() => {
-  let data = props.applicationData;
-
-  // idArray에 현재 사용자가 포함되어 있지 않다면 requester 또는 designer로 필터링
-  if (!isIdIncluded) {
-    data = data.filter((d) => d.requester === name || d.designer === name);
-  }
-
-  // Lot ID, Designer, 또는 Requester 검색 적용
-  if (searchTerm.value) {
-    const term = searchTerm.value.toLowerCase();
-    data = data.filter(
-      (d) =>
-        d.lotId.toLowerCase().includes(term) ||
-        d.designer.toLowerCase().includes(term) ||
-        d.requester.toLowerCase().includes(term)
-      // d.modelName.toLowerCase().includes(term) ||
-      // d.assayLotId.toLowerCase().includes(term)
-    );
-  }
-
-  return data;
+  const term = searchTerm.value.toLowerCase();
+  return props.applicationData.filter((item) => {
+    // 선택한 검색 기준을 기준으로 필터링
+    const field = item[searchCategory.value] as string;
+    return field && field.toLowerCase().includes(term);
+  });
 });
 
 // Method to handle the search button click
@@ -352,24 +344,19 @@ const tableRowClassName = ({
   row: ApplicationData;
   rowIndex: number;
 }) => {
-
-  if(row.receivedDate){
+  if (row.receivedDate) {
     return "warning-row";
   }
-  return 
-  
+  return;
 };
-
-
 </script>
 
 <style>
 /* Add any additional styles here */
 
 .el-table__row.warning-row {
-  background-color: rgb(240, 198, 108);
+  background-color: rgb(255, 166, 0);
 }
-
 
 .table {
   min-height: 300px;
@@ -431,21 +418,32 @@ const tableRowClassName = ({
 /* Button styles based on status */
 .btn-in-progress {
   background-color: #007bff !important; /* Bright blue */
-  border-color: #007bff !important;
+  /* border-color: #007bff !important; */
   color: #fff !important;
 }
 
 .btn-finished {
   background-color: #28a745 !important; /* Bright green */
-  border-color: #28a745 !important;
+  /* border-color: #28a745 !important; */
   color: #fff !important;
 }
 
 .btn-waiting {
-  background-color: grey !important;
-  border-color: grey !important;
+  background-color: #918e8e !important;
+  /* border-color: grey !important; */
   color: #fff !important;
-  font-weight: bold;
-  text-transform: uppercase;
+  /* font-weight: bold;
+  text-transform: uppercase; */
+}
+
+.button-grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3개의 열로 배열 */
+  justify-items: center;
+}
+
+.fixed-size {
+  width: 130px; /* 고정된 버튼 너비 */
+  text-align: center;
 }
 </style>

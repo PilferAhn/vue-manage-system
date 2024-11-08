@@ -55,6 +55,8 @@ export interface ApplicationData {
   requester?: string; // 의뢰인 (requester)
   requesterId?: string;
   
+  inductorType?: string;
+  
   filterType?: string;
   deembedMode? : string;
   isSampleAvailable? : boolean

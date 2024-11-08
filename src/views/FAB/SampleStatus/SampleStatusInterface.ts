@@ -75,6 +75,19 @@ export interface FabData {
   currentHistorySeq: number;
   fabCardId: number;
   fabCardCheck: boolean;
+
+  assaySite? : string;
+  mesFabIn? : string;
+  feSite? : string;
+  feStart? : string;
+  feName? : string
+  feOut? : string
+  
+  isAssay? : boolean
+  assayIn? : string
+  assayStart? : string
+  assayName? : string
+
 }
 
 

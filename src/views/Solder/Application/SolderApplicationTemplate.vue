@@ -1,4 +1,5 @@
 <template>
+  
   <el-form
     :model="applicationData"
     :rules="rules"
@@ -51,7 +52,7 @@
 
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form-item label="Filter Type" prop="filterType">
+                <el-form-item label="Filter Type" prop="filterType" >
                   <el-select
                     v-model="applicationData.filterType"
                     placeholder="Select Filter Type"
@@ -97,7 +98,7 @@
 
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form-item label="Band">
+                <el-form-item label="Band" prop='band'>
                   <el-select
                     v-model="applicationData.band"
                     placeholder="Band 28"
@@ -141,8 +142,7 @@
               </el-col>
               <el-col :span="12">
                 <el-form-item
-                  label="WHC EVB Material List"
-                  prop="matchingComponentType"
+                  label="WHC EVB Material List"                  
                 >
                   <el-button type="primary" @click="getEvbListExcel">
                     WHC EVB LIST EXCEL
@@ -158,7 +158,7 @@
               <el-col :span="8">
                 <div style="display: flex; align-items: center">
                   <!-- Form item that displays either inputText or el-select depending on isManualInput -->
-                  <el-form-item label="EVB Type" style="flex-grow: 1">
+                  <el-form-item label="EVB Type" prop="evbType" style="flex-grow: 1">
                     <!-- Show inputText if manual input is enabled -->
                     <template v-if="isManualInput">
                       <inputText
@@ -192,7 +192,7 @@
                 <!-- Checkbox to toggle between manual input or dropdown -->
                 <el-form-item label="Action">
                   <el-button
-                    @click="toggleManualInput"
+                    @click="toggleManualInput(isManualInput)"
                     type="primary"
                     :plain="!isManualInput"
                     style="margin-right: 10px"
@@ -221,7 +221,7 @@
                   
                   <el-form-item label="Inductor Type" style="flex-grow: 1">
                     
-                    <template v-if="isManualInput">
+                    <template v-if="isManualInputForInductor">
                       <inputText
                         v-model="applicationData.evbType"
                         label=""
@@ -253,12 +253,12 @@
                 
                 <el-form-item label="Action">
                   <el-button
-                    @click="toggleManualInput"
+                    @click="toggleManualInput(isManualInputForInductor)"
                     type="primary"
                     :plain="!isManualInput"
                     style="margin-right: 10px"
                   >
-                    {{ isManualInput ? "EVB Type 선택" : "수동 입력 전환" }}
+                    {{ isManualInputForInductor ? "EVB Type 선택" : "수동 입력 전환" }}
                   </el-button>
                 </el-form-item>
               </el-col>
@@ -284,6 +284,9 @@
       </el-row>
 
       <el-divider content-position="center">Measurement Infomation</el-divider>
+      <el-button type="primary" @click="onSubmit(props.applicationData, props.applicationType)"
+        >Update Application</el-button
+      >
       <el-row>
         <el-col>
           <el-card>
@@ -367,8 +370,7 @@
                       type="primary"
                       size="small"
                       :align="'center'"
-                      :disabled="!scope.row.isMeasured"
-                      @click="handleUpdate(scope.row)"
+                      @click="updateMeasurement(scope.row)"
                     >
                       Update
                     </el-button>
@@ -389,7 +391,7 @@
           <el-card>
             <el-divider content-position="center">File Upload</el-divider>
             <el-upload
-              :limit="5"
+              :limit="1"
               :multiple="true"
               :on-change="handleFileChange"
               :on-exceed="handleExceed"
@@ -420,7 +422,7 @@
       <el-divider
         v-if="props.applicationType === 'load'"
         content-position="center"
-        >의뢰서</el-divider
+        >Excel</el-divider
       >
       <el-table :data="applicationData.files" style="width: 100%">
         <el-table-column prop="name" label="파일 이름" align="center">
@@ -438,7 +440,7 @@
             <el-button
               type="primary"
               size="small"
-              @click="downloadCreatedFile(scope.row.uuid, scope.row.name)"
+              @click="downloadCreatedFile(applicationData.uuid, scope.row.uuid)"
             >
               다운로드
             </el-button>
@@ -565,7 +567,7 @@
         style="margin-top: 20px"
       >
         <el-col :span="24">
-          <el-button type="primary" @click="onSubmit(props.applicationType)"
+          <el-button type="primary" @click="onSubmit(props.applicationData, props.applicationType)"
             >Update Application</el-button
           >
           <!-- <el-button type="danger" @click="onSubmit"
@@ -575,7 +577,7 @@
       </el-row>
       <el-row v-else :gutter="20" style="margin-top: 20px"
         ><el-col :span="24">
-          <el-button type="primary" @click="onSubmit(props.applicationType)"
+          <el-button type="primary" @click="onSubmit(props.applicationData, props.applicationType)"
             >Create Application</el-button
           >
         </el-col></el-row
@@ -598,6 +600,7 @@ import {
   loadApplicationData,
   getMeasurementLabel,
   updateStatusByUuid,
+  updateMeasurement,
 } from "./SolderApplication";
 import { statusList } from "../ApplicationList/SolderApplicationList";
 import { chipInductorList } from "../../../utils/ChipInductorList";
@@ -617,12 +620,13 @@ const props = defineProps<{
   applicationType: string;
 }>();
 
-const toggleManualInput = () => {
+const toggleManualInput = (isManualInput) => {
   isManualInput.value = !isManualInput.value;
 };
 
 // Determine if manual input should be used
 const isManualInput = ref(false);
+const isManualInputForInductor = ref(false);
 const isForSubmission = ref(true);
 
 // Initialize application data as reactive
@@ -685,7 +689,7 @@ const downloadCreatedFile = (uuid: string, fileName: string) => {
 };
 
 // Submit handler with form validation
-const onSubmit = (buttonType: string) => {
+const onSubmit = (applicationData : ApplicationData,  buttonType: string) => {
   // Validate form data using the validate method of el-form component
 
   const url = ref("");
@@ -694,7 +698,10 @@ const onSubmit = (buttonType: string) => {
   } else {
     url.value = "/solder/submit";
   }
-
+  console.log(applicationData.measurements[0].status);
+  console.log(applicationData.measurements[1].status);
+  console.log(applicationData.measurements[2].status);
+  console.log(applicationData.measurements[3].status);
   applicationForm.value.validate(async (valid: boolean) => {
     if (valid) {
       try {
@@ -716,10 +723,6 @@ const onSubmit = (buttonType: string) => {
   });
 };
 
-function handleUpdate(row: ApplicationData) {
-  updateStatusByUuid(props.applicationData.uuid, row.uuid, row.status);
-  // fetchApplicationData(row, uuid);
-}
 
 watch(
   () => applicationData.band,
