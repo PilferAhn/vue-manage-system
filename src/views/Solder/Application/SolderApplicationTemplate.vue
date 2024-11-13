@@ -1,5 +1,4 @@
 <template>
-  
   <el-form
     :model="applicationData"
     :rules="rules"
@@ -52,7 +51,7 @@
 
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form-item label="Filter Type" prop="filterType" >
+                <el-form-item label="Filter Type" prop="filterType">
                   <el-select
                     v-model="applicationData.filterType"
                     placeholder="Select Filter Type"
@@ -98,7 +97,7 @@
 
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form-item label="Band" prop='band'>
+                <el-form-item label="Band" prop="band">
                   <el-select
                     v-model="applicationData.band"
                     placeholder="Band 28"
@@ -141,15 +140,13 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item
-                  label="WHC EVB Material List"                  
-                >
+                <el-form-item label="WHC Material List">
                   <el-button type="primary" @click="getEvbListExcel">
                     WHC EVB LIST EXCEL
                   </el-button>
-                  <el-button type="primary" @click="getEvbListExcel" disabled>
+                  <!-- <el-button type="primary" @click="getEvbListExcel" disabled>
                     WHC IND LIST EXCEL
-                  </el-button>
+                  </el-button> -->
                 </el-form-item>
               </el-col>
             </el-row>
@@ -158,13 +155,16 @@
               <el-col :span="8">
                 <div style="display: flex; align-items: center">
                   <!-- Form item that displays either inputText or el-select depending on isManualInput -->
-                  <el-form-item label="EVB Type" prop="evbType" style="flex-grow: 1">
+                  <el-form-item
+                    label="EVB Type"
+                    prop="evbType"
+                    style="flex-grow: 1"
+                  >
                     <!-- Show inputText if manual input is enabled -->
                     <template v-if="isManualInput">
                       <inputText
                         v-model="applicationData.evbType"
-                        label=""
-                        prop="evbType"
+                        label=""                        
                         placeholder="Enter custom EVB Type"
                         style="width: 100%"
                       />
@@ -192,12 +192,12 @@
                 <!-- Checkbox to toggle between manual input or dropdown -->
                 <el-form-item label="Action">
                   <el-button
-                    @click="toggleManualInput(isManualInput)"
+                    @click="toggleManualInput()"
                     type="primary"
                     :plain="!isManualInput"
                     style="margin-right: 10px"
                   >
-                    {{ isManualInput ? "EVB Type 선택" : "수동 입력 전환" }}
+                    {{ isManualInput ? "Select EVB Type" : "Manual Input" }}
                   </el-button>
                 </el-form-item>
               </el-col>
@@ -219,14 +219,14 @@
               <el-col :span="8">
                 <div style="display: flex; align-items: center">
                   
-                  <el-form-item label="Inductor Type" style="flex-grow: 1">
+                  <el-form-item label="Inductor Type" prop="inductorType" style="flex-grow: 1">
                     
                     <template v-if="isManualInputForInductor">
                       <inputText
-                        v-model="applicationData.evbType"
+                        v-model="applicationData.inductorType"
                         label=""
-                        prop="evbType"
-                        placeholder="Enter custom EVB Type"
+                        prop="inductorType"
+                        placeholder="Enter Inductor"
                         style="width: 100%"
                       />
                     </template>
@@ -234,11 +234,11 @@
                     
                     <template v-else>
                       <el-select
-                        v-model="applicationData.evbType"
-                        placeholder="EVB Type 선택"
+                        v-model="applicationData.inductorType"
+                        placeholder="Please Select Inductor"
                       >
                         <el-option
-                          v-for="item in evbTypeList"
+                          v-for="item in chipInductorList"
                           :key="item.key"
                           :label="item.label"
                           :value="item.value"
@@ -253,12 +253,12 @@
                 
                 <el-form-item label="Action">
                   <el-button
-                    @click="toggleManualInput(isManualInputForInductor)"
+                    @click="toggleManualInputForIn()"
                     type="primary"
-                    :plain="!isManualInput"
+                    :plain="!isManualInputForInductor"
                     style="margin-right: 10px"
                   >
-                    {{ isManualInputForInductor ? "EVB Type 선택" : "수동 입력 전환" }}
+                    {{ isManualInputForInductor ? "Select Inductor" : "Manual Input" }}
                   </el-button>
                 </el-form-item>
               </el-col>
@@ -270,11 +270,18 @@
                   label="WHC 개발팀 Sample 보유 여부"
                   prop="isSampleAvailable"
                 >
-                  <el-switch
+                  <el-select
                     v-model="applicationData.isSampleAvailable"
-                    active-text="Yes"
-                    inactive-text="No"
-                  ></el-switch>
+                    placeholder="선택안함"
+                  >
+                    <el-option
+                      key="1"
+                      label="선택안함"
+                      :value="''"
+                    ></el-option>
+                    <el-option key="2" label="O" :value="true"></el-option>
+                    <el-option key="3" label="X" :value="false"></el-option>
+                  </el-select>
                 </el-form-item>
               </el-col>
               <el-col :span="6"> </el-col>
@@ -284,16 +291,14 @@
       </el-row>
 
       <el-divider content-position="center">Measurement Infomation</el-divider>
-      <el-button type="primary" @click="onSubmit(props.applicationData, props.applicationType)"
-        >Update Application</el-button
-      >
+      
       <el-row>
         <el-col>
           <el-card>
             <el-table :data="applicationData.measurements" style="width: 100%">
               <el-table-column
                 prop="measurementType"
-                label="측정 종류"
+                label="Measurement"
                 width="250"
               >
                 <template #default="scope">
@@ -318,7 +323,7 @@
               </el-table-column>
               <el-table-column
                 prop="quantity"
-                label="수량"
+                label="Quantity"
                 width="100"
                 :align="'center'"
               >
@@ -338,7 +343,7 @@
                   ></el-input>
                 </template>
               </el-table-column>
-              <el-table-column prop="기타" label="유의사항" width="450">
+              <el-table-column label="유의사항" width="450">
                 <template #default="scope">
                   <el-input v-model="scope.row.placeHolder" disabled></el-input>
                 </template>
@@ -567,7 +572,9 @@
         style="margin-top: 20px"
       >
         <el-col :span="24">
-          <el-button type="primary" @click="onSubmit(props.applicationData, props.applicationType)"
+          <el-button
+            type="primary"
+            @click="onSubmit(props.applicationData, props.applicationType)"
             >Update Application</el-button
           >
           <!-- <el-button type="danger" @click="onSubmit"
@@ -577,7 +584,9 @@
       </el-row>
       <el-row v-else :gutter="20" style="margin-top: 20px"
         ><el-col :span="24">
-          <el-button type="primary" @click="onSubmit(props.applicationData, props.applicationType)"
+          <el-button
+            type="primary"
+            @click="onSubmit(props.applicationData, props.applicationType)"
             >Create Application</el-button
           >
         </el-col></el-row
@@ -612,6 +621,7 @@ import { bandInformationDict } from "../../../utils/frequancyInfo";
 import type { ApplicationData } from "../../../interface/solderAppInterface";
 import { downloadFileByUrl } from "./LoadSolderApplication";
 
+
 // Toggle function for switching between manual input and select dropdown
 
 // Define props to receive processData
@@ -620,8 +630,12 @@ const props = defineProps<{
   applicationType: string;
 }>();
 
-const toggleManualInput = (isManualInput) => {
+const toggleManualInput = () => {
   isManualInput.value = !isManualInput.value;
+};
+
+const toggleManualInputForIn = () => {
+  isManualInputForInductor.value = !isManualInputForInductor.value;
 };
 
 // Determine if manual input should be used
@@ -689,7 +703,7 @@ const downloadCreatedFile = (uuid: string, fileName: string) => {
 };
 
 // Submit handler with form validation
-const onSubmit = (applicationData : ApplicationData,  buttonType: string) => {
+const onSubmit = (applicationData: ApplicationData, buttonType: string) => {
   // Validate form data using the validate method of el-form component
 
   const url = ref("");
@@ -698,10 +712,7 @@ const onSubmit = (applicationData : ApplicationData,  buttonType: string) => {
   } else {
     url.value = "/solder/submit";
   }
-  console.log(applicationData.measurements[0].status);
-  console.log(applicationData.measurements[1].status);
-  console.log(applicationData.measurements[2].status);
-  console.log(applicationData.measurements[3].status);
+  
   applicationForm.value.validate(async (valid: boolean) => {
     if (valid) {
       try {
@@ -722,7 +733,6 @@ const onSubmit = (applicationData : ApplicationData,  buttonType: string) => {
     }
   });
 };
-
 
 watch(
   () => applicationData.band,
@@ -759,6 +769,7 @@ watch(
 watch(
   () => applicationData.filterType,
   (newBand, oldBand) => {
+
     if (newBand === "DPX") {
       applicationData.matchingQuantity = 3;
     } else if (newBand === "RX") {
@@ -800,7 +811,7 @@ const updateSegments = () => {
       start: "",
       stop: "",
       points: "",
-      ifbw: "20",
+      ifbw: "10kHz",
     })
   );
 };

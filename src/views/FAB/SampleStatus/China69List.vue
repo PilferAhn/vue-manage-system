@@ -4,12 +4,12 @@
 
     <el-table :data="filteredFabData" style="width: 100%" height="800px">
       <!-- Model Name 열 -->
-      <el-table-column type="index" label="#" width="50" :align="'left'" />
+      <el-table-column type="index" label="#" width="50" :align="'center'" />
       <el-table-column
         prop="productName"
         label="Model Name"
         width="200"
-        :align="'left'"
+        :align="'center'"
       ></el-table-column>
 
       <!-- PL 열 -->
@@ -17,36 +17,37 @@
         prop="pl"
         label="PL"
         width="150"
-        :align="'left'"
+        :align="'center'"
       ></el-table-column>
       <!-- PL 열 -->
       <el-table-column
         label="여기부터 MES 연동"
         width="150"
-        :align="'left'"
+        :align="'center'"
       ></el-table-column>
-      <el-table-column label="FE FAB" width="100" :align="'center'">
-        <!-- <el-table-column label="강백호 FAB IN" prop="fabIn" :align="'left'"></el-table-column> -->
-        <el-table-column label="MES FAB IN" :align="'left'">
+      <el-table-column label="HQ" width="100" :align="'center'">
+        <!-- <el-table-column label="강백호 FAB IN" prop="fabIn" :align="'center'"></el-table-column> -->
+        <el-table-column label="HQ IN" :align="'center'">
           <template #default="scope">
             {{ formatDate(scope.row.mesFabIn) }}
           </template>
         </el-table-column>
-        <el-table-column label="현위치 (투입시간)" :align="'left'">
+        <el-table-column label="현위치 (투입시간)" :align="'center'">
           <template #default="scope">
             <span v-if="scope.row.feName !== undefined">
               {{ scope.row.feName }} ({{ formatDateTime(scope.row.feStart) }})
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="출하(Assy)" :align="'left'">
+        <el-table-column label="To WHC" :align="'center'">
           <template #default="scope">
             {{ formatDate(scope.row.feOut) }}
           </template>
         </el-table-column>
+        
       </el-table-column>
-      <el-table-column prop="whcCsp" label="Assay" width="150" :align="'left'">
-        <el-table-column label="Assay In">
+      <el-table-column prop="whcCsp" label="WHC" width="150" :align="'center'">
+        <el-table-column label="WHC In">
           <template #default="scope">
             {{ formatDate(scope.row.assayIn) }}
           </template>
@@ -185,14 +186,14 @@ const filterFabData = async () => {
 
         if (tempDict["cassettes_member"].length != 0) {
           filteredFabData.value[i].mesFabIn =
-            tempDict["cassettes_member"][0]["creation_date"];
+            tempDict["creation_date"];
           filteredFabData.value[i].feName =
             tempDict["cassettes_member"][0]["operation"]["name"];
           filteredFabData.value[i].feSite =
             tempDict["cassettes_member"][0]["operation"]["site_id"];
 
           filteredFabData.value[i].feStart =
-            tempDict["cassettes_member"][0]["creation_date"];
+            tempDict["cassettes_member"][0]["site_in_date"];
 
           if (tempDict["cassettes_member"][0]["hanoi_csp"] === null) {
           } else {
@@ -205,12 +206,8 @@ const filterFabData = async () => {
               tempDict["cassettes_member"][0]["hanoi_csp"]["site_in_date"];
           }
 
-          if (
-            tempDict["cassettes_member"][0]["operation"]["name"] ===
-            "Transit 공정"
-          ) {
-            filteredFabData.value[i].feOut =
-              tempDict["cassettes_member"][0]["prev_history"]["end_date"];
+          if (tempDict["cassettes_member"][0]["operation"]["name"] === "Transit 공정"){
+            filteredFabData.value[i].feOut = tempDict["cassettes_member"][0]["prev_history"]["end_date"]
           }
 
           //     filteredFabData.value[i].assayIn = "-";

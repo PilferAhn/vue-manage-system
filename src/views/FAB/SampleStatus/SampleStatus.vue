@@ -81,7 +81,7 @@
     <el-table
       :data="paginatedData"
       style="width: 100%"
-      height="750"
+      height="700"
       @sort-change="handleSortChange"
       :row-class-name="tableRowClassName"
       :lazy="true"

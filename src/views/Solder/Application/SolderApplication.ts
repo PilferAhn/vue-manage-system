@@ -1,6 +1,9 @@
 import axios from "axios";
 import { ref, watch } from "vue";
-import { convertKeysToPEP8, convertKeysToCamelCase} from "../../../utils/key-converter";
+import {
+  convertKeysToPEP8,
+  convertKeysToCamelCase,
+} from "../../../utils/key-converter";
 import {
   ApplicationData,
   Measurement,
@@ -8,6 +11,7 @@ import {
 import { ElMessage, ElMessageBox, ElNotification } from "element-plus";
 import fs from "fs/promises";
 import path from "path";
+import { fa } from "element-plus/es/locale";
 
 export async function downloadSolderApplicationXlsx(
   applicationData: ApplicationData,
@@ -185,7 +189,6 @@ export async function updateMeasurement(solderMeasurement: Measurement) {
 
     // solderMeasurement 객체의 프로퍼티를 직접 camelCase 스타일로 업데이트
     Object.assign(solderMeasurement, convertKeysToCamelCase(response.data));
-
   } catch (error) {
     console.error("Error sending request to server:", error);
     // 실패 시 el-notification으로 에러 메시지 출력
@@ -197,44 +200,185 @@ export async function updateMeasurement(solderMeasurement: Measurement) {
   }
 }
 
+function validateSegmentation(applicationData: ApplicationData) {
+  let isValid = true;
+
+  if (applicationData.segmentQuantity == 0) {
+    isValid = false;
+  } else {
+    applicationData.segments.forEach((segment, index) => {
+      // segmetation 의 정보가 아무것도 안들어올경우.
+      if (
+        segment.start == undefined ||
+        segment.stop == undefined ||
+        segment.points == undefined ||
+        segment.start === "" ||
+        segment.stop === "" ||
+        segment.points === ""
+      ) {
+        isValid = false;
+      }
+    });
+  }
+
+  if (!isValid) {
+    ElNotification({
+      title: "에러",
+      message: `Segmentation 정보가 누락되었습니다`,
+      type: "error",
+    });
+  }
+
+  return isValid;
+}
+
+function validateMatchingInformation(applicationData: ApplicationData) {
+  // Matching 정보를 validation하는 함수
+  // 기타의 경우는 1개이상입력
+  // 다른경우는 정해진 양만큼이 필요함.
+
+  const filterType = applicationData.filterType;
+
+  if (filterType === "기타") {
+    if (applicationData.matchingQuantity == 0) {
+      ElNotification({
+        title: "에러",
+        message: `Matching 정보는 최소 1개이상 입력되어야합니다`,
+        type: "error",
+      });
+      return false;
+    } else {
+      return true;
+    }
+  } else {
+    let minQuantity = 0;
+
+    if (filterType === "DPX") {
+      minQuantity = 3;
+    } else if (filterType === "RX") {
+      minQuantity = 2;
+    } else if (filterType === "TRX") {
+      minQuantity = 2;
+    } else if (filterType === "QPX") {
+      minQuantity = 5;
+    } else if (filterType === "DUAL (2X1/1X2)") {
+      minQuantity = 3;
+    } else {
+      minQuantity = 4;
+    }
+
+    if (applicationData.matchingQuantity < minQuantity) {
+      ElNotification({
+        title: "에러",
+        message: `Matching 정보는 최소 ${minQuantity}이상 입력되어야 합니다.`,
+        type: "error",
+      });
+      return false;
+    }
+    return true;
+  }
+}
+
+function validateMeasurementInfo(applicationData: ApplicationData) {
+  let isValid = true;
+  let i = 0;
+
+  let isValid2 = false;
+  applicationData.measurements.forEach((measurement, index) => {
+    if (measurement.isMeasured === true) {
+      isValid2 = true;
+    }
+  });
+
+  if (!isValid2) {
+    ElNotification({
+      title: "에러",
+      message: `최소 1개 이상의 측정이 선택되어야 합니다`,
+      type: "error",
+    });
+
+    return isValid2;
+  }
+
+  applicationData.measurements.forEach((measurement, index) => {
+    if (measurement.isMeasured === true) {
+      if (measurement.quantity === 0) {
+        isValid = false;
+        i = index;
+      }
+    }
+  });
+
+  if (!isValid) {
+    ElNotification({
+      title: "에러",
+      message: `${applicationData.measurements[i].measurementType}의 최소 수량을 입력하세요`,
+      type: "error",
+    });
+  }
+
+  return isValid;
+}
+
+function validateForm(applicationData: ApplicationData) {
+  // segmentation과 matching정보를 확인
+
+  if (!validateMeasurementInfo(applicationData)) {
+    return false;
+  }
+
+  if (!validateMatchingInformation(applicationData)) {
+    return false;
+  }
+
+  if (!validateSegmentation(applicationData)) {
+    return false;
+  }
+  console.log("여기까지 ㅇㄴ다고? ");
+  return true;
+}
+
 export async function sendApplicationData2(
   applicationData: ApplicationData,
   selectedFiles: File[] | null, // 배열 또는 null일 수 있음
   url: string,
   buttonType: string
 ) {
-
-
   try {
-    updateMeasurementStatus(applicationData);
+    // rules 에서 잡지 못하는 부분들을 validation 한다
+    if (validateForm(applicationData)) {
 
-    const apiUrl = url; // FastAPI 엔드포인트
-    const pep8Data = toPep8Recursive(applicationData);
+      updateMeasurementStatus(applicationData);
 
-    const response = await axios.post(apiUrl, pep8Data);
+      
+      const apiUrl = url; // FastAPI 엔드포인트
+      const pep8Data = toPep8Recursive(applicationData);
 
-    // axios는 성공 시 자동으로 status code 200-299을 처리하므로 따로 ok 체크는 필요 없음
-    const result = response.data; // response의 data가 서버의 JSON 응답을 나타냄
-    const uuid = result.uuid;
+      const response = await axios.post(apiUrl, pep8Data);
 
-    // 파일이 있을 경우에만 파일 전송
-    if (selectedFiles && selectedFiles.length > 0) {
-      await sendFilesWithUuid(uuid, selectedFiles);
-    } else {
-      console.log("No files to upload.");
-    }
+      // axios는 성공 시 자동으로 status code 200-299을 처리하므로 따로 ok 체크는 필요 없음
+      const result = response.data; // response의 data가 서버의 JSON 응답을 나타냄
+      const uuid = result.uuid;
 
-    if (buttonType === "load") {
-      ElMessageBox.alert("의뢰서가 정상적으로 업데이트 되었습니다.", "성공", {
-        confirmButtonText: "확인",
-        type: "success",
-      });
-    } else {
-      // 성공 시 el-message-box로 메시지 출력
-      ElMessageBox.alert("의뢰서가 정상적으로 작성되었습니다.", "성공", {
-        confirmButtonText: "확인",
-        type: "success",
-      });
+      // 파일이 있을 경우에만 파일 전송
+      if (selectedFiles && selectedFiles.length > 0) {
+        await sendFilesWithUuid(uuid, selectedFiles);
+      } else {
+        console.log("No files to upload.");
+      }
+
+      if (buttonType === "load") {
+        ElMessageBox.alert("의뢰서가 정상적으로 업데이트 되었습니다.", "성공", {
+          confirmButtonText: "확인",
+          type: "success",
+        });
+      } else {
+        // 성공 시 el-message-box로 메시지 출력
+        ElMessageBox.alert("의뢰서가 정상적으로 작성되었습니다.", "성공", {
+          confirmButtonText: "확인",
+          type: "success",
+        });
+      }
     }
   } catch (error) {
     console.error("Error sending request to server:", error);
@@ -327,7 +471,6 @@ function updateMeasurementStatus(applicationData: ApplicationData) {
   if (applicationData.measurements && applicationData.measurements.length > 0) {
     applicationData.measurements.forEach((measurement) => {
       if (measurement.isMeasured) {
-        
       } else {
         measurement.status = ""; // Reset to an empty string if not measured
       }

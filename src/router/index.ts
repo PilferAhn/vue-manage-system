@@ -500,6 +500,18 @@ const routes: RouteRecordRaw[] = [
           ),
       },
       {
+        path: "/fab/feb-application-list2",
+        name: "FabApplicationList2",
+        meta: {
+          title: "작성된 의뢰 목록2",
+          permiss: "11",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "table" */ "../views/FAB/ApplicationList/ApplicationList2.vue"
+          ),
+      },
+      {
         path: "/fab/my-application-status",
         name: "MyApplicationStatus",
         meta: {

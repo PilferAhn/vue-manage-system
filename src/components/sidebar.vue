@@ -156,6 +156,11 @@ const items = [
         permiss: "11",
       },
       {
+        index: "/fab/feb-application-list2",
+        title: "투입 계획서 검토(new)",
+        permiss: "11",
+      },
+      {
         index: "/fab/mes",
         title: "개발 SPL 현황",
         permiss: "11",

@@ -60,7 +60,7 @@ export default defineConfig({
 			"/api" : "http://10.29.11.59:8005",
 			"/rf-limit" : "http://10.29.11.59:8002",
 			"/solder" : "http://10.29.11.57:40000",
-			"/fab_monitoring" : "http://10.29.11.57:40000",
+			"/fab_monitoring" : "http://10.29.11.124:40000",
 			"/bfsm2" : "http://10.20.10.114",			
 			"/mes" : "http://10.29.11.124:40000",
 			"/OpeationMns" : "http://10.70.21.216:9086"

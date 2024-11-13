@@ -41,5 +41,5 @@ export const solderApplicationRules = {
       message: "WHC 개발팀 Samplle 보유 여부 선택해주세요",
       trigger: "blur",
     },
-  ],
+  ],  
 };

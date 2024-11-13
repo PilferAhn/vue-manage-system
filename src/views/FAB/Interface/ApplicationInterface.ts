@@ -1,5 +1,8 @@
+import type {LotData} from "./mes-interface"
+
 export interface ProcessData {
   uuid?: string;
+  id? : string;
   group?: string; // GROUP
   process?: string; // 공정
   priority?: string; // Priority
@@ -39,8 +42,17 @@ export interface ProcessData {
 
   requester? : string;
   requesterId? : string;
+  lotStatus ? : LotData[];
+  maxHistorySeq? : number
+  hanoiIndex? : number
+  hanoiOperation? : string;
+  hanoiOperationStart? : string;
+  hanoiSiteIn? : string;
 
-
+  feIndex? :number
+  feOperation? : string;
+  feOperationStart? : string;
+  feSiteIn? : string;
 
   status? : string;
   note? : string;

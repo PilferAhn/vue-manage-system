@@ -4,7 +4,7 @@ export async function getMaterialInfo(materialId: string) {
   const form = new FormData();
   form.append("materials_id", materialId);
 
-  const tempUrl = "mes/get_materials_by_id";
+  const tempUrl = "mes/get_materials_by_id_legacy";
 
   try {
     const response = await axios.post(tempUrl, form);
