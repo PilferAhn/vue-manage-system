@@ -1,9 +1,12 @@
 import { ref, watch } from "vue";
 import { chipPackageList } from "../../../utils/ChipPackageList";
 
-export const getSuggestions = (queryString: string, cb: (suggestions: any[]) => void) => {
+export const getSuggestions = (
+  queryString: string,
+  cb: (suggestions: any[]) => void
+) => {
   // `value` 필드에서 `queryString`과 일치하는 항목을 검색
-  const suggestions = chipPackageList.filter(item => 
+  const suggestions = chipPackageList.filter((item) =>
     item.value.toLowerCase().includes(queryString.toLowerCase())
   );
   // 검색된 항목을 콜백을 통해 반환
@@ -104,6 +107,11 @@ interface EvbType {
 }
 
 export const evbTypeList: EvbType[] = [
+  {
+    key: 0,
+    label: "직접 입력",
+    value: "직접 입력",
+  },
   {
     key: 1,
     label: "1 - 1007 WLP - 1IN2OUT_7 PIN _REVO3 W300 - 21 ea",
@@ -211,8 +219,8 @@ export const evbTypeList: EvbType[] = [
   },
   {
     key: 22,
-    label: "22 - DPX TYPE 3,REV 05 W200 - 1109 FILTER - 9 ea",
-    value: "22 - DPX TYPE 3,REV 05 W200 - 1109 FILTER - 9 ea",
+    label: "22 - DPX TYPE 3,REV 05 W200 - 9 ea",
+    value: "22 - DPX TYPE 3,REV 05 W200 - 9 ea",
   },
   {
     key: 23,
@@ -274,5 +282,4 @@ export const evbTypeList: EvbType[] = [
     label: "34 - DPX STANDARD REVO1 W220 - 5 ea",
     value: "34 - DPX STANDARD REVO1 W220 - 5 ea",
   },
-
 ];

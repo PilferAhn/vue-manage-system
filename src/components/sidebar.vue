@@ -80,7 +80,6 @@ import { useSidebarStore } from "../store/sidebar";
 import { useRoute } from "vue-router";
 import { permission, title } from "process";
 
-
 const items = [
   {
     icon: "Odometer",
@@ -157,7 +156,7 @@ const items = [
       },
       {
         index: "/fab/feb-application-list2",
-        title: "투입 계획서 검토(new)",
+        title: "개발 Sample 현황 (NEW)",
         permiss: "11",
       },
       {
@@ -181,11 +180,10 @@ const items = [
             permiss: "11",
           },
           {
-            index : "/fab/china69",
-            title : "중화69과제(테스트)",
+            index: "/fab/china69",
+            title: "중화69과제(테스트)",
             permiss: "11",
-          }
-      
+          },
         ],
       },
       // {
@@ -198,7 +196,7 @@ const items = [
   {
     icon: "Pear",
     index: "4",
-    title: "WHC 의뢰",
+    title: "WHC",
     permiss: "11",
     subs: [
       {
@@ -210,6 +208,40 @@ const items = [
         index: "/whc/application-list",
         title: "의뢰 현황",
         permiss: "11",
+      },
+      {
+        index: "/whc/solder-stock-management",
+        title: "Solder 입고 관리",
+        permiss: "11",
+        subs: [
+          {
+            index: "/whc/solder-stock-management/create-stock",
+            title: "Solder 등록",
+            permiss: "11",
+          },
+          {
+            index: "/whc/solder-stock-management/stock-list",
+            title: "보유 현황",
+            permiss: "11",
+          },
+        ],
+      },
+      {
+        index: "/whc/stock-management",
+        title: "재고 관리",
+        permiss: "11",
+        subs: [
+          {
+            index: "/whc/stock-management/create-stock",
+            title: "LOT 등록",
+            permiss: "11",
+          },
+          {
+            index: "/whc/stock-management/stock-list",
+            title: "보유 현황",
+            permiss: "11",
+          },
+        ],
       },
       {
         index: "/whc/network-analyzer",

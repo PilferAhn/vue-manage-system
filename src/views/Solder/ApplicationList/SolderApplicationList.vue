@@ -20,8 +20,16 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import SolverApplicationListByStatus from "./SolverApplicationListByStatus.vue";
-import { get_application_list_by_status } from "./SolderApplicationList";
+import {
+  get_application_list_by_status,
+  get_application_list,
+  findLots,
+  findLotHistoryFromFabRequest
+} from "./SolderApplicationList";
 import type { ApplicationData } from "../../../interface/solderAppInterface";
+
+const name = localStorage.getItem("ms_username");
+const userId = localStorage.getItem("id");
 
 // Tab management
 const activeTab = ref("created");
@@ -30,8 +38,11 @@ const activeTab = ref("created");
 const finishedData = ref<ApplicationData[]>([]);
 const progressData = ref<ApplicationData[]>([]);
 const createdData = ref<ApplicationData[]>([]);
+const filteredData = ref<ApplicationData[]>([]);
 
-function sortByCreatedDateDesc(applicationDataArray: ApplicationData[]): ApplicationData[] {
+function sortByCreatedDateDesc(
+  applicationDataArray: ApplicationData[]
+): ApplicationData[] {
   return applicationDataArray.sort((a, b) => {
     const dateA = a.createdDate ? new Date(a.createdDate).getTime() : 0;
     const dateB = b.createdDate ? new Date(b.createdDate).getTime() : 0;
@@ -39,25 +50,30 @@ function sortByCreatedDateDesc(applicationDataArray: ApplicationData[]): Applica
   });
 }
 
+const applicationList = ref<ApplicationData[]>([]);
+
 // Function to fetch the data again
 async function refreshData() {
   try {
-    createdData.value = await get_application_list_by_status("created");
-    progressData.value = await get_application_list_by_status("in progress");
-    finishedData.value = await get_application_list_by_status("finished");
+    applicationList.value = await get_application_list();
 
-    // progressData.value = [...progressData.value.reverse(), ...createdData.value.reverse()];
-    progressData.value = [...progressData.value, ...createdData.value];
-    progressData.value = sortByCreatedDateDesc(progressData.value)
-    // finishedData.value = finishedData.value
+    // applicationList.value.forEach((app, index) => {
+    //   if (app.modelName === "X897ASA") {
+    //     console.log(app)
+    //   }
+    // });
 
-    // const matchingItems = finishedData.value.filter((item1) =>
-    //   createdData.value.some((item2) => item2.uuid === item1.uuid)
-    // );
+    findLotHistoryFromFabRequest(applicationList.value)
+    // findLots(applicationList.value);
+    applicationList.value = sortByCreatedDateDesc(applicationList.value);
 
-    // console.log(matchingItems);
-    
+    progressData.value = applicationList.value.filter((app) => {
+      return ["created", "in progress"].includes(app.status);
+    });
 
+    finishedData.value = applicationList.value.filter((app) => {
+      return app.status === "finished";
+    });
   } catch (error) {
     console.error("Error loading application data:", error);
   }

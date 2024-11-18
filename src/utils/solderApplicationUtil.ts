@@ -161,7 +161,7 @@ export const initializeApplicationData = () => {
         isMeasured: false, // 초기값 false
         quantity: 0, // 초기값 '0' 문자열로 설정
         status : "",
-        placeHolder : "", 
+        placeHolder : "메탈 마스크 WHC 보유 여부 확인, 없다면 의뢰 必", 
         detail : "",
       },
       {
@@ -169,7 +169,7 @@ export const initializeApplicationData = () => {
         measurementType: "PDT(Manual_수탑)", // 빈 문자열
         isMeasured: false, // 초기값 false
         quantity: 0, // 초기값 '0' 문자열로 설정
-        placeHolder : "메탈 마스크 WHC 보유 여부 확인, 없다면 의뢰 必", 
+        placeHolder : "", 
         
         status : "",      
         detail : "",

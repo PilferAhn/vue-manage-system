@@ -11,7 +11,7 @@
 import { reactive } from "vue";
 import { initializeApplicationData, initializeApplicationData2 } from "../../../utils/solderApplicationUtil";
 import SolderApplicationTemplate from "./SolderApplicationTemplate.vue";
-const applicationData = reactive(initializeApplicationData2());
+const applicationData = reactive(initializeApplicationData());
 </script>
 
 <style></style>

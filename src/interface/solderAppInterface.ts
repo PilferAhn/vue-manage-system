@@ -1,3 +1,5 @@
+import type { LotStatus } from "./mes-interface";
+
 export interface Measurement {
   number? : string;
   measurementType: string; // 측정 종류
@@ -15,7 +17,6 @@ export interface Segment {
     points : string
     ifbw : string
 }
-
 
 export interface MatchingComponent {
   series? : string
@@ -54,7 +55,7 @@ export interface ApplicationData {
   designerId?: string;
   requester?: string; // 의뢰인 (requester)
   requesterId?: string;
-  
+  customEvbType? : string;
   inductorType?: string;
   
   filterType?: string;
@@ -75,5 +76,12 @@ export interface ApplicationData {
   segments?: Segment[];
   matchingQuantity? : number ;
   matching? : Matching[];
-  
+  lotStatus? : LotStatus[];
+
+  childDepth? : number;
+  childOperation? : string;
+  childStageName? : string
+  childLotId? : string
+  childAssay? : string
+  childIsAssay? : boolean
 }

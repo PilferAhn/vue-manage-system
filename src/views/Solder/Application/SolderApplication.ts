@@ -175,6 +175,8 @@ export async function removeApplicationByUuid(uuid: string) {
   }
 }
 
+
+
 export async function updateMeasurement(solderMeasurement: Measurement) {
   const url = "/solder/update_solder_measurement";
 
@@ -334,7 +336,22 @@ function validateForm(applicationData: ApplicationData) {
   if (!validateSegmentation(applicationData)) {
     return false;
   }
-  console.log("여기까지 ㅇㄴ다고? ");
+ 
+  return true;
+}
+
+export function validateInput(application: ApplicationData): boolean {
+  if (application.evbType === "직접 입력") {
+    if (!application.customEvbType || application.customEvbType.trim() === "") {
+      // ElMessage로 에러 발생
+      ElMessage.error("직접 입력을 선택한 경우 EVB Type을 입력해야 합니다.");
+      return false;
+    }
+    else{
+      application.evbType = application.customEvbType
+    }
+
+  } 
   return true;
 }
 
@@ -345,6 +362,14 @@ export async function sendApplicationData2(
   buttonType: string
 ) {
   try {
+
+    // 여기서 false true 체크하고 false 면 그냥 진행안함. 
+    const isValid = validateInput(applicationData);
+    if (!isValid) {
+      // 유효성 검사 실패 시 진행 중단
+      return;
+    }
+
     // rules 에서 잡지 못하는 부분들을 validation 한다
     if (validateForm(applicationData)) {
 

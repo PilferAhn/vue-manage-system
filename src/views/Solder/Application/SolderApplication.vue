@@ -500,9 +500,6 @@ const handle = (item: { key: string; value: string; label: string }) => {
 
 // Toggle function for switching between manual input and select dropdown
 
-const toggleManualInput = () => {
-  isManualInput.value = !isManualInput.value;
-};
 
 // Determine if manual input should be used
 const isManualInput = ref(false);

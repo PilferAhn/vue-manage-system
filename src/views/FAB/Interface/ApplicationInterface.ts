@@ -1,4 +1,4 @@
-import type {LotData} from "./mes-interface"
+import type {LotStatus} from "./mes-interface"
 
 export interface ProcessData {
   uuid?: string;
@@ -42,21 +42,48 @@ export interface ProcessData {
 
   requester? : string;
   requesterId? : string;
-  lotStatus ? : LotData[];
+  lotStatus ? : LotStatus[];
   maxHistorySeq? : number
   hanoiIndex? : number
   hanoiOperation? : string;
   hanoiOperationStart? : string;
   hanoiSiteIn? : string;
+  hanoiStep? : string;
+  hanoiTransite? : boolean
 
   feIndex? :number
   feOperation? : string;
   feOperationStart? : string;
   feSiteIn? : string;
+  estToHanoi? : string
 
   status? : string;
   note? : string;
   result? : string;
 
+  step1Operation? : string;
+  step1OperationStart? : string;
+  step1SiteIn? : string;
+  step1LotId? : string;
+
+  step2Operation? : string;
+  step2OperationStart? : string;
+  step2SiteIn? : string;
+  step2LotId? : string;
+
+  step3Operation? : string;
+  step3OperationStart? : string;
+  step3SiteIn? : string;
+  step3LotId? : string;
+
+  step4Operation? : string;
+  step4OperationStart? : string;
+  step4SiteIn? : string;
+  step4LotId? : string;
+
+  step5Operation? : string;
+  step5OperationStart? : string;
+  step5SiteIn? : string;
+  step5LotId? : string;
 
 }

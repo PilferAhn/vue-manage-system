@@ -717,6 +717,78 @@ const routes: RouteRecordRaw[] = [
             /* webpackChunkName: "table" */ "../views/Solder/Application/CreateSolderApplication.vue"
           ),
       },
+      // {
+      //   path: "/whc/solder-stock-management/stock-list",
+      //   name: "Soler Stock List",
+      //   meta: {
+      //     title: "Solder Stock List",
+      //     permiss: "11",
+      //   },
+      //   component: () =>
+      //     import(
+      //       /* webpackChunkName: "table" */ "../views/Solder/Stock/ApplicationList/LoadApplicationList.vue"
+      //     ),
+      // },
+      {
+        path: "/whc/solder-stock-management/create-stock",
+        name: "Add Solder Lot Stock",
+        meta: {
+          title: "Add Solder Lot Stock",
+          permiss: "11",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "table" */ "../views/Solder/Stock/Application/SolderCreateApplication.vue"
+          ),
+      },
+      {
+        path: "/whc/stock-management/create-stock",
+        name: "Add Lot Stock",
+        meta: {
+          title: "Add Lot Stock",
+          permiss: "11",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "table" */ "../views/Solder/Stock/Application/CreateApplication.vue"
+          ),
+      },
+      {
+        path: "/whc/stock-management/load-stock/:reelId",
+        name: "LoadLotStock",
+        meta: {
+          title: "LoadLotStock",
+          permiss: "11",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "table" */ "../views/Solder/Stock/Application/LoadApplication.vue"
+          ),
+      },
+      {
+        path: "/whc/stock-management/stock-list",
+        name: "Stock List",
+        meta: {
+          title: "Stock List",
+          permiss: "11",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "table" */ "../views/Solder/Stock/ApplicationList/LoadApplicationList.vue"
+          ),
+      },
+      {
+        path: "/whc/solder-stock-management/stock-list",
+        name: "Solder Stock List",
+        meta: {
+          title: "Solder Stock List",
+          permiss: "11",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "table" */ "../views/Solder/Stock/ApplicationList/SolderLoadApplicationList.vue"
+          ),
+      },
       {
         path: "/whc/application-list",
         name: "measurement list",

@@ -20,21 +20,20 @@
                   placeholder="ex) XMN5CTV@1A"
                 />
               </el-col>
-              <el-col :span="12">
+              <!-- <el-col :span="12">
                 <inputText
-                  v-model="applicationData.lotId"
-                  label="FAB LOT ID"
-                  prop="lotId"
+                  v-model="applicationData.assayLotId"
+                  label="Assay ID (WHC) - 모를경우 기재 X"
                   placeholder="ex) NCIFE0A30"
                 />
-              </el-col>
+              </el-col> -->
             </el-row>
 
             <el-row :gutter="20">
               <el-col :span="12">
                 <inputText
                   v-model="applicationData.designer"
-                  label="Designer"
+                  label="개발자"
                   prop="designer"
                   placeholder="ex) Designer"
                 />
@@ -42,7 +41,7 @@
               <el-col :span="12">
                 <inputText
                   v-model="applicationData.requester"
-                  label="Requester"
+                  label="의뢰자"
                   prop="requester"
                   placeholder="ex) Requester"
                 />
@@ -156,51 +155,40 @@
                 <div style="display: flex; align-items: center">
                   <!-- Form item that displays either inputText or el-select depending on isManualInput -->
                   <el-form-item
+                    v-if="applicationData.evbType !== '직접 입력'"
                     label="EVB Type"
                     prop="evbType"
                     style="flex-grow: 1"
                   >
-                    <!-- Show inputText if manual input is enabled -->
-                    <template v-if="isManualInput">
-                      <inputText
-                        v-model="applicationData.evbType"
-                        label=""                        
-                        placeholder="Enter custom EVB Type"
-                        style="width: 100%"
-                      />
-                    </template>
-
-                    <!-- Otherwise show the el-select dropdown -->
-                    <template v-else>
-                      <el-select
-                        v-model="applicationData.evbType"
-                        placeholder="Select EVB Type"
-                      >
-                        <el-option
-                          v-for="item in evbTypeList"
-                          :key="item.key"
-                          :label="item.label"
-                          :value="item.value"
-                        ></el-option>
-                      </el-select>
-                    </template>
+                    <el-select
+                      v-model="applicationData.evbType"
+                      placeholder="Select EVB Type"
+                    >
+                      <el-option
+                        v-for="item in evbTypeList"
+                        :key="item.key"
+                        :label="item.label"
+                        :value="item.value"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item
+                    v-if="applicationData.evbType === '직접 입력'"
+                    label="EVB Type"
+                    prop="evbType"
+                    style="flex-grow: 1"
+                  >
+                    <inputText
+                      v-model="applicationData.customEvbType"
+                      label=""
+                      placeholder="Enter custom EVB Type"
+                      style="width: 100%"
+                    />
                   </el-form-item>
                 </div>
               </el-col>
 
-              <el-col :span="4">
-                <!-- Checkbox to toggle between manual input or dropdown -->
-                <el-form-item label="Action">
-                  <el-button
-                    @click="toggleManualInput()"
-                    type="primary"
-                    :plain="!isManualInput"
-                    style="margin-right: 10px"
-                  >
-                    {{ isManualInput ? "Select EVB Type" : "Manual Input" }}
-                  </el-button>
-                </el-form-item>
-              </el-col>
+              <el-col :span="4"> </el-col>
 
               <!-- EVB info input text field -->
               <el-col :span="12">
@@ -213,93 +201,21 @@
                 />
               </el-col>
             </el-row>
-
-            <!-- <el-row :gutter="20">
-              
-              <el-col :span="8">
-                <div style="display: flex; align-items: center">
-                  
-                  <el-form-item label="Inductor Type" prop="inductorType" style="flex-grow: 1">
-                    
-                    <template v-if="isManualInputForInductor">
-                      <inputText
-                        v-model="applicationData.inductorType"
-                        label=""
-                        prop="inductorType"
-                        placeholder="Enter Inductor"
-                        style="width: 100%"
-                      />
-                    </template>
-
-                    
-                    <template v-else>
-                      <el-select
-                        v-model="applicationData.inductorType"
-                        placeholder="Please Select Inductor"
-                      >
-                        <el-option
-                          v-for="item in chipInductorList"
-                          :key="item.key"
-                          :label="item.label"
-                          :value="item.value"
-                        ></el-option>
-                      </el-select>
-                    </template>
-                  </el-form-item>
-                </div>
-              </el-col>
-
-              <el-col :span="4">
-                
-                <el-form-item label="Action">
-                  <el-button
-                    @click="toggleManualInputForIn()"
-                    type="primary"
-                    :plain="!isManualInputForInductor"
-                    style="margin-right: 10px"
-                  >
-                    {{ isManualInputForInductor ? "Select Inductor" : "Manual Input" }}
-                  </el-button>
-                </el-form-item>
-              </el-col>
-            </el-row> -->
-
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <el-form-item
-                  label="WHC 개발팀 Sample 보유 여부"
-                  prop="isSampleAvailable"
-                >
-                  <el-select
-                    v-model="applicationData.isSampleAvailable"
-                    placeholder="선택안함"
-                  >
-                    <el-option
-                      key="1"
-                      label="선택안함"
-                      :value="''"
-                    ></el-option>
-                    <el-option key="2" label="O" :value="true"></el-option>
-                    <el-option key="3" label="X" :value="false"></el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="6"> </el-col>
-            </el-row>
           </el-card>
         </el-col>
       </el-row>
 
       <el-divider content-position="center">Measurement Infomation</el-divider>
-      
+
       <el-row>
         <el-col>
           <el-card>
             <el-table :data="applicationData.measurements" style="width: 100%">
               <el-table-column
                 prop="measurementType"
-                label="Measurement"
-                width="250"
+                label="측정 항목"
+                width="130"
+                :align="'center'"
               >
                 <template #default="scope">
                   {{ getMeasurementLabel(scope.row.measurementType) }}
@@ -335,7 +251,11 @@
                   ></el-input>
                 </template>
               </el-table-column>
-              <el-table-column prop="기타" label="기타" width="500">
+              <el-table-column
+                prop="기타"
+                label="측정 상세 요청 사항"
+                width="600"
+              >
                 <template #default="scope">
                   <el-input
                     v-model="scope.row.detail"
@@ -343,7 +263,7 @@
                   ></el-input>
                 </template>
               </el-table-column>
-              <el-table-column label="유의사항" width="450">
+              <el-table-column label="유의사항" width="500">
                 <template #default="scope">
                   <el-input v-model="scope.row.placeHolder" disabled></el-input>
                 </template>
@@ -621,7 +541,6 @@ import { bandInformationDict } from "../../../utils/frequancyInfo";
 import type { ApplicationData } from "../../../interface/solderAppInterface";
 import { downloadFileByUrl } from "./LoadSolderApplication";
 
-
 // Toggle function for switching between manual input and select dropdown
 
 // Define props to receive processData
@@ -712,7 +631,9 @@ const onSubmit = (applicationData: ApplicationData, buttonType: string) => {
   } else {
     url.value = "/solder/submit";
   }
+
   
+
   applicationForm.value.validate(async (valid: boolean) => {
     if (valid) {
       try {
@@ -769,7 +690,6 @@ watch(
 watch(
   () => applicationData.filterType,
   (newBand, oldBand) => {
-
     if (newBand === "DPX") {
       applicationData.matchingQuantity = 3;
     } else if (newBand === "RX") {

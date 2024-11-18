@@ -7,9 +7,7 @@
         class="search-dropdown"
         style="width: 150px"
       >
-        <el-option label="Lot ID" value="lotId"></el-option>
         <el-option label="Designer" value="designer"></el-option>
-        <el-option label="Requester" value="requester"></el-option>
         <el-option label="Product Name" value="modelName"></el-option>
       </el-select>
 
@@ -47,6 +45,12 @@
       :row-class-name="tableRowClassName"
       height="700px"
     >
+      <el-table-column
+        type="index"
+        label="No"
+        :align="'center'"
+      ></el-table-column>
+
       <el-table-column
         prop="modelName"
         label="Product Name"
@@ -95,8 +99,11 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Received" width="170" :align="'center'">
+      <el-table-column label="Received" width="87" :align="'center'">
         <template #default="scope">
+          {{ formatDate(scope.row.receivedDate) }}
+        </template>
+        <!-- <template #default="scope">
           <el-date-picker
             v-model="scope.row.receivedDate"
             type="date"
@@ -105,24 +112,28 @@
             value-format="YYYY-MM-DDTHH:mm:ss"
             style="width: 140px"
           />
+        </template> -->
+      </el-table-column>
+
+      <el-table-column        
+        label="Location"
+        :align="'center'"
+        width="150"
+      >
+      <template #default="scope">
+        {{ scope.row.childStageName }} <br>
+        {{ scope.row.childOperation }}
         </template>
       </el-table-column>
 
-      <el-table-column
+      <!-- <el-table-column
         prop="lotId"
         label="FAB Lot ID"
         :align="'center'"
         width="110"
-      ></el-table-column>
-
-      <!-- <el-table-column
-        prop="assayLotId"
-        label="Assay LOT ID"
-        width="130"
-        :align="'center'"
       ></el-table-column> -->
 
-      <el-table-column label="Assay LOT ID" width="170" :align="'center'">
+      <!-- <el-table-column label="Assay LOT ID" width="170" :align="'center'">
         <template #default="scope">
           <div>
             <el-input
@@ -132,7 +143,7 @@
             ></el-input>
           </div>
         </template>
-      </el-table-column>
+      </el-table-column> -->
 
       <el-table-column
         prop="designer"
@@ -204,6 +215,7 @@
             type="danger"
             size="small"
             @click="handleDelete(scope.row)"
+            :disabled="!isIdIncluded"
           >
             삭제
           </el-button>
@@ -224,6 +236,7 @@ import { statusList, confirmDelete } from "./SolderApplicationList";
 import { convertPythonTimeToVue } from "../../Common/utility";
 import { sendApplicationData2 } from "../Application/SolderApplication";
 import axios from "axios";
+import { formatDate, formatDateTime } from "../../FAB/Common/Application";
 
 const props = defineProps<{
   applicationData: ApplicationData[];
@@ -231,7 +244,7 @@ const props = defineProps<{
 
 // 라우터 및 현재 경로 가져오기
 const searchTerm = ref("");
-const searchCategory = ref("lotId"); // 기본 검색 기준을 "Lot ID"로 설정
+const searchCategory = ref("modelName"); // 기본 검색 기준을 "Lot ID"로 설정
 const route = useRoute();
 
 onMounted(() => {
@@ -264,6 +277,8 @@ const filteredApplicationData = computed(() => {
     const field = item[searchCategory.value] as string;
     return field && field.toLowerCase().includes(term);
   });
+
+  console.log(term);
 });
 
 // Method to handle the search button click
@@ -344,9 +359,19 @@ const tableRowClassName = ({
   row: ApplicationData;
   rowIndex: number;
 }) => {
-  if (row.receivedDate) {
-    return "warning-row";
+
+  if(row.assayLotId !== null && row.childAssay !== undefined){
+    // return "bothsourse-row";
+    return 
   }
+  else if (row.childIsAssay !== undefined) {
+    // return "mes-row";    
+  }
+  else if(row.assayLotId !== null){
+    // return "manual-row";
+  }
+  
+  
   return;
 };
 </script>
@@ -354,8 +379,16 @@ const tableRowClassName = ({
 <style>
 /* Add any additional styles here */
 
-.el-table__row.warning-row {
+.el-table__row.bothsourse-row {
   background-color: rgb(255, 166, 0);
+}
+
+.el-table__row.mes-row {
+  background-color: rgb(125, 207, 125);
+}
+
+.el-table__row.manual-row {
+  background-color: rgb(202, 193, 223);
 }
 
 .table {

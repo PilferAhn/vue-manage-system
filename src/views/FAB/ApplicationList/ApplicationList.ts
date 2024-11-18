@@ -6,6 +6,18 @@ import type { ProcessData } from "../Interface/ApplicationInterface";
 // Define the processData ref in case you want to use it directly
 export const processData = ref<ProcessData[]>([]);
 
+export const showInfo = async (processData: ProcessData[]) => {
+
+  const idList = ["YG76AUJ@1C"]
+
+  processData.forEach((data , index) => {
+    if(idList.includes(data.modelName)){
+      console.log(data)
+    }
+  })
+
+}
+
 export const downloadExcel = async (processData: ProcessData[]) => {
   try {
     // processData 배열에서 id 값만 추출하여 idList에 저장
@@ -68,7 +80,7 @@ export const fetchProcessData = async () => {
 
     formData.append("lot_status", "true")
 
-    formData.append("order_by", "created_date");
+    formData.append("order_by", "week_number");
 
     formData.append("order_dir", "asc");
 
@@ -86,3 +98,87 @@ export const fetchProcessData = async () => {
     return [];
   }
 };
+
+
+export function getMaxHistorySeqAndIndexFromProcessData(
+  processDataArray: ProcessData[]
+): {
+  maxHistorySeq: number | null;
+  processDataIndex: number | null;
+  lotStatusIndex: number | null;
+} {
+  if (!processDataArray || processDataArray.length === 0) {
+    return {
+      maxHistorySeq: null,
+      processDataIndex: null,
+      lotStatusIndex: null,
+    };
+  }
+
+  let maxHistorySeq = null;
+  let processDataIndex = null;
+  let lotStatusIndex = null;
+
+  processDataArray.forEach((processData, index) => {
+    try {
+      if (processData.lotStatus.length > 0) {
+        processData.lotStatus.forEach((lotStatus, lotIndex) => {
+          if (lotStatus.hanoi_csp !== null) {
+            processData.hanoiIndex = index;
+            processData.hanoiSiteIn = lotStatus["hanoi_csp"]["creation_date"];
+
+            if (lotStatus["hanoi_csp"]["child"] === null) {
+              processData.hanoiOperation =
+                lotStatus["hanoi_csp"]["operation"]["name"];
+              processData.hanoiOperationStart =
+                lotStatus["hanoi_csp"]["movein_date"];
+            } else {
+              if (lotStatus["hanoi_csp"]["child"]["child"] === null) {
+                processData.hanoiOperation =
+                  lotStatus["hanoi_csp"]["child"]["operation"]["name"];
+                processData.hanoiOperationStart =
+                  lotStatus["hanoi_csp"]["child"]["movein_date"];
+                processData.hanoiStep = "(Package)";
+                // console.log(processData.modelName)
+                // console.log(lotStatus["hanoi_csp"]["child"])
+              } else {
+                processData.hanoiStep = "(Assay)";
+                processData.hanoiOperation =
+                  lotStatus["hanoi_csp"]["child"]["child"]["operation"]["name"];
+                processData.hanoiOperationStart =
+                  lotStatus["hanoi_csp"]["child"]["child"]["movein_date"];
+              }
+            }
+          }
+
+          let maxsq = -999;
+          let maxIndex = 0;
+
+          if (lotStatus.judge_flag === "P" || lotStatus.judge_flag === "H" || lotStatus.judge_flag === "S") {
+            if (processData.hanoiTransite === undefined) {
+              if (lotStatus["operation"]["operation_id"] === "TRANSIT") {
+                processData.feIndex = lotIndex;
+                processData.feOperationStart = lotStatus["movein_date"];
+                processData.feSiteIn = lotStatus["creation_date"];
+                processData.feOperation = lotStatus["operation"]["name"];
+                processData.hanoiTransite = true
+                return;
+              } else if (lotStatus.history_seq > maxsq) {
+                maxsq = lotStatus.history_seq;
+                processData.maxHistorySeq = lotIndex;
+                processData.feIndex = lotIndex;
+                processData.feOperationStart = lotStatus["movein_date"];
+                processData.feSiteIn = lotStatus["creation_date"];
+                processData.feOperation = lotStatus["operation"]["name"];
+              }
+            }
+          }
+        });
+      }
+    } catch {
+      console.log(processData);
+    }
+  });
+
+  return { maxHistorySeq, processDataIndex, lotStatusIndex };
+}
