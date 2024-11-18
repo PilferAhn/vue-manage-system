@@ -277,9 +277,9 @@ export async function submitForm(
                 // console.log(applicationUuid.value);
 
                 // 엑셀 파일 생성
-                const excel_response = await create_teg_application_excel(
-                  response.data.applicationUUID
-                );
+                // const excel_response = await create_teg_application_excel(
+                //   response.data.applicationUUID
+                // );
 
                 // 성공 메시지 표시
                 ElMessage.success({
@@ -406,9 +406,22 @@ export const download = async (applicationUuid) => {
     return;
   }
   try {
-    await downloadExcel(applicationUuid);
+    // TEG 의뢰서 작성 중 메시지 표시
+    ElMessage({
+      message: "TEG 의뢰서를 작성 중입니다. 잠시만 기다려주세요.",
+      type: "info",
+      duration: 2000, // 메시지가 2초 동안 표시됨
+    });
+
+    await create_teg_application_excel(applicationUuid);
+
+    // 2초 후 다운로드 실행
+    setTimeout(async () => {
+      await downloadExcel(applicationUuid);
+    }, 2000);
   } catch (error) {
     console.error("Failed to download the excel file:", error);
+    ElMessage.error("엑셀 파일 다운로드에 실패했습니다.");
   }
 };
 

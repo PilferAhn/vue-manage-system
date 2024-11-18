@@ -272,15 +272,15 @@
               >의뢰서 작성</el-button
             ></span
           >
-          /
-          <span>
+          
+          <!-- <span>
             <el-button
               type="primary"
               @click="handleDownload"
               :disabled="!activateDownload"
               >의뢰서 다운로드</el-button
             >
-          </span>
+          </span> -->
         </div>
       </div>
     </div>
