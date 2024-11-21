@@ -64,7 +64,8 @@ export default defineConfig({
 			"/bfsm2" : "http://10.20.10.114",			
 			"/mes" : "http://10.29.11.124:40000",
 			"/OpeationMns" : "http://10.70.21.216:9086",
-			"/reel" : "http://10.29.11.57:40000"
+			"/reel" : "http://10.29.11.57:40000",
+			"/test" : "http://10.29.11.59:8002"
 		}
 	  },
 });

@@ -1,22 +1,179 @@
 import axios from "axios";
 import { ref } from "vue";
 import { convertToCamelCase } from "../Common/Application";
-import type { ProcessData } from "../Interface/ApplicationInterface";
+import { ProcessData } from "../Interface/ApplicationInterface";
+import type { LotStatus } from "./../../../interface/mes-interface";
+import { convertKeysToPEP8 } from "../../../utils/key-converter";
+import { convertKeysToCamelCase } from "../../../utils/key-converter";
+import type { FabExcel, FabLotStatusExcel } from "../../../interface/fab";
+import { adjustDate } from "../../../utils/date-utils";
 
 // Define the processData ref in case you want to use it directly
 export const processData = ref<ProcessData[]>([]);
 
-export const showInfo = async (processData: ProcessData[]) => {
+import axios from "axios";
 
-  const idList = ["YG76AUJ@1C"]
+export async function downloadFabPlanExcel(FabExcel: FabExcel[]) {
+  try {
+    // 배열의 각 요소를 변환하여 새 배열 생성
+    const values = FabExcel.map((item) => convertKeysToPEP8(item));
 
-  processData.forEach((data , index) => {
-    if(idList.includes(data.modelName)){
-      console.log(data)
-    }
-  })
+    const url = "/test/download_fab_plan_excel";
 
+    // 파일 다운로드 요청
+    const response = await axios.post(url, values, {
+      responseType: "blob", // 바이너리 데이터 처리
+    });
+
+    // 파일 다운로드 처리
+    const blob = new Blob([response.data], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "투입계획서.xlsx"; // 다운로드될 파일 이름
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    console.log("다운로드 성공");
+  } catch (error) {
+    console.error("다운로드 실패:", error);
+  }
 }
+
+
+
+export function syncFabFormToFabExcel(
+  fabReqeustForm: ProcessData[],
+  FabExcelList: FabExcel[]
+) {
+  fabReqeustForm.forEach((fab , index) => {
+
+    const ex = ref<FabExcel>({});
+
+    ex.value.weekNumber = fab.weekNumber;
+    ex.value.modelName = fab.modelName
+    ex.value.designer = fab.designer;
+    ex.value.requester = fab.requester;
+    ex.value.wantedFabStartDate = fab.wantedFabStartDate;
+    ex.value.wantedFabFinishDate = fab.wantedFabFinishDate;
+
+    ex.value.lotQuantity = fab.lotStatus.length;
+    
+    if (ex.value.lotQuantity >= 1) {
+      ex.value.fabLotStatusExcel = []
+      fab.lotStatus.forEach((lot, i) => {
+        
+        const lotExcel = ref<FabLotStatusExcel>({});
+
+        lotExcel.value.lotId = lot["lot_id"];
+        lotExcel.value.fabInsertDate = lot["creation_date"];
+        
+        lotExcel.value.currentOperationTime = lot["movein_date"];
+        lotExcel.value.currentOperationName = lot.operation.name;
+
+        let result = "";
+
+        if (lot["operation"]["operation_id"] === "OP0E002040") {
+          // 조건 1: operation_id가 'OP0E002040'인 경우
+          result = adjustDate(lot["movein_date"], 3);
+        } else if (
+          lot["second_probe_history"] &&
+          lot["second_probe_history"]["start_date"] !== null
+        ) {
+          // 조건 2: second_probe_history가 있고 start_date가 null이 아닌 경우
+          result = adjustDate(lot["second_probe_history"]["start_date"], 3);
+        } else if (
+          lot["second_probe_history"] &&
+          lot["second_probe_history"]["end_date"] !== null
+        ) {
+          // 조건 3: second_probe_history가 있고 end_date가 null이 아닌 경우
+          result = adjustDate(lot["second_probe_history"]["end_date"], 3);
+        } else if (
+          lot["second_probe_history"] &&
+          lot["second_probe_history"]["start_date"] === null
+        ) {
+          // 조건 4: second_probe_history가 있고 start_date가 null인 경우
+          result = "SKIP";
+        } else {
+          // 조건 5: 위 조건에 모두 해당하지 않는 경우
+          result = "--";
+        }
+
+        lotExcel.value.whcExpectedShipmentDate = result;
+
+        if (lot["operation"]["name"] === "Transit 공정")
+          lotExcel.value.whcShipmentDate = lot["movein_date"];
+        else {
+          lotExcel.value.whcShipmentDate = "--";
+        }
+
+        if (lot["hanoi_csp"] === null) {
+          lotExcel.value.whcArrivalDate = "--";
+        } else {
+          lotExcel.value.whcArrivalDate = lot["hanoi_csp"]["creation_date"];
+          lotExcel.value.assyIn = lot["hanoi_csp"]["movein_date"]
+
+          traverseLotStatus(lot["hanoi_csp"]["child"], lotExcel.value, 0);
+        }
+
+        ex.value.fabLotStatusExcel.push(lotExcel.value);
+      });
+    }
+    FabExcelList.push(ex.value)
+
+  })
+  return FabExcelList
+}
+
+function traverseLotStatus(
+  lotStatus: LotStatus,
+  lotExcel: FabLotStatusExcel | null,
+  depth = 0
+): void {
+  if (lotStatus === null || depth >= 5) return;
+
+  if (depth == 0) {
+    lotExcel.filpBondingOperation = lotStatus["operation"]["name"];
+    lotExcel.filpBondingTime = lotStatus["movein_date"];
+  } else if (depth == 1) {
+    lotExcel.packageOperation = lotStatus["operation"]["name"];
+    lotExcel.packageTime = lotStatus["movein_date"];
+  } else if (depth == 3) {
+    lotExcel.assyOperation = lotStatus["operation"]["name"];
+    lotExcel.assyTime = lotStatus["movein_date"];
+  } else if (depth == 4) {
+    lotExcel.finalShipmentOperation = lotStatus["operation"]["name"];
+    lotExcel.finalShipmentTime = lotStatus["movein_date"];
+  }
+
+  traverseLotStatus(lotStatus["child"], lotExcel, depth + 1);
+}
+
+export const showInfo = async (processData: ProcessData[]) => {
+  const idList = [];
+
+  processData.forEach((data, index) => {
+    if (idList.includes(data.modelName)) {
+      console.log(data);
+    }
+  });
+};
+
+export const showInfoByWeek = (processData: ProcessData[]) => {
+  const weekList = [38, 39];
+  let tempStr = "";
+
+  processData.forEach((app, index) => {
+    if (weekList.includes(app.weekNumber)) {
+      const tempModelName = app.modelName.split("@")[0];
+      tempStr += tempModelName + "-M,";
+    }
+  });
+
+  console.log(tempStr);
+};
 
 export const downloadExcel = async (processData: ProcessData[]) => {
   try {
@@ -78,7 +235,7 @@ export const fetchProcessData = async () => {
     let startTime = performance.now();
     const formData = new FormData();
 
-    formData.append("lot_status", "true")
+    formData.append("lot_status", "true");
 
     formData.append("order_by", "week_number");
 
@@ -98,7 +255,6 @@ export const fetchProcessData = async () => {
     return [];
   }
 };
-
 
 export function getMaxHistorySeqAndIndexFromProcessData(
   processDataArray: ProcessData[]
@@ -154,14 +310,18 @@ export function getMaxHistorySeqAndIndexFromProcessData(
           let maxsq = -999;
           let maxIndex = 0;
 
-          if (lotStatus.judge_flag === "P" || lotStatus.judge_flag === "H" || lotStatus.judge_flag === "S") {
+          if (
+            lotStatus.judge_flag === "P" ||
+            lotStatus.judge_flag === "H" ||
+            lotStatus.judge_flag === "S"
+          ) {
             if (processData.hanoiTransite === undefined) {
               if (lotStatus["operation"]["operation_id"] === "TRANSIT") {
                 processData.feIndex = lotIndex;
                 processData.feOperationStart = lotStatus["movein_date"];
                 processData.feSiteIn = lotStatus["creation_date"];
                 processData.feOperation = lotStatus["operation"]["name"];
-                processData.hanoiTransite = true
+                processData.hanoiTransite = true;
                 return;
               } else if (lotStatus.history_seq > maxsq) {
                 maxsq = lotStatus.history_seq;

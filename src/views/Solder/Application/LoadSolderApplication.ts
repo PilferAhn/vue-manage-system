@@ -2,10 +2,10 @@ import { ApplicationData } from "../../../interface/solderAppInterface";
 import axios from "axios";
 import { ref, watch, onMounted, reactive } from "vue";
 import {
-  convertKeysToCamelCase,
   sortMeasurementByNumber,
 } from "../ApplicationList/SolderApplicationList";
 import Form from "../../form.vue";
+import { convertKeysToCamelCase } from "../ApplicationList/SolderApplicationList";
 
 // applicationData를 초기화
 // const applicationData = reactive<ApplicationData>(initializeApplicationData2());
@@ -66,9 +66,9 @@ export async function fetchApplicationData(
   try {
     const url = `/solder/get_solder_application_by_uuid/${uuid}`;
     const response = await axios.get(url);
-
+    
     const s = convertKeysToCamelCase(response.data);
-
+    
     // 응답 데이터를 반응형 객체에 할당 (객체 전체를 대입하지 않고 속성만 덮어쓰기)
     Object.assign(applicationData, s); // 기존 객체의 속성을 덮어씀
     // applicationData = s
@@ -243,6 +243,7 @@ export function initializeApplicationData2() {
     pattern: "", // 측정 CHIP 패턴
     pkgType: "", // 측정 PKG
     detail: "",
+    files : [],
     measurementQuantity: 0,
     measurements: [
       {

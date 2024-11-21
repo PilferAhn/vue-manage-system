@@ -16,14 +16,12 @@ import axios from "axios";
 import { useRouter } from "vue-router";
 import { convertToCamelCase } from "../Common/Application"; // Assuming the utility is stored here
 import { getCurrentWeekNumber, getTodayDatetime, adjustDate } from "../../../utils/date-utils";
-import { fetchProcessData, processData, showInfo } from "./ApplicationList";
+import { fetchProcessData, processData, showInfo, showInfoByWeek } from "./ApplicationList";
 import ApplicationsByWeek from "./ApplicationsByWeek2.vue";
 import type { ProcessData } from "../Interface/ApplicationInterface";
 import { it } from "node:test";
 
 const currentWeekNumber: number = getCurrentWeekNumber();
-
-console.log(getTodayDatetime())
 
 // const privious2WeekLabel = (currentWeekNumber - 2).toString() + "주 이후";
 
@@ -69,7 +67,7 @@ function getMaxHistorySeqAndIndexFromProcessData(
     try {
       if (processData.lotStatus.length > 0) {
         processData.lotStatus.forEach((lotStatus, lotIndex) => {
-          if (lotStatus.hanoi_csp !== null) {
+          if (lotStatus.hanoiCsp !== null) {
             processData.hanoiIndex = index;
             processData.hanoiSiteIn = lotStatus["hanoi_csp"]["creation_date"];
 
@@ -182,9 +180,9 @@ function getMaxHistorySeqAndIndexFromProcessData(
 
 
           if (
-            lotStatus.judge_flag === "P" ||
-            lotStatus.judge_flag === "H" ||
-            lotStatus.judge_flag === "S"
+            lotStatus.judgeFlag === "P" ||
+            lotStatus.judgeFlag === "H" ||
+            lotStatus.judgeFlag === "S"
           ) {
             if (processData.hanoiTransite === undefined) {
               if (lotStatus["operation"]["operation_id"] === "TRANSIT") {
@@ -195,8 +193,8 @@ function getMaxHistorySeqAndIndexFromProcessData(
                 processData.hanoiTransite = true;
                 processData.estToHanoi = undefined
                 return;
-              } else if (lotStatus.history_seq > maxsq) {
-                maxsq = lotStatus.history_seq;
+              } else if (lotStatus.historySeq > maxsq) {
+                maxsq = lotStatus.historySeq;
                 processData.maxHistorySeq = lotIndex;
                 processData.feIndex = lotIndex;
                 processData.feOperationStart = lotStatus["movein_date"];
@@ -212,7 +210,7 @@ function getMaxHistorySeqAndIndexFromProcessData(
         });
       }
     } catch {
-      console.log(processData);
+      // console.log(processData);
     }
   });
 
@@ -224,6 +222,7 @@ onMounted(async () => {
   // fetchProcessData 함수로 데이터 가져오기
   processDataArray.value = await fetchProcessData();
   getMaxHistorySeqAndIndexFromProcessData(processDataArray.value);
+  // showInfoByWeek(processDataArray.value)
 
   processDataArray.value.forEach((processData, index) => {
     if (processData["destination"] === "WHC_CSP") {

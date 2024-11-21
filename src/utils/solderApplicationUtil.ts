@@ -27,69 +27,68 @@ export const initializeApplicationData2 = () => {
     shipmentInfo: "",
     detail: "",
 
-    
-    
-    deembedMode : "",
-    matchingComponentType : "",
-            
-    status : "created",
+    deembedMode: "",
+    matchingComponentType: "",
+
+    status: "created",
     measurementQuantity: 5,
     measurements: [
       {
-        number : "1",
+        number: "1",
         measurementType: "특성 평가", // 빈 문자열
         isMeasured: false, // 초기값 false
         quantity: 0, // 초기값 '0' 문자열로 설정
-        status : "",
-        placeHolder : "", 
-        detail : "",
+        status: "",
+        placeHolder: "",
+        detail: "",
       },
       {
-        number : "2",
+        number: "2",
         measurementType: "PDT(SMT)", // 빈 문자열
         isMeasured: false, // 초기값 false
         quantity: 0, // 초기값 '0' 문자열로 설정
-        status : "",
-        placeHolder : "", 
-        detail : "",
+        status: "",
+        placeHolder: "",
+        detail: "",
       },
       {
-        number : "3",
+        number: "3",
         measurementType: "PDT(Manual_수탑)", // 빈 문자열
         isMeasured: false, // 초기값 false
         quantity: 0, // 초기값 '0' 문자열로 설정
-        placeHolder : "메탈 마스크 WHC 보유 여부 확인, 없다면 의뢰 必", 
-        
-        status : "",      
-        detail : "",
+        placeHolder: "메탈 마스크 WHC 보유 여부 확인, 없다면 의뢰 必",
+
+        status: "",
+        detail: "",
       },
       {
-        number : "4",
+        number: "4",
         measurementType: "PS 신뢰성", // 빈 문자열
         isMeasured: false, // 초기값 false
         quantity: 0, // 초기값 '0' 문자열로 설정
-        status : "",
-        placeHolder : "고객사 기재할 것 (중화, K1)", 
-        detail : "",
+        status: "",
+        placeHolder: "고객사 기재할 것 (중화, K1)",
+        detail: "",
       },
       {
-        number : "5",
+        number: "5",
         measurementType: "TCF", // 빈 문자열
         isMeasured: false, // 초기값 false
         quantity: 0, // 초기값 '0' 문자열로 설정
-        status : "",
-        placeHolder : "샘플 제작 : WHC / TCF : 본사  (WHC 이관 이후 Update 예정)", 
-        detail : "",
+        status: "",
+        placeHolder:
+          "샘플 제작 : WHC / TCF : 본사  (WHC 이관 이후 Update 예정)",
+        detail: "",
       },
       {
-        number : "6",
+        number: "6",
         measurementType: "비선형", // 빈 문자열
         isMeasured: false, // 초기값 false
         quantity: 0, // 초기값 '0' 문자열로 설정
-        status : "",
-        placeHolder : "", 
-        detail : "",
-      }
+        status: "",
+        placeHolder: "",
+        detail: "",
+      },
     ], // Initialize with an empty array
     segmentQuantity: 0,
     segments: [
@@ -98,18 +97,18 @@ export const initializeApplicationData2 = () => {
       //   start: "",
       //   stop: "",
       //   points: "",
-      //   ifwb: "10",        
-      // },      
+      //   ifwb: "10",
+      // },
     ],
-    matchingQuantity : 0,
-    matching : [
+    matchingQuantity: 0,
+    matching: [
       // {
       //   number : "1",
       //   port : "",
       //   ind : {series : "", shunt : ""},
       //   cap : {series : "", shunt : ""}
       // }
-    ]
+    ],
   });
 };
 
@@ -139,68 +138,69 @@ export const initializeApplicationData = () => {
     detail: "",
 
     // isSampleAvailable : ,
-    
-    deembedMode : "",
-    matchingComponentType : "",
-            
-    status : "created",
+
+    deembedMode: "",
+    matchingComponentType: "",
+
+    status: "created",
     measurementQuantity: 5,
     measurements: [
       {
-        number : "1",
+        number: "1",
         measurementType: "특성 평가", // 빈 문자열
         isMeasured: false, // 초기값 false
         quantity: 0, // 초기값 '0' 문자열로 설정
-        status : "",
-        placeHolder : "", 
-        detail : "",
+        status: "",
+        placeHolder: "",
+        detail: "",
       },
       {
-        number : "2",
+        number: "2",
         measurementType: "PDT(SMT)", // 빈 문자열
         isMeasured: false, // 초기값 false
         quantity: 0, // 초기값 '0' 문자열로 설정
-        status : "",
-        placeHolder : "메탈 마스크 WHC 보유 여부 확인, 없다면 의뢰 必", 
-        detail : "",
+        status: "",
+        placeHolder: "메탈 마스크 WHC 보유 여부 확인, 없다면 의뢰 必",
+        detail: "",
       },
       {
-        number : "3",
+        number: "3",
         measurementType: "PDT(Manual_수탑)", // 빈 문자열
         isMeasured: false, // 초기값 false
         quantity: 0, // 초기값 '0' 문자열로 설정
-        placeHolder : "", 
-        
-        status : "",      
-        detail : "",
+        placeHolder: "",
+
+        status: "",
+        detail: "",
       },
       {
-        number : "4",
+        number: "4",
         measurementType: "PS 신뢰성", // 빈 문자열
         isMeasured: false, // 초기값 false
         quantity: 0, // 초기값 '0' 문자열로 설정
-        status : "",
-        placeHolder : "고객사 기재할 것 (중화, K1)", 
-        detail : "",
+        status: "",
+        placeHolder: "고객사 기재할 것 (중화, K1)",
+        detail: "",
       },
       {
-        number : "5",
+        number: "5",
         measurementType: "TCF", // 빈 문자열
         isMeasured: false, // 초기값 false
         quantity: 0, // 초기값 '0' 문자열로 설정
-        status : "",
-        placeHolder : "샘플 제작 : WHC / TCF : 본사  (WHC 이관 이후 Update 예정)", 
-        detail : "",
+        status: "",
+        placeHolder:
+          "샘플 제작 : WHC / TCF : 본사  (WHC 이관 이후 Update 예정)",
+        detail: "",
       },
       {
-        number : "6",
+        number: "6",
         measurementType: "비선형", // 빈 문자열
         isMeasured: false, // 초기값 false
         quantity: 0, // 초기값 '0' 문자열로 설정
-        status : "",
-        placeHolder : "", 
-        detail : "",
-      }
+        status: "",
+        placeHolder: "",
+        detail: "",
+      },
     ], // Initialize with an empty array
     segmentQuantity: 0,
     segments: [
@@ -209,18 +209,38 @@ export const initializeApplicationData = () => {
       //   start: "",
       //   stop: "",
       //   points: "",
-      //   ifwb: "10",        
-      // },      
+      //   ifwb: "10",
+      // },
     ],
-    matchingQuantity : 0,
-    matching : [
+    matchingQuantity: 0,
+    matching: [
       // {
       //   number : "1",
       //   port : "",
       //   ind : {series : "", shunt : ""},
       //   cap : {series : "", shunt : ""}
       // }
-    ]
+    ],
+    files: [
+      {
+        index: 0,
+        uuid: "",
+        applicationUuid: "",
+        ext: "",
+        name: "",
+        typ: "evb",
+        explanation: "EVB 사진을 선택해주세요",
+      },
+      {
+        index: 1,
+        uuid: "",
+        applicationUuid: "",
+        ext: "",
+        name: "",
+        typ: "wafer",
+        explanation: "Wafer MAP 사진을 선택해주세요",
+      },
+    ],
   });
 };
 
@@ -246,7 +266,7 @@ export function updateSegments(applicationData: any) {
       start: "",
       stop: "",
       points: "",
-      ifwb: "20",      
+      ifwb: "20",
     })
   );
 }
@@ -256,10 +276,10 @@ export function updateMathching(applicationData: any) {
   applicationData.matching = Array.from(
     { length: selectedQuantity },
     (_, index) => ({
-      number: (index + 1).toString(),      
+      number: (index + 1).toString(),
       port: "",
-      ind: {series : "", shunt : ""},
-      cap: {series : "", shunt : ""},
+      ind: { series: "", shunt: "" },
+      cap: { series: "", shunt: "" },
     })
   );
 }

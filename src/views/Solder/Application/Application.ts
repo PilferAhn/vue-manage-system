@@ -1,5 +1,6 @@
 import { ref, watch } from "vue";
 import { chipPackageList } from "../../../utils/ChipPackageList";
+import type { ApplicationData, SolderFile } from "../../../interface/solderAppInterface";
 
 export const getSuggestions = (
   queryString: string,
@@ -283,3 +284,14 @@ export const evbTypeList: EvbType[] = [
     value: "34 - DPX STANDARD REVO1 W220 - 5 ea",
   },
 ];
+
+export function updateSolderFiles(solderFiles : SolderFile[], row : SolderFile){
+
+  if(row.index == 0){
+    solderFiles[0] = row
+  }
+  else{
+    solderFiles[1] = row
+  }
+
+}

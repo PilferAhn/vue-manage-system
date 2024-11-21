@@ -10,7 +10,7 @@ import { reactive, ref, watch } from "vue";
 import {
   useApplicationData,
   initializeApplicationData2,
-  fetchApplicationData,  
+  fetchApplicationData,
 } from "./LoadSolderApplication";
 import type { ApplicationData } from "../../../interface/solderAppInterface";
 import { useRoute } from "vue-router";
@@ -24,7 +24,7 @@ const initData = reactive(initializeApplicationData2());
 
 const callApplication = async (uuid: string) => {
   const fetchedData = await fetchApplicationData(initData, uuid); // 객체 속성만 갱신
-  
+
   if (fetchedData) {
     sortApplicationDataByNumber(fetchedData);
     Object.assign(initData, fetchedData); // 정렬된 데이터를 할당
@@ -33,7 +33,7 @@ const callApplication = async (uuid: string) => {
   // 데이터를 number로 정렬하는 함수
   function sortApplicationDataByNumber(data: ApplicationData) {
     if (data.measurements) {
-      data.measurements.sort((a, b) => Number(a.number) - Number(b.number));
+      data.measurements.sort((a, b) => Number(a.number) - Number(b.number));      
     }
     if (data.segments) {
       data.segments.sort((a, b) => Number(a.number) - Number(b.number));
@@ -43,8 +43,6 @@ const callApplication = async (uuid: string) => {
     }
   }
 };
-
-console.log(initData)
 
 // Watch the `uuid` route parameter, fetch data immediately and when it changes
 watch(
@@ -56,8 +54,6 @@ watch(
   },
   { immediate: true } // Trigger immediately on component mount
 );
-
-
 </script>
 
 <style></style>

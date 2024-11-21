@@ -357,7 +357,8 @@ export function validateInput(application: ApplicationData): boolean {
 
 export async function sendApplicationData2(
   applicationData: ApplicationData,
-  selectedFiles: File[] | null, // 배열 또는 null일 수 있음
+  picFiles: File[] | null, // 배열 또는 null일 수 있음
+  mapFiles: File[] | null, // 배열 또는 null일 수 있음
   url: string,
   buttonType: string
 ) {
@@ -386,10 +387,17 @@ export async function sendApplicationData2(
       const uuid = result.uuid;
 
       // 파일이 있을 경우에만 파일 전송
-      if (selectedFiles && selectedFiles.length > 0) {
-        await sendFilesWithUuid(uuid, selectedFiles);
+      if (picFiles && picFiles.length > 0) {
+        console.log(picFiles)
+        await sendFilesWithUuid(uuid, "evb", picFiles);
       } else {
         console.log("No files to upload.");
+      }
+
+      if (mapFiles && mapFiles.length > 0) {
+        await sendFilesWithUuid(uuid, "map", mapFiles);
+      } else {
+       
       }
 
       if (buttonType === "load") {
@@ -475,11 +483,12 @@ export async function sendApplicationData(
   }
 }
 
-export async function sendFilesWithUuid(uuid: string, selectedFiles: File[]) {
+export async function sendFilesWithUuid(uuid: string, fileType:string, selectedFiles: File[]) {
   try {
-    const apiUrl = "/solder/upload_solder_application_file"; // 파일 업로드를 위한 FastAPI 엔드포인트
+    const apiUrl = "/solder/upload_solder_application_file2"; // 파일 업로드를 위한 FastAPI 엔드포인트
     const formData = new FormData();
     formData.append("uuid", uuid); // UUID 추가
+    formData.append("file_type", fileType)
     // formData.append("files", selectedFiles.values); // 파일 추가
     selectedFiles.forEach((file) => formData.append("files", file.raw));
     const response = await axios.post(apiUrl, formData, {

@@ -103,47 +103,20 @@
         <template #default="scope">
           {{ formatDate(scope.row.receivedDate) }}
         </template>
-        <!-- <template #default="scope">
-          <el-date-picker
-            v-model="scope.row.receivedDate"
-            type="date"
-            placeholder="Select Date"
-            format="YYYY-MM-DD"
-            value-format="YYYY-MM-DDTHH:mm:ss"
-            style="width: 140px"
-          />
-        </template> -->
       </el-table-column>
 
-      <el-table-column        
-        label="Location"
-        :align="'center'"
-        width="150"
-      >
-      <template #default="scope">
-        {{ scope.row.childStageName }} <br>
-        {{ scope.row.childOperation }}
-        </template>
-      </el-table-column>
-
-      <!-- <el-table-column
-        prop="lotId"
-        label="FAB Lot ID"
-        :align="'center'"
-        width="110"
-      ></el-table-column> -->
-
-      <!-- <el-table-column label="Assay LOT ID" width="170" :align="'center'">
+      <el-table-column label="Finished" width="87" :align="'center'">
         <template #default="scope">
-          <div>
-            <el-input
-              v-model="scope.row.assayLotId"
-              placeholder="Enter Assay LOT ID"
-              style="width: 150px"
-            ></el-input>
-          </div>
+          {{ formatDate(scope.row.completionDate) }}
         </template>
-      </el-table-column> -->
+      </el-table-column>
+
+      <el-table-column label="Location" :align="'center'" width="150">
+        <template #default="scope">
+          {{ scope.row.childStageName }} <br />
+          {{ scope.row.childOperation }}
+        </template>
+      </el-table-column>
 
       <el-table-column
         prop="designer"
@@ -168,8 +141,6 @@
         </template>
       </el-table-column>
 
-      <!-- <div v-if="!isIdIncluded "> -->
-
       <el-table-column
         label="Detail"
         fixed="right"
@@ -189,7 +160,7 @@
             v-else
             type="primary"
             size="small"
-            @click="downloadFileByUrl(scope.row.uuid, null)"
+            @click="downloadSolderApplicationXlsx(scope.row,`/solder/download_solder_application_file3`)"
           >
             Excel
           </el-button>
@@ -198,9 +169,8 @@
             type="warning"
             size="small"
             @click="
-              sendApplicationData2(scope.row, [], '/solder/update', 'load')
+              sendApplicationData2(scope.row, [], [], '/solder/update', 'load')
             "
-            :disabled="!isIdIncluded"
           >
             Update
           </el-button>
@@ -215,7 +185,6 @@
             type="danger"
             size="small"
             @click="handleDelete(scope.row)"
-            :disabled="!isIdIncluded"
           >
             삭제
           </el-button>
@@ -234,7 +203,7 @@ import { updateStatusByUuid } from "../Application/SolderApplication";
 import SelectOptions from "../../Common/SelectOptions.vue";
 import { statusList, confirmDelete } from "./SolderApplicationList";
 import { convertPythonTimeToVue } from "../../Common/utility";
-import { sendApplicationData2 } from "../Application/SolderApplication";
+import { sendApplicationData2, downloadSolderApplicationXlsx } from "../Application/SolderApplication";
 import axios from "axios";
 import { formatDate, formatDateTime } from "../../FAB/Common/Application";
 
@@ -277,8 +246,6 @@ const filteredApplicationData = computed(() => {
     const field = item[searchCategory.value] as string;
     return field && field.toLowerCase().includes(term);
   });
-
-  console.log(term);
 });
 
 // Method to handle the search button click
@@ -359,19 +326,15 @@ const tableRowClassName = ({
   row: ApplicationData;
   rowIndex: number;
 }) => {
-
-  if(row.assayLotId !== null && row.childAssay !== undefined){
+  if (row.assayLotId !== null && row.childAssay !== undefined) {
     // return "bothsourse-row";
-    return 
-  }
-  else if (row.childIsAssay !== undefined) {
-    // return "mes-row";    
-  }
-  else if(row.assayLotId !== null){
+    return;
+  } else if (row.childIsAssay !== undefined) {
+    // return "mes-row";
+  } else if (row.assayLotId !== null) {
     // return "manual-row";
   }
-  
-  
+
   return;
 };
 </script>

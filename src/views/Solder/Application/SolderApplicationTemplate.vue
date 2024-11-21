@@ -6,7 +6,7 @@
     label-width="100px"
     ref="applicationForm"
   >
-    <div class="container">
+    <div class="container" v-if="!loading">
       <el-row :gutter="20">
         <el-col :span="24">
           <el-card>
@@ -20,13 +20,18 @@
                   placeholder="ex) XMN5CTV@1A"
                 />
               </el-col>
-              <!-- <el-col :span="12">
-                <inputText
-                  v-model="applicationData.assayLotId"
-                  label="Assay ID (WHC) - 모를경우 기재 X"
-                  placeholder="ex) NCIFE0A30"
-                />
-              </el-col> -->
+              <el-col :span="12">
+                <el-form-item label="Packge Type" prop="pkgType">
+                  <el-select v-model="applicationData.pkgType">
+                    <el-option
+                      v-for="packge in packgeList"
+                      :key="packge.value"
+                      :value="packge.value"
+                      :label="packge.label"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
             </el-row>
 
             <el-row :gutter="20">
@@ -210,7 +215,7 @@
       <el-row>
         <el-col>
           <el-card>
-            <el-table :data="applicationData.measurements" style="width: 100%">
+            <el-table :data="sortedMeasurements" style="width: 100%">
               <el-table-column
                 prop="measurementType"
                 label="측정 항목"
@@ -218,13 +223,9 @@
                 :align="'center'"
               >
                 <template #default="scope">
-                  {{ getMeasurementLabel(scope.row.measurementType) }}
-                  <!-- <el-input
-                      :model-value="
-                        getMeasurementLabel(scope.row.measurementType)
-                      "
-                      disabled
-                    ></el-input> -->
+                  <div :key="scope.row.number">
+                    {{ scope.row.measurementType }}
+                  </div>
                 </template>
               </el-table-column>
               <el-table-column
@@ -262,6 +263,12 @@
                     :disabled="!scope.row.isMeasured"
                   ></el-input>
                 </template>
+              </el-table-column>
+              <el-table-column
+                v-if="props.applicationType === 'load'"
+                label="종료일"
+              >
+                <template #default="scope"> {{ scope.row.d }} </template>
               </el-table-column>
               <el-table-column label="유의사항" width="500">
                 <template #default="scope">
@@ -306,72 +313,98 @@
           </el-card>
         </el-col>
       </el-row>
-
       <el-row
         v-if="props.applicationType === 'create'"
         :gutter="20"
         style="margin-top: 20px"
       >
+        <!-- EVB 사진 업로드 -->
         <el-col :span="24">
           <el-card>
-            <el-divider content-position="center">File Upload</el-divider>
+            <el-divider content-position="center"
+              >EVB Picture Upload</el-divider
+            >
             <el-upload
+              ref="evbUpload"
+              class="upload-demo"
               :limit="1"
-              :multiple="true"
-              :on-change="handleFileChange"
-              :on-exceed="handleExceed"
+              :on-exceed="handleEvbExceed"
+              :on-change="handleEvbFileChange"
               :auto-upload="false"
               drag
-              ref="uploadRef"
-              class="upload-box"
+              :file-list="selectedFiles"
+              accept="image/*"
             >
-              <i class="el-icon-upload"></i>
+              <el-icon class="el-icon--upload"><upload-filled /></el-icon>
               <div class="el-upload__text">
-                파일을 이곳에 드래그하거나 클릭하여 업로드하세요
+                <em>EVB 사진을 이곳에 드래그하거나 클릭하여 업로드하세요</em>
               </div>
               <div class="el-upload__tip">
-                파일 최대 5개까지 업로드할 수 있습니다.
+                EVB 사진은 1개만 업로드할 수 있습니다 (그림 형식만 가능합니다).
               </div>
             </el-upload>
-            <el-button
-              type="primary"
-              @click="downloadFile"
-              style="margin-top: 20px"
+          </el-card>
+        </el-col>
+
+        <!-- MAP 사진 업로드 -->
+        <el-col :span="24" style="margin-top: 20px">
+          <el-card>
+            <el-divider content-position="center"
+              >MAP Picture Upload</el-divider
             >
-              Download Application Template
-            </el-button>
+            <el-upload
+              ref="mapUpload"
+              class="upload-demo"
+              :limit="1"
+              :on-exceed="handleMapExceed"
+              :on-change="handleMapFileChange"
+              :auto-upload="false"
+              drag
+              accept="image/*"
+            >
+              <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+              <div class="el-upload__text">
+                <em>MAP 사진을 이곳에 드래그하거나 클릭하여 업로드하세요</em>
+              </div>
+              <div class="el-upload__tip">
+                MAP 사진은 1개만 업로드할 수 있습니다 (그림 형식만 가능합니다).
+              </div>
+            </el-upload>
           </el-card>
         </el-col>
       </el-row>
 
-      <el-divider
-        v-if="props.applicationType === 'load'"
-        content-position="center"
-        >Excel</el-divider
-      >
-      <el-table :data="applicationData.files" style="width: 100%">
-        <el-table-column prop="name" label="파일 이름" align="center">
-          <template #default="scope">
-            <span>{{ scope.row.name }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="ext" label="파일 형식" align="center">
-          <template #default="scope">
-            <span>{{ scope.row.ext }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="Action" :align="'center'">
-          <template #default="scope">
-            <el-button
-              type="primary"
-              size="small"
-              @click="downloadCreatedFile(applicationData.uuid, scope.row.uuid)"
+      <!-- <el-row v-if="props.applicationType==='create'" :gutter="20" style="margin-top: 20px">
+        <el-col :span="24">
+          <el-card>
+            <el-divider content-position="center">Picture Upload</el-divider>
+            <el-upload
+              ref="upload"
+              class="upload-demo"
+              :limit="2"
+              :on-exceed="handleExceed"
+              :on-change="handleFileChange"
+              :auto-upload="false"
+              drag
+              multiple
+              accept="image/*"
             >
-              다운로드
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+              <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+              <div class="el-upload__text">
+                <em>파일을 이곳에 드래그하거나 클릭하여 업로드하세요</em>
+              </div>
+              <div class="el-upload__tip">
+                파일 최대 2개까지 업로드할 수 있습니다 (그림 형식만 가능합니다).
+              </div>
+              <template #tip>
+                <div class="el-upload__tip">
+                  EVB , Wafer MAP 사진을 선택해주세요
+                </div>
+              </template>
+            </el-upload>
+          </el-card>
+        </el-col>
+      </el-row> -->
 
       <el-divider content-position="center">Segment Information</el-divider>
       <el-row :gutter="20">
@@ -397,7 +430,7 @@
 
         <el-col :span="15">
           <!-- Segment details table -->
-          <el-table :data="applicationData.segments" style="width: 100%">
+          <el-table :data="sortedSegment" style="width: 100%">
             <el-table-column label="Segment 정보" header-align="center">
               <el-table-column prop="start" label="Start">
                 <template #default="scope">
@@ -446,8 +479,8 @@
         </el-col>
 
         <el-col :span="15">
-          <!-- Segment details table -->
-          <el-table :data="applicationData.matching" style="width: 100%">
+          <!-- Matching details table -->
+          <el-table :data="sortedMatching" style="width: 100%">
             <el-table-column label="구분" header-align="center">
               <el-table-column label="Port" :align="'center'">
                 <template #default="scope">
@@ -497,9 +530,15 @@
             @click="onSubmit(props.applicationData, props.applicationType)"
             >Update Application</el-button
           >
-          <!-- <el-button type="danger" @click="onSubmit"
+          <el-button
+            type="primary"
+            @click="donwloadExcel(applicationData.uuid)"
+          >
+            Excel Download
+          </el-button>
+          <el-button type="danger" @click="onSubmit"
             >Delete Application</el-button
-          > -->
+          >
         </el-col>
       </el-row>
       <el-row v-else :gutter="20" style="margin-top: 20px"
@@ -516,7 +555,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed  } from "vue";
 import {
   initializeApplicationData,
   // updateMeasurements,
@@ -531,6 +570,8 @@ import {
   updateStatusByUuid,
   updateMeasurement,
 } from "./SolderApplication";
+
+import { packgeList } from "../../../utils/package-types";
 import { statusList } from "../ApplicationList/SolderApplicationList";
 import { chipInductorList } from "../../../utils/ChipInductorList";
 import inputText from "../../Common/InputText.vue";
@@ -538,10 +579,14 @@ import longInputText from "../../Common/LongInputText.vue";
 import { reactive } from "vue";
 import { solderApplicationRules } from "./SolderApplicationRules";
 import { bandInformationDict } from "../../../utils/frequancyInfo";
-import type { ApplicationData } from "../../../interface/solderAppInterface";
+import type {
+  ApplicationData,
+  SolderFile,
+} from "../../../interface/solderAppInterface";
 import { downloadFileByUrl } from "./LoadSolderApplication";
 
-// Toggle function for switching between manual input and select dropdown
+import type { UploadInstance, UploadProps, UploadRawFile } from "element-plus";
+import { genFileId, ElMessage } from "element-plus";
 
 // Define props to receive processData
 const props = defineProps<{
@@ -549,17 +594,63 @@ const props = defineProps<{
   applicationType: string;
 }>();
 
-const toggleManualInput = () => {
-  isManualInput.value = !isManualInput.value;
+const sortedMeasurements = computed(() =>
+  [...applicationData.measurements].sort((a, b) => {
+    const numA = parseInt(a.number ?? "0", 10); // 문자열을 숫자로 변환
+    const numB = parseInt(b.number ?? "0", 10);
+    return numA - numB;
+  })
+);
+
+const sortedSegment = computed(() =>
+  [...applicationData.segments].sort((a, b) => {
+    const numA = parseInt(a.number ?? "0", 10); // 문자열을 숫자로 변환
+    const numB = parseInt(b.number ?? "0", 10);
+    return numA - numB;
+  })
+);
+
+const sortedMatching = computed(() =>
+  [...applicationData.matching].sort((a, b) => {
+    const numA = parseInt(a.number ?? "0", 10); // 문자열을 숫자로 변환
+    const numB = parseInt(b.number ?? "0", 10);
+    return numA - numB;
+  })
+);
+
+const loading = ref(true)
+
+const application = ref<ApplicationData>({});
+
+// EVB와 MAP 사진 리스트 관리
+const evbPic = ref<File[]>([]); // EVB 사진 리스트
+const mapPic = ref<File[]>([]); // EVB 사진 리스트
+
+// EVB 초과 처리
+const handleEvbExceed = (files) => {
+  const newFile = files[0]; // 초과된 첫 번째 파일
+  newFile.uid = genFileId(); // 고유 ID 설정
+  evbPic.value = [newFile]; // EVB 사진 리스트 갱신
 };
 
-const toggleManualInputForIn = () => {
-  isManualInputForInductor.value = !isManualInputForInductor.value;
+// EVB 파일 변경 처리
+const handleEvbFileChange = (file: any, fileList: File[]) => {
+  evbPic.value = fileList; // 선택된 파일들의 배열을 저장
+};
+
+// MAP 초과 처리
+const handleMapExceed = (files) => {
+  const newFile = files[0]; // 초과된 첫 번째 파일
+  newFile.uid = genFileId(); // 고유 ID 설정
+  mapPic.value = [newFile]; // MAP 사진 리스트 갱신
+};
+
+// MAP 파일 변경 처리
+const handleMapFileChange = (file: any, fileList: File[]) => {
+  mapPic.value = fileList; // 선택된 파일들의 배열을 저장
 };
 
 // Determine if manual input should be used
-const isManualInput = ref(false);
-const isManualInputForInductor = ref(false);
 const isForSubmission = ref(true);
 
 // Initialize application data as reactive
@@ -570,25 +661,19 @@ const rules = solderApplicationRules;
 // 선택한 파일들의 이름을 저장하는 변수
 const selectedFileNames = ref<string[]>([]);
 const selectedFiles = ref<File[]>([]); // 선택된 파일들을 저장하는 변수
-
+const upload = ref<UploadInstance>();
 const applicationForm = ref();
 // const bandList = Object.keys(bandInformationDict.LTE);
 
-// Function to handle file selection
-const handleFileChange = (file: any, fileList: File[]) => {
-  selectedFiles.value = fileList; // 선택된 파일들의 배열을 저장
-};
-
-// Handle selection change
-const handleEvbTypeChange = (value: string) => {
-  if (value === "수동 입력") {
-    isManualInput.value = true;
-  }
-};
-
 const segmentData = ref<any>(null);
 const keys = ref<string[]>([]); // keys를 빈 배열로 초기화
-const selectedKey = ref<string | null>(null);
+
+onMounted(() => {
+  application.value = props.applicationData;
+  sortApplicationDataByNumber(application.value);
+  console.log(application.value.measurements)
+  loading.value = false
+});
 
 onMounted(async () => {
   try {
@@ -597,17 +682,24 @@ onMounted(async () => {
     );
 
     keys.value = loadedKeys; // 데이터 로드 후 keys에 값 할당
-
     segmentData.value = vals;
   } catch (error) {
     console.error("Failed to load application data:", error);
   }
 });
 
-// Function to handle file upload limit exceed
-const handleExceed = () => {
-  console.warn("File limit exceeded");
-};
+// 데이터를 number로 정렬하는 함수
+function sortApplicationDataByNumber(data: ApplicationData) {
+  if (data.measurements) {
+    applicationData.measurements = [...applicationData.measurements.sort((a, b) => Number(a.number) - Number(b.number))];
+  }
+  if (data.segments) {
+    data.segments.sort((a, b) => Number(a.number) - Number(b.number));
+  }
+  if (data.matching) {
+    data.matching.sort((a, b) => Number(a.number) - Number(b.number));
+  }
+}
 
 function getEvbListExcel() {
   downloadSolderApplicationXlsx(applicationData, `/solder/send_evb`); // Pass the ApplicationData object
@@ -617,8 +709,11 @@ function downloadFile() {
   downloadSolderApplicationXlsx(applicationData, `/solder/send_template`); // Pass the ApplicationData object
 }
 
-const downloadCreatedFile = (uuid: string, fileName: string) => {
-  downloadFileByUrl(uuid, fileName);
+const donwloadExcel = (uuid: string) => {
+  downloadSolderApplicationXlsx(
+    applicationData,
+    `/solder/download_solder_application_file3`
+  );
 };
 
 // Submit handler with form validation
@@ -632,15 +727,14 @@ const onSubmit = (applicationData: ApplicationData, buttonType: string) => {
     url.value = "/solder/submit";
   }
 
-  
-
   applicationForm.value.validate(async (valid: boolean) => {
     if (valid) {
       try {
         // Call the sendApplicationData function to send the POST request
         const result = await sendApplicationData2(
           applicationData,
-          selectedFiles.value,
+          evbPic.value,
+          mapPic.value,
           url.value,
           buttonType
         );

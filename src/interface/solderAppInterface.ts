@@ -32,10 +32,14 @@ export interface Matching {
 }
 
 export interface SolderFile {
+
+  index? : number
   uuid? : string
   applicationUuid? : string
   name? : string
   ext? : string
+  explanation? : string
+  typ? : string
 }
 
 // solder application entity
@@ -58,6 +62,8 @@ export interface ApplicationData {
   customEvbType? : string;
   inductorType?: string;
   
+
+
   filterType?: string;
   deembedMode? : string;
   isSampleAvailable? : boolean

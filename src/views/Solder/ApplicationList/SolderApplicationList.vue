@@ -23,7 +23,7 @@ import SolverApplicationListByStatus from "./SolverApplicationListByStatus.vue";
 import {
   get_application_list_by_status,
   get_application_list,
-  findLots,
+  getMyApplicationList,
   findLotHistoryFromFabRequest
 } from "./SolderApplicationList";
 import type { ApplicationData } from "../../../interface/solderAppInterface";
@@ -46,7 +46,7 @@ function sortByCreatedDateDesc(
   return applicationDataArray.sort((a, b) => {
     const dateA = a.createdDate ? new Date(a.createdDate).getTime() : 0;
     const dateB = b.createdDate ? new Date(b.createdDate).getTime() : 0;
-    return dateB - dateA; // Sort in descending order
+    return dateA - dateB; // Sort in descending order
   });
 }
 
@@ -55,8 +55,9 @@ const applicationList = ref<ApplicationData[]>([]);
 // Function to fetch the data again
 async function refreshData() {
   try {
-    applicationList.value = await get_application_list();
 
+    applicationList.value = await get_application_list();
+    applicationList.value = getMyApplicationList(applicationList.value)
     // applicationList.value.forEach((app, index) => {
     //   if (app.modelName === "X897ASA") {
     //     console.log(app)

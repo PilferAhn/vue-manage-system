@@ -1,20 +1,26 @@
 import axios from "axios";
-import type { ApplicationData } from "../../../interface/solderAppInterface";
+import type { ApplicationData, SolderFile } from "../../../interface/solderAppInterface";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { removeApplicationByUuid } from "../Application/SolderApplication";
+import { getUserName } from "../../../utils/account-utils";
 // import type { LotStatus, FabApplicationForm } from "../../FAB/Interface/mes-interface";
 import {
   LotStatus,
   FabApplicationForm,
 } from "../../../interface/mes-interface";
 
+import { convertKeysToPEP8 } from "../../../utils/key-converter";
+
 import { ref } from "vue";
+import { FabExcel } from "../../../interface/fab";
 
 export const statusList = [
   { key: "created", value: "created", label: "Waiting" },
   { key: "in progress", value: "in progress", label: "In Progress" },
   { key: "finished", value: "finished", label: "FINISH" },
 ];
+
+
 
 function traverseLotStatus(
   app: ApplicationData,
@@ -32,11 +38,11 @@ function traverseLotStatus(
     app.childOperation = lotStatus.operation.name;
 
     if (depth == 0) {
-      app.childStageName = "STEP1";
+      app.childStageName = "플립본딩";
     } else if (depth == 1) {
       app.childStageName = "Package";
     } else if (depth == 2) {
-      app.childStageName = "Assay";
+      app.childStageName = "Assy";
       app.childIsAssay = true;
       app.assayLotId = lotStatus.lotId;
     } else if (depth == 3) {
@@ -51,6 +57,22 @@ function traverseLotStatus(
 
   // 다음 child 탐색
   traverseLotStatus(app, lotStatus.child, depth + 1);
+}
+
+export function getMyApplicationList(applicationData: ApplicationData[]) {
+  
+  if(getUserName() === "admin"){
+    return applicationData
+  }
+
+  const myApplicationList : ApplicationData[] = applicationData.filter((app , index) => {
+    if(app.requester === getUserName() || app.designer === getUserName()){
+      return app
+    }
+  })
+
+  return myApplicationList
+
 }
 
 export async function findLotHistoryFromFabRequest(
