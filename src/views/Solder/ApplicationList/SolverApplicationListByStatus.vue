@@ -99,7 +99,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Finished" width="87" :align="'center'">
+      <el-table-column label="Finish" width="87" :align="'center'">
         <template #default="scope">
           {{ formatDate(scope.row.completionDate) }}
         </template>

@@ -16,6 +16,7 @@
       >
         <el-option label="Designer" value="designer"></el-option>
         <el-option label="Product Name" value="modelName"></el-option>
+        
       </el-select>
 
       <el-input
@@ -107,7 +108,7 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="현위치(투입시간)" :align="'center'" width="200">
+      <el-table-column label="FAB 현위치(투입시간)" :align="'center'" width="230">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             {{ item["operation"]["name"] }}
@@ -200,7 +201,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="현위치(투입시간)" :align="'center'" width="1500">
+      <el-table-column label="WHC 현위치(투입시간)" :align="'center'" width="1500">
         <el-table-column label="플립본딩" width="400" :align="'center'">
           <template #default="scope">
             <span v-for="(item, index) in scope.row.lotStatus" :key="index">
@@ -333,7 +334,7 @@
         width="150"
         :align="'center'"
       ></el-table-column>
-      <el-table-column
+      <!-- <el-table-column
         fixed="right"
         label="Action"
         width="100"
@@ -345,7 +346,7 @@
             의뢰서
           </el-button></template
         >
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
     <DialogTemplate
       v-model:visible="dialogTableVisible"
@@ -357,7 +358,7 @@
     {{ isFiltered ? "원래 데이터 보기" : "중화 69 과제 보기" }}
   </el-button>
   <el-button type="primary" @click="handleExcelSubmit" class="buttun-section">
-    투입 계획서 EXCEL 다운로드
+    개발 샘플 진행 상황 EXCEL
   </el-button>
 </template>
 
@@ -447,7 +448,7 @@ const emit = defineEmits<{
 // 셀에 적용할 클래스 반환
 const cellClass = ({ row, rowIndex, column, columnIndex }) => {
   // 예: 짝수 행에만 스타일을 적용
-  if (columnIndex == 9) {
+  if ([5 ,7,9,12].includes(columnIndex) ) {
     return "even-row";
   }
   return "";
@@ -469,10 +470,10 @@ function handleExcelSubmit() {
 <style>
 .even-row {
   /* 더 진한 음영 효과 */
-  box-shadow: inset 0px 1px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0px 1px 5px rgba(37, 13, 13, 0.3);
 
   /* 연한 배경색 */
-  background-color: rgb(250, 200, 200);
+  background-color: rgb(243, 235, 235);
 
   /* 선택 사항: 모서리 둥글게 */
   border-radius: 4px;
@@ -480,12 +481,9 @@ function handleExcelSubmit() {
 }
 
 .custom-table ::v-deep(.el-table__header-wrapper th.highlighted-header) {
-  background-color: rgb(
-    228,
-    78,
-    78
-  ) !important; /* 적용을 위한 !important 추가 */
+  background-color: rgb(0, 0, 0) !important; /* 적용을 위한 !important 추가 */
 }
+
 
 .table-wrapper {
   max-width: 100%;
