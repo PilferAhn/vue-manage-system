@@ -16,6 +16,20 @@
       <el-table-column type="index" label="No" width="50"></el-table-column>
 
       <el-table-column
+        
+        prop="modelName"
+        label="Model Name"
+        width="170"
+      ></el-table-column>
+
+      <el-table-column
+        
+        prop="designer"
+        label="Designer"
+        width="110"
+      ></el-table-column>
+
+      <el-table-column
         v-if="props.operationType === 'reel'"
         prop="reelId"
         label="Reel ID"
@@ -31,13 +45,10 @@
       <el-table-column
         prop="location"
         label="Location"
-        width="200"
+        width="150"
       ></el-table-column>
 
-      <el-table-column
-        label="Received Date"
-        width="200"
-      >
+      <el-table-column label="Received Date" width="200">
         <template #default="scope">{{
           formatDate(scope.row.dateOfCreated)
         }}</template>
@@ -51,7 +62,7 @@
         v-if="props.operationType === 'reel'"
         prop="quantity"
         label="Total Quantity"
-        width="200"
+        width="150"
       ></el-table-column>
       <el-table-column
         v-if="props.operationType === 'reel'"
@@ -89,28 +100,94 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref, computed } from "vue";
+import { defineProps, ref, computed, onMounted } from "vue";
 import type { StockInfo } from "../Common/ApplicationInterface";
 import { formatDate } from "../../../../utils/date-utils";
 import { useRouter } from "vue-router";
+import { fetchProcessData } from "../../../FAB/ApplicationList/ApplicationList";
+import { ProcessData } from "../../../FAB/Interface/ApplicationInterface";
+import { FabApplicationForm } from "../../../FAB/Interface/mes-interface";
+import type { LotStatus } from "../../../FAB/Interface/mes-interface";
 
 const props = defineProps<{
   stockInfoList: StockInfo[];
   operationType: string;
 }>();
 
+const fabRequestForms = ref<ProcessData[]>([]); // For this week's data
 const router = useRouter();
 const currentPage = ref(1); // 현재 페이지
 const pageSize = 14; // 한 페이지당 행 수
 
 // 현재 페이지 데이터 계산
 const paginatedData = computed(() =>
-  props.stockInfoList.slice((currentPage.value - 1) * pageSize, currentPage.value * pageSize)
+  props.stockInfoList.slice(
+    (currentPage.value - 1) * pageSize,
+    currentPage.value * pageSize
+  )
 );
 
 function handlePageChange(page: number) {
   currentPage.value = page; // 페이지 변경
 }
+
+function traverseLotStatus(
+  lotStatus: LotStatus,
+  stockInfo: StockInfo,
+  depth = 0
+): boolean {
+  if (lotStatus === null || depth >= 7) return false;
+
+  if (lotStatus.lot_id === stockInfo.reelId) {
+    return true; // 조건이 만족되면 true 반환
+  }
+
+  // 재귀 호출의 결과를 반환
+  return traverseLotStatus(lotStatus["child"], stockInfo, depth + 1);
+}
+
+async function assignDesigner(
+  fabRequestForms: ProcessData[],
+  stockList: StockInfo[]
+) {
+  for (let i = 0; i < fabRequestForms.length; i++) {
+    if (fabRequestForms[i]["lotStatus"].length > 0) {
+      for (let k = 0; k < fabRequestForms[i]["lotStatus"].length; k++) {
+        if (fabRequestForms[i]["lotStatus"][k]["hanoi_csp"] !== null) {
+          for (let j = 0; j < stockList.length; j++) {
+            const val = traverseLotStatus(
+              fabRequestForms[i]["lotStatus"][k]["hanoi_csp"],
+              stockList[j],
+              0
+            );
+            if(val){
+              stockList[j].designer = fabRequestForms[i].designer
+              stockList[j].modelName = fabRequestForms[i].modelName
+              
+            }
+          }
+        }
+      }
+      
+    }
+    
+  }
+}
+
+onMounted(async () => {
+  // 시작 시간 측정
+  const startTime = performance.now();
+
+  // 데이터 가져오기
+  fabRequestForms.value = await fetchProcessData();
+  await assignDesigner(fabRequestForms.value, props.stockInfoList);
+  // 종료 시간 측정
+  const endTime = performance.now();
+
+  // 밀리초 -> 초 단위로 변환 및 로그 출력
+  const elapsedTime = (endTime - startTime) / 1000;
+  console.log(`FetchProcessData took ${elapsedTime.toFixed(2)} seconds.`);
+});
 
 function handleDetail(row: StockInfo) {
   router.push({

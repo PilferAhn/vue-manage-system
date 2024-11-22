@@ -8,5 +8,8 @@ export interface StockInfo {
     assumedQuantity?: number;
     receiver? : string;
     operationType? : string;
+
+    designer? : string
+    modelName?: string
   }
   

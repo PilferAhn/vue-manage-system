@@ -12,7 +12,7 @@ export async function fetchStockInfo(operationType : string): Promise<StockInfo[
     
     const response = await axios.post('/reel/get_reel_request_list', form);
     const data = response.data;
-    console.log(response.data)
+    
     // Convert each item in the array to camelCase
     return data.map((item: Record<string, any>) => convertKeysToCamelCase(item) as StockInfo);
     
