@@ -536,9 +536,20 @@
           >
             Excel Download
           </el-button>
-          <el-button type="danger" @click="onSubmit"
+          <!-- <el-button type="danger" @click="onSubmit"
             >Delete Application</el-button
+          > -->
+          <el-button
+            type="primary"
+            @click="
+              moveRounterbyApplicationUuid(
+                'CloneSolderApplication',
+                applicationData.uuid
+              )
+            "
           >
+            비슷한 의뢰 만들기
+          </el-button>
         </el-col>
       </el-row>
       <el-row v-else :gutter="20" style="margin-top: 20px"
@@ -555,7 +566,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, watch, computed  } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import {
   initializeApplicationData,
   // updateMeasurements,
@@ -570,7 +581,7 @@ import {
   updateStatusByUuid,
   updateMeasurement,
 } from "./SolderApplication";
-
+import { useRouter } from "vue-router";
 import { packgeList } from "../../../utils/package-types";
 import { statusList } from "../ApplicationList/SolderApplicationList";
 import { chipInductorList } from "../../../utils/ChipInductorList";
@@ -587,6 +598,7 @@ import { downloadFileByUrl } from "./LoadSolderApplication";
 
 import type { UploadInstance, UploadProps, UploadRawFile } from "element-plus";
 import { genFileId, ElMessage } from "element-plus";
+const router = useRouter();
 
 // Define props to receive processData
 const props = defineProps<{
@@ -618,7 +630,7 @@ const sortedMatching = computed(() =>
   })
 );
 
-const loading = ref(true)
+const loading = ref(true);
 
 const application = ref<ApplicationData>({});
 
@@ -671,8 +683,8 @@ const keys = ref<string[]>([]); // keys를 빈 배열로 초기화
 onMounted(() => {
   application.value = props.applicationData;
   sortApplicationDataByNumber(application.value);
-  console.log(application.value.measurements)
-  loading.value = false
+  console.log(application.value.measurements);
+  loading.value = false;
 });
 
 onMounted(async () => {
@@ -691,7 +703,11 @@ onMounted(async () => {
 // 데이터를 number로 정렬하는 함수
 function sortApplicationDataByNumber(data: ApplicationData) {
   if (data.measurements) {
-    applicationData.measurements = [...applicationData.measurements.sort((a, b) => Number(a.number) - Number(b.number))];
+    applicationData.measurements = [
+      ...applicationData.measurements.sort(
+        (a, b) => Number(a.number) - Number(b.number)
+      ),
+    ];
   }
   if (data.segments) {
     data.segments.sort((a, b) => Number(a.number) - Number(b.number));
@@ -842,6 +858,17 @@ const updateMathching = () => {
     })
   );
 };
+
+function moveRounterbyApplicationUuid(
+  vueRouterName: string,
+  uuid: string
+) {
+  router.push({
+    name: vueRouterName,
+    params: { applicationUuid: uuid },
+  });
+  ;
+}
 </script>
 
 <style scoped>

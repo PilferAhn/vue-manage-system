@@ -2,6 +2,8 @@ import { ref, watch } from "vue";
 import { chipPackageList } from "../../../utils/ChipPackageList";
 import type { ApplicationData, SolderFile } from "../../../interface/solderAppInterface";
 
+import axios from "axios";
+
 export const getSuggestions = (
   queryString: string,
   cb: (suggestions: any[]) => void
@@ -106,6 +108,8 @@ interface EvbType {
   label: string;
   value: string;
 }
+
+
 
 export const evbTypeList: EvbType[] = [
   {

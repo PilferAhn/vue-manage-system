@@ -252,33 +252,7 @@
             </span>
           </template>
         </el-table-column>
-        <!-- <el-table-column label="STEP3" width="300" :align="'center'">
-          <template #default="scope">
-            <span v-for="(item, index) in scope.row.lotStatus" :key="index">
-              <span
-                v-if="
-                  item['hanoi_csp'] !== null &&
-                  item['hanoi_csp']['child'] !== null &&
-                  item['hanoi_csp']['child']['child'] !== null &&
-                  item['hanoi_csp']['child']['child']['child'] !== null
-                "
-              >
-                {{
-                  item["hanoi_csp"]["child"]["child"]["child"]["operation"][
-                    "name"
-                  ]
-                }}
-                {{
-                  formatDateTime(
-                    item["hanoi_csp"]["child"]["child"]["child"]["movein_date"]
-                  )
-                }}
-              </span>
-              <span v-else>--</span>
-              <br />
-            </span>
-          </template>
-        </el-table-column> -->
+
         <el-table-column label="Assy" width="400" :align="'center'">
           <template #default="scope">
             <span v-for="(item, index) in scope.row.lotStatus" :key="index">
@@ -359,19 +333,24 @@
         width="150"
         :align="'center'"
       ></el-table-column>
-      <!-- <el-table-column
+      <el-table-column
         fixed="right"
         label="Action"
         width="100"
         :align="'center'"
         size="samll"
       >
-        <el-button plain @click="dialogTableVisible = true">
-          의뢰서
-        </el-button></el-table-column
-      > -->
+        <template #default="scope"
+          ><el-button plain @click="handleVisible(true, scope.row.modelName)">
+            의뢰서
+          </el-button></template
+        >
+      </el-table-column>
     </el-table>
-    <!-- <ApplicationLinksDialog v-model:visible="dialogTableVisible"></ApplicationLinksDialog> -->
+    <DialogTemplate
+      v-model:visible="dialogTableVisible"
+      :fabApplicationId="selectApplicationId"
+    ></DialogTemplate>
   </div>
 
   <el-button type="primary" @click="toggleFilter" class="buttun-section">
@@ -397,7 +376,7 @@ import {
 import { formatDate, formatDateTime } from "../Common/Application";
 import { getTodayDatetime, adjustDate } from "../../../utils/date-utils";
 import MyApplicationList from "../../Mdr/General/ApplicationList/MyApplicationList.vue";
-// import ApplicationLinksDialog from "./ApplicationLinksDialog.vue"
+import DialogTemplate from "./ApplicationLinksDialog.vue";
 import { cn69ModelNames } from "../SampleStatus/Cn69List";
 import type { FabExcel } from "../../../interface/fab";
 const props = defineProps<{
@@ -414,6 +393,11 @@ function handleClear() {
 }
 
 const dialogTableVisible = ref(false);
+const selectApplicationId = ref("");
+function handleVisible(status: boolean, id: string) {
+  dialogTableVisible.value = status;
+  selectApplicationId.value = id;
+}
 
 const filteredApplicationData = computed(() => {
   const term = searchTerm.value.toLowerCase();

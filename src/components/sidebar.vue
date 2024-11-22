@@ -211,7 +211,7 @@ const items = [
       },
       {
         index: "/whc/solder-stock-management",
-        title: "Solder 입고 관리",
+        title: "JIG용 Solder관리",
         permiss: "11",
         subs: [
           {
@@ -228,7 +228,7 @@ const items = [
       },
       {
         index: "/whc/stock-management",
-        title: "재고 관리",
+        title: "완제품(Reel) 관리",
         permiss: "11",
         subs: [
           {
@@ -298,6 +298,18 @@ const items = [
           //   title: "TEG 대기 현황",
           //   permiss: "5",
           // },
+        ],
+      },
+      {
+        index: "/admin/whc/solder-application",
+        title: "WHC 측정",
+        permiss: "5",
+        subs: [
+          {
+            index: "/admin/whc/solder-application-statistic",
+            title: "WHC 측정 통계",
+            permiss: "5",
+          },
         ],
       },
 

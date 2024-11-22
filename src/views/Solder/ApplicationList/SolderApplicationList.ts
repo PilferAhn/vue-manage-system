@@ -1,5 +1,8 @@
 import axios from "axios";
-import type { ApplicationData, SolderFile } from "../../../interface/solderAppInterface";
+import type {
+  ApplicationData,
+  SolderFile,
+} from "../../../interface/solderAppInterface";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { removeApplicationByUuid } from "../Application/SolderApplication";
 import { getUserName } from "../../../utils/account-utils";
@@ -19,8 +22,6 @@ export const statusList = [
   { key: "in progress", value: "in progress", label: "In Progress" },
   { key: "finished", value: "finished", label: "FINISH" },
 ];
-
-
 
 function traverseLotStatus(
   app: ApplicationData,
@@ -60,19 +61,19 @@ function traverseLotStatus(
 }
 
 export function getMyApplicationList(applicationData: ApplicationData[]) {
-  
-  if(getUserName() === "admin"){
-    return applicationData
+  if (["admin", "안지민", "엄정은", "whcRD"].includes(getUserName())) {
+    return applicationData;
   }
 
-  const myApplicationList : ApplicationData[] = applicationData.filter((app , index) => {
-    if(app.requester === getUserName() || app.designer === getUserName()){
-      return app
+  const myApplicationList: ApplicationData[] = applicationData.filter(
+    (app, index) => {
+      if (app.requester === getUserName() || app.designer === getUserName()) {
+        return app;
+      }
     }
-  })
+  );
 
-  return myApplicationList
-
+  return myApplicationList;
 }
 
 export async function findLotHistoryFromFabRequest(

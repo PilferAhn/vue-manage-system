@@ -1,9 +1,7 @@
 import { ApplicationData } from "../../../interface/solderAppInterface";
 import axios from "axios";
 import { ref, watch, onMounted, reactive } from "vue";
-import {
-  sortMeasurementByNumber,
-} from "../ApplicationList/SolderApplicationList";
+import { sortMeasurementByNumber } from "../ApplicationList/SolderApplicationList";
 import Form from "../../form.vue";
 import { convertKeysToCamelCase } from "../ApplicationList/SolderApplicationList";
 
@@ -66,9 +64,9 @@ export async function fetchApplicationData(
   try {
     const url = `/solder/get_solder_application_by_uuid/${uuid}`;
     const response = await axios.get(url);
-    
+
     const s = convertKeysToCamelCase(response.data);
-    
+
     // 응답 데이터를 반응형 객체에 할당 (객체 전체를 대입하지 않고 속성만 덮어쓰기)
     Object.assign(applicationData, s); // 기존 객체의 속성을 덮어씀
     // applicationData = s
@@ -120,6 +118,68 @@ export function useApplicationData(
   return {
     applicationData, // 반응형 객체 반환
   };
+}
+
+export function initMeasurements(solderApplication: ApplicationData) {
+  solderApplication.measurementQuantity =  6
+  solderApplication.measurements = [
+    {
+      number: "1",
+      measurementType: "특성 평가", // 빈 문자열
+      isMeasured: false, // 초기값 false
+      quantity: 0, // 초기값 '0' 문자열로 설정
+      status: "",
+      placeHolder: "",
+      detail: "",
+    },
+    {
+      number: "2",
+      measurementType: "PDT(SMT)", // 빈 문자열
+      isMeasured: false, // 초기값 false
+      quantity: 0, // 초기값 '0' 문자열로 설정
+      status: "",
+      placeHolder: "메탈 마스크 WHC 보유 여부 확인, 없다면 의뢰 必",
+      detail: "",
+    },
+    {
+      number: "3",
+      measurementType: "PDT(Manual_수탑)", // 빈 문자열
+      isMeasured: false, // 초기값 false
+      quantity: 0, // 초기값 '0' 문자열로 설정
+      placeHolder: "",
+
+      status: "",
+      detail: "",
+    },
+    {
+      number: "4",
+      measurementType: "PS 신뢰성", // 빈 문자열
+      isMeasured: false, // 초기값 false
+      quantity: 0, // 초기값 '0' 문자열로 설정
+      status: "",
+      placeHolder: "고객사 기재할 것 (중화, K1)",
+      detail: "",
+    },
+    {
+      number: "5",
+      measurementType: "TCF", // 빈 문자열
+      isMeasured: false, // 초기값 false
+      quantity: 0, // 초기값 '0' 문자열로 설정
+      status: "",
+      placeHolder:
+        "샘플 제작 : WHC / TCF : 본사  (WHC 이관 이후 Update 예정)",
+      detail: "",
+    },
+    {
+      number: "6",
+      measurementType: "비선형", // 빈 문자열
+      isMeasured: false, // 초기값 false
+      quantity: 0, // 초기값 '0' 문자열로 설정
+      status: "",
+      placeHolder: "",
+      detail: "",
+    },
+  ] // Initialize with an empty array
 }
 
 // Function to initialize an empty ApplicationData object
@@ -243,7 +303,7 @@ export function initializeApplicationData2() {
     pattern: "", // 측정 CHIP 패턴
     pkgType: "", // 측정 PKG
     detail: "",
-    files : [],
+    files: [],
     measurementQuantity: 0,
     measurements: [
       {

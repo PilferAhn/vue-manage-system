@@ -60,6 +60,18 @@ const routes: RouteRecordRaw[] = [
           ),
       },
       {
+        path: "/admin/whc/solder-application-statistic",
+        name: "SolderApplicationStatistic",
+        meta: {
+          title: "의뢰서",
+          permiss: "5",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "table" */ "../views/AdminPage/WHC/Solder/TaskMeasurementChart.vue"
+          ),
+      },
+      {
         path: "/admin/pdt/application-list",
         name: "ApplicationList",
         meta: {
@@ -823,6 +835,30 @@ const routes: RouteRecordRaw[] = [
         component: () =>
           import(
             /* webpackChunkName: "table" */ "../views/Solder/Application/CallSolderApplication.vue"
+          ),
+      },
+      {
+        path: "/whc/call-application/:applicationUuid",
+        name: "CloneSolderApplication",
+        meta: {
+          title: "Clone Solder Application",
+          permiss: "11",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "table" */ "../views/Solder/Application/CloneSolderApplication.vue"
+          ),
+      },
+      {
+        path: "/whc/create-application-by-fab-form/:modelName",
+        name: "CreateApplicationByFabForm",
+        meta: {
+          title: "Create Application By Fab Form",
+          permiss: "11",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "table" */ "../views/Solder/Application/CreateApplicationByFabRequestForm.vue"
           ),
       },
       {

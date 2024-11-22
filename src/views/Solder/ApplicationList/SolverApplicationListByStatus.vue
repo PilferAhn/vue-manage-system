@@ -93,15 +93,9 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Reqeust" width="87" :align="'center'">
+      <el-table-column sortable label="Request" width="100" :align="'center'" prop="createdDate">
         <template #default="scope">
           {{ convertPythonTimeToVue(scope.row.createdDate) }}
-        </template>
-      </el-table-column>
-
-      <el-table-column label="Received" width="87" :align="'center'">
-        <template #default="scope">
-          {{ formatDate(scope.row.receivedDate) }}
         </template>
       </el-table-column>
 
