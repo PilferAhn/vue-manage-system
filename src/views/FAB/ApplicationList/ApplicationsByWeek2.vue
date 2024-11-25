@@ -102,7 +102,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="FAB Out 계획일" width="110" :align="'center'">
+      <el-table-column label="FAB Out 계획일" width="105" :align="'center'">
         <template #default="scope">
           <span>
             {{ formatDate(scope.row.wantedFabFinishDate) }}
@@ -483,9 +483,10 @@ function handleExcelSubmit() {
 }
 
 .custom-table ::v-deep(.even-row) {
-  box-shadow: inset 0px 1px 1px rgba(37, 13, 13, 0.3);
+  box-shadow: inset 0px 1px 2px 3px  rgba(218, 24, 24, 0.3);
   background-color: rgb(243, 235, 235);
   border-radius: 1px;
+  
   // padding: 4px;
 }
 
