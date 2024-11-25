@@ -1,123 +1,49 @@
 <template>
-  <div style="display: flex; justify-content: space-between; align-items: center;">
-    <!-- Total Pie Chart -->
-    <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
-      <canvas id="totalPieChart" style="max-width: 300px; max-height: 300px;"></canvas>
-    </div>
-
-    <!-- Completed Pie Chart -->
-    <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
-      <canvas id="completedPieChart" style="max-width: 300px; max-height: 300px;"></canvas>
-    </div>
+  <div style="max-width: 500px; max-height: 400px;">
+    <canvas :id="canvasId" width="500" height="400"></canvas>
   </div>
 </template>
 
+
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { ref, onMounted, onUnmounted, watch } from "vue";
 import { Chart, ArcElement, Tooltip, Legend, Title, PieController } from "chart.js";
 
-// Chart.js 모듈 등록
+
+// Register Chart.js modules
 Chart.register(PieController, ArcElement, Tooltip, Legend, Title);
 
-// 측정 데이터
-const measurementData = ref({
-  "PDT(Manual_수탑)": [449, 210],
-  "PDT(SMT)": [32, 0],
-  "PS 신뢰성(ESD)": [570, 480],
-  "TCF": [85, 58],
-  "비선형": [31, 23],
-  "특성 평가": [2252, 2137],
-});
+const props = defineProps<{
+  data: Record<string, number[]>; // { measurement_type: [total_quantity, finished_quantity] }
+  title: string;
+}>();
 
-let totalPieChartInstance: Chart<"pie", number[], string> | null = null;
-let completedPieChartInstance: Chart<"pie", number[], string> | null = null;
+let pieChartInstance: Chart<"pie", number[], string> | null = null;
+
+// Generate a unique ID for the canvas
+const canvasId = ref(`pieChart-${Math.random().toString(36).substr(2, 9)}`);
 
 const renderPieCharts = () => {
-  const totalCtx = document.getElementById("totalPieChart") as HTMLCanvasElement;
-  const completedCtx = document.getElementById("completedPieChart") as HTMLCanvasElement;
+  const ctx = document.getElementById(canvasId.value) as HTMLCanvasElement;
 
-  const labels = Object.keys(measurementData.value);
-  const totalData = Object.values(measurementData.value).map((item) => item[0]); // Total quantities
-  const completedData = Object.values(measurementData.value).map((item) => item[1] || 0); // Completed quantities
+  // Check if the canvas context exists
+  if (!ctx) {
+    console.error("Canvas element not found");
+    return;
+  }
 
-  // 기존 Chart 제거
-  if (totalPieChartInstance) totalPieChartInstance.destroy();
-  if (completedPieChartInstance) completedPieChartInstance.destroy();
+  // Destroy the previous chart instance if it exists
+  if (pieChartInstance) {
+    pieChartInstance.destroy();
+    pieChartInstance = null;
+  }
 
-  // Custom Legend Formatter
-  const customLegendFormatter = (chart: Chart) => {
-    const legendContainer = document.createElement("div");
-    legendContainer.style.display = "flex";
-    legendContainer.style.flexWrap = "wrap";
-    legendContainer.style.justifyContent = "center";
+  // Data preparation
+  const labels = Object.keys(props.data);
+  const completedData = Object.values(props.data).map((item) => item[1] || 0);
 
-    chart.data.labels?.forEach((label, index) => {
-      const legendItem = document.createElement("div");
-      legendItem.style.flex = "1 1 30%"; // 30%의 너비로 설정하여 한 줄에 3개씩 배치
-      legendItem.style.margin = "5px";
-      legendItem.style.textAlign = "center";
-      legendItem.innerHTML = `<span style="display:inline-block;width:10px;height:10px;background-color:${
-        chart.data.datasets[0].backgroundColor[index]
-      };margin-right:5px;"></span>${label}`;
-      legendContainer.appendChild(legendItem);
-    });
-
-    return legendContainer;
-  };
-
-  // Total Pie Chart
-  totalPieChartInstance = new Chart<"pie", number[], string>(totalCtx, {
-    type: "pie",
-    data: {
-      labels: labels,
-      datasets: [
-        {
-          data: totalData,
-          backgroundColor: [
-            "rgba(255, 99, 132, 0.6)",
-            "rgba(54, 162, 235, 0.6)",
-            "rgba(255, 206, 86, 0.6)",
-            "rgba(75, 192, 192, 0.6)",
-            "rgba(153, 102, 255, 0.6)",
-            "rgba(255, 159, 64, 0.6)",
-            "rgba(100, 200, 100, 0.6)",
-          ],
-          borderWidth: 1,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: false, // 기본 legend 비활성화
-        },
-        tooltip: {
-          enabled: true,
-        },
-        title: {
-          display: true,
-          text: "의뢰",
-          font: {
-            size: 18, // 제목 글꼴 크기 설정
-          },
-        },
-      },
-    },
-    plugins: [
-      {
-        id: "customLegend",
-        afterRender: (chart) => {
-          const container = chart.canvas.parentNode as HTMLElement;
-          const customLegend = customLegendFormatter(chart);
-          container.appendChild(customLegend);
-        },
-      },
-    ],
-  });
-
-  // Completed Pie Chart
-  completedPieChartInstance = new Chart<"pie", number[], string>(completedCtx, {
+  // Create the chart instance
+  pieChartInstance = new Chart(ctx, {
     type: "pie",
     data: {
       labels: labels,
@@ -141,35 +67,43 @@ const renderPieCharts = () => {
       responsive: true,
       plugins: {
         legend: {
-          display: false, // 기본 legend 비활성화
+          display: true,
+          position: "top",
         },
         tooltip: {
           enabled: true,
         },
         title: {
           display: true,
-          text: "완료",
+          text: "WHC 측정 현황 - " + props.title,
           font: {
-            size: 18, // 제목 글꼴 크기 설정
-          },
+              size: 25,
+              weight: "bold",
+            },
         },
       },
     },
-    plugins: [
-      {
-        id: "customLegend",
-        afterRender: (chart) => {
-          const container = chart.canvas.parentNode as HTMLElement;
-          const customLegend = customLegendFormatter(chart);
-          container.appendChild(customLegend);
-        },
-      },
-    ],
   });
 };
 
-// Pie Chart 렌더링
+// Re-render the chart when `props.data` changes
+watch(
+  () => props.data,
+  () => {
+    renderPieCharts();
+  },
+  { deep: true, immediate: true }
+);
+
+// Lifecycle hooks
 onMounted(() => {
   renderPieCharts();
+});
+
+onUnmounted(() => {
+  if (pieChartInstance) {
+    pieChartInstance.destroy();
+    pieChartInstance = null;
+  }
 });
 </script>

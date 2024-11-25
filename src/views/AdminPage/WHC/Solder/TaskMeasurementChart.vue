@@ -1,25 +1,30 @@
 <template>
-  <div style="display: flex; justify-content: space-between; gap: 20px">
-    <!-- BarChart 1 -->
-    <!-- BarChart 2 -->
-
-    <div style="flex: 1">      
-      <BarChart v-if="isLoad" :title="'24년 11월 이후'" :y_max = 850 :data="measurementData" />
-      <!-- 여기에 Total 을 넣을것 -->
+  <div style="display: flex; flex-direction: column; gap: 20px;">
+    <!-- Bar Charts Row -->
+    <div style="display: flex; justify-content: space-between; gap: 20px;">
+      <div style="flex: 1">
+        <BarChart class="bar-container" v-if="isLoad" :title="'24년 11월 이후'" :y_max="850" :data="measurementData" />
+      </div>
     </div>
-    <!-- <div style="flex: 1">
-      <BarChart v-if="isLoad" :title="'This Week'" :data="thisWeek" />
-    </div> -->
-  </div>
-  <div style="display: flex; justify-content: space-between; gap: 20px">
-    <!-- BarChart 1 -->
-    <!-- BarChart 2 -->
 
-    <div style="flex: 1">      
-      <BarChart2 v-if="isLoad" :title="'Last Week'" :y_max = 300 :data="lastWeek" />
+    <!-- Last Week and This Week Bar Charts Row -->
+    <div style="display: flex; justify-content: space-between; gap: 20px;">
+      <div  style="flex: 1">
+        <BarChart2 class="bar-container" v-if="isLoad" :title="'Last Week'" :y_max="300" :data="lastWeek" />
+      </div>
+      <div  style="flex: 1">
+        <BarChart2 class="bar-container" v-if="isLoad" :title="'This Week'" :y_max="300" :data="thisWeek" />
+      </div>
     </div>
-    <div style="flex: 1">
-      <BarChart2 v-if="isLoad" :title="'This Week'" :y_max = 300 :data="thisWeek" />
+
+    <!-- Pie Charts Row -->
+    <div style="display: flex; justify-content: space-between; gap: 20px;">
+      <div class="pie-container">
+        <pieChart v-if="isLoad" :title="'Last Week'" :data="lastWeek" />
+      </div>
+      <div class="pie-container">
+        <pieChart v-if="isLoad" :title="'This Week'" :data="thisWeek" />
+      </div>
     </div>
   </div>
 </template>
@@ -28,6 +33,7 @@
 import { ref, onMounted } from "vue";
 import BarChart from "./BarChart.vue";
 import BarChart2 from "./BarChart2.vue";
+import pieChart from "./pie.vue"
 import {
   getThisFriday,
   formatDate,
@@ -158,6 +164,25 @@ onMounted(async () => {
 });
 </script>
 
-<style>
-/* Optional: Adjust layout for better spacing */
+
+<style scoped>
+.pie-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 50%; /* Ensure each pie chart takes half the width */
+  /* background-color: #f9f9f9; */
+  border: 1px solid #ddd; /* Optional: Border for better visual separation */
+  padding: 10px;
+  border-radius: 10px; /* Optional: Rounded corners */
+}
+
+.bar-container {
+  
+  border: 1px solid #ddd; /* Optional: Border for better visual separation */
+  padding: 10px;
+  border-radius: 10px; /* Optional: Rounded corners */
+}
 </style>
+
