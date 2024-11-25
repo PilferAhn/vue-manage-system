@@ -36,6 +36,7 @@
       height="640"
       :row-style="{ height: '30px' }"
       :cell-class-name="cellClass"
+      
     >
       <el-table-column
         :fixed="'left'"
@@ -477,14 +478,9 @@ function handleExcelSubmit() {
   color: #333; /* 텍스트 색상 */
 }
 
-.even-row {
-  /* 더 진한 음영 효과 */
+.custom-table ::v-deep(.even-row) {
   box-shadow: inset 0px 1px 5px rgba(37, 13, 13, 0.3);
-
-  /* 연한 배경색 */
   background-color: rgb(243, 235, 235);
-
-  /* 선택 사항: 모서리 둥글게 */
   border-radius: 4px;
   padding: 4px;
 }
