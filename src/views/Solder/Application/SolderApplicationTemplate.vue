@@ -554,6 +554,14 @@
           >
             비슷한 의뢰 만들기
           </el-button>
+          <!-- <el-button
+            type="danger"
+            @click="
+              removeApplication(applicationData)
+            "
+          >
+            의뢰서 삭제
+          </el-button> -->
         </el-col>
       </el-row>
       <el-row v-else :gutter="20" style="margin-top: 20px"
@@ -603,6 +611,7 @@ import { downloadFileByUrl } from "./LoadSolderApplication";
 import type { UploadInstance, UploadProps, UploadRawFile } from "element-plus";
 import { genFileId, ElMessage } from "element-plus";
 import { formatDate } from "../../FAB/Common/Application";
+import { removeApplicationHandler } from "../../../utils/Solder/application-utils";
 const router = useRouter();
 
 // Define props to receive processData
@@ -739,6 +748,12 @@ const donwloadExcel = (uuid: string) => {
   );
 };
 
+function removeApplication(solderApplication : ApplicationData){
+  if(removeApplicationHandler(solderApplication)){
+    moveRounter("SolderApplicationList")
+  }
+}
+
 // Submit handler with form validation
 const onSubmit = (applicationData: ApplicationData, buttonType: string) => {
   // Validate form data using the validate method of el-form component
@@ -865,6 +880,12 @@ const updateMathching = () => {
     })
   );
 };
+
+function moveRounter(vueRouterName: string) {
+  router.push({
+    name: vueRouterName,    
+  });
+}
 
 function moveRounterbyApplicationUuid(vueRouterName: string, uuid: string) {
   router.push({

@@ -803,7 +803,7 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: "/whc/application-list",
-        name: "measurement list",
+        name: "SolderApplicationList",
         meta: {
           title: "Solder Measurement List",
           permiss: "11",

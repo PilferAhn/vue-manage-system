@@ -81,7 +81,7 @@
           },
           title: {
             display: true,
-            text: "WHC 측정 현황 - " + props.title,
+            text: "WHC 측정 완료 현황 - " + props.title,
             font: {
               size: 25,
               weight: "bold",
