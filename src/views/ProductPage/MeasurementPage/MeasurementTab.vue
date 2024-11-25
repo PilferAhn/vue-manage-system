@@ -36,9 +36,12 @@
         <el-table-column prop="condition" label="Status" align="center">
         </el-table-column>
 
-        <el-table-column prop="signal_type" label="Signal" align="center">
+        <el-table-column prop="temperature" label="Temp°C" align="center">
         </el-table-column>
 
+        <el-table-column prop="signal_type" label="Signal" align="center">
+        </el-table-column>
+        
         <el-table-column prop="target_position" label="Target" align="center">
         </el-table-column>
 
@@ -216,7 +219,7 @@ const fetchData = async () => {
     );
 
     allData.value = response.data;
-
+    console.log(allData)
     filterData();
   } catch (error) {
     ElMessage.error("데이터를 불러오는 데 실패했습니다.");

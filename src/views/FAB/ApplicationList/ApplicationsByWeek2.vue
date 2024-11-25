@@ -483,15 +483,15 @@ function handleExcelSubmit() {
 }
 
 .custom-table ::v-deep(.even-row) {
-  box-shadow: inset 0px 1px 5px rgba(37, 13, 13, 0.3);
+  box-shadow: inset 0px 1px 1px rgba(37, 13, 13, 0.3);
   background-color: rgb(243, 235, 235);
-  border-radius: 4px;
-  padding: 4px;
+  border-radius: 1px;
+  // padding: 4px;
 }
 
 .custom-table ::v-deep(.el-table__cell) {
   font-size: 14px; /* 약간 큰 텍스트 */
-  padding: 10px 5px; /* 셀 여백 추가 */
+  // padding: 10px 5px; /* 셀 여백 추가 */
   color: #333; /* 일반 텍스트 색상 */
   background-color: #ffffff; /* 흰색 배경 */
   border-bottom: 1px solid #e0e0e0; /* 셀 구분을 위한 테두리 */
