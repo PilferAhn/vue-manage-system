@@ -48,7 +48,7 @@
       <el-table-column
         :fixed="'left'"
         label="주차"
-        width="50"
+        width="55"
         prop="weekNumber"
         :align="'center'"
       ></el-table-column>
@@ -92,7 +92,7 @@
           {{ formatDate(scope.row.wantedFabStartDate) }}
         </template>
       </el-table-column>
-      <el-table-column label="FAB 투입일" :align="'center'" width="90">
+      <el-table-column label="FAB 투입일" :align="'center'" width="110">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             {{ formatDate(item.creation_date) }}
@@ -101,7 +101,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="FAB Out - 계획일" width="90" :align="'center'">
+      <el-table-column label="FAB Out 계획일" width="90" :align="'center'">
         <template #default="scope">
           <span>
             {{ formatDate(scope.row.wantedFabFinishDate) }}
@@ -118,7 +118,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="WHC 출하 예정일" :align="'center'" width="90">
+      <el-table-column label="WHC 출하 예정일" :align="'center'" width="110">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             <span v-if="item['operation']['operation_id'] === 'OP0E002040'">
@@ -162,7 +162,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="WHC 출하" :align="'center'" width="90">
+      <el-table-column label="WHC 출하" :align="'center'" width="100">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             <span v-if="item['operation']['name'] === 'Transit 공정'">
@@ -174,7 +174,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="WHC 도착" :align="'center'" width="90">
+      <el-table-column label="WHC 도착" :align="'center'" width="100">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             <span v-if="item['hanoi_csp'] !== null">
@@ -467,7 +467,16 @@ function handleExcelSubmit() {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
+/* 글로벌 적용 */
+
+.custom-table ::v-deep(.el-table__header-wrapper th) {
+  font-weight: bold;
+  font-size: 15px; /* px를 추가해야 동작 */
+  background-color: #f9f9f9; /* 필요 시 배경색 추가 */
+  color: #333; /* 텍스트 색상 */
+}
+
 .even-row {
   /* 더 진한 음영 효과 */
   box-shadow: inset 0px 1px 5px rgba(37, 13, 13, 0.3);

@@ -25,8 +25,8 @@ const currentWeekNumber: number = getCurrentWeekNumber();
 
 // const privious2WeekLabel = (currentWeekNumber - 2).toString() + "주 이후";
 
-const cspLabel = "40주 이후(CSP)";
-const wlpLabel = "40주 이후(WLP)";
+const cspLabel = "CSP";
+const wlpLabel = "WLP(BDMP)";
 
 // Define the active tab, default is 'thisWeek'
 const activeTab = ref("csp");
@@ -222,7 +222,7 @@ onMounted(async () => {
   // fetchProcessData 함수로 데이터 가져오기
   processDataArray.value = await fetchProcessData();
   getMaxHistorySeqAndIndexFromProcessData(processDataArray.value);
-  // showInfoByWeek(processDataArray.value)
+  showInfoByWeek(processDataArray.value)
 
   processDataArray.value.forEach((processData, index) => {
     if (processData["destination"] === "WHC_CSP") {

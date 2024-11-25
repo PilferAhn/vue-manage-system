@@ -2,13 +2,11 @@
   <div style="display: flex; justify-content: space-between; align-items: center;">
     <!-- Total Pie Chart -->
     <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
-      
       <canvas id="totalPieChart" style="max-width: 300px; max-height: 300px;"></canvas>
     </div>
 
     <!-- Completed Pie Chart -->
     <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
-      
       <canvas id="completedPieChart" style="max-width: 300px; max-height: 300px;"></canvas>
     </div>
   </div>
@@ -21,12 +19,12 @@ import { Chart, ArcElement, Tooltip, Legend, Title, PieController } from "chart.
 // Chart.js 모듈 등록
 Chart.register(PieController, ArcElement, Tooltip, Legend, Title);
 
+// 측정 데이터
 const measurementData = ref({
   "PDT(Manual_수탑)": [449, 210],
   "PDT(SMT)": [32, 0],
   "PS 신뢰성(ESD)": [570, 480],
   "TCF": [85, 58],
-  "내전력": [320, 320],
   "비선형": [31, 23],
   "특성 평가": [2252, 2137],
 });
@@ -45,6 +43,27 @@ const renderPieCharts = () => {
   // 기존 Chart 제거
   if (totalPieChartInstance) totalPieChartInstance.destroy();
   if (completedPieChartInstance) completedPieChartInstance.destroy();
+
+  // Custom Legend Formatter
+  const customLegendFormatter = (chart: Chart) => {
+    const legendContainer = document.createElement("div");
+    legendContainer.style.display = "flex";
+    legendContainer.style.flexWrap = "wrap";
+    legendContainer.style.justifyContent = "center";
+
+    chart.data.labels?.forEach((label, index) => {
+      const legendItem = document.createElement("div");
+      legendItem.style.flex = "1 1 30%"; // 30%의 너비로 설정하여 한 줄에 3개씩 배치
+      legendItem.style.margin = "5px";
+      legendItem.style.textAlign = "center";
+      legendItem.innerHTML = `<span style="display:inline-block;width:10px;height:10px;background-color:${
+        chart.data.datasets[0].backgroundColor[index]
+      };margin-right:5px;"></span>${label}`;
+      legendContainer.appendChild(legendItem);
+    });
+
+    return legendContainer;
+  };
 
   // Total Pie Chart
   totalPieChartInstance = new Chart<"pie", number[], string>(totalCtx, {
@@ -71,18 +90,30 @@ const renderPieCharts = () => {
       responsive: true,
       plugins: {
         legend: {
-          display: true,
-          position: "top",
-        },
-        title: {
-          display: true,
-          text: "의뢰",
+          display: false, // 기본 legend 비활성화
         },
         tooltip: {
           enabled: true,
         },
+        title: {
+          display: true,
+          text: "의뢰",
+          font: {
+            size: 18, // 제목 글꼴 크기 설정
+          },
+        },
       },
     },
+    plugins: [
+      {
+        id: "customLegend",
+        afterRender: (chart) => {
+          const container = chart.canvas.parentNode as HTMLElement;
+          const customLegend = customLegendFormatter(chart);
+          container.appendChild(customLegend);
+        },
+      },
+    ],
   });
 
   // Completed Pie Chart
@@ -110,18 +141,30 @@ const renderPieCharts = () => {
       responsive: true,
       plugins: {
         legend: {
-          display: true,
-          position: "top",
-        },
-        title: {
-          display: true,
-          text: "완료",
+          display: false, // 기본 legend 비활성화
         },
         tooltip: {
           enabled: true,
         },
+        title: {
+          display: true,
+          text: "완료",
+          font: {
+            size: 18, // 제목 글꼴 크기 설정
+          },
+        },
       },
     },
+    plugins: [
+      {
+        id: "customLegend",
+        afterRender: (chart) => {
+          const container = chart.canvas.parentNode as HTMLElement;
+          const customLegend = customLegendFormatter(chart);
+          container.appendChild(customLegend);
+        },
+      },
+    ],
   });
 };
 

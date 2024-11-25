@@ -267,8 +267,12 @@
               <el-table-column
                 v-if="props.applicationType === 'load'"
                 label="종료일"
+                width="100"
+                :align="'center'"
               >
-                <template #default="scope"> {{ scope.row.d }} </template>
+                <template #default="scope">
+                  {{ formatDate(scope.row.finishedDate) }}
+                </template>
               </el-table-column>
               <el-table-column label="유의사항" width="500">
                 <template #default="scope">
@@ -598,6 +602,7 @@ import { downloadFileByUrl } from "./LoadSolderApplication";
 
 import type { UploadInstance, UploadProps, UploadRawFile } from "element-plus";
 import { genFileId, ElMessage } from "element-plus";
+import { formatDate } from "../../FAB/Common/Application";
 const router = useRouter();
 
 // Define props to receive processData
@@ -605,6 +610,8 @@ const props = defineProps<{
   applicationData: ApplicationData;
   applicationType: string;
 }>();
+
+console.log(props.applicationData);
 
 const sortedMeasurements = computed(() =>
   [...applicationData.measurements].sort((a, b) => {
@@ -859,15 +866,11 @@ const updateMathching = () => {
   );
 };
 
-function moveRounterbyApplicationUuid(
-  vueRouterName: string,
-  uuid: string
-) {
+function moveRounterbyApplicationUuid(vueRouterName: string, uuid: string) {
   router.push({
     name: vueRouterName,
     params: { applicationUuid: uuid },
   });
-  ;
 }
 </script>
 

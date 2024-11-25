@@ -162,7 +162,7 @@ export const showInfo = async (processData: ProcessData[]) => {
 };
 
 export const showInfoByWeek = (processData: ProcessData[]) => {
-  const weekList = [38, 39];
+  const weekList = [35, 36, 37];
   let tempStr = "";
 
   processData.forEach((app, index) => {

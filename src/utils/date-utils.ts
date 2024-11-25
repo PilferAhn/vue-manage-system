@@ -65,3 +65,31 @@ export function formatDateTime(dateString: string): string {
   const minutes = String(date.getMinutes()).padStart(2, "0");
   return `${year}-${month}-${day} ${hours}:${minutes}`;
 }
+
+export function getThisFriday(): string {
+  const today = new Date(); // 오늘 날짜 가져오기
+  const dayOfWeek = today.getDay(); // 오늘이 주의 몇 번째 날인지 (0: 일요일 ~ 6: 토요일)
+
+  // 현재 주 금요일까지의 남은 일수 계산
+  const daysUntilFriday = 5 - dayOfWeek; // 5는 금요일 (0: 일요일 기준)
+
+  // 이번 주 금요일 날짜 계산
+  const thisFriday = new Date(today);
+  thisFriday.setDate(
+    today.getDate() +
+      (daysUntilFriday >= 0 ? daysUntilFriday : 7 + daysUntilFriday)
+  );
+
+  // 문자열로 반환 (YYYY-MM-DD HH:mm:ss 형식)
+  const year = thisFriday.getFullYear();
+  const month = String(thisFriday.getMonth() + 1).padStart(2, "0"); // 월은 0부터 시작하므로 +1
+  const date = String(thisFriday.getDate()).padStart(2, "0");
+  const hours = String(thisFriday.getHours()).padStart(2, "0");
+  const minutes = String(thisFriday.getMinutes()).padStart(2, "0");
+  const seconds = String(thisFriday.getSeconds()).padStart(2, "0");
+
+  return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
+}
+
+// 테스트 실행
+console.log("이번 주 금요일:", getThisFriday());

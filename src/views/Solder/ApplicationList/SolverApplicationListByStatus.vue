@@ -39,16 +39,15 @@
     </div>
     <el-table
       :data="filteredApplicationData"
-      class="table"
+      class="custom-table"
       ref="multipleTable"
-      header-cell-class-name="table-header"
-      :row-class-name="tableRowClassName"
       height="700px"
     >
       <el-table-column
         type="index"
         label="No"
         :align="'center'"
+        width = "70"
       ></el-table-column>
 
       <el-table-column
@@ -93,13 +92,19 @@
         </template>
       </el-table-column>
 
-      <el-table-column sortable label="Request" width="100" :align="'center'" prop="createdDate">
+      <el-table-column
+        sortable
+        label="Request"
+        width="130"
+        :align="'center'"
+        prop="createdDate"
+      >
         <template #default="scope">
           {{ convertPythonTimeToVue(scope.row.createdDate) }}
         </template>
       </el-table-column>
 
-      <el-table-column label="Finish" width="87" :align="'center'">
+      <el-table-column label="Finish" width="130" :align="'center'">
         <template #default="scope">
           {{ formatDate(scope.row.completionDate) }}
         </template>
@@ -154,7 +159,12 @@
             v-else
             type="primary"
             size="small"
-            @click="downloadSolderApplicationXlsx(scope.row,`/solder/download_solder_application_file3`)"
+            @click="
+              downloadSolderApplicationXlsx(
+                scope.row,
+                `/solder/download_solder_application_file3`
+              )
+            "
           >
             Excel
           </el-button>
@@ -197,7 +207,10 @@ import { updateStatusByUuid } from "../Application/SolderApplication";
 import SelectOptions from "../../Common/SelectOptions.vue";
 import { statusList, confirmDelete } from "./SolderApplicationList";
 import { convertPythonTimeToVue } from "../../Common/utility";
-import { sendApplicationData2, downloadSolderApplicationXlsx } from "../Application/SolderApplication";
+import {
+  sendApplicationData2,
+  downloadSolderApplicationXlsx,
+} from "../Application/SolderApplication";
 import axios from "axios";
 import { formatDate, formatDateTime } from "../../FAB/Common/Application";
 
@@ -312,61 +325,36 @@ const handleUpdate = async (uuid, assayLotId) => {
     // 에러 메시지 표시
   }
 };
-
-const tableRowClassName = ({
-  row,
-  rowIndex,
-}: {
-  row: ApplicationData;
-  rowIndex: number;
-}) => {
-  if (row.assayLotId !== null && row.childAssay !== undefined) {
-    // return "bothsourse-row";
-    return;
-  } else if (row.childIsAssay !== undefined) {
-    // return "mes-row";
-  } else if (row.assayLotId !== null) {
-    // return "manual-row";
-  }
-
-  return;
-};
 </script>
 
-<style>
-/* Add any additional styles here */
+<style lang="scss" scoped>
+/* 글로벌 적용 */
 
-.el-table__row.bothsourse-row {
-  background-color: rgb(255, 166, 0);
+/* 헤더 스타일 */
+.custom-table ::v-deep(.el-table__header-wrapper th) {
+  font-weight: bold; /* 글자 굵기 */
+  font-size: 14px; /* 글자 크기 */
+  background-color: #f1f5f9; /* 부드러운 회색 배경 */
+  color: #333; /* 다크 그레이 텍스트 */
+  border: 1px solid #d1d5db; /* 연한 그레이 테두리 */
+  // padding: 8px; /* 여백 */
 }
 
-.el-table__row.mes-row {
-  background-color: rgb(125, 207, 125);
+/* 셀 스타일 */
+.custom-table ::v-deep(.el-table__cell) {
+  border: 1px solid #e5e7eb; /* 셀 테두리 (연한 회색) */
+  background-color: #ffffff; /* 흰색 배경 */
+  font-size: 13px; /* 글자 크기 */
+  color: #4b5563; /* 중간 회색 텍스트 */
+  // padding: 8px; /* 여백 */
 }
 
-.el-table__row.manual-row {
-  background-color: rgb(202, 193, 223);
+/* 헤더와 셀을 명확히 구분하기 위해 hover 효과 추가 */
+.custom-table ::v-deep(.el-table__row:hover .el-table__cell) {
+  background-color: #f3f4f6; /* hover 시 부드러운 회색 강조 */
 }
 
-.table {
-  min-height: 300px;
-}
-</style>
 
-<style>
-/* Adjusted styles */
-
-.el-table__cell {
-  font-size: 12px; /* 원하는 크기로 조정 */
-  border: 1px solid #dcdfe6; /* 셀에 경계선 추가 */
-  font-weight: 600; /* 글씨를 더 두껍게 설정 */
-}
-
-.container {
-  margin: 20px;
-  min-height: 400px;
-  padding: 10px;
-}
 
 .search-box {
   margin-bottom: 20px;
@@ -396,44 +384,45 @@ const tableRowClassName = ({
   font-size: 14px;
 }
 
-.table {
-  min-height: 300px;
-  width: 100%; /* Ensure table width fits its container */
-}
-
 .pagination-margin {
   margin-top: 20px;
 }
 
 /* Button styles based on status */
 .btn-in-progress {
-  background-color: #007bff !important; /* Bright blue */
+  background-color: #007bff; /* Bright blue */
   /* border-color: #007bff !important; */
   color: #fff !important;
 }
 
 .btn-finished {
-  background-color: #28a745 !important; /* Bright green */
+  background-color: #28a745 ; /* Bright green */
   /* border-color: #28a745 !important; */
   color: #fff !important;
 }
 
+/* Waiting 버튼 스타일 */
 .btn-waiting {
-  background-color: #918e8e !important;
-  /* border-color: grey !important; */
-  color: #fff !important;
-  /* font-weight: bold;
-  text-transform: uppercase; */
+  background-color: #d3d3d3 ; /* 밝은 회색 */
+  color: #555 !important; /* 중간 회색 텍스트 */
+  border: 1px solid #c0c0c0; /* 연한 회색 테두리 */
 }
+
 
 .button-grid-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3개의 열로 배열 */
-  justify-items: center;
+  grid-template-columns: repeat(3, 1fr); /* 3열로 고정 */
+  gap: 10px; /* 버튼 간격 */
+  justify-items: center; /* 버튼을 셀 중앙에 정렬 */
+  align-items: center; /* 수직 방향으로도 중앙 정렬 */
+  width: 100%; /* 컨테이너 너비를 100%로 설정 */
+  margin: 0;
+  padding: 0;
 }
 
 .fixed-size {
-  width: 130px; /* 고정된 버튼 너비 */
-  text-align: center;
+  width: 140px; /* 고정된 버튼 너비 */
+  margin: 0;
+  padding: 0;
 }
 </style>
