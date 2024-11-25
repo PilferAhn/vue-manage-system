@@ -42,14 +42,14 @@
         :fixed="'left'"
         type="index"
         label="No"
-        width="50"
+        width="70"
         :align="'center'"
       ></el-table-column>
 
       <el-table-column
         :fixed="'left'"
         label="주차"
-        width="55"
+        width="70"
         prop="weekNumber"
         :align="'center'"
       ></el-table-column>
@@ -58,13 +58,13 @@
         :fixed="'left'"
         prop="modelName"
         label="P/N"
-        width="90"
+        width="140"
         :align="'center'"
       />
 
       <el-table-column
         label="개발자"
-        width="80"
+        width="120"
         :align="'center'"
         :fixed="'left'"
       >
@@ -76,7 +76,7 @@
 
       <el-table-column
         label="LOT ID"
-        width="100"
+        width="120"
         :align="'center'"
         fixed="left"
       >
@@ -88,12 +88,12 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="FAB 투입 계획일" width="90" :align="'center'">
+      <el-table-column label="FAB 투입 계획일" width="110" :align="'center'">
         <template #default="scope">
           {{ formatDate(scope.row.wantedFabStartDate) }}
         </template>
       </el-table-column>
-      <el-table-column label="FAB 투입일" :align="'center'" width="110">
+      <el-table-column label="FAB 투입일" :align="'center'" width="130">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             {{ formatDate(item.creation_date) }}
@@ -102,14 +102,14 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="FAB Out 계획일" width="90" :align="'center'">
+      <el-table-column label="FAB Out 계획일" width="110" :align="'center'">
         <template #default="scope">
           <span>
             {{ formatDate(scope.row.wantedFabFinishDate) }}
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="FAB 현위치(투입시간)" :align="'center'" width="230">
+      <el-table-column label="FAB 현위치(투입시간)" :align="'center'" width="270">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             {{ item["operation"]["name"] }}
@@ -119,7 +119,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="WHC 출하 예정일" :align="'center'" width="110">
+      <el-table-column label="WHC 출하 예정일" :align="'center'" width="120">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             <span v-if="item['operation']['operation_id'] === 'OP0E002040'">
@@ -163,7 +163,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="WHC 출하" :align="'center'" width="100">
+      <el-table-column label="WHC 출하" :align="'center'" width="120">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             <span v-if="item['operation']['name'] === 'Transit 공정'">
@@ -175,7 +175,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="WHC 도착" :align="'center'" width="100">
+      <el-table-column label="WHC 도착" :align="'center'" width="120">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             <span v-if="item['hanoi_csp'] !== null">
@@ -187,7 +187,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Assy In 예정일" :align="'center'" width="80">
+      <el-table-column label="Assy In 예정일" :align="'center'" width="105">
       </el-table-column>
 
       <el-table-column label="Assy In" :align="'center'" width="110">
@@ -203,7 +203,7 @@
       </el-table-column>
 
       <el-table-column label="WHC 현위치(투입시간)" :align="'center'" width="1500">
-        <el-table-column label="플립본딩" width="400" :align="'center'">
+        <el-table-column label="플립본딩" width="450" :align="'center'">
           <template #default="scope">
             <span v-for="(item, index) in scope.row.lotStatus" :key="index">
               <span
@@ -472,10 +472,14 @@ function handleExcelSubmit() {
 /* 글로벌 적용 */
 
 .custom-table ::v-deep(.el-table__header-wrapper th) {
-  font-weight: bold;
-  font-size: 15px; /* px를 추가해야 동작 */
-  background-color: #f9f9f9; /* 필요 시 배경색 추가 */
-  color: #333; /* 텍스트 색상 */
+  font-weight: bold; /* 두껍게 */
+  font-size: 16px; /* 크기를 키워 가독성 향상 */
+  background-color: #f1f1f1; /* 연한 회색 배경 */
+  font-family: 'Times New Roman', Times, serif; /* Times New Roman 글꼴 설정 */
+  color: #222; /* 진한 텍스트 색상 */
+  text-align: center; /* 중앙 정렬 */
+  border-bottom: 2px solid #ccc; /* 구분을 위한 아래 테두리 */
+  
 }
 
 .custom-table ::v-deep(.even-row) {
@@ -485,8 +489,17 @@ function handleExcelSubmit() {
   padding: 4px;
 }
 
-.custom-table ::v-deep(.el-table__header-wrapper th.highlighted-header) {
-  background-color: rgb(0, 0, 0) !important; /* 적용을 위한 !important 추가 */
+.custom-table ::v-deep(.el-table__cell) {
+  font-size: 14px; /* 약간 큰 텍스트 */
+  padding: 10px 5px; /* 셀 여백 추가 */
+  color: #333; /* 일반 텍스트 색상 */
+  background-color: #ffffff; /* 흰색 배경 */
+  border-bottom: 1px solid #e0e0e0; /* 셀 구분을 위한 테두리 */
+}
+
+.custom-table ::v-deep(.el-table__cell.highlighted-cell) {
+  font-weight: bold; /* 강조 */
+  color: #1a73e8; /* 파란색 텍스트 */
 }
 
 
