@@ -454,6 +454,7 @@ const cellClass = ({ row, rowIndex, column, columnIndex }) => {
   }
   return "";
 };
+
 const groupCounts = computed(() => {
   return props.processData.reduce((acc, item) => {
     acc[item.group] = (acc[item.group] || 0) + 1;
