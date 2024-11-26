@@ -35,9 +35,10 @@ import BarChart from "./BarChart.vue";
 import BarChart2 from "./BarChart2.vue";
 import pieChart from "./pie.vue"
 import {
-  getThisFriday,
+  getThisMonday,
   formatDate,
   adjustDate,
+  getThisSunday
 } from "../../../../utils/date-utils";
 import axios from "axios";
 import { format } from "path";
@@ -151,11 +152,13 @@ function processMeasurementData(data: Record<string, number[]>): Record<string, 
   return data;
 }
 
+
 // Fetch data on component mount
 onMounted(async () => {
+  console.log(getThisMonday())
   measurementData.value = processMeasurementData(await getWhcMeasurementHistoryQuantity());
-  thisWeek.value = processMeasurementData(await getWhcMeasurementHistoryQuantityByDate(formatDate(getThisFriday())));
-  lastWeek.value = processMeasurementData(await getWhcMeasurementHistoryQuantityByDate(formatDate(adjustDate(getThisFriday(), -7))));
+  thisWeek.value = processMeasurementData(await getWhcMeasurementHistoryQuantityByDate(formatDate(adjustDate(getThisMonday(), 7))));
+  lastWeek.value = processMeasurementData(await getWhcMeasurementHistoryQuantityByDate(formatDate(getThisMonday())));
 
   // Generate transformed data for the second chart
   // transformedData.value = transformData(lastWeek.value);

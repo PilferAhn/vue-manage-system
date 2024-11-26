@@ -620,7 +620,6 @@ const props = defineProps<{
   applicationType: string;
 }>();
 
-console.log(props.applicationData);
 
 const sortedMeasurements = computed(() =>
   [...applicationData.measurements].sort((a, b) => {

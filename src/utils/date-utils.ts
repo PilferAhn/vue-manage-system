@@ -91,5 +91,51 @@ export function getThisFriday(): string {
   return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
 }
 
-// 테스트 실행
-console.log("이번 주 금요일:", getThisFriday());
+export function getThisMonday(): string {
+  const today = new Date(); // 오늘 날짜 가져오기
+  const dayOfWeek = today.getDay(); // 오늘이 주의 몇 번째 날인지 (0: 일요일 ~ 6: 토요일)
+
+  // 현재 주 월요일까지의 남은 일수 계산
+  const daysSinceMonday = dayOfWeek - 1; // 1은 월요일 (0: 일요일 기준)
+
+  // 이번 주 월요일 날짜 계산
+  const thisMonday = new Date(today);
+  thisMonday.setDate(
+    today.getDate() - (daysSinceMonday >= 0 ? daysSinceMonday : 7 + daysSinceMonday)
+  );
+
+  // 문자열로 반환 (YYYY-MM-DD HH:mm:ss 형식)
+  const year = thisMonday.getFullYear();
+  const month = String(thisMonday.getMonth() + 1).padStart(2, "0"); // 월은 0부터 시작하므로 +1
+  const date = String(thisMonday.getDate()).padStart(2, "0");
+  const hours = String(thisMonday.getHours()).padStart(2, "0");
+  const minutes = String(thisMonday.getMinutes()).padStart(2, "0");
+  const seconds = String(thisMonday.getSeconds()).padStart(2, "0");
+
+  return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
+}
+
+
+export function getThisSunday(): string {
+  const today = new Date(); // 오늘 날짜 가져오기
+  const dayOfWeek = today.getDay(); // 오늘이 주의 몇 번째 날인지 (0: 일요일 ~ 6: 토요일)
+
+  // 이번 주 일요일까지의 남은 일수 계산
+  const daysUntilSunday = 7 - dayOfWeek; // 7은 다음 주 일요일 기준, 0이면 오늘이 일요일
+
+  // 이번 주 일요일 날짜 계산
+  const thisSunday = new Date(today);
+  thisSunday.setDate(
+    today.getDate() + (daysUntilSunday >= 7 ? 0 : daysUntilSunday)
+  );
+
+  // 문자열로 반환 (YYYY-MM-DD HH:mm:ss 형식)
+  const year = thisSunday.getFullYear();
+  const month = String(thisSunday.getMonth() + 1).padStart(2, "0"); // 월은 0부터 시작하므로 +1
+  const date = String(thisSunday.getDate()).padStart(2, "0");
+  const hours = String(thisSunday.getHours()).padStart(2, "0");
+  const minutes = String(thisSunday.getMinutes()).padStart(2, "0");
+  const seconds = String(thisSunday.getSeconds()).padStart(2, "0");
+
+  return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
+}
