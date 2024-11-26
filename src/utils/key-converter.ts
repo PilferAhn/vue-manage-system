@@ -6,7 +6,6 @@ const toSnakeCase = (str: string): string => {
     .replace(/^_/, "");
 };
 
-// 인터페이스 객체의 키를 PEP8 스타일로 변환하는 함수 (재귀 포함)
 export function convertKeysToPEP8<T extends Record<string, any>>(
   input: T
 ): Record<string, any> {
@@ -17,16 +16,26 @@ export function convertKeysToPEP8<T extends Record<string, any>>(
       const newKey = toSnakeCase(key);
       const value = input[key];
 
-      // 값이 객체인지 확인하고, 객체라면 재귀적으로 변환
-      output[newKey] =
-        value && typeof value === "object" && !Array.isArray(value)
-          ? convertKeysToPEP8(value)
-          : value;
+      if (Array.isArray(value)) {
+        // 배열이라면 배열 내부의 각 요소를 검사
+        output[newKey] = value.map((item) =>
+          item && typeof item === "object" && !Array.isArray(item)
+            ? convertKeysToPEP8(item) // 배열 내부 객체 키 변환
+            : item
+        );
+      } else if (value && typeof value === "object") {
+        // 객체라면 재귀적으로 변환
+        output[newKey] = convertKeysToPEP8(value);
+      } else {
+        // 기본 값은 그대로 할당
+        output[newKey] = value;
+      }
     }
   }
 
   return output;
 }
+
 
 // snake_case를 camelCase로 변환하는 유틸리티 함수
 const toCamelCase = (str: string): string => {

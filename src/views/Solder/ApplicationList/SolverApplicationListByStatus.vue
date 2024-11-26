@@ -263,7 +263,7 @@ const tableRowClassName = ({
   rowIndex: number
 }) => {
   if (row.reelId !== undefined || row.jigSolderId !== undefined) {    
-    console.log(`Adding "el-warning" class to row ${rowIndex}`);
+    
     return "el-warning"; // Ensure this matches your CSS class
   }
   return ''
@@ -274,7 +274,7 @@ const cellClass = ({ row, rowIndex, column, columnIndex }) => {
   // 예: 짝수 행에만 스타일을 적용
 
   if (row.reelId !== undefined || row.jigSolderId !== undefined) {    
-    console.log(row.reelId)
+    
     if ([0].includes(columnIndex)) {
       return "even-row";
     }

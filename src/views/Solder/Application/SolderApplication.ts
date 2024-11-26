@@ -1,7 +1,6 @@
 import axios from "axios";
 import { ref, watch } from "vue";
-import {
-  convertKeysToPEP8,
+import {  
   convertKeysToCamelCase,
 } from "../../../utils/key-converter";
 import {
@@ -12,16 +11,17 @@ import { ElMessage, ElMessageBox, ElNotification } from "element-plus";
 import fs from "fs/promises";
 import path from "path";
 import { fa } from "element-plus/es/locale";
+import { convertKeysToPEP8 } from "../../../utils/key-converter";
 
 export async function downloadSolderApplicationXlsx(
   applicationData: ApplicationData,
   destinationUrl: string
 ) {
   try {
-    const requestData = convertToPep8(applicationData);
+    const requestData = convertKeysToPEP8(applicationData);
 
     const template_url = destinationUrl;
-
+    
     const response = await axios({
       url: template_url,
       method: "POST",
@@ -33,12 +33,26 @@ export async function downloadSolderApplicationXlsx(
     const disposition = response.headers["content-disposition"];
     let fileName = "solder_application.xlsx"; // Default file name
 
+    
     if (disposition && disposition.includes("filename")) {
-      const fileNameMatch = disposition.match(
-        /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
-      );
-      if (fileNameMatch != null && fileNameMatch[1]) {
-        fileName = decodeURIComponent(fileNameMatch[1].replace(/['"]/g, "")); // Ensure correct decoding
+      let fileNameMatch;
+    
+      // 우선적으로 filename* 처리
+      if (disposition.includes("filename*")) {
+        fileNameMatch = disposition.match(
+          /filename\*=[^']*'[^']*'(.*)/
+        );
+        if (fileNameMatch && fileNameMatch[1]) {
+          fileName = decodeURIComponent(fileNameMatch[1]); // UTF-8 디코딩
+        }
+      } else {
+        // 기본 filename 처리
+        fileNameMatch = disposition.match(
+          /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
+        );
+        if (fileNameMatch && fileNameMatch[1]) {
+          fileName = decodeURIComponent(fileNameMatch[1].replace(/['"]/g, ""));
+        }
       }
     }
 
