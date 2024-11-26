@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import type { StockInfo } from "../Common/ApplicationInterface";
+import type { StockInfo } from "../../../../interface/stock";
 import ApplicationListTemplate from "./ApplicationListTemplate.vue";
 import { fetchStockInfo } from "./ApplicationList"; // Import the fetch function
 

@@ -1,4 +1,4 @@
-import type { StockInfo } from "../Common/ApplicationInterface";
+import type { StockInfo } from "../../../../interface/stock";
 import { ElMessage } from "element-plus";
 import type { FormInstance } from "element-plus";
 import { ElMessageBox } from "element-plus";

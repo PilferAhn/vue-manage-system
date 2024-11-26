@@ -57,6 +57,7 @@ async function refreshData() {
   try {
 
     applicationList.value = await get_application_list();
+        
     applicationList.value = getMyApplicationList(applicationList.value)
     // applicationList.value.forEach((app, index) => {
     //   if (app.modelName === "X897ASA") {

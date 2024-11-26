@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { StockInfo } from "../Common/ApplicationInterface";
+import type { StockInfo } from "../../../../interface/stock";
 import {convertKeysToCamelCase} from "../../../../utils/key-converter"
 // Function to fetch StockInfo data
 export async function fetchStockInfo(operationType : string): Promise<StockInfo[]> {

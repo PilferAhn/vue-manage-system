@@ -101,7 +101,7 @@
 
 <script setup lang="ts">
 import { defineProps, ref, computed, onMounted } from "vue";
-import type { StockInfo } from "../Common/ApplicationInterface";
+import type { StockInfo } from "../../../../interface/stock";
 import { formatDate } from "../../../../utils/date-utils";
 import { useRouter } from "vue-router";
 import { fetchProcessData } from "../../../FAB/ApplicationList/ApplicationList";

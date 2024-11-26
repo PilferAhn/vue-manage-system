@@ -47,6 +47,20 @@
         />
       </el-form-item>
 
+      <el-form-item prop="modelName" label="Model Name">
+        <el-input
+          v-model="localStockInfo.modelName"
+          placeholder="Enter the Model Name"
+        />
+      </el-form-item>
+
+      <el-form-item prop="designer" label="Designer">
+        <el-input
+          v-model="localStockInfo.designer"
+          placeholder="Enter the Desginer Name"
+        />
+      </el-form-item>
+
       <div v-if="props.formType === 'create'">
         <el-button type="primary" @click="handleSubmit('create')"
           >Submit</el-button
@@ -66,7 +80,7 @@
 
 <script setup lang="ts">
 import { defineProps, watch, ref } from "vue";
-import type { StockInfo } from "../Common/ApplicationInterface";
+import type { StockInfo } from "../../../../interface/stock";
 import { rules } from "../Common/ApplicationRules";
 import { submitForm } from "./Application";
 import type { FormInstance } from "element-plus";
