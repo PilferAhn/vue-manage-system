@@ -42,12 +42,13 @@
       class="custom-table"
       ref="multipleTable"
       height="700px"
+      :row-class-name="tableRowClassName"
     >
       <el-table-column
         type="index"
         label="No"
         :align="'center'"
-        width = "70"
+        width="70"
       ></el-table-column>
 
       <el-table-column
@@ -138,6 +139,23 @@
             ></el-input>
           </div>
         </template>
+      </el-table-column>
+
+      <el-table-column label="STOCK" width="300" :align="'center'">
+        <el-table-column label="JIG용 Solder관리" width="150" :align="'center'">
+          <template #default="scope">
+            {{ scope.row.jigSolderId }}
+            <br />
+            {{ scope.row.jigSolderLoc }}
+          </template>
+        </el-table-column>
+        <el-table-column label="완제품(Reel)" width="150" :align="'center'">
+          <template #default="scope">
+            {{ scope.row.reelId }}
+            <br />
+            {{ scope.row.reelLoc }}
+          </template>
+        </el-table-column>
       </el-table-column>
 
       <el-table-column
@@ -237,17 +255,40 @@ watch(searchTerm, (newTerm) => {
   localStorage.setItem("searchTerm", newTerm);
 });
 
-// Search term for filtering Lot ID
+const tableRowClassName = ({
+  row,
+  rowIndex,
+}: {
+  row: ApplicationData
+  rowIndex: number
+}) => {
+  if (row.reelId !== undefined || row.jigSolderId !== undefined) {    
+    console.log(`Adding "el-warning" class to row ${rowIndex}`);
+    return "el-warning"; // Ensure this matches your CSS class
+  }
+  return ''
+}
 
-// props.applicationData.filter((application, index) => {
-//   console.log(application.receivedDate)
-// });
+// 셀에 적용할 클래스 반환
+const cellClass = ({ row, rowIndex, column, columnIndex }) => {
+  // 예: 짝수 행에만 스타일을 적용
+
+  if (row.reelId !== undefined || row.jigSolderId !== undefined) {    
+    console.log(row.reelId)
+    if ([0].includes(columnIndex)) {
+      return "even-row";
+    }
+  }
+
+  return "";
+};
 
 // 필터링 로직
 // Lot ID, Designer, 또는 Requester로 검색 기능 추가
 // 필터링 로직 - 선택된 검색 기준에 따라 필터링
 const filteredApplicationData = computed(() => {
   const term = searchTerm.value.toLowerCase();
+
   return props.applicationData.filter((item) => {
     // 선택한 검색 기준을 기준으로 필터링
     const field = item[searchCategory.value] as string;
@@ -285,23 +326,6 @@ function getStatusClass(status: string) {
   }
 }
 
-// w2150704, admin // wh2409001
-
-const name = localStorage.getItem("ms_username");
-const userId = localStorage.getItem("id");
-const idArray = ["w2150704", "admin", "wh2409001"];
-// id가 배열에 포함되어 있는지 확인
-const isIdIncluded = idArray.includes(localStorage.id);
-
-// 내가 이 Application 의 주인인지 아닌지를 결정
-function isMyApplication(row: ApplicationData) {
-  if (name === row.requester || name === row.designer) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
 const router = useRouter();
 function handleDetail(row: ApplicationData) {
   router.push({
@@ -318,7 +342,7 @@ const handleUpdate = async (uuid, assayLotId) => {
 
   try {
     const response = await axios.post("/solder/update_assay_lot_id", form);
-    console.log("Update successful:", response.data);
+    // console.log("Update successful:", response.data);
     // 성공 메시지 표시 또는 다른 후속 작업 수행
   } catch (error) {
     console.error("Error updating data:", error);
@@ -330,31 +354,51 @@ const handleUpdate = async (uuid, assayLotId) => {
 <style lang="scss" scoped>
 /* 글로벌 적용 */
 
+.custom-table ::v-deep(.el-warning) {
+  background-color: hsl(
+    0,
+    76%,
+    23%
+  ) !important; /* Ensure the background changes */
+  color: hsl(0, 68%, 12%) !important;
+  font-size: 30px !important;
+}
+
 /* 헤더 스타일 */
 .custom-table ::v-deep(.el-table__header-wrapper th) {
-  font-weight: bold; /* 글자 굵기 */
-  font-size: 14px; /* 글자 크기 */
-  background-color: #f1f5f9; /* 부드러운 회색 배경 */
-  color: #333; /* 다크 그레이 텍스트 */
-  border: 1px solid #d1d5db; /* 연한 그레이 테두리 */
-  // padding: 8px; /* 여백 */
+  font-weight: bold;
+  font-size: 14px;
+  background-color: #f1f5f9;
+  color: #333;
+  border: 1px solid #d1d5db;
 }
 
 /* 셀 스타일 */
 .custom-table ::v-deep(.el-table__cell) {
-  border: 1px solid #e5e7eb; /* 셀 테두리 (연한 회색) */
-  background-color: #ffffff; /* 흰색 배경 */
-  font-size: 13px; /* 글자 크기 */
-  color: #4b5563; /* 중간 회색 텍스트 */
-  // padding: 8px; /* 여백 */
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  font-size: 13px;
+  color: #4b5563;
 }
 
-/* 헤더와 셀을 명확히 구분하기 위해 hover 효과 추가 */
+/* Hover 효과 */
 .custom-table ::v-deep(.el-table__row:hover .el-table__cell) {
-  background-color: #f3f4f6; /* hover 시 부드러운 회색 강조 */
+  background-color: #f3f4f6;
 }
 
+.custom-table ::v-deep(.even-row) {
+  box-shadow: inset 0px 1px 2px 3px rgba(218, 24, 24, 0.3);
+  background-color: rgb(243, 235, 235);
+  border-radius: 1px;
 
+  // padding: 4px;
+}
+
+.custom-table ::v-deep(.el-table__row.el-warning .el-table__cell) {
+  background-color: hsl(0, 61%, 90%) !important;
+  color: hsl(0 75% 7%) !important;
+  
+}
 
 .search-box {
   margin-bottom: 20px;
@@ -396,18 +440,17 @@ const handleUpdate = async (uuid, assayLotId) => {
 }
 
 .btn-finished {
-  background-color: #28a745 ; /* Bright green */
+  background-color: #28a745; /* Bright green */
   /* border-color: #28a745 !important; */
   color: #fff !important;
 }
 
 /* Waiting 버튼 스타일 */
 .btn-waiting {
-  background-color: #d3d3d3 ; /* 밝은 회색 */
+  background-color: #d3d3d3; /* 밝은 회색 */
   color: #555 !important; /* 중간 회색 텍스트 */
   border: 1px solid #c0c0c0; /* 연한 회색 테두리 */
 }
-
 
 .button-grid-container {
   display: grid;

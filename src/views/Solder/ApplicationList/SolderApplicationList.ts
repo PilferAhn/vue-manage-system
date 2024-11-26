@@ -76,6 +76,27 @@ export function getMyApplicationList(applicationData: ApplicationData[]) {
   return myApplicationList;
 }
 
+export function updateReelInfo(applicationData : ApplicationData[]) {
+  
+  applicationData.forEach((app , index) => {
+    if(app.stocks.length > 0){
+      
+      app.stocks.forEach((stock) =>{
+        if (stock.operationType === "reel"){
+          app.reelId = stock.reelId
+          app.reelLoc = stock.location
+          
+        }
+        else{
+          app.jigSolderId = stock.reelId
+          app.jigSolderLoc = stock.location          
+        }
+      })
+    }
+  })
+
+}
+
 export async function findLotHistoryFromFabRequest(
   applicationData: ApplicationData[]
 ) {
@@ -108,9 +129,9 @@ export async function findLotHistoryFromFabRequest(
       if (applicationData[i].modelName === fabApplicationData[j].modelName) {
         applicationData[i].lotStatus = fabApplicationData[j].lotStatus;
 
-        if (applicationData[i].modelName === "XG47GHU@1A") {
-          console.log(fabApplicationData[j]);
-        }
+        // if (applicationData[i].modelName === "XG47GHU@1A") {
+        //   console.log(fabApplicationData[j]);
+        // }
 
         fabApplicationData[j].lotStatus.forEach((lot, index) => {
           if (lot.hanoiCsp !== null) {

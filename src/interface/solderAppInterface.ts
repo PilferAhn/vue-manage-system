@@ -91,4 +91,10 @@ export interface ApplicationData {
   childAssay? : string
   childIsAssay? : boolean
 
+  jigSolderId? : string
+  jigSolderLoc? : string
+  
+  reelId? : string
+  reelLoc? : string
+
 }

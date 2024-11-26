@@ -131,56 +131,13 @@ function handlePageChange(page: number) {
   currentPage.value = page; // 페이지 변경
 }
 
-function traverseLotStatus(
-  lotStatus: LotStatus,
-  stockInfo: StockInfo,
-  depth = 0
-): boolean {
-  if (lotStatus === null || depth >= 7) return false;
-
-  if (lotStatus.lot_id === stockInfo.reelId) {
-    return true; // 조건이 만족되면 true 반환
-  }
-
-  // 재귀 호출의 결과를 반환
-  return traverseLotStatus(lotStatus["child"], stockInfo, depth + 1);
-}
-
-async function assignDesigner(
-  fabRequestForms: ProcessData[],
-  stockList: StockInfo[]
-) {
-  for (let i = 0; i < fabRequestForms.length; i++) {
-    if (fabRequestForms[i]["lotStatus"].length > 0) {
-      for (let k = 0; k < fabRequestForms[i]["lotStatus"].length; k++) {
-        if (fabRequestForms[i]["lotStatus"][k]["hanoi_csp"] !== null) {
-          for (let j = 0; j < stockList.length; j++) {
-            const val = traverseLotStatus(
-              fabRequestForms[i]["lotStatus"][k]["hanoi_csp"],
-              stockList[j],
-              0
-            );
-            if(val){
-              stockList[j].designer = fabRequestForms[i].designer
-              stockList[j].modelName = fabRequestForms[i].modelName
-              
-            }
-          }
-        }
-      }
-      
-    }
-    
-  }
-}
-
 onMounted(async () => {
   // 시작 시간 측정
   const startTime = performance.now();
 
   // 데이터 가져오기
   fabRequestForms.value = await fetchProcessData();
-  await assignDesigner(fabRequestForms.value, props.stockInfoList);
+
   // 종료 시간 측정
   const endTime = performance.now();
 

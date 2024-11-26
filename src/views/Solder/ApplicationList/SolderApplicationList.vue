@@ -24,7 +24,8 @@ import {
   get_application_list_by_status,
   get_application_list,
   getMyApplicationList,
-  findLotHistoryFromFabRequest
+  findLotHistoryFromFabRequest,
+  updateReelInfo
 } from "./SolderApplicationList";
 import type { ApplicationData } from "../../../interface/solderAppInterface";
 
@@ -59,8 +60,12 @@ async function refreshData() {
     applicationList.value = await get_application_list();
         
     applicationList.value = getMyApplicationList(applicationList.value)
+    
+
+    updateReelInfo(applicationList.value)    
+
     // applicationList.value.forEach((app, index) => {
-    //   if (app.modelName === "X897ASA") {
+    //   if (app.modelName === "DG45FA4@2A") {
     //     console.log(app)
     //   }
     // });
