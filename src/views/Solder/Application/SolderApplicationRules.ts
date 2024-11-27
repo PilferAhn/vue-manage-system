@@ -32,11 +32,11 @@ export const solderApplicationRules = {
       trigger: "blur",
     },
   ], 
-  client : [
-    {
-      required: true,
-      message: "고객사 정보를 입력하세요",
-      trigger: "blur",
-    },
-  ]
+  // client : [
+  //   {
+  //     required: true,
+  //     message: "고객사 정보를 입력하세요",
+  //     trigger: "blur",
+  //   },
+  // ]
 };
