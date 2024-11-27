@@ -2,7 +2,115 @@ import { ElMessage, ElMessageBox, ElNotification } from "element-plus";
 import axios from "axios";
 import { ApplicationData as solderApplication } from "../../interface/solderAppInterface";
 
-import { ElMessageBox, ElMessage } from "element-plus";
+export function updateMeasurementDataByClient(solderApplication: solderApplication, client : string){
+
+  if(client === "K1"){
+    solderApplication.measurements.forEach((meas) => {
+      if(meas.measurementType === "특성 평가"){
+        meas.isMeasured = true
+        meas.quantity=5
+      }
+      else if(meas.measurementType === "PDT(Manual_수탑)"){
+        meas.isMeasured = true
+        meas.quantity=15        
+      }
+      else if(meas.measurementType === "PS 신뢰성"){
+        meas.isMeasured = true
+        meas.quantity=9
+      }
+      else if(meas.measurementType === "TCF"){
+        meas.isMeasured = true
+        meas.quantity=2        
+      }
+      else if(meas.measurementType === "비선형"){
+        meas.isMeasured = true
+        meas.quantity=2
+      }
+      else{
+        meas.isMeasured = false
+        meas.quantity=0
+      }
+    })
+  }
+  else if(client === "중화(ODM)"){
+    solderApplication.measurements.forEach((meas) => {
+      if(meas.measurementType === "특성 평가"){
+        meas.isMeasured = true
+        meas.quantity=5
+      }
+      else if(meas.measurementType === "PDT(Manual_수탑)"){
+        meas.isMeasured = true
+        meas.quantity=5      
+      }
+      else if(meas.measurementType === "PS 신뢰성"){
+        meas.isMeasured = true
+        meas.quantity=3
+      }
+      else if(meas.measurementType === "TCF"){
+        meas.isMeasured = true
+        meas.quantity=2        
+      }
+      else{
+        meas.isMeasured = false
+        meas.quantity=0
+      }
+    })
+  }
+  else if(client === "중화(OVX)"){
+    solderApplication.measurements.forEach((meas) => {
+      if(meas.measurementType === "특성 평가"){
+        meas.isMeasured = true
+        meas.quantity=5
+      }
+      else if(meas.measurementType === "PDT(Manual_수탑)"){
+        meas.isMeasured = true
+        meas.quantity=15      
+      }
+      else if(meas.measurementType === "PS 신뢰성"){
+        meas.isMeasured = true
+        meas.quantity=9
+      }
+      else if(meas.measurementType === "TCF"){
+        meas.isMeasured = true
+        meas.quantity=2        
+      }
+      else{
+        meas.isMeasured = false
+        meas.quantity=0
+      }
+    })
+  }
+  else if(client === "전장"){
+    solderApplication.measurements.forEach((meas) => {
+      if(meas.measurementType === "특성 평가"){
+        meas.isMeasured = true
+        meas.quantity=5
+      }
+      else if(meas.measurementType === "PDT(Manual_수탑)"){
+        meas.isMeasured = true
+        meas.quantity=15      
+      }
+      else if(meas.measurementType === "PS 신뢰성"){
+        meas.isMeasured = true
+        meas.quantity=15
+      }
+      else if(meas.measurementType === "TCF"){
+        meas.isMeasured = true
+        meas.quantity=2        
+      }
+      else{
+        meas.isMeasured = false
+        meas.quantity=0
+      }
+    })
+  }
+  else{
+    solderApplication.measurements.forEach((meas) => {
+      meas.isMeasured = false
+        meas.quantity=0
+    })
+  }
+}
 
 export async function removeApplicationHandler(
   solderApplication: solderApplication

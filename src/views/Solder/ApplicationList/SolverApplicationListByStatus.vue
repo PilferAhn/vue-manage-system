@@ -105,7 +105,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Finish" width="130" :align="'center'">
+      <el-table-column v-if="props.applicationType === 'finished' " label="Finish" width="130" :align="'center'">
         <template #default="scope">
           {{ formatDate(scope.row.completionDate) }}
         </template>
@@ -234,6 +234,7 @@ import { formatDate, formatDateTime } from "../../FAB/Common/Application";
 
 const props = defineProps<{
   applicationData: ApplicationData[];
+  applicationType : string
 }>();
 
 // 라우터 및 현재 경로 가져오기

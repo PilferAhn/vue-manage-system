@@ -24,7 +24,7 @@ export interface LotStatus {
   originalDueDate: string | null;
   scheduleDueDate: string | null;
   siteInDate: string | null;
-  moveInDate: string | null;
+  moveinDate: string | null;
   moveOutDate: string | null;
   startDate: string | null;
   operation: Operation;

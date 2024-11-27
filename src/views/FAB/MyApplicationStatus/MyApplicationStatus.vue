@@ -19,24 +19,30 @@
           <span class="uppercase">{{ scope.row.process }}</span>
         </template>
       </el-table-column>
-      <el-table-column
+      <!-- <el-table-column
         prop="priority"
         label="Priority"
         width="80"
         :align="'center'"
-      />
-      <el-table-column
+      /> -->
+      <!-- <el-table-column
         prop="packageType"
         label="Package Type"
         width="150"
         :align="'center'"
-      />
+      /> -->
       <el-table-column
         prop="modelName"
         label="Model Name"
         width="150"
         :align="'center'"
       />
+      <el-table-column
+        prop="designer"
+        label="P/L"
+        width="150"
+        :align="'center'"
+      ></el-table-column>
       <el-table-column
         prop="purpose"
         label="목적"

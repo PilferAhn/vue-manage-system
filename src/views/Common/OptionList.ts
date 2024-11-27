@@ -17,3 +17,9 @@ export const packageList = [
     { key: "차세대 SAW", label: "차세대 SAW", value: "차세대 SAW" },
     { key: "선행 공법", label: "선행 공법", value: "선행 공법" },
   ];
+
+  export interface options {
+    key: number;
+    label: string;
+    value: string;
+  }

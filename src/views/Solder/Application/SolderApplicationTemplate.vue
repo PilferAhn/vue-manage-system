@@ -10,6 +10,15 @@
       <el-row :gutter="20">
         <el-col :span="24">
           <el-card>
+            <SelectOptions
+              v-model="applicationData.client"
+              :label="'Select Client'"
+              :prop="'client'"
+              :disable="false"
+              :placeholder="'고객사를 선택하세요'"
+              :options="clientOptions"
+            ></SelectOptions>
+
             <el-divider content-position="center">기본 정보</el-divider>
             <el-row :gutter="20">
               <el-col :span="12">
@@ -593,6 +602,8 @@ import {
   updateStatusByUuid,
   updateMeasurement,
 } from "./SolderApplication";
+import SelectOptions from "../../Common/SelectOptionsNew2.vue";
+import { clientOptions } from "../../../utils/Solder/option-values";
 import { useRouter } from "vue-router";
 import { packgeList } from "../../../utils/package-types";
 import { statusList } from "../ApplicationList/SolderApplicationList";
@@ -607,11 +618,12 @@ import type {
   SolderFile,
 } from "../../../interface/solderAppInterface";
 import { downloadFileByUrl } from "./LoadSolderApplication";
-
+import { updateMeasurementDataByClient } from "../../../utils/Solder/application-utils";
 import type { UploadInstance, UploadProps, UploadRawFile } from "element-plus";
 import { genFileId, ElMessage } from "element-plus";
 import { formatDate } from "../../FAB/Common/Application";
 import { removeApplicationHandler } from "../../../utils/Solder/application-utils";
+import { optionList } from "../../Calculator/SParameter/sparameter";
 const router = useRouter();
 
 // Define props to receive processData
@@ -619,7 +631,6 @@ const props = defineProps<{
   applicationData: ApplicationData;
   applicationType: string;
 }>();
-
 
 const sortedMeasurements = computed(() =>
   [...applicationData.measurements].sort((a, b) => {
@@ -747,9 +758,9 @@ const donwloadExcel = (uuid: string) => {
   );
 };
 
-function removeApplication(solderApplication : ApplicationData){
-  if(removeApplicationHandler(solderApplication)){
-    moveRounter("SolderApplicationList")
+function removeApplication(solderApplication: ApplicationData) {
+  if (removeApplicationHandler(solderApplication)) {
+    moveRounter("SolderApplicationList");
   }
 }
 
@@ -785,6 +796,17 @@ const onSubmit = (applicationData: ApplicationData, buttonType: string) => {
     }
   });
 };
+
+watch(
+  () => applicationData.client,
+  (newVal, oldVal) => {
+    if (newVal !== oldVal) {
+      console.log("here");
+      updateMeasurementDataByClient(applicationData, applicationData.client);
+    }
+  },
+  { deep: true }
+);
 
 watch(
   () => applicationData.band,
@@ -882,7 +904,7 @@ const updateMathching = () => {
 
 function moveRounter(vueRouterName: string) {
   router.push({
-    name: vueRouterName,    
+    name: vueRouterName,
   });
 }
 

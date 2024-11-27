@@ -1,6 +1,6 @@
 import type {LotStatus} from "./mes-interface"
 
-export interface FabExcel {
+export interface ModifiedFabDataInterface {
   no?: string;
   weekNumber?: number;
   modelName?: string;
@@ -11,10 +11,10 @@ export interface FabExcel {
   wantedFabFinishDate?: string;
   fabOutDate?: string;
   whcDevelopmentTeamReceiving?: string;
-  fabLotStatusExcel? : FabLotStatusExcel[]
+  fabLotStatusExcel? : ModifiedFabLotDataInterface[]
 }
 
-export interface FabLotStatusExcel {
+export interface ModifiedFabLotDataInterface {
   lotId?: string;
   fabInsertDate?: string
   fabOutPlannedDate?: string;
@@ -25,8 +25,8 @@ export interface FabLotStatusExcel {
   whcArrivalDate?: string;
   assyInPlannedDate?: string;
   assyInDate?: string;
-  filpBondingOperation?: string;
-  filpBondingTime?: string;
+  flipBondingOperation?: string;
+  flipBondingTime?: string;
   packageOperation?: string;
   packageTime?: string;
   assyOperation?: string;

@@ -127,6 +127,7 @@ export const initializeApplicationData = () => {
 
     measurer: "",
     measurerId: "",
+    client : "선택 안함",
 
     evbType: "",
     evbInfo: "",
@@ -139,7 +140,7 @@ export const initializeApplicationData = () => {
 
     // isSampleAvailable : ,
 
-    deembedMode: "",
+    deembedMode: "External Deembeding",
     matchingComponentType: "",
 
     status: "created",

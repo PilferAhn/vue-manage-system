@@ -63,3 +63,30 @@ export function convertKeysToCamelCase<T extends Record<string, any>>(
 
   return output;
 }
+
+// 객체와 배열의 키를 PEP8 스타일에서 camelCase로 변환하는 함수
+export function convertPep8ToCamelCase2(data: any): any {
+  if (Array.isArray(data)) {
+    // 배열일 경우 각 요소를 변환
+    return data.map((item) => convertPep8ToCamelCase2(item));
+  } else if (typeof data === "object" && data !== null) {
+    // 객체일 경우 각 키를 변환
+    const convertedObject: { [key: string]: any } = {};
+    for (const key in data) {
+      if (data.hasOwnProperty(key)) {
+        const newKey = toCamelCase(key); // 키를 camelCase로 변환
+        const value = data[key];
+
+        // 값이 객체나 배열이면 재귀적으로 변환
+        convertedObject[newKey] =
+          value && typeof value === "object"
+            ? convertPep8ToCamelCase2(value)
+            : value;
+      }
+    }
+    return convertedObject;
+  }
+  // 원시 값은 그대로 반환
+  return data;
+}
+

@@ -16,7 +16,6 @@
       >
         <el-option label="Designer" value="designer"></el-option>
         <el-option label="Product Name" value="modelName"></el-option>
-        
       </el-select>
 
       <el-input
@@ -36,7 +35,6 @@
       height="640"
       :row-style="{ height: '30px' }"
       :cell-class-name="cellClass"
-      
     >
       <el-table-column
         :fixed="'left'"
@@ -82,7 +80,7 @@
       >
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
-            {{ item.lot_id }}
+            {{ item.lotId }}
             <br />
           </span>
         </template>
@@ -96,7 +94,7 @@
       <el-table-column label="FAB 투입일" :align="'center'" width="130">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
-            {{ formatDate(item.creation_date) }}
+            {{ formatDate(item.creationDate) }}
             <br />
           </span>
         </template>
@@ -109,11 +107,15 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="FAB 현위치(투입시간)" :align="'center'" width="270">
+      <el-table-column
+        label="FAB 현위치(투입시간)"
+        :align="'center'"
+        width="270"
+      >
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             {{ item["operation"]["name"] }}
-            {{ formatDateTime(item.movein_date) }}
+            {{ formatDateTime(item.moveinDate) }}
             <br />
           </span>
         </template>
@@ -122,37 +124,35 @@
       <el-table-column label="WHC 출하 예정일" :align="'center'" width="120">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
-            <span v-if="item['operation']['operation_id'] === 'OP0E002040'">
-              {{ formatDate(adjustDate(item["movein_date"], 3)) }}
+            <span v-if="item['operation']['operationId'] === 'OP0E002040'">
+              {{ formatDate(adjustDate(item["moveinDate"], 3)) }}
             </span>
             <span
               v-else-if="
-                item['second_probe_history'] !== null &&
-                item['second_probe_history']['start_date'] !== null
+                item['secondProbeHistory'] !== null &&
+                item['secondProbeHistory']['startDate'] !== null
               "
             >
               {{
                 formatDate(
-                  adjustDate(item["second_probe_history"]["start_date"], 3)
+                  adjustDate(item["secondProbeHistory"]["startDate"], 3)
                 )
               }}
             </span>
             <span
               v-else-if="
-                item['second_probe_history'] !== null &&
-                item['second_probe_history']['end_date'] !== null
+                item['secondProbeHistory'] !== null &&
+                item['secondProbeHistory']['endDate'] !== null
               "
             >
               {{
-                formatDate(
-                  adjustDate(item["second_probe_history"]["end_date"], 3)
-                )
+                formatDate(adjustDate(item["secondProbeHistory"]["endDate"], 3))
               }}
             </span>
             <span
               v-else-if="
-                item['second_probe_history'] !== null &&
-                item['second_probe_history']['start_date'] === null
+                item['secondProbeHistory'] !== null &&
+                item['secondProbeHistory']['startDate'] === null
               "
             >
               SKIP
@@ -167,7 +167,7 @@
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             <span v-if="item['operation']['name'] === 'Transit 공정'">
-              {{ formatDate(item["movein_date"]) }}
+              {{ formatDate(item["moveinDate"]) }}
             </span>
             <span v-else> -- </span>
             <br />
@@ -178,8 +178,8 @@
       <el-table-column label="WHC 도착" :align="'center'" width="120">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
-            <span v-if="item['hanoi_csp'] !== null">
-              {{ formatDate(item["hanoi_csp"]["creation_date"]) }}
+            <span v-if="item['hanoiCsp'] !== null">
+              {{ formatDate(item["hanoiCsp"]["creationDate"]) }}
             </span>
             <span v-else> -- </span>
             <br />
@@ -193,8 +193,8 @@
       <el-table-column label="Assy In" :align="'center'" width="110">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
-            <span v-if="item['hanoi_csp'] !== null">
-              {{ formatDate(item["hanoi_csp"]["movein_date"]) }}
+            <span v-if="item['hanoiCsp'] !== null">
+              {{ formatDate(item["hanoiCsp"]["moveinDate"]) }}
             </span>
             <span v-else> -- </span>
             <br />
@@ -202,29 +202,18 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="WHC 현위치(투입시간)" :align="'center'" width="1500">
+      <el-table-column
+        label="WHC 현위치(투입시간)"
+        :align="'center'"
+        width="1500"
+      >
         <el-table-column label="플립본딩" width="450" :align="'center'">
           <template #default="scope">
             <span v-for="(item, index) in scope.row.lotStatus" :key="index">
-              <span
-                v-if="
-                  item['hanoi_csp'] !== null &&
-                  item['hanoi_csp']['child'] !== null
-                "
-              >
-                {{ item["hanoi_csp"]["child"]["operation"]["name"] }}
-                {{ formatDateTime(item["hanoi_csp"]["child"]["movein_date"]) }}
-                {{ item["hanoi_csp"]["child"]["lot_id"] }}
-              </span>
-              <span
-                v-else-if="
-                  item['hanoi_csp'] !== null &&
-                  item['hanoi_csp']['child'] === null
-                "
-              >
-                {{ item["hanoi_csp"]["operation"]["name"] }}
-                {{ formatDateTime(item["hanoi_csp"]["movein_date"]) }}
-                {{ item["hanoi_csp"]["lot_id"] }}
+              <span v-if="item['hanoiCsp'] !== null">
+                {{ item["hanoiCsp"]["operation"]["name"] }}
+                {{ formatDateTime(item["hanoiCsp"]["moveinDate"]) }}
+                {{ item["hanoiCsp"]["lotId"] }}
               </span>
               <span v-else>--</span>
               <br />
@@ -236,18 +225,13 @@
             <span v-for="(item, index) in scope.row.lotStatus" :key="index">
               <span
                 v-if="
-                  item['hanoi_csp'] !== null &&
-                  item['hanoi_csp']['child'] !== null &&
-                  item['hanoi_csp']['child']['child'] !== null
+                  item['hanoiCsp'] !== null &&
+                  item['hanoiCsp']['child'] !== null
                 "
               >
-                {{ item["hanoi_csp"]["child"]["child"]["operation"]["name"] }}
-                {{
-                  formatDateTime(
-                    item["hanoi_csp"]["child"]["child"]["movein_date"]
-                  )
-                }}
-                {{ item["hanoi_csp"]["child"]["child"]["lot_id"] }}
+                {{ item["hanoiCsp"]["child"]["operation"]["name"] }}
+                {{ formatDateTime(item["hanoiCsp"]["child"]["moveinDate"]) }}
+                {{ item["hanoiCsp"]["child"]["lotId"] }}
               </span>
               <span v-else>--</span>
               <br />
@@ -260,30 +244,23 @@
             <span v-for="(item, index) in scope.row.lotStatus" :key="index">
               <span
                 v-if="
-                  item['hanoi_csp'] !== null &&
-                  item['hanoi_csp']['child'] !== null &&
-                  item['hanoi_csp']['child']['child'] !== null &&
-                  item['hanoi_csp']['child']['child']['child'] !== null &&
-                  item['hanoi_csp']['child']['child']['child']['child'] !== null
+                  item['hanoiCsp'] !== null &&
+                  item['hanoiCsp']['child'] !== null &&
+                  item['hanoiCsp']['child']['child'] !== null
+
                 "
               >
                 {{
-                  item["hanoi_csp"]["child"]["child"]["child"]["child"][
-                    "operation"
-                  ]["name"]
+                  item["hanoiCsp"]["child"]["child"]["operation"][
+                    "name"
+                  ]
                 }}
                 {{
                   formatDateTime(
-                    item["hanoi_csp"]["child"]["child"]["child"]["child"][
-                      "movein_date"
-                    ]
+                    item["hanoiCsp"]["child"]["child"]["moveinDate"]
                   )
                 }}
-                {{
-                  item["hanoi_csp"]["child"]["child"]["child"]["child"][
-                    "lot_id"
-                  ]
-                }}
+                {{ item["hanoiCsp"]["child"]["child"]["lotId"] }}
               </span>
               <span v-else>--</span>
               <br />
@@ -295,33 +272,33 @@
             <span v-for="(item, index) in scope.row.lotStatus" :key="index">
               <span
                 v-if="
-                  item['hanoi_csp'] !== null &&
-                  item['hanoi_csp']['child'] !== null &&
-                  item['hanoi_csp']['child']['child'] !== null &&
-                  item['hanoi_csp']['child']['child']['child'] !== null &&
-                  item['hanoi_csp']['child']['child']['child']['child'] !==
+                  item['hanoiCsp'] !== null &&
+                  item['hanoiCsp']['child'] !== null &&
+                  item['hanoiCsp']['child']['child'] !== null &&
+                  item['hanoiCsp']['child']['child']['child'] !== null &&
+                  item['hanoiCsp']['child']['child']['child']['child'] !==
                     null &&
-                  item['hanoi_csp']['child']['child']['child']['child'][
+                  item['hanoiCsp']['child']['child']['child']['child'][
                     'child'
                   ] !== null
                 "
               >
                 {{
-                  item["hanoi_csp"]["child"]["child"]["child"]["child"][
-                    "child"
-                  ]["operation"]["name"]
+                  item["hanoiCsp"]["child"]["child"]["child"]["child"]["child"][
+                    "operation"
+                  ]["name"]
                 }}
                 {{
                   formatDateTime(
-                    item["hanoi_csp"]["child"]["child"]["child"]["child"][
+                    item["hanoiCsp"]["child"]["child"]["child"]["child"][
                       "child"
-                    ]["movein_date"]
+                    ]["moveinDate"]
                   )
                 }}
                 {{
-                  item["hanoi_csp"]["child"]["child"]["child"]["child"][
-                    "child"
-                  ]["lot_id"]
+                  item["hanoiCsp"]["child"]["child"]["child"]["child"]["child"][
+                    "lotId"
+                  ]
                 }}
               </span>
               <span v-else>--</span>
@@ -365,24 +342,21 @@
 
 <script lang="ts" setup>
 import { defineProps, ref, computed } from "vue";
-import type { ProcessData } from "../Interface/ApplicationInterface";
+
 import {
   handleDateChange as externalHandleDateChange,
   updateStatus,
 } from "./ApplicationsByWeek";
-import {
-  downloadExcel,
-  syncFabFormToFabExcel,
-  downloadFabPlanExcel,
-} from "./ApplicationList";
+import { createTableData, downloadFabPlanExcel } from "./ApplicationList";
 import { formatDate, formatDateTime } from "../Common/Application";
 import { getTodayDatetime, adjustDate } from "../../../utils/date-utils";
 import MyApplicationList from "../../Mdr/General/ApplicationList/MyApplicationList.vue";
+import type { FabApplicationForm } from "../../../interface/mes-interface";
 import DialogTemplate from "./ApplicationLinksDialog.vue";
 import { cn69ModelNames } from "../SampleStatus/Cn69List";
-import type { FabExcel } from "../../../interface/fab";
+import type { ModifiedFabDataInterface } from "../../../interface/fab";
 const props = defineProps<{
-  processData: ProcessData[];
+  processData: FabApplicationForm[];
 }>();
 
 // 라우터 및 현재 경로 가져오기
@@ -410,11 +384,11 @@ const filteredApplicationData = computed(() => {
   });
 });
 
-const fabExcels = ref<FabExcel[]>([]);
+const modifiedFabData = ref<ModifiedFabDataInterface[]>([]);
 
 // 필터링 상태를 관리하는 변수
 const isFiltered = ref(false);
-const temp = ref<ProcessData[]>([]);
+const temp = ref<FabApplicationForm[]>([]);
 // 특정 material_id가 포함된 항목들만 필터링한 배열
 
 const filteredData = computed(() => {
@@ -443,13 +417,13 @@ const toggleFilter = () => {
 
 // emit 정의
 const emit = defineEmits<{
-  (e: "update:processData", updatedData: ProcessData[]): void;
+  (e: "update:processData", updatedData: FabApplicationForm[]): void;
 }>();
 
 // 셀에 적용할 클래스 반환
 const cellClass = ({ row, rowIndex, column, columnIndex }) => {
   // 예: 짝수 행에만 스타일을 적용
-  if ([5 ,7,9,12].includes(columnIndex) ) {
+  if ([5, 7, 9, 12].includes(columnIndex)) {
     return "even-row";
   }
   return "";
@@ -463,9 +437,12 @@ const groupCounts = computed(() => {
 });
 
 function handleExcelSubmit() {
-  fabExcels.value = [];
-  fabExcels.value = syncFabFormToFabExcel(filteredData.value, fabExcels.value);
-  downloadFabPlanExcel(fabExcels.value);
+  modifiedFabData.value = [];
+  modifiedFabData.value = createTableData(
+    filteredData.value,
+    modifiedFabData.value
+  );
+  downloadFabPlanExcel(modifiedFabData.value);
 }
 </script>
 
@@ -476,18 +453,17 @@ function handleExcelSubmit() {
   font-weight: bold; /* 두껍게 */
   font-size: 16px; /* 크기를 키워 가독성 향상 */
   background-color: #f1f1f1; /* 연한 회색 배경 */
-  font-family: 'Times New Roman', Times, serif; /* Times New Roman 글꼴 설정 */
+  font-family: "Times New Roman", Times, serif; /* Times New Roman 글꼴 설정 */
   color: #222; /* 진한 텍스트 색상 */
   text-align: center; /* 중앙 정렬 */
   border-bottom: 2px solid #ccc; /* 구분을 위한 아래 테두리 */
-  
 }
 
 .custom-table ::v-deep(.even-row) {
-  box-shadow: inset 0px 1px 2px 3px  rgba(218, 24, 24, 0.3);
+  box-shadow: inset 0px 1px 2px 3px rgba(218, 24, 24, 0.3);
   background-color: rgb(243, 235, 235);
   border-radius: 1px;
-  
+
   // padding: 4px;
 }
 
@@ -503,7 +479,6 @@ function handleExcelSubmit() {
   font-weight: bold; /* 강조 */
   color: #1a73e8; /* 파란색 텍스트 */
 }
-
 
 .table-wrapper {
   max-width: 100%;

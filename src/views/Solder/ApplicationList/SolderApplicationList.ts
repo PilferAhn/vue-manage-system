@@ -50,7 +50,7 @@ function traverseLotStatus(
       app.childStageName = "STEP4";
     } else if (depth == 4) {
       app.childStageName = "출하";
-      app.receivedDate = lotStatus.moveInDate;
+      app.receivedDate = lotStatus.moveinDate;
       // console.log(lotStatus);
     }
     app.lotId = lotStatus.lotId;
@@ -136,6 +136,25 @@ export async function findLotHistoryFromFabRequest(
         fabApplicationData[j].lotStatus.forEach((lot, index) => {
           if (lot.hanoiCsp !== null) {
             traverseLotStatus(applicationData[i], lot.hanoiCsp, 0);
+          }
+          else{
+
+            if(!["OPF01", "OP07001015", "OP07003015"].includes(lot.operation.operationId)){
+
+              if(applicationData[i].modelName === "HG72EXH@M2"){
+                console.log(lot)
+              }
+              
+              if(applicationData[i].childOperation === undefined){
+                applicationData[i].childOperation  = lot.operation.name + ", "
+              }
+              else{
+                applicationData[i].childOperation = applicationData[i].childOperation + lot.operation.name + ", "
+              }              
+              applicationData[i].childStageName = "FAB";
+
+            }
+            
           }
         });
         // console.log(applicationData[i]);

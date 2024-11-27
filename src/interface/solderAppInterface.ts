@@ -61,7 +61,7 @@ export interface ApplicationData {
   requesterId?: string;
   customEvbType? : string;
   inductorType?: string;
-  
+  client? : string;  
 
 
   filterType?: string;
@@ -97,4 +97,9 @@ export interface ApplicationData {
   reelId? : string
   reelLoc? : string
 
+}
+
+
+export interface client {
+  
 }

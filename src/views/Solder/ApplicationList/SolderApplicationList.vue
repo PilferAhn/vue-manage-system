@@ -4,12 +4,14 @@
       <el-tab-pane label="Ongoing" name="created">
         <SolverApplicationListByStatus
           :applicationData="progressData"
+          :applicationType="'created'"
           @status-updated="refreshData"
         />
       </el-tab-pane>
       <el-tab-pane label="Finished" name="finished">
         <SolverApplicationListByStatus
           :applicationData="finishedData"
+          :applicationType="'finished'"
           @status-updated="refreshData"
         />
       </el-tab-pane>
