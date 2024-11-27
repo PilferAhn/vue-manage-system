@@ -160,7 +160,7 @@
 
       <el-table-column
         label="Detail"
-        fixed="right"
+        
         :align="'center'"
         width="290"
       >

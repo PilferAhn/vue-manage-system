@@ -12,12 +12,13 @@
           <el-card>
             <SelectOptions
               v-model="applicationData.client"
-              :label="'Select Client'"
+              :label="'Customer'"
               :prop="'client'"
-              :disable="false"
+              :disable="applicationType==='load'"
               :placeholder="'고객사를 선택하세요'"
               :options="clientOptions"
             ></SelectOptions>
+            
 
             <el-divider content-position="center">기본 정보</el-divider>
             <el-row :gutter="20">
@@ -228,7 +229,7 @@
               <el-table-column
                 prop="measurementType"
                 label="측정 항목"
-                width="130"
+                width="150"
                 :align="'center'"
               >
                 <template #default="scope">
@@ -264,7 +265,7 @@
               <el-table-column
                 prop="기타"
                 label="측정 상세 요청 사항"
-                width="600"
+                width="1100"
               >
                 <template #default="scope">
                   <el-input
@@ -283,11 +284,11 @@
                   {{ formatDate(scope.row.finishedDate) }}
                 </template>
               </el-table-column>
-              <el-table-column label="유의사항" width="500">
+              <!-- <el-table-column label="유의사항" width="500">
                 <template #default="scope">
                   <el-input v-model="scope.row.placeHolder" disabled></el-input>
                 </template>
-              </el-table-column>
+              </el-table-column> -->
               <el-table-column
                 v-if="props.applicationType === 'load'"
                 label="UPDATE"

@@ -3,7 +3,7 @@
     <!-- Bar Charts Row -->
     <div style="display: flex; justify-content: space-between; gap: 20px;">
       <div style="flex: 1">
-        <BarChart class="bar-container" v-if="isLoad" :title="'24년 11월 이후'" :y_max="850" :data="measurementData" />
+        <BarChart class="bar-container" v-if="isLoad" :title="'24년 11월 이후'" :y_max="1100" :data="measurementData" />
       </div>
     </div>
 
