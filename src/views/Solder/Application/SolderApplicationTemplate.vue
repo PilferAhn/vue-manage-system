@@ -801,8 +801,9 @@ watch(
   () => applicationData.client,
   (newVal, oldVal) => {
     if (newVal !== oldVal) {
-      console.log("here");
-      updateMeasurementDataByClient(applicationData, applicationData.client);
+      if(props.applicationType !== "load"){
+        updateMeasurementDataByClient(applicationData, applicationData.client);
+      }      
     }
   },
   { deep: true }
