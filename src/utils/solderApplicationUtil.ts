@@ -140,7 +140,7 @@ export const initializeApplicationData = () => {
 
     // isSampleAvailable : ,
 
-    deembedMode: "External Deembeding",
+    deembedMode: "",
     matchingComponentType: "",
 
     status: "created",
@@ -154,6 +154,8 @@ export const initializeApplicationData = () => {
         status: "",
         placeHolder: "",
         detail: "",
+        wantedFinishedDate : ""
+        
       },
       {
         number: "2",
@@ -163,6 +165,7 @@ export const initializeApplicationData = () => {
         status: "",
         placeHolder: "메탈 마스크 WHC 보유 여부 확인, 없다면 의뢰 必",
         detail: "",
+        wantedFinishedDate: ""
       },
       {
         number: "3",
@@ -170,9 +173,9 @@ export const initializeApplicationData = () => {
         isMeasured: false, // 초기값 false
         quantity: 0, // 초기값 '0' 문자열로 설정
         placeHolder: "",
-
         status: "",
         detail: "",
+        wantedFinishedDate : "",
       },
       {
         number: "4",
@@ -182,6 +185,7 @@ export const initializeApplicationData = () => {
         status: "",
         placeHolder: "고객사 기재할 것 (중화, K1)",
         detail: "",
+        wantedFinishedDate : "",
       },
       {
         number: "5",
@@ -192,6 +196,7 @@ export const initializeApplicationData = () => {
         placeHolder:
           "샘플 제작 : WHC / TCF : 본사  (WHC 이관 이후 Update 예정)",
         detail: "",
+        wantedFinishedDate : "",
       },
       {
         number: "6",
@@ -201,6 +206,7 @@ export const initializeApplicationData = () => {
         status: "",
         placeHolder: "",
         detail: "",
+        wantedFinishedDate : "",
       },
     ], // Initialize with an empty array
     segmentQuantity: 0,

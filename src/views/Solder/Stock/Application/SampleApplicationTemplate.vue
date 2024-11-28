@@ -17,6 +17,14 @@
         />
       </el-form-item>
 
+      <el-form-item label="Total Quantity">
+        <el-input
+          v-model="localStockInfo.quantity"
+          :min="0"
+          placeholder="Entire Chip Quantity"
+        />
+      </el-form-item>
+
       <el-form-item prop="receiver" label="Receiver">
         <el-input
           v-model="localStockInfo.receiver"

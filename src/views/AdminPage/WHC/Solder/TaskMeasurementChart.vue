@@ -1,24 +1,51 @@
 <template>
-  <div style="display: flex; flex-direction: column; gap: 20px;">
+  <div style="display: flex; flex-direction: column; gap: 20px">
     <!-- Bar Charts Row -->
-    <div style="display: flex; justify-content: space-between; gap: 20px;">
+    <div style="display: flex; justify-content: space-between; gap: 20px">
       <div style="flex: 1">
-        <BarChart class="bar-container" v-if="isLoad" :title="'24년 11월 이후'" :y_max="1100" :data="measurementData" />
+        <BarChart
+          class="bar-container"
+          v-if="isLoad"
+          :title="'24년 11월 이후'"
+          :y_max="1100"
+          :data="measurementData"
+        />
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; gap: 20px">
+      <div style="flex: 1">
+        <DailyBar :serverData="lastdailyMeasInfo" title="Last Week" v-if="isLoad" />
+      </div>
+      <div style="flex: 1">
+        <DailyBar :serverData="dailyMeasInfo" title="This Week" v-if="isLoad" />
       </div>
     </div>
 
     <!-- Last Week and This Week Bar Charts Row -->
-    <div style="display: flex; justify-content: space-between; gap: 20px;">
-      <div  style="flex: 1">
-        <BarChart2 class="bar-container" v-if="isLoad" :title="'Last Week'" :y_max="300" :data="lastWeek" />
+    <div style="display: flex; justify-content: space-between; gap: 20px">
+      <div style="flex: 1">
+        <BarChart2
+          class="bar-container"
+          v-if="isLoad"
+          :title="'Last Week'"
+          :y_max="300"
+          :data="lastWeek"
+        />
       </div>
-      <div  style="flex: 1">
-        <BarChart2 class="bar-container" v-if="isLoad" :title="'This Week'" :y_max="300" :data="thisWeek" />
+      <div style="flex: 1">
+        <BarChart2
+          class="bar-container"
+          v-if="isLoad"
+          :title="'This Week'"
+          :y_max="300"
+          :data="thisWeek"
+        />
       </div>
     </div>
 
     <!-- Pie Charts Row -->
-    <div style="display: flex; justify-content: space-between; gap: 20px;">
+    <div style="display: flex; justify-content: space-between; gap: 20px">
       <div class="pie-container">
         <pieChart v-if="isLoad" :title="'Last Week'" :data="lastWeek" />
       </div>
@@ -30,20 +57,26 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, reactive } from "vue";
 import BarChart from "./BarChart.vue";
 import BarChart2 from "./BarChart2.vue";
-import pieChart from "./pie.vue"
+import pieChart from "./pie.vue";
+import DailyBar from "./DailyBar.vue";
+import { serverData } from "./temp-date";
+import type { DailyMeasInfo } from "../../../../interface/solderAppInterface";
 import {
   getThisMonday,
   formatDate,
   adjustDate,
-  getThisSunday
+  getThisSunday,
 } from "../../../../utils/date-utils";
 import axios from "axios";
 import { format } from "path";
+import { getDailyData } from "./solder-static-utils";
 
 // Define the type for measurement data
+const dailyMeasInfo = reactive<DailyMeasInfo[]>([]);
+const lastdailyMeasInfo = reactive<DailyMeasInfo[]>([]);
 type MeasurementData = Record<string, [number, number]>;
 const thisWeek = ref<MeasurementData>({});
 const lastWeek = ref<MeasurementData>({});
@@ -60,7 +93,7 @@ async function getWhcMeasurementHistoryQuantity(): Promise<MeasurementData> {
     const response = await axios.get(url);
     // return prioritizeCharacteristicEvaluation(response.data);
     // return prioritizeKeys(response.data);
-    return response.data
+    return response.data;
   } catch (error) {
     console.error("Error fetching measurement data:", error);
     return {};
@@ -74,7 +107,7 @@ async function getWhcMeasurementHistoryQuantityByDate(
   const url = "/solder/get_measured_vs_requested_by_date/" + date;
   try {
     const response = await axios.get(url);
-    return response.data
+    return response.data;
     // return prioritizeKeys(response.data);
   } catch (error) {
     console.error("Error fetching measurement data:", error);
@@ -82,7 +115,9 @@ async function getWhcMeasurementHistoryQuantityByDate(
   }
 }
 
-function prioritizeCharacteristicEvaluation(data: Record<string, number[]>): Record<string, number[]> {
+function prioritizeCharacteristicEvaluation(
+  data: Record<string, number[]>
+): Record<string, number[]> {
   const prioritizedKey = "특성 평가";
 
   // 특성 평가 데이터를 맨 앞에 배치
@@ -99,12 +134,16 @@ function prioritizeCharacteristicEvaluation(data: Record<string, number[]>): Rec
   return sortedData;
 }
 
-function prioritizeKeys(data: Record<string, number[]>): Record<string, number[]> {
+function prioritizeKeys(
+  data: Record<string, number[]>
+): Record<string, number[]> {
   const prioritizedKey = "특성 평가";
   const psKey = "PS 신뢰성";
 
   // 필터링된 나머지 키
-  const remainingKeys = Object.keys(data).filter((key) => key !== prioritizedKey && key !== psKey);
+  const remainingKeys = Object.keys(data).filter(
+    (key) => key !== prioritizedKey && key !== psKey
+  );
 
   // 결과를 구성
   const sortedData: Record<string, number[]> = {
@@ -120,19 +159,21 @@ function prioritizeKeys(data: Record<string, number[]>): Record<string, number[]
     }, {} as Record<string, number[]>),
   };
 
-  console.log(sortedData)
+  console.log(sortedData);
   return sortedData;
 }
 
-function processMeasurementData(data: Record<string, number[]>): Record<string, number[]> {
+function processMeasurementData(
+  data: Record<string, number[]>
+): Record<string, number[]> {
   if (!data) return {};
 
   // 1. "PS 신뢰성" 값을 저장
   const value = data["PS 신뢰성"];
-  const solderMes = data["특성 평가"]
+  const solderMes = data["특성 평가"];
   // 기존 키 삭제
-  delete data["PS 신뢰성"];    
-    delete data["내전력"];
+  delete data["PS 신뢰성"];
+  delete data["내전력"];
   if (value) {
     // 객체를 배열로 변환하여 순서 조작
     const entries = Object.entries(data);
@@ -140,33 +181,47 @@ function processMeasurementData(data: Record<string, number[]>): Record<string, 
     // 새로운 키를 추가 및 삽입
     const targetIndex = 2; // 원하는 인덱스 설정
     entries.splice(targetIndex, 0, ["ESD", value]);
-    
+
     entries.splice(0, 0, ["특성 평가", solderMes]);
 
-        
     const updatedData = Object.fromEntries(entries);
 
-    return updatedData
+    return updatedData;
   }
 
   return data;
 }
 
-
 // Fetch data on component mount
 onMounted(async () => {
-  console.log(getThisMonday())
-  measurementData.value = processMeasurementData(await getWhcMeasurementHistoryQuantity());
-  thisWeek.value = processMeasurementData(await getWhcMeasurementHistoryQuantityByDate(formatDate(adjustDate(getThisMonday(), 7))));
-  lastWeek.value = processMeasurementData(await getWhcMeasurementHistoryQuantityByDate(formatDate(getThisMonday())));
+  console.log(getThisMonday());
+  measurementData.value = processMeasurementData(
+    await getWhcMeasurementHistoryQuantity()
+  );
+  thisWeek.value = processMeasurementData(
+    await getWhcMeasurementHistoryQuantityByDate(
+      formatDate(adjustDate(getThisMonday(), 7))
+    )
+  );
+  lastWeek.value = processMeasurementData(
+    await getWhcMeasurementHistoryQuantityByDate(formatDate(getThisMonday()))
+  );
 
+  dailyMeasInfo.length = 0; // 기존 데이터를 비움
+  dailyMeasInfo.push(
+    ...(await getDailyData(formatDate(adjustDate(getThisMonday(), 7))))
+  );
+
+  lastdailyMeasInfo.length = 0
+  lastdailyMeasInfo.push(
+    ...(await getDailyData(formatDate(getThisMonday())))
+  )
   // Generate transformed data for the second chart
   // transformedData.value = transformData(lastWeek.value);
 
   isLoad.value = true;
 });
 </script>
-
 
 <style scoped>
 .pie-container {
@@ -182,10 +237,8 @@ onMounted(async () => {
 }
 
 .bar-container {
-  
   border: 1px solid #ddd; /* Optional: Border for better visual separation */
   padding: 10px;
   border-radius: 10px; /* Optional: Rounded corners */
 }
 </style>
-

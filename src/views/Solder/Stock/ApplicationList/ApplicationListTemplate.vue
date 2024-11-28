@@ -16,14 +16,12 @@
       <el-table-column type="index" label="No" width="50"></el-table-column>
 
       <el-table-column
-        
         prop="modelName"
         label="Model Name"
         width="170"
       ></el-table-column>
 
       <el-table-column
-        
         prop="designer"
         label="Designer"
         width="110"
@@ -59,16 +57,11 @@
         prop="receiver"
       ></el-table-column>
       <el-table-column
-        
         prop="quantity"
         label="Total Quantity"
         width="150"
       ></el-table-column>
-      <el-table-column
-        
-        label="Remaining Quantity"
-        width="200"
-      >
+      <el-table-column label="Remaining Quantity" width="200">
         <template #default="scope">
           {{ scope.row.quantity - scope.row.assumedQuantity }}
         </template>

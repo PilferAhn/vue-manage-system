@@ -8,6 +8,7 @@ export interface Measurement {
   detail : string;
   status : string;
   placeHolder? : string;
+  wantedFinishedDate?: string;
 }
 
 export interface Segment {
@@ -102,4 +103,10 @@ export interface ApplicationData {
 
 export interface client {
   
+}
+
+export interface DailyMeasInfo{
+  date: string;
+  measurement_type: string;
+  finished_task: number;
 }

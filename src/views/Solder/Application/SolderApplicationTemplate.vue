@@ -14,12 +14,11 @@
               v-model="applicationData.client"
               :label="'Customer'"
               :prop="'client'"
-              :disable="applicationType==='load'"
+              :disable="applicationType === 'load'"
               :placeholder="'고객사를 선택하세요'"
               :options="clientOptions"
               :need-bold="true"
             ></SelectOptions>
-            
 
             <el-divider content-position="center">기본 정보</el-divider>
             <el-row :gutter="20">
@@ -266,7 +265,7 @@
               <el-table-column
                 prop="기타"
                 label="측정 상세 요청 사항"
-                width="1100"
+                width="800"
               >
                 <template #default="scope">
                   <el-input
@@ -275,6 +274,7 @@
                   ></el-input>
                 </template>
               </el-table-column>
+
               <el-table-column
                 v-if="props.applicationType === 'load'"
                 label="종료일"
@@ -290,6 +290,19 @@
                   <el-input v-model="scope.row.placeHolder" disabled></el-input>
                 </template>
               </el-table-column> -->
+              <el-table-column label="완료 희망" :align="'center'" width="250">
+                <template #default="scope">
+                  <!-- {{ scope.row.desiredCompletionDate }} -->
+                  <el-date-picker
+                    v-model="scope.row.desiredCompletionDate"
+                    type="date"
+                    placeholder="Pick a day"
+                    format="YYYY/MM/DD"
+                    value-format="YYYY-MM-DD"
+                    :size="'deault'"
+                  />
+                </template>
+              </el-table-column>
               <el-table-column
                 v-if="props.applicationType === 'load'"
                 label="UPDATE"
@@ -803,9 +816,9 @@ watch(
   () => applicationData.client,
   (newVal, oldVal) => {
     if (newVal !== oldVal) {
-      if(props.applicationType !== "load"){
+      if (props.applicationType !== "load") {
         updateMeasurementDataByClient(applicationData, applicationData.client);
-      }      
+      }
     }
   },
   { deep: true }

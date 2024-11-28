@@ -4,7 +4,7 @@ export const clientOptions: OptionInterface[] = [
   {
     key: 1,
     value: "K1",
-    label: "k1",
+    label: "K1",
   },
   {
     key: 2,

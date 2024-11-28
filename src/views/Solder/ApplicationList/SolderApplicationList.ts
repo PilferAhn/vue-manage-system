@@ -26,9 +26,10 @@ export const statusList = [
 function traverseLotStatus(
   app: ApplicationData,
   lotStatus: LotStatus | null,
-  depth = 0
+  depth : number
 ): void {
-  if (lotStatus === null || depth >= 5) return; // Null 체크 및 최대 깊이 제한
+  if (lotStatus === null || depth >= 6) return; // Null 체크 및 최대 깊이 제한
+
 
   // console.log(`Depth: ${depth}, Lot ID: ${lotStatus.lotId}`);
   // console.log(`Operation Name: ${lotStatus.operation.name}`);
@@ -47,8 +48,13 @@ function traverseLotStatus(
       app.childIsAssay = true;
       app.assayLotId = lotStatus.lotId;
     } else if (depth == 3) {
-      app.childStageName = "STEP4";
+      app.childStageName = "STEP3";
     } else if (depth == 4) {
+      app.childStageName = "STEP4";
+      app.receivedDate = lotStatus.moveinDate;
+      // console.log(lotStatus);
+    }
+    else if (depth == 5) {
       app.childStageName = "출하";
       app.receivedDate = lotStatus.moveinDate;
       // console.log(lotStatus);
@@ -135,6 +141,9 @@ export async function findLotHistoryFromFabRequest(
 
         fabApplicationData[j].lotStatus.forEach((lot, index) => {
           if (lot.hanoiCsp !== null) {
+            if(fabApplicationData[j].modelName === "XM71ATM@2C"){
+              console.log(fabApplicationData[j].lotStatus)
+            }
             traverseLotStatus(applicationData[i], lot.hanoiCsp, 0);
           }
           else{
