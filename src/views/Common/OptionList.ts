@@ -18,8 +18,3 @@ export const packageList = [
     { key: "선행 공법", label: "선행 공법", value: "선행 공법" },
   ];
 
-  export interface options {
-    key: number;
-    label: string;
-    value: string;
-  }

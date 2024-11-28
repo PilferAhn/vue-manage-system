@@ -32,7 +32,7 @@
       :data="filteredApplicationData"
       class="custom-table"
       style="min-width: 1000px"
-      height="640"
+      height="670"
       :row-style="{ height: '30px' }"
       :cell-class-name="cellClass"
     >

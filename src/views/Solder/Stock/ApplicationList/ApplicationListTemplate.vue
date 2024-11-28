@@ -59,13 +59,13 @@
         prop="receiver"
       ></el-table-column>
       <el-table-column
-        v-if="props.operationType === 'reel'"
+        
         prop="quantity"
         label="Total Quantity"
         width="150"
       ></el-table-column>
       <el-table-column
-        v-if="props.operationType === 'reel'"
+        
         label="Remaining Quantity"
         width="200"
       >

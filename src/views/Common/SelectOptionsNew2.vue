@@ -1,5 +1,5 @@
 <template>
-    <el-form-item :label="label" :prop="prop" :rules="rules">
+    <el-form-item :label="label" :prop="prop" :rules="rules"  :class="{'required-label' : props.needBold}">
       <el-select
         v-model="internalValue"
         @change="updateValue"
@@ -31,6 +31,7 @@
     placeholder: String,
     options: Array as PropType<OptionInterface[]>, // Array of OptionItem objects with string properties
     disable: Boolean,
+    needBold : Boolean
   });
   
   const emit = defineEmits(["update:modelValue"]);
@@ -48,3 +49,11 @@
     }
   );
   </script>
+
+<style scope>
+.required-label > .el-form-item__label {
+  font-weight: bold;
+  color: rgb(0, 0, 0);
+  font-size: 1.1em;
+}
+</style>

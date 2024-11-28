@@ -61,7 +61,7 @@ function traverseLotStatus(
 }
 
 export function getMyApplicationList(applicationData: ApplicationData[]) {
-  if (["admin", "안지민", "엄정은", "whcRD"].includes(getUserName())) {
+  if (["admin", "안지민", "엄정은", "whcRD", "Jeremy"].includes(getUserName())) {
     return applicationData;
   }
 
@@ -139,21 +139,21 @@ export async function findLotHistoryFromFabRequest(
           }
           else{
 
-            if(!["OPF01", "OP07001015", "OP07003015"].includes(lot.operation.operationId)){
+            // if(!["OPF01", "OP07001015", "OP07003015"].includes(lot.operation.operationId)){
 
-              if(applicationData[i].modelName === "HG72EXH@M2"){
-                console.log(lot)
-              }
+            //   if(applicationData[i].modelName === "HG72EXH@M2"){
+            //     console.log(lot)
+            //   }
               
-              if(applicationData[i].childOperation === undefined){
-                applicationData[i].childOperation  = lot.operation.name + ", "
-              }
-              else{
-                applicationData[i].childOperation = applicationData[i].childOperation + lot.operation.name + ", "
-              }              
-              applicationData[i].childStageName = "FAB";
+            //   if(applicationData[i].childOperation === undefined){
+            //     applicationData[i].childOperation  = lot.operation.name + ", "
+            //   }
+            //   else{
+            //     applicationData[i].childOperation = applicationData[i].childOperation + lot.operation.name + ", "
+            //   }              
+            //   applicationData[i].childStageName = "FAB";
 
-            }
+            // }
             
           }
         });

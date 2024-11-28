@@ -19,7 +19,7 @@
         />
       </el-form-item>
 
-      <el-form-item label="Total Quantity" v-if="props.stockInfo.operationType === 'reel'">
+      <el-form-item label="Total Quantity">
         <el-input
           v-model="localStockInfo.quantity"
           :min="0"
@@ -27,7 +27,7 @@
         />
       </el-form-item>
 
-      <div v-if="props.formType === 'load' && props.stockInfo.operationType === 'reel'">
+      <div v-if="props.formType === 'load'">
         <el-form-item prop="assumedQuantity" label="Usage Quantity">
           <el-input
             v-model="localStockInfo.assumedQuantity"

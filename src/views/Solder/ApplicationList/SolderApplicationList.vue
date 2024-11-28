@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-tabs v-model="activeTab">
+    <el-tabs v-model="activeTab" type="border-card">
       <el-tab-pane label="Ongoing" name="created">
         <SolverApplicationListByStatus
           :applicationData="progressData"

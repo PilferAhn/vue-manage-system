@@ -17,6 +17,7 @@
               :disable="applicationType==='load'"
               :placeholder="'고객사를 선택하세요'"
               :options="clientOptions"
+              :need-bold="true"
             ></SelectOptions>
             
 

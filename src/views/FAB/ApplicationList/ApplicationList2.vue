@@ -1,6 +1,10 @@
 <template>
-  <div class="container">
-    <el-tabs v-model="activeTab" type="card" @tab-click="handleTabClick">
+  <div>
+    <el-tabs
+      v-model="activeTab"
+      type="border-card"
+      @tab-click="handleTabClick" 
+    >
       <el-tab-pane :label="cspLabel" name="csp">
         <ApplicationsByWeek :processData="whcCsp" />
       </el-tab-pane>
@@ -16,7 +20,6 @@ import { fetchProcessData } from "./ApplicationList";
 import ApplicationsByWeek from "./ApplicationsByWeek2.vue";
 import type { FabApplicationForm } from "../../../interface/mes-interface";
 
-
 const cspLabel = "CSP";
 const wlpLabel = "WLP(BDMP)";
 
@@ -31,7 +34,6 @@ const handleTabClick = (tab: any) => {
 const processDataArray = ref<FabApplicationForm[]>([]); // For this week's data
 const whcCsp = ref<FabApplicationForm[]>([]); // For last week's data
 const whcWlp = ref<FabApplicationForm[]>([]); // For next week's data
-
 
 let tempName = "";
 onMounted(async () => {
@@ -67,4 +69,5 @@ onMounted(async () => {
 .uppercase {
   text-transform: uppercase;
 }
+
 </style>
