@@ -10,10 +10,15 @@
         fontWeight: 'bold',
         fontSize: '18px',
       }"
-      height="770"
+      height="775"
       :row-style="{ height: '50px' }"
     >
-      <el-table-column type="index" label="No" width="50"></el-table-column>
+      <el-table-column label="No" width="50">
+        <template #default="scope">
+          <!-- Calculate sequential index -->
+          {{ (currentPage - 1) * pageSize + scope.$index + 1 }}
+        </template>
+      </el-table-column>
 
       <el-table-column
         prop="modelName"
@@ -25,6 +30,7 @@
         prop="designer"
         label="Designer"
         width="110"
+        :align="'center'"
       ></el-table-column>
 
       <el-table-column
