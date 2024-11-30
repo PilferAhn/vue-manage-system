@@ -1,8 +1,6 @@
 import axios from "axios";
 import { ref, watch } from "vue";
-import {  
-  convertKeysToCamelCase,
-} from "../../../utils/key-converter";
+import { convertKeysToCamelCase } from "../../../utils/key-converter";
 import {
   ApplicationData,
   Measurement,
@@ -21,7 +19,7 @@ export async function downloadSolderApplicationXlsx(
     const requestData = convertKeysToPEP8(applicationData);
 
     const template_url = destinationUrl;
-    
+
     const response = await axios({
       url: template_url,
       method: "POST",
@@ -33,15 +31,12 @@ export async function downloadSolderApplicationXlsx(
     const disposition = response.headers["content-disposition"];
     let fileName = "solder_application.xlsx"; // Default file name
 
-    
     if (disposition && disposition.includes("filename")) {
       let fileNameMatch;
-    
+
       // 우선적으로 filename* 처리
       if (disposition.includes("filename*")) {
-        fileNameMatch = disposition.match(
-          /filename\*=[^']*'[^']*'(.*)/
-        );
+        fileNameMatch = disposition.match(/filename\*=[^']*'[^']*'(.*)/);
         if (fileNameMatch && fileNameMatch[1]) {
           fileName = decodeURIComponent(fileNameMatch[1]); // UTF-8 디코딩
         }
@@ -189,18 +184,21 @@ export async function removeApplicationByUuid(uuid: string) {
   }
 }
 
-
-
 export async function updateMeasurement(solderMeasurement: Measurement) {
   const url = "/solder/update_solder_measurement";
 
   try {
-
-    console.log(solderMeasurement.wantedFinishedDate)
-    if(solderMeasurement.wantedFinishedDate === "" || solderMeasurement.wantedFinishedDate === undefined || solderMeasurement.wantedFinishedDate === null){
-      solderMeasurement.wantedFinishedDate = undefined
-    }else{
-      solderMeasurement.wantedFinishedDate = formatDateTime(solderMeasurement.wantedFinishedDate)
+    console.log(solderMeasurement.wantedFinishedDate);
+    if (
+      solderMeasurement.wantedFinishedDate === "" ||
+      solderMeasurement.wantedFinishedDate === undefined ||
+      solderMeasurement.wantedFinishedDate === null
+    ) {
+      solderMeasurement.wantedFinishedDate = undefined;
+    } else {
+      solderMeasurement.wantedFinishedDate = formatDateTime(
+        solderMeasurement.wantedFinishedDate
+      );
     }
 
     const vals = convertKeysToPEP8(solderMeasurement);
@@ -358,7 +356,7 @@ function validateForm(applicationData: ApplicationData) {
   if (!validateSegmentation(applicationData)) {
     return false;
   }
- 
+
   return true;
 }
 
@@ -368,12 +366,10 @@ export function validateInput(application: ApplicationData): boolean {
       // ElMessage로 에러 발생
       ElMessage.error("직접 입력을 선택한 경우 EVB Type을 입력해야 합니다.");
       return false;
+    } else {
+      application.evbType = application.customEvbType;
     }
-    else{
-      application.evbType = application.customEvbType
-    }
-
-  } 
+  }
   return true;
 }
 
@@ -385,8 +381,7 @@ export async function sendApplicationData2(
   buttonType: string
 ) {
   try {
-
-    // 여기서 false true 체크하고 false 면 그냥 진행안함. 
+    // 여기서 false true 체크하고 false 면 그냥 진행안함.
     const isValid = validateInput(applicationData);
     if (!isValid) {
       // 유효성 검사 실패 시 진행 중단
@@ -395,10 +390,8 @@ export async function sendApplicationData2(
 
     // rules 에서 잡지 못하는 부분들을 validation 한다
     if (validateForm(applicationData)) {
-
       updateMeasurementStatus(applicationData);
 
-      
       const apiUrl = url; // FastAPI 엔드포인트
       const pep8Data = toPep8Recursive(applicationData);
 
@@ -410,7 +403,7 @@ export async function sendApplicationData2(
 
       // 파일이 있을 경우에만 파일 전송
       if (picFiles && picFiles.length > 0) {
-        console.log(picFiles)
+        console.log(picFiles);
         await sendFilesWithUuid(uuid, "evb", picFiles);
       } else {
         console.log("No files to upload.");
@@ -419,7 +412,6 @@ export async function sendApplicationData2(
       if (mapFiles && mapFiles.length > 0) {
         await sendFilesWithUuid(uuid, "map", mapFiles);
       } else {
-       
       }
 
       if (buttonType === "load") {
@@ -505,12 +497,16 @@ export async function sendApplicationData(
   }
 }
 
-export async function sendFilesWithUuid(uuid: string, fileType:string, selectedFiles: File[]) {
+export async function sendFilesWithUuid(
+  uuid: string,
+  fileType: string,
+  selectedFiles: File[]
+) {
   try {
     const apiUrl = "/solder/upload_solder_application_file2"; // 파일 업로드를 위한 FastAPI 엔드포인트
     const formData = new FormData();
     formData.append("uuid", uuid); // UUID 추가
-    formData.append("file_type", fileType)
+    formData.append("file_type", fileType);
     // formData.append("files", selectedFiles.values); // 파일 추가
     selectedFiles.forEach((file) => formData.append("files", file.raw));
     const response = await axios.post(apiUrl, formData, {
@@ -524,6 +520,18 @@ export async function sendFilesWithUuid(uuid: string, fileType:string, selectedF
 }
 
 function updateMeasurementStatus(applicationData: ApplicationData) {
+
+  applicationData.measurements.forEach((meas, index) => {
+    if (meas.wantedFinishedDate === "" || meas.wantedFinishedDate === null) {
+      meas.wantedFinishedDate = undefined;
+    } else if (meas.wantedFinishedDate === undefined) {
+    } else {
+      meas.wantedFinishedDate = formatDateTime(meas.wantedFinishedDate);
+    }
+
+    console.log(meas.wantedFinishedDate);
+  });
+
   if (applicationData.measurements && applicationData.measurements.length > 0) {
     applicationData.measurements.forEach((measurement) => {
       if (measurement.isMeasured) {
@@ -532,18 +540,6 @@ function updateMeasurementStatus(applicationData: ApplicationData) {
       }
     });
   }
-
-  applicationData.measurements.forEach((meas , index) => {
-    if(meas.wantedFinishedDate === ""){
-      meas.wantedFinishedDate = undefined
-    }
-    else if(meas.wantedFinishedDate === undefined){
-
-    }
-    else{
-      meas.wantedFinishedDate = formatDateTime(meas.wantedFinishedDate)
-    }
-  })
 }
 
 export async function updateStatusByUuid(
