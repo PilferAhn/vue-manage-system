@@ -9,6 +9,8 @@ export interface Measurement {
   status : string;
   placeHolder? : string;
   wantedFinishedDate?: string;
+  createdDate? : string;
+  finishedDate? : string;  
 }
 
 export interface Segment {

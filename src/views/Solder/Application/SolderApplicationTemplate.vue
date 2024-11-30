@@ -220,12 +220,18 @@
         </el-col>
       </el-row>
 
+      <el-card>
+        <SolderMeasurement
+          :measurements="applicationData.measurements"
+          :application-type="props.applicationType"
+        ></SolderMeasurement>
+      </el-card>
       <el-divider content-position="center">Measurement Infomation</el-divider>
 
-      <el-row>
+      <!-- <el-row>
         <el-col>
           <el-card>
-            <el-table :data="sortedMeasurements" style="width: 100%">
+            <el-table :data="props.applicationData.measurements" style="width: 100%">
               <el-table-column
                 prop="measurementType"
                 label="측정 항목"
@@ -285,21 +291,20 @@
                   {{ formatDate(scope.row.finishedDate) }}
                 </template>
               </el-table-column>
-              <!-- <el-table-column label="유의사항" width="500">
+              <el-table-column label="유의사항" width="500">
                 <template #default="scope">
                   <el-input v-model="scope.row.placeHolder" disabled></el-input>
                 </template>
-              </el-table-column> -->
+              </el-table-column>
               <el-table-column label="완료 희망" :align="'center'" width="250">
                 <template #default="scope">
-                  <!-- {{ scope.row.desiredCompletionDate }} -->
+                  
                   <el-date-picker
-                    v-model="scope.row.desiredCompletionDate"
+                    v-model="scope.row.wantedFinishedDate"
                     type="date"
                     placeholder="Pick a day"
                     format="YYYY/MM/DD"
-                    value-format="YYYY-MM-DD"
-                    :size="'deault'"
+                    value-format="YYYY-MM-DD"                    
                   />
                 </template>
               </el-table-column>
@@ -340,7 +345,7 @@
             </el-table>
           </el-card>
         </el-col>
-      </el-row>
+      </el-row> -->
       <el-row
         v-if="props.applicationType === 'create'"
         :gutter="20"
@@ -639,6 +644,7 @@ import { genFileId, ElMessage } from "element-plus";
 import { formatDate } from "../../FAB/Common/Application";
 import { removeApplicationHandler } from "../../../utils/Solder/application-utils";
 import { optionList } from "../../Calculator/SParameter/sparameter";
+import SolderMeasurement from "./SolderMeasurement.vue";
 const router = useRouter();
 
 // Define props to receive processData
@@ -647,13 +653,7 @@ const props = defineProps<{
   applicationType: string;
 }>();
 
-const sortedMeasurements = computed(() =>
-  [...applicationData.measurements].sort((a, b) => {
-    const numA = parseInt(a.number ?? "0", 10); // 문자열을 숫자로 변환
-    const numB = parseInt(b.number ?? "0", 10);
-    return numA - numB;
-  })
-);
+
 
 const sortedSegment = computed(() =>
   [...applicationData.segments].sort((a, b) => {

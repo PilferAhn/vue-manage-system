@@ -71,7 +71,7 @@ async function refreshData() {
     //     console.log(app)
     //   }
     // });
-
+    
     findLotHistoryFromFabRequest(applicationList.value)
     // findLots(applicationList.value);
     applicationList.value = sortByCreatedDateDesc(applicationList.value);

@@ -12,7 +12,7 @@ import fs from "fs/promises";
 import path from "path";
 import { fa } from "element-plus/es/locale";
 import { convertKeysToPEP8 } from "../../../utils/key-converter";
-
+import { formatDateTime } from "../../../utils/date-utils";
 export async function downloadSolderApplicationXlsx(
   applicationData: ApplicationData,
   destinationUrl: string
@@ -195,6 +195,14 @@ export async function updateMeasurement(solderMeasurement: Measurement) {
   const url = "/solder/update_solder_measurement";
 
   try {
+
+    console.log(solderMeasurement.wantedFinishedDate)
+    if(solderMeasurement.wantedFinishedDate === "" || solderMeasurement.wantedFinishedDate === undefined || solderMeasurement.wantedFinishedDate === null){
+      solderMeasurement.wantedFinishedDate = undefined
+    }else{
+      solderMeasurement.wantedFinishedDate = formatDateTime(solderMeasurement.wantedFinishedDate)
+    }
+
     const vals = convertKeysToPEP8(solderMeasurement);
     const response = await axios.post(url, vals);
     // 성공 시 el-message-box로 메시지 출력
@@ -524,6 +532,18 @@ function updateMeasurementStatus(applicationData: ApplicationData) {
       }
     });
   }
+
+  applicationData.measurements.forEach((meas , index) => {
+    if(meas.wantedFinishedDate === ""){
+      meas.wantedFinishedDate = undefined
+    }
+    else if(meas.wantedFinishedDate === undefined){
+
+    }
+    else{
+      meas.wantedFinishedDate = formatDateTime(meas.wantedFinishedDate)
+    }
+  })
 }
 
 export async function updateStatusByUuid(
