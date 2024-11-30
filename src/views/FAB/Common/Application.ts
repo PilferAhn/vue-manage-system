@@ -70,7 +70,7 @@ export const getSuggestions = (
 };
 
 // Confirm Application Function
-export const confirmApplication = async (id: string) => {
+export const confirmApplication = async (modelName: string) => {
   try {
     // Show a confirmation dialog before confirming
     await ElMessageBox.confirm(
@@ -84,7 +84,7 @@ export const confirmApplication = async (id: string) => {
     );
 
     const formData = new FormData();
-    formData.append("id", id);
+    formData.append("model_name", modelName);
     // If the user confirms, send the confirm request
     const response = await axios.post(
       `/fab_monitoring/set_designer_confirm`,

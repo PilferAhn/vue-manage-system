@@ -91,7 +91,7 @@
           <el-button
             type="primary"
             size="small"
-            @click="handleConfirm(scope.row.id)"
+            @click="handleConfirm(scope.row.modelName)"
             >의뢰서 등록</el-button
           >
           <!-- Confirm Button -->
@@ -102,12 +102,13 @@
             @click="writeFabcard(scope.row.id)"
             >FAB 카드 작성</el-button
           >
-          <el-button
+          <!-- <el-button
             type="info"
             :size="'small'"
             @click="handleRowClick(scope.row.id)"
+            :disabled="true"
             >자세히</el-button
-          >
+          > -->
           <!-- Delete Button -->
           <!-- <el-button
             type="danger"
@@ -175,8 +176,8 @@ const handleRowClick = (id: string) => {
   
 };
 
-const handleConfirm = (id : string) => {
-  confirmApplication(id)
+const handleConfirm = (modelName : string) => {
+  confirmApplication(modelName)
 }
 
 console.log(processData)

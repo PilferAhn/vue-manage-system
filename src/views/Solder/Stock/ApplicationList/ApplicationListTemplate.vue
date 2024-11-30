@@ -1,8 +1,23 @@
 <template>
   <div>
+    <!-- Search Input -->
+    <!-- <div style="margin-bottom: 20px; display: flex; justify-content: flex-start; align-items: center;">
+      <el-input
+        v-model="searchTerm"
+        placeholder="Model Name 검색"
+        clearable
+        style="width: 300px;"
+        @clear="handleClear"
+      >
+        <template #prefix>
+          <i class="el-icon-search"></i>
+        </template>
+      </el-input>
+    </div> -->
+
     <!-- Table -->
     <el-table
-      :data="paginatedData"
+      :data="filteredData"
       style="width: 100%; font-size: 16px; padding: 20px"
       :border="true"
       :header-cell-style="{
@@ -10,13 +25,12 @@
         fontWeight: 'bold',
         fontSize: '18px',
       }"
-      height="775"
       :row-style="{ height: '50px' }"
     >
       <el-table-column label="No" width="50">
         <template #default="scope">
-          <!-- Calculate sequential index -->
-          {{ (currentPage - 1) * pageSize + scope.$index + 1 }}
+          <!-- Sequential index -->
+          {{ scope.$index + 1 }}
         </template>
       </el-table-column>
 
@@ -86,64 +100,38 @@
         </template>
       </el-table-column>
     </el-table>
-
-    <!-- Pagination -->
-    <el-pagination
-      background
-      layout="prev, pager, next"
-      :page-size="pageSize"
-      :total="props.stockInfoList.length"
-      @current-change="handlePageChange"
-    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref, computed, onMounted } from "vue";
+import { defineProps, ref, computed } from "vue";
 import type { StockInfo } from "../../../../interface/stock";
 import { formatDate } from "../../../../utils/date-utils";
 import { useRouter } from "vue-router";
-import { fetchProcessData } from "../../../FAB/ApplicationList/ApplicationList";
-import { ProcessData } from "../../../FAB/Interface/ApplicationInterface";
-import { FabApplicationForm } from "../../../FAB/Interface/mes-interface";
-import type { LotStatus } from "../../../FAB/Interface/mes-interface";
 
 const props = defineProps<{
   stockInfoList: StockInfo[];
   operationType: string;
 }>();
 
-const fabRequestForms = ref<ProcessData[]>([]); // For this week's data
+const searchTerm = ref(""); // 검색어
 const router = useRouter();
-const currentPage = ref(1); // 현재 페이지
-const pageSize = 14; // 한 페이지당 행 수
 
-// 현재 페이지 데이터 계산
-const paginatedData = computed(() =>
-  props.stockInfoList.slice(
-    (currentPage.value - 1) * pageSize,
-    currentPage.value * pageSize
-  )
-);
+// 필터링된 데이터 계산
+const filteredData = computed(() => {
+  if (!searchTerm.value) {
+    return props.stockInfoList;
+  }
 
-function handlePageChange(page: number) {
-  currentPage.value = page; // 페이지 변경
-}
-
-onMounted(async () => {
-  // 시작 시간 측정
-  const startTime = performance.now();
-
-  // 데이터 가져오기
-  fabRequestForms.value = await fetchProcessData();
-
-  // 종료 시간 측정
-  const endTime = performance.now();
-
-  // 밀리초 -> 초 단위로 변환 및 로그 출력
-  const elapsedTime = (endTime - startTime) / 1000;
-  console.log(`FetchProcessData took ${elapsedTime.toFixed(2)} seconds.`);
+  // 검색 필터
+  return props.stockInfoList.filter((item) =>
+    item.modelName.toLowerCase().includes(searchTerm.value.toLowerCase())
+  );
 });
+
+function handleClear() {
+  searchTerm.value = ""; // 검색어 초기화
+}
 
 function handleDetail(row: StockInfo) {
   router.push({
@@ -152,21 +140,3 @@ function handleDetail(row: StockInfo) {
   });
 }
 </script>
-
-<style scoped>
-.el-table th {
-  background-color: #f7f7f7;
-  font-weight: bold;
-  font-size: 18px;
-  text-align: center;
-}
-
-.el-table td {
-  text-align: center;
-  font-size: 16px;
-}
-
-.el-table__row {
-  height: 50px;
-}
-</style>
