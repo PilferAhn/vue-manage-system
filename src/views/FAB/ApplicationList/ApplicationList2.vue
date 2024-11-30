@@ -44,7 +44,7 @@ onMounted(async () => {
   // showInfoByWeek(processDataArray.value)
 
   processDataArray.value.forEach((processData, index) => {
-    if (processData["destination"] === "WHC_CSP") {
+    if (["WHC_CSP", "WHC-CSP"].includes(processData["destination"])) {
       whcCsp.value.push(processData);
     } else if (processData["destination"] === "WHC_WLP") {
       whcWlp.value.push(processData);
