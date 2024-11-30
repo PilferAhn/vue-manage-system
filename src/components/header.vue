@@ -5,7 +5,7 @@
 			<el-icon v-if="sidebar.collapse"><Expand /></el-icon>
 			<el-icon v-else><Fold /></el-icon>
 		</div>
-		<div class="logo">요소기술그룹</div>
+		<div class="logo">RF 개발팀</div>
 		<div class="header-right">
 			<div class="header-user-con">
 				<!-- 消息中心 -->

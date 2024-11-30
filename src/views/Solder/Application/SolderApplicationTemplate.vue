@@ -160,7 +160,7 @@
                 >
                   <el-select
                     v-model="applicationData.matchingComponentType"
-                    placeholder="Select Deembed Mode"
+                    placeholder="Select TN or HQ ?"
                   >
                     <el-option label="TN" value="TN"></el-option>
                     <el-option label="HQ" value="HQ"></el-option>
