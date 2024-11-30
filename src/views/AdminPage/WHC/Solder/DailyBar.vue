@@ -84,7 +84,7 @@ const options = {
   plugins: {
     title: {
       display: true,
-      text: "WHC 일별 측정 완료 현황 - " + props.title,
+      text: " 일별 누계(" + props.title + ")",
       font: {
         size: 25,
         weight: "bold",

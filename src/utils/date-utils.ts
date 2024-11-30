@@ -139,3 +139,56 @@ export function getThisSunday(): string {
 
   return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
 }
+
+export function getMondayFromInsertedDate(dateStr: string): string {
+  // 입력받은 문자열을 Date 객체로 변환
+  const date = new Date(dateStr);
+
+  if (isNaN(date.getTime())) {
+    throw new Error("Invalid date format. Use 'YYYY-MM-DD HH:mm:ss'");
+  }
+
+  // 현재 요일 (0: 일요일, 1: 월요일, ..., 6: 토요일)
+  const day = date.getDay();
+
+  // 월요일을 기준으로 날짜 보정
+  const diff = day === 0 ? -6 : 1 - day;
+
+  // 보정된 날짜 (월요일) 계산
+  const monday = new Date(date);
+  monday.setDate(date.getDate() + diff);
+
+  // YYYY-MM-DD 형식으로 반환
+  const year = monday.getFullYear();
+  const month = String(monday.getMonth() + 1).padStart(2, "0");
+  const dayOfMonth = String(monday.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${dayOfMonth}`;
+}
+
+
+/**
+ * 입력된 날짜(YYYY-MM-DD) 기준으로 주 번호를 계산하여 반환
+ * @param dateStr 날짜 문자열 (예: "2024-11-15")
+ * @returns 주 번호 (ISO-8601 기준)
+ */
+export function getWeekNumberByDate(dateStr: string): number {
+  const date = new Date(dateStr);
+
+  if (isNaN(date.getTime())) {
+    throw new Error("Invalid date format. Please use 'YYYY-MM-DD'");
+  }
+
+  // ISO-8601 주 계산: 월요일 시작, 첫 주는 1월 4일을 포함해야 함
+  const tempDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+
+  // ISO 주 계산용 시작 요일 설정 (0: 일요일, 1: 월요일 ...)
+  const dayOfWeek = tempDate.getUTCDay() === 0 ? 7 : tempDate.getUTCDay(); // 0일 경우 7(일요일을 월요일 이후로 계산)
+  tempDate.setUTCDate(tempDate.getUTCDate() + 4 - dayOfWeek); // 해당 주의 목요일로 이동 (ISO 주 기준)
+
+  const yearStart = new Date(Date.UTC(tempDate.getUTCFullYear(), 0, 1)); // 해당 연도의 첫 번째 날
+  const weekNumber = Math.ceil(((tempDate.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+
+  return weekNumber;
+}
+

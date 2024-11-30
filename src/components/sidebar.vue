@@ -35,14 +35,38 @@
                 v-permiss="subItem.permiss"
               >
                 <template #title>{{ subItem.title }}</template>
-                <el-menu-item
+
+                <template
                   v-for="threeItem in subItem.subs"
                   :key="threeItem.index + '_threeItem'"
-                  :index="threeItem.index"
-                  v-permiss="threeItem.permiss"
                 >
-                  {{ threeItem.title }}
-                </el-menu-item>
+                  <el-sub-menu
+                    v-if="threeItem.subs"
+                    :index="threeItem.index"
+                    :key="threeItem.index + '_submenu'"
+                    v-permiss="threeItem.permiss"
+                  >
+                    <template #title>{{ threeItem.title }}</template>
+
+                    <el-menu-item
+                      v-for="fourItem in threeItem.subs"
+                      :key="fourItem.index + '_fourItem'"
+                      :index="fourItem.index"
+                      v-permiss="fourItem.permiss"
+                    >
+                      {{ fourItem.title }}
+                    </el-menu-item>
+                  </el-sub-menu>
+
+                  <el-menu-item
+                    v-else
+                    :key="threeItem.index + '_menuitem'"
+                    :index="threeItem.index"
+                    v-permiss="threeItem.permiss"
+                  >
+                    {{ threeItem.title }}
+                  </el-menu-item>
+                </template>
               </el-sub-menu>
 
               <el-menu-item
@@ -74,6 +98,7 @@
   </div>
 </template>
 
+
 <script setup lang="ts">
 import { computed } from "vue";
 import { useSidebarStore } from "../store/sidebar";
@@ -90,7 +115,7 @@ const items = [
   {
     icon: "Calendar",
     index: "1",
-    title: "Product - PDT ",
+    title: "내전력(PDT)",
     permiss: "2",
     subs: [
       {
@@ -113,22 +138,22 @@ const items = [
   {
     icon: "Calendar",
     index: "2",
-    title: "TEG",
+    title: "개발 프로브",
     permiss: "2",
     subs: [
       {
+        index: "/teg/create-teg-application2",
+        title: "의뢰서 작성",
+        permiss: "2",
+      },
+      {
         index: "/teg/waiting-list",
-        title: "Measurement Status",
+        title: "측정 진행 현황",
         permiss: "2",
       },
       {
         index: "/teg/finished-list",
-        title: "Measurement Finished",
-        permiss: "2",
-      },
-      {
-        index: "/teg/create-teg-application2",
-        title: "의뢰서 작성",
+        title: "측정 완료 현황",
         permiss: "2",
       },
     ],
@@ -136,7 +161,7 @@ const items = [
   {
     icon: "DocumentAdd",
     index: "3",
-    title: "개발 SPL",
+    title: "개발 SAMPLE",
     permiss: "11",
     subs: [
       {
@@ -149,19 +174,19 @@ const items = [
         title: "투입 계획서 현황",
         permiss: "11",
       },
-      {
-        index: "/fab/feb-application-list",
-        title: "투입 계획서 검토",
-        permiss: "11",
-      },
+      // {
+      //   index: "/fab/feb-application-list",
+      //   title: "투입 계획서 검토",
+      //   permiss: "11",
+      // },
       {
         index: "/fab/feb-application-list2",
-        title: "개발 Sample 현황 (NEW)",
+        title: "개발 Sample Monitor",
         permiss: "11",
       },
       {
         index: "/fab/mes",
-        title: "개발 SPL 현황",
+        title: "기타 사이트",
         permiss: "11",
         subs: [
           {
@@ -169,21 +194,21 @@ const items = [
             title: "개발 SPL 현황 - HQ",
             permiss: "11",
           },
-          {
-            index: "/fab/sample_status",
-            title: "개발 SPL 현황 - WHC(WLP)",
-            permiss: "11",
-          },
-          {
-            index: "/fab/sample_status",
-            title: "개발 SPL 현황 - WHC(CSP)",
-            permiss: "11",
-          },
-          {
-            index: "/fab/china69",
-            title: "중화69과제(테스트)",
-            permiss: "11",
-          },
+          // {
+          //   index: "/fab/sample_status",
+          //   title: "개발 SPL 현황 - WHC(WLP)",
+          //   permiss: "11",
+          // },
+          // {
+          //   index: "/fab/sample_status",
+          //   title: "개발 SPL 현황 - WHC(CSP)",
+          //   permiss: "11",
+          // },
+          // {
+          //   index: "/fab/china69",
+          //   title: "중화69과제(테스트)",
+          //   permiss: "11",
+          // },
         ],
       },
       // {
@@ -196,64 +221,71 @@ const items = [
   {
     icon: "Pear",
     index: "4",
-    title: "WHC",
+    title: "WHC 개발 측정",
     permiss: "11",
     subs: [
       {
         index: "/whc/create-application",
-        title: "의뢰서 작성",
+        title: "측정 의뢰서 작성",
         permiss: "11",
       },
       {
         index: "/whc/application-list",
-        title: "의뢰 현황",
+        title: "측정 의뢰 현황",
         permiss: "11",
       },
       {
-        index: "/whc/solder-stock-management",
-        title: "JIG용 Solder관리",
+        index: "/whc/stock",
+        title: "재고 현황",
         permiss: "11",
         subs: [
           {
-            index: "/whc/solder-stock-management/create-stock",
-            title: "Solder 등록",
+            index: "/whc/stock/solder-stock-management",
+            title: "JIG용 Solder관리",
             permiss: "11",
+            subs: [
+              {
+                index: "/whc/solder-stock-management/create-stock",
+                title: "Solder 등록",
+                permiss: "11",
+              },
+              {
+                index: "/whc/solder-stock-management/stock-list",
+                title: "보유 현황",
+                permiss: "11",
+              },
+            ],
           },
           {
-            index: "/whc/solder-stock-management/stock-list",
-            title: "보유 현황",
+            index: "/whc/stock-management",
+            title: "완제품(Reel) 관리",
             permiss: "11",
+            subs: [
+              {
+                index: "/whc/stock-management/create-stock",
+                title: "LOT 등록",
+                permiss: "11",
+              },
+              {
+                index: "/whc/stock-management/stock-list",
+                title: "보유 현황",
+                permiss: "11",
+              },
+            ],
           },
         ],
       },
-      {
-        index: "/whc/stock-management",
-        title: "완제품(Reel) 관리",
-        permiss: "11",
-        subs: [
-          {
-            index: "/whc/stock-management/create-stock",
-            title: "LOT 등록",
-            permiss: "11",
-          },
-          {
-            index: "/whc/stock-management/stock-list",
-            title: "보유 현황",
-            permiss: "11",
-          },
-        ],
-      },
-      {
-        index: "/whc/network-analyzer",
-        title: "TEST",
-        permiss: "11",
-      },
+      // {
+      //   index: "/whc/network-analyzer",
+      //   title: "TEST",
+      //   permiss: "11",
+      // },
     ],
   },
   {
     icon: "Edit",
     index: "5",
-    title: "Admin Function",
+    title: "측정 통계",
     permiss: "4",
     subs: [
       {
@@ -352,7 +384,7 @@ const items = [
   {
     icon: "Calendar",
     index: "6",
-    title: "Tools",
+    title: "개발지원도구",
     permiss: "11",
     subs: [
       {
@@ -365,48 +397,48 @@ const items = [
       //   title: "RF Limit",
       //   permiss: "11",
       // },
-      {
-        index: "/calculator/rf-limit2",
-        title: "RF Limit",
-        permiss: "11",
-      },
+      // {
+      //   index: "/calculator/rf-limit2",
+      //   title: "RF Limit",
+      //   permiss: "11",
+      // },
     ],
   },
-  {
-    icon: "Calendar",
-    index: "7",
-    title: "MDR",
-    permiss: "4",
-    subs: [
-      {
-        index: "/mdr/mdr-regular",
-        title: "정규 MDR",
-        permiss: "4",
-        subs: [
-          {
-            index: "/mdr/mdr-regular/create-application",
-            title: "일정 작성",
-            permiss: "4",
-          },
-          {
-            index: "/mdr/mdr-regular/my-application-list",
-            title: "일정 현황",
-            permiss: "4",
-          },
-          {
-            index: "/mdr/mdr-regular/mdr",
-            title: "MDR",
-            permiss: "4",
-          },
-        ],
-      },
-      {
-        index: "/mdr/mdr-china",
-        title: "중화 MDR",
-        permiss: "4",
-      },
-    ],
-  },
+  // {
+  //   icon: "Calendar",
+  //   index: "7",
+  //   title: "MDR",
+  //   permiss: "4",
+  //   subs: [
+  //     {
+  //       index: "/mdr/mdr-regular",
+  //       title: "정규 MDR",
+  //       permiss: "4",
+  //       subs: [
+  //         {
+  //           index: "/mdr/mdr-regular/create-application",
+  //           title: "일정 작성",
+  //           permiss: "4",
+  //         },
+  //         {
+  //           index: "/mdr/mdr-regular/my-application-list",
+  //           title: "일정 현황",
+  //           permiss: "4",
+  //         },
+  //         {
+  //           index: "/mdr/mdr-regular/mdr",
+  //           title: "MDR",
+  //           permiss: "4",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       index: "/mdr/mdr-china",
+  //       title: "중화 MDR",
+  //       permiss: "4",
+  //     },
+  //   ],
+  // },
 
   // {
   //   icon: "Calendar",
@@ -458,12 +490,12 @@ const items = [
       },
     ],
   },
-  {
-    icon: "rank",
-    index: "/s-parameter/SnP",
-    title: "S parameter",
-    permiss: "11",
-  },
+  // {
+  //   icon: "rank",
+  //   index: "/s-parameter/SnP",
+  //   title: "S parameter",
+  //   permiss: "11",
+  // },
   // {
   //   icon: "PieChart",
   //   index: "/charts",

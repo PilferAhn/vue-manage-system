@@ -81,7 +81,7 @@
           },
           title: {
             display: true,
-            text: "WHC 측정 현황 - " + props.title,
+            text: props.title,
             font: {
               size: 25,
               weight: "bold",
@@ -114,7 +114,7 @@
               },
             },
             beginAtZero: true,
-            max: props.y_max, // Y축의 최대값 고정
+            // max: props.y_max, // Y축의 최대값 고정
           },
         },
       },
