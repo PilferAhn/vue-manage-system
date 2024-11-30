@@ -527,9 +527,7 @@ function updateMeasurementStatus(applicationData: ApplicationData) {
     } else if (meas.wantedFinishedDate === undefined) {
     } else {
       meas.wantedFinishedDate = formatDateTime(meas.wantedFinishedDate);
-    }
-
-    console.log(meas.wantedFinishedDate);
+    }    
   });
 
   if (applicationData.measurements && applicationData.measurements.length > 0) {

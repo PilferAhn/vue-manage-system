@@ -31,7 +31,7 @@
                 />
               </el-col>
               <el-col :span="12">
-                <el-form-item label="Packge Type" prop="pkgType">
+                <el-form-item label="Packge Type">
                   <el-select v-model="applicationData.pkgType">
                     <el-option
                       v-for="packge in packgeList"
@@ -46,20 +46,34 @@
 
             <el-row :gutter="20">
               <el-col :span="12">
-                <inputText
-                  v-model="applicationData.designer"
-                  label="개발자"
-                  prop="designer"
-                  placeholder="ex) Designer"
-                />
+                <el-form-item label="개발자" style="width: 525px" prop="designer">
+                  <el-autocomplete
+                    v-model="applicationData.designer"
+                    placeholder="개발자를 입력하세요"                    
+                    :fetch-suggestions="
+                      (queryString, cb) =>
+                        querySearch(queryString, cb, 'designer')
+                    "
+                    @select="(item) => handleSelect(item, 'designer')"
+                    value-key="label"
+                    style="width: 100%"
+                  ></el-autocomplete>
+                </el-form-item>
               </el-col>
               <el-col :span="12">
-                <inputText
-                  v-model="applicationData.requester"
-                  label="의뢰자"
-                  prop="requester"
-                  placeholder="ex) Requester"
-                />
+                <el-form-item label="의뢰자" style="width: 525px" prop="requester">
+                  <el-autocomplete
+                    v-model="applicationData.requester"
+                    placeholder="의뢰자를 입력하세요"
+                    :fetch-suggestions="
+                      (queryString, cb) =>
+                        querySearch(queryString, cb, 'requester')
+                    "
+                    @select="(item) => handleSelect(item, 'requester')"
+                    value-key="label"
+                    style="width: 100%"
+                  ></el-autocomplete>
+                </el-form-item>
               </el-col>
             </el-row>
 
@@ -220,132 +234,14 @@
         </el-col>
       </el-row>
 
+      <el-divider content-position="center">Measurement Infomation</el-divider>
       <el-card>
         <SolderMeasurement
           :measurements="applicationData.measurements"
           :application-type="props.applicationType"
         ></SolderMeasurement>
       </el-card>
-      <el-divider content-position="center">Measurement Infomation</el-divider>
-
-      <!-- <el-row>
-        <el-col>
-          <el-card>
-            <el-table :data="props.applicationData.measurements" style="width: 100%">
-              <el-table-column
-                prop="measurementType"
-                label="측정 항목"
-                width="150"
-                :align="'center'"
-              >
-                <template #default="scope">
-                  <div :key="scope.row.number">
-                    {{ scope.row.measurementType }}
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column
-                prop="isMeasured"
-                label="측정 여부"
-                width="90"
-                :align="'center'"
-              >
-                <template #default="scope">
-                  <el-checkbox v-model="scope.row.isMeasured"></el-checkbox>
-                </template>
-              </el-table-column>
-              <el-table-column
-                prop="quantity"
-                label="Quantity"
-                width="100"
-                :align="'center'"
-              >
-                <template #default="scope">
-                  <el-input
-                    v-model="scope.row.quantity"
-                    type="number"
-                    :disabled="!scope.row.isMeasured"
-                  ></el-input>
-                </template>
-              </el-table-column>
-              <el-table-column
-                prop="기타"
-                label="측정 상세 요청 사항"
-                width="800"
-              >
-                <template #default="scope">
-                  <el-input
-                    v-model="scope.row.detail"
-                    :disabled="!scope.row.isMeasured"
-                  ></el-input>
-                </template>
-              </el-table-column>
-
-              <el-table-column
-                v-if="props.applicationType === 'load'"
-                label="종료일"
-                width="100"
-                :align="'center'"
-              >
-                <template #default="scope">
-                  {{ formatDate(scope.row.finishedDate) }}
-                </template>
-              </el-table-column>
-              <el-table-column label="유의사항" width="500">
-                <template #default="scope">
-                  <el-input v-model="scope.row.placeHolder" disabled></el-input>
-                </template>
-              </el-table-column>
-              <el-table-column label="완료 희망" :align="'center'" width="250">
-                <template #default="scope">
-                  
-                  <el-date-picker
-                    v-model="scope.row.wantedFinishedDate"
-                    type="date"
-                    placeholder="Pick a day"
-                    format="YYYY/MM/DD"
-                    value-format="YYYY-MM-DD"                    
-                  />
-                </template>
-              </el-table-column>
-              <el-table-column
-                v-if="props.applicationType === 'load'"
-                label="UPDATE"
-                fixed="right"
-                :align="'center'"
-                width="230"
-              >
-                <template #default="scope">
-                  <div style="display: flex; align-items: center; gap: 10px">
-                    <el-select
-                      class="m-4"
-                      v-model="scope.row.status"
-                      placeholder="Select"
-                      size="small"
-                      style="width: 130px"
-                      :align="'center'"
-                    >
-                      <el-option
-                        v-for="item in statusList"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                      /> </el-select
-                    ><el-button
-                      type="primary"
-                      size="small"
-                      :align="'center'"
-                      @click="updateMeasurement(scope.row)"
-                    >
-                      Update
-                    </el-button>
-                  </div>
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-card>
-        </el-col>
-      </el-row> -->
+      
       <el-row
         v-if="props.applicationType === 'create'"
         :gutter="20"
@@ -637,6 +533,7 @@ import type {
   ApplicationData,
   SolderFile,
 } from "../../../interface/solderAppInterface";
+import { useUserOptions } from "../../Common/utility";
 import { downloadFileByUrl } from "./LoadSolderApplication";
 import { updateMeasurementDataByClient } from "../../../utils/Solder/application-utils";
 import type { UploadInstance, UploadProps, UploadRawFile } from "element-plus";
@@ -652,8 +549,6 @@ const props = defineProps<{
   applicationData: ApplicationData;
   applicationType: string;
 }>();
-
-
 
 const sortedSegment = computed(() =>
   [...applicationData.segments].sort((a, b) => {
@@ -727,6 +622,36 @@ onMounted(() => {
   console.log(application.value.measurements);
   loading.value = false;
 });
+
+const { userOptions } = useUserOptions();
+// 사용자의 입력을 기준으로 필터링된 결과를 반환하는 공통 함수
+const querySearch = (
+  queryString: string,
+  cb: (suggestions: { value: string; label: string; key: string }[]) => void,
+  fieldType: string // 'designer' 또는 'requester'로 구분
+) => {
+  const results = userOptions.value.filter((user) =>
+    user.label.toLowerCase().includes(queryString.toLowerCase())
+  );
+  cb(results);
+};
+
+// 개발자와 의뢰자 선택 시 처리하는 공통 함수
+const handleSelect = (
+  item: { value: string; label: string },
+  fieldType: string
+) => {
+  const selectedUser = userOptions.value.find(
+    (user) => user.label === item.label
+  );
+  if (selectedUser) {
+    if (fieldType === "designer") {
+      props.applicationData.designerId = selectedUser.value; // 개발자 ID 할당
+    } else if (fieldType === "requester") {
+      props.applicationData.requesterId = selectedUser.value; // 의뢰자 ID 할당
+    }
+  }
+};
 
 onMounted(async () => {
   try {

@@ -25,6 +25,9 @@ export const solderApplicationRules = {
   matchingComponentType: [
     { required: true, message: "Matching Component Type 정보는 필수 입력입니다.", trigger: "blur" },
   ],
+  pkgType : [
+    { required: true, message: "Package Type 정보는 필수 입력입니다.", trigger: "blur" },
+  ],
   deembedMode: [
     {
       required: true,

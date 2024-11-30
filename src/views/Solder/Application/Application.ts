@@ -33,7 +33,9 @@ export interface PDTRequestFormType {
   bandwidth: string;
 
   designer: string;
+  designerId: string;
   requester: string;
+  requesterId:string;
   purpose: string;
 
   temperature: string;
