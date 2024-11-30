@@ -123,8 +123,10 @@ const lastWeekNumber = ref(getWeekNumberByDate(lastMonday.value)+ "주차")
 
 const selectedWeek = ref(null); // 주 입력 값
 const handleWeekChange = () => {  
-  lastMonday.value = formatDate(adjustDate(thisMonday.value , -14));
-  thisMonday.value = formatDate(adjustDate(lastMonday.value,7));  
+  const tempDate = formatDateTime(getMondayFromInsertedDate(selectedWeek.value))
+  console.log(tempDate)
+  lastMonday.value = formatDate(tempDate);
+  thisMonday.value = formatDate(adjustDate(tempDate , 7));  
   thisWeekNumber.value = getWeekNumberByDate(thisMonday.value).toString() + "주차"
   lastWeekNumber.value = getWeekNumberByDate(lastMonday.value).toString() + "주차"
 };
