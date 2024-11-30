@@ -1,13 +1,43 @@
 <template>
   <div style="display: flex; flex-direction: column; gap: 20px">
+    <!-- 날짜 선택 -->
+    <div
+      style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        padding: 15px;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      "
+    >
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-weight: bold; font-size: 16px;">날짜 선택</span>
+        <el-date-picker
+          v-model="selectedWeek"
+          type="date"
+          placeholder="날짜를 선택하세요"
+          style="width: 200px"
+          format="YYYY/MM/DD"
+          value-format="YYYY-MM-DD"
+        ></el-date-picker>
+      </div>
+      <el-button type="primary" @click="handleWeekChange" style="height: 40px; width: 100px;">
+        확인
+      </el-button>
+    </div>
+
     <!-- Bar Charts Row -->
     <div style="display: flex; justify-content: space-between; gap: 20px">
       <div style="flex: 1">
         <BarChart
           class="bar-container"
           v-if="isLoad"
-          :title="'24년 11월 이후'"
-          :y_max="1100"
+          :title="'WHC 개발팀 측정 현황 (24년11월 ~)'"
+          :y_max="1300"
           :data="measurementData"
         />
       </div>
@@ -15,20 +45,29 @@
 
     <div style="display: flex; justify-content: space-between; gap: 20px">
       <div style="flex: 1">
-        <DailyBar :serverData="lastdailyMeasInfo" title="Last Week" v-if="isLoad" />
+        <DailyBar
+          class="bar-container"
+          :serverData="lastdailyMeasInfo"
+          :title="lastWeekNumber"
+          v-if="isLoad"
+        />
       </div>
       <div style="flex: 1">
-        <DailyBar :serverData="dailyMeasInfo" title="This Week" v-if="isLoad" />
+        <DailyBar
+          class="bar-container"
+          :serverData="dailyMeasInfo"
+          :title="thisWeekNumber"
+          v-if="isLoad"
+        />
       </div>
     </div>
 
-    <!-- Last Week and This Week Bar Charts Row -->
     <div style="display: flex; justify-content: space-between; gap: 20px">
       <div style="flex: 1">
         <BarChart2
           class="bar-container"
           v-if="isLoad"
-          :title="'Last Week'"
+          :title="lastWeekNumber"
           :y_max="300"
           :data="lastWeek"
         />
@@ -37,7 +76,7 @@
         <BarChart2
           class="bar-container"
           v-if="isLoad"
-          :title="'This Week'"
+          :title="thisWeekNumber"
           :y_max="300"
           :data="thisWeek"
         />
@@ -47,17 +86,17 @@
     <!-- Pie Charts Row -->
     <div style="display: flex; justify-content: space-between; gap: 20px">
       <div class="pie-container">
-        <pieChart v-if="isLoad" :title="'Last Week'" :data="lastWeek" />
+        <pieChart v-if="isLoad" :title="lastWeekNumber" :data="lastWeek" />
       </div>
       <div class="pie-container">
-        <pieChart v-if="isLoad" :title="'This Week'" :data="thisWeek" />
+        <pieChart v-if="isLoad" :title="thisWeekNumber" :data="thisWeek" />
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, reactive } from "vue";
+import { ref, onMounted, reactive, watch } from "vue";
 import BarChart from "./BarChart.vue";
 import BarChart2 from "./BarChart2.vue";
 import pieChart from "./pie.vue";
@@ -68,15 +107,33 @@ import {
   getThisMonday,
   formatDate,
   adjustDate,
-  getThisSunday,
+  getMondayFromInsertedDate,
+  formatDateTime,
+  getWeekNumberByDate
 } from "../../../../utils/date-utils";
 import axios from "axios";
 import { format } from "path";
 import { getDailyData } from "./solder-static-utils";
 
+const thisMonday = ref(formatDate(adjustDate(getThisMonday(), 7)));
+const lastMonday = ref(formatDate(getThisMonday()));
+
+const thisWeekNumber = ref(getWeekNumberByDate(thisMonday.value)+ "주차") 
+const lastWeekNumber = ref(getWeekNumberByDate(lastMonday.value)+ "주차") 
+
+const selectedWeek = ref(null); // 주 입력 값
+const handleWeekChange = () => {  
+  lastMonday.value = formatDate(adjustDate(thisMonday.value , -14));
+  thisMonday.value = formatDate(adjustDate(lastMonday.value,7));  
+  thisWeekNumber.value = getWeekNumberByDate(thisMonday.value).toString() + "주차"
+  lastWeekNumber.value = getWeekNumberByDate(lastMonday.value).toString() + "주차"
+};
+
+
 // Define the type for measurement data
 const dailyMeasInfo = reactive<DailyMeasInfo[]>([]);
 const lastdailyMeasInfo = reactive<DailyMeasInfo[]>([]);
+
 type MeasurementData = Record<string, [number, number]>;
 const thisWeek = ref<MeasurementData>({});
 const lastWeek = ref<MeasurementData>({});
@@ -192,30 +249,45 @@ function processMeasurementData(
   return data;
 }
 
+// Watch 기능: thisMonday가 변경될 때 트리거
+watch(thisMonday, async (newVal, oldVal) => {
+  console.log(`thisMonday changed: ${oldVal} -> ${newVal}`);
+  isLoad.value = false;
+  // Fetch new data
+  const newThisWeekData = await getWhcMeasurementHistoryQuantityByDate(formatDate(thisMonday.value));
+  const newLastWeekData = await getWhcMeasurementHistoryQuantityByDate(formatDate(lastMonday.value));
+  
+  // Update thisWeek and lastWeek reactively
+  Object.assign(thisWeek.value, newThisWeekData);
+  Object.assign(lastWeek.value, newLastWeekData);
+
+  // Update dailyMeasInfo and lastdailyMeasInfo
+  dailyMeasInfo.length = 0; // Clear existing data
+  dailyMeasInfo.push(...(await getDailyData(thisMonday.value)));
+
+  lastdailyMeasInfo.length = 0;
+  lastdailyMeasInfo.push(...(await getDailyData(lastMonday.value)));
+
+  isLoad.value = true;
+});
+
 // Fetch data on component mount
 onMounted(async () => {
-  console.log(getThisMonday());
   measurementData.value = processMeasurementData(
     await getWhcMeasurementHistoryQuantity()
   );
   thisWeek.value = processMeasurementData(
-    await getWhcMeasurementHistoryQuantityByDate(
-      formatDate(adjustDate(getThisMonday(), 7))
-    )
+    await getWhcMeasurementHistoryQuantityByDate(formatDate(thisMonday.value))
   );
   lastWeek.value = processMeasurementData(
-    await getWhcMeasurementHistoryQuantityByDate(formatDate(getThisMonday()))
+    await getWhcMeasurementHistoryQuantityByDate(lastMonday.value)
   );
 
   dailyMeasInfo.length = 0; // 기존 데이터를 비움
-  dailyMeasInfo.push(
-    ...(await getDailyData(formatDate(adjustDate(getThisMonday(), 7))))
-  );
+  dailyMeasInfo.push(...(await getDailyData(thisMonday.value)));
 
-  lastdailyMeasInfo.length = 0
-  lastdailyMeasInfo.push(
-    ...(await getDailyData(formatDate(getThisMonday())))
-  )
+  lastdailyMeasInfo.length = 0;
+  lastdailyMeasInfo.push(...(await getDailyData(lastMonday.value)));
   // Generate transformed data for the second chart
   // transformedData.value = transformData(lastWeek.value);
 
@@ -225,19 +297,19 @@ onMounted(async () => {
 
 <style scoped>
 .pie-container {
-  flex: 1;
+  flex: 2;
   display: flex;
   justify-content: center;
   align-items: center;
   max-width: 50%; /* Ensure each pie chart takes half the width */
   /* background-color: #f9f9f9; */
-  border: 1px solid #ddd; /* Optional: Border for better visual separation */
+  border: 3px solid #ddd; /* Optional: Border for better visual separation */
   padding: 10px;
   border-radius: 10px; /* Optional: Rounded corners */
 }
 
 .bar-container {
-  border: 1px solid #ddd; /* Optional: Border for better visual separation */
+  border: 2px solid #ddd; /* Optional: Border for better visual separation */
   padding: 10px;
   border-radius: 10px; /* Optional: Rounded corners */
 }

@@ -7,25 +7,56 @@
 
   <div class="table-wrapper">
     <!-- 검색어 입력 필드 -->
-    <div style="margin-bottom: 10px">
-      <el-select
-        v-model="searchCategory"
-        placeholder="검색 기준"
-        class="search-dropdown"
-        style="width: 150px"
-      >
-        <el-option label="Designer" value="designer"></el-option>
-        <el-option label="Product Name" value="modelName"></el-option>
-      </el-select>
+    <div
+      style="
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      "
+    >
+      
+      <div style="display: flex; align-items: center">
+        <el-select
+          v-model="searchCategory"
+          placeholder="검색 기준"
+          class="search-dropdown"
+          style="width: 150px"
+        >
+          <el-option label="Designer" value="designer"></el-option>
+          <el-option label="Product Name" value="modelName"></el-option>
+        </el-select>
 
-      <el-input
-        v-model="searchTerm"
-        :placeholder="`검색할 ${searchCategory} 입력`"
-        class="search-input mr10"
-        clearable
-        @clear="handleClear"
-        style="width: 300px"
-      ></el-input>
+        <el-input
+          v-model="searchTerm"
+          :placeholder="`검색할 ${searchCategory} 입력`"
+          class="search-input mr10"
+          clearable
+          @clear="handleClear"
+          style="width: 300px; margin-left: 10px"
+        ></el-input>
+      </div>
+
+      
+      <!-- <div style="display: flex; align-items: center">
+        <el-date-picker
+          v-model="firstDate"
+          type="date"
+          placeholder="시작 날짜"
+          style="width: 150px; margin-right: 5px"
+        ></el-date-picker>
+
+        <span style="margin: 0 5px">~</span>
+
+        <el-date-picker
+          v-model="lastDate"
+          type="date"
+          placeholder="종료 날짜"
+          style="width: 150px; margin-right: 10px"
+        ></el-date-picker>
+
+        <el-button type="primary" style="margin-left: 10px"> 검색 </el-button>
+      </div> -->
     </div>
 
     <el-table
@@ -247,14 +278,9 @@
                   item['hanoiCsp'] !== null &&
                   item['hanoiCsp']['child'] !== null &&
                   item['hanoiCsp']['child']['child'] !== null
-
                 "
               >
-                {{
-                  item["hanoiCsp"]["child"]["child"]["operation"][
-                    "name"
-                  ]
-                }}
+                {{ item["hanoiCsp"]["child"]["child"]["operation"]["name"] }}
                 {{
                   formatDateTime(
                     item["hanoiCsp"]["child"]["child"]["moveinDate"]
@@ -367,6 +393,9 @@ const searchCategory = ref("modelName"); // 기본 검색 기준을 "Lot ID"로 
 function handleClear() {
   searchTerm.value = ""; // Reset search term
 }
+
+const firstDate = adjustDate(getTodayDatetime(), -30)
+const lastDate = getTodayDatetime()
 
 const dialogTableVisible = ref(false);
 const selectApplicationId = ref("");
