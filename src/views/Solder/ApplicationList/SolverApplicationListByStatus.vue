@@ -22,7 +22,7 @@
       ></el-input>
       <el-button type="primary" @click="handleSearch">검색</el-button>
 
-      <div class="legend">
+      <div class="legend">        
         <div class="legend-item">
           <el-button class="btn-in-progress" disabled>진행 중</el-button>
           <span>진행 중</span>
@@ -37,196 +37,183 @@
         </div>
       </div>
     </div>
-    
-      <el-table
-        :data="filteredApplicationData"
-        class="custom-table"
-        ref="multipleTable"
-        height="700px"
-        :row-class-name="tableRowClassName"
+
+    <el-table
+      :data="filteredApplicationData"
+      class="custom-table"
+      ref="multipleTable"
+      height="700px"
+      :row-class-name="tableRowClassName"
+    >
+      <el-table-column
+        type="index"
+        label="No"
+        :align="'center'"
+        width="70"
+      ></el-table-column>
+
+      <el-table-column
+        prop="modelName"
+        label="Product Name"
+        width="120"
+        :align="'center'"
+      ></el-table-column>
+      <el-table-column label="Stage" :align="'center'" width="460">
+        <template #default="scope">
+          <div class="button-grid-container">
+            <el-button
+              v-for="(measurement, index) in scope.row.measurements"
+              :key="index"
+              :class="getStatusClass(measurement.status)"
+              size="small"
+              class="fixed-size"
+              disabled
+              plain
+            >
+              <i
+                v-if="measurement.status === 'in progress'"
+                class="el-icon-loading mr5"
+              ></i>
+              <i
+                v-if="measurement.status === 'finished'"
+                class="el-icon-check mr5"
+              ></i>
+              {{
+                measurement.measurementType.toUpperCase() === "비선형"
+                  ? "Non-Linearity"
+                  : measurement.measurementType.toUpperCase() === "PS 신뢰성"
+                  ? "ESD"
+                  : measurement.measurementType.toUpperCase() === "내전력"
+                  ? "PDT"
+                  : measurement.measurementType.toUpperCase() === "특성 평가"
+                  ? "Solder Measurement"
+                  : measurement.measurementType.toUpperCase()
+              }}
+            </el-button>
+          </div>
+        </template>
+      </el-table-column>
+
+      <el-table-column
+        sortable
+        label="Request"
+        width="130"
+        :align="'center'"
+        prop="createdDate"
       >
-        <el-table-column
-          type="index"
-          label="No"
-          :align="'center'"
-          width="70"
-        ></el-table-column>
+        <template #default="scope">
+          {{ convertPythonTimeToVue(scope.row.createdDate) }}
+        </template>
+      </el-table-column>
 
-        <el-table-column
-          prop="modelName"
-          label="Product Name"
-          width="120"
-          :align="'center'"
-        ></el-table-column>
-        <el-table-column label="Stage" :align="'center'" width="460">
-          <template #default="scope">
-            <div class="button-grid-container">
-              <el-button
-                v-for="(measurement, index) in scope.row.measurements"
-                :key="index"
-                :class="getStatusClass(measurement.status)"
-                size="small"
-                class="fixed-size"
-                disabled
-                plain
-              >
-                <i
-                  v-if="measurement.status === 'in progress'"
-                  class="el-icon-loading mr5"
-                ></i>
-                <i
-                  v-if="measurement.status === 'finished'"
-                  class="el-icon-check mr5"
-                ></i>
-                {{
-                  measurement.measurementType.toUpperCase() === "비선형"
-                    ? "Non-Linearity"
-                    : measurement.measurementType.toUpperCase() === "PS 신뢰성"
-                    ? "ESD"
-                    : measurement.measurementType.toUpperCase() === "내전력"
-                    ? "PDT"
-                    : measurement.measurementType.toUpperCase() === "특성 평가"
-                    ? "Solder Measurement"
-                    : measurement.measurementType.toUpperCase()
-                }}
-              </el-button>
-            </div>
-          </template>
-        </el-table-column>
+      <el-table-column
+        v-if="props.applicationType === 'finished'"
+        label="Finish"
+        width="130"
+        :align="'center'"
+      >
+        <template #default="scope">
+          {{ formatDate(scope.row.completionDate) }}
+        </template>
+      </el-table-column>
 
-        <el-table-column
-          sortable
-          label="Request"
-          width="130"
-          :align="'center'"
-          prop="createdDate"
+      <el-table-column label="Location" :align="'center'" width="150">
+        <template #default="scope">
+          {{ scope.row.childStageName }} <br />
+          {{ scope.row.childOperation }}
+        </template>
+      </el-table-column>
+
+      <el-table-column
+        prop="designer"
+        label="Designer"
+        width="150"
+        :align="'center'"
+      >
+        <template #default="scope">
+          {{ scope.row.designer }} / {{ scope.row.requester }}</template
         >
+      </el-table-column>
+
+      <el-table-column label="Measurer" width="180" :align="'center'">
+        <template #default="scope">
+          <div>
+            <el-input
+              v-model="scope.row.measurer"
+              placeholder=""
+              style="width: 150px"
+            ></el-input>
+          </div>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="STOCK" width="300" :align="'center'">
+        <el-table-column label="JIG용 Solder관리" width="150" :align="'center'">
           <template #default="scope">
-            {{ convertPythonTimeToVue(scope.row.createdDate) }}
+            {{ scope.row.jigSolderId }}
+            <br />
+            {{ scope.row.jigSolderLoc }}
           </template>
         </el-table-column>
-
-        <el-table-column
-          v-if="props.applicationType === 'finished'"
-          label="Finish"
-          width="130"
-          :align="'center'"
-        >
+        <el-table-column label="완제품(Reel)" width="150" :align="'center'">
           <template #default="scope">
-            {{ formatDate(scope.row.completionDate) }}
+            {{ scope.row.reelId }}
+            <br />
+            {{ scope.row.reelLoc }}
           </template>
         </el-table-column>
+      </el-table-column>
 
-        <el-table-column label="Location" :align="'center'" width="150">
-          <template #default="scope">
-            {{ scope.row.childStageName }} <br />
-            {{ scope.row.childOperation }}
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          prop="designer"
-          label="Designer"
-          width="150"
-          :align="'center'"
-        >
-          <template #default="scope">
-            {{ scope.row.designer }} / {{ scope.row.requester }}</template
+      <el-table-column label="Detail" :align="'center'" width="290">
+        <template #default="scope">
+          <el-button
+            v-if="scope.row.files.length != 0"
+            type="primary"
+            size="small"
+            @click="downloadFileByUrl(scope.row.uuid, scope.row.files[0].uuid)"
           >
-        </el-table-column>
-
-        <el-table-column label="Measurer" width="180" :align="'center'">
-          <template #default="scope">
-            <div>
-              <el-input
-                v-model="scope.row.measurer"
-                placeholder=""
-                style="width: 150px"
-              ></el-input>
-            </div>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="STOCK" width="300" :align="'center'">
-          <el-table-column
-            label="JIG용 Solder관리"
-            width="150"
-            :align="'center'"
+            Excel
+          </el-button>
+          <el-button
+            v-else
+            type="primary"
+            size="small"
+            @click="
+              downloadSolderApplicationXlsx(
+                scope.row,
+                `/solder/download_solder_application_file3`
+              )
+            "
           >
-            <template #default="scope">
-              {{ scope.row.jigSolderId }}
-              <br />
-              {{ scope.row.jigSolderLoc }}
-            </template>
-          </el-table-column>
-          <el-table-column label="완제품(Reel)" width="150" :align="'center'">
-            <template #default="scope">
-              {{ scope.row.reelId }}
-              <br />
-              {{ scope.row.reelLoc }}
-            </template>
-          </el-table-column>
-        </el-table-column>
+            Excel
+          </el-button>
 
-        <el-table-column label="Detail" :align="'center'" width="290">
-          <template #default="scope">
-            <el-button
-              v-if="scope.row.files.length != 0"
-              type="primary"
-              size="small"
-              @click="
-                downloadFileByUrl(scope.row.uuid, scope.row.files[0].uuid)
-              "
-            >
-              Excel
-            </el-button>
-            <el-button
-              v-else
-              type="primary"
-              size="small"
-              @click="
-                downloadSolderApplicationXlsx(
-                  scope.row,
-                  `/solder/download_solder_application_file3`
-                )
-              "
-            >
-              Excel
-            </el-button>
-
-            <el-button
-              type="warning"
-              size="small"
-              @click="
-                sendApplicationData2(
-                  scope.row,
-                  [],
-                  [],
-                  '/solder/update',
-                  'load'
-                )
-              "
-            >
-              Update
-            </el-button>
-            <el-button
-              type="success"
-              size="small"
-              @click="handleDetail(scope.row)"
-            >
-              Details
-            </el-button>
-            <el-button
-              type="danger"
-              size="small"
-              @click="handleDelete(scope.row)"
-            >
-              삭제
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    
+          <el-button
+            type="warning"
+            size="small"
+            @click="
+              sendApplicationData2(scope.row, [], [], '/solder/update', 'load')
+            "
+          >
+            Update
+          </el-button>
+          <el-button
+            type="success"
+            size="small"
+            @click="handleDetail(scope.row)"
+          >
+            Details
+          </el-button>
+          <el-button
+            type="danger"
+            size="small"
+            @click="handleDelete(scope.row)"
+          >
+            삭제
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
   </div>
 </template>
 
@@ -255,6 +242,7 @@ const props = defineProps<{
 const searchTerm = ref("");
 const searchCategory = ref("modelName"); // 기본 검색 기준을 "Lot ID"로 설정
 const route = useRoute();
+const autoRefresh = ref(60);
 
 onMounted(() => {
   // 쿼리 파라미터에 값이 있으면 사용, 없으면 localStorage 값 사용
@@ -264,6 +252,8 @@ onMounted(() => {
     searchTerm.value = localStorage.getItem("searchTerm") as string;
   }
 });
+
+
 
 // 검색어가 변경될 때마다 `localStorage`에 저장
 watch(searchTerm, (newTerm) => {

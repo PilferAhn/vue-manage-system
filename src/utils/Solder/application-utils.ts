@@ -65,8 +65,9 @@ export function updateMeasurementDataByClient(
         meas.quantity = 9;
         meas.detail = "ESD: 200V(3)/250V(3)/300V(3)";
       } else if (meas.measurementType === "TCF") {
-        meas.isMeasured = true;
+        meas.isMeasured = true;        
         meas.quantity = 2;
+        meas.detail = "TEMP(-30 25 55 85)"
       } else if (meas.measurementType === "비선형") {
         meas.isMeasured = true;
         meas.quantity = 2;
@@ -90,6 +91,7 @@ export function updateMeasurementDataByClient(
       } else if (meas.measurementType === "TCF") {
         meas.isMeasured = true;
         meas.quantity = 2;
+        meas.detail = "TEMP(-30 25 55 85)"
       } else {
         meas.isMeasured = false;
         meas.quantity = 0;
@@ -110,6 +112,7 @@ export function updateMeasurementDataByClient(
       } else if (meas.measurementType === "TCF") {
         meas.isMeasured = true;
         meas.quantity = 2;
+        meas.detail = "TEMP(-30 25 55 85)"
       } else {
         meas.isMeasured = false;
         meas.quantity = 0;
@@ -130,6 +133,7 @@ export function updateMeasurementDataByClient(
       } else if (meas.measurementType === "TCF") {
         meas.isMeasured = true;
         meas.quantity = 2;
+        meas.detail = "TEMP(-40 -30 25 55 85 105)"
       } else {
         meas.isMeasured = false;
         meas.quantity = 0;

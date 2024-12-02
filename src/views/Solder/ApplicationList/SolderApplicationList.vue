@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import SolverApplicationListByStatus from "./SolverApplicationListByStatus.vue";
 import {
   get_application_list_by_status,
@@ -87,6 +87,32 @@ async function refreshData() {
     console.error("Error loading application data:", error);
   }
 }
+
+
+// Timer variable
+const autoRefresh = ref(120);
+let intervalId: ReturnType<typeof setInterval> | undefined;
+
+
+// Interval logic
+onMounted(() => {
+  intervalId = setInterval(() => {
+    autoRefresh.value--;
+
+    // When timer reaches 0
+    if (autoRefresh.value <= 0) {
+      autoRefresh.value = 120; // Reset the timer
+      refreshData()
+    }
+  }, 1000); // Interval every 1 second
+});
+
+// Cleanup interval on component unmount
+onUnmounted(() => {
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
+});
 
 // Fetch the data on component mount
 onMounted(refreshData);
