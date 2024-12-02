@@ -4,9 +4,9 @@
     <div
       style="
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start; /* 버튼을 왼쪽 정렬 */
         align-items: center;
-        gap: 20px;
+        gap: 20px; /* 버튼 간 간격을 조절 */
         padding: 15px;
         border: 2px solid #ddd;
         border-radius: 10px;
@@ -14,8 +14,8 @@
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       "
     >
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <span style="font-weight: bold; font-size: 16px;">날짜 선택</span>
+      <div style="display: flex; align-items: center; gap: 10px">
+        <span style="font-weight: bold; font-size: 16px">날짜 선택</span>
         <el-date-picker
           v-model="selectedWeek"
           type="date"
@@ -25,9 +25,24 @@
           value-format="YYYY-MM-DD"
         ></el-date-picker>
       </div>
-      <el-button type="primary" @click="handleWeekChange" style="height: 40px; width: 100px;">
-        확인
-      </el-button>
+
+      <div style="display: flex; gap: 10px; margin-left: auto;"> <!-- 오른쪽 정렬 -->
+        <!-- 버튼 컨테이너 추가 -->
+        <el-button
+          type="primary"
+          @click="downloadExcel(excelExportDate)"
+          style="height: 40px; width: 100px"
+        >
+          EXCEL
+        </el-button>
+        <el-button
+          type="primary"
+          @click="handleWeekChange"
+          style="height: 40px; width: 100px"
+        >
+          확인
+        </el-button>
+      </div>
     </div>
 
     <!-- Bar Charts Row -->
@@ -109,8 +124,9 @@ import {
   adjustDate,
   getMondayFromInsertedDate,
   formatDateTime,
-  getWeekNumberByDate
+  getWeekNumberByDate,
 } from "../../../../utils/date-utils";
+import { downloadExcel } from "../../../../utils/Solder/application-utils";
 import axios from "axios";
 import { format } from "path";
 import { getDailyData } from "./solder-static-utils";
@@ -118,19 +134,27 @@ import { getDailyData } from "./solder-static-utils";
 const thisMonday = ref(formatDate(adjustDate(getThisMonday(), 7)));
 const lastMonday = ref(formatDate(getThisMonday()));
 
-const thisWeekNumber = ref(getWeekNumberByDate(thisMonday.value)+ "주차") 
-const lastWeekNumber = ref(getWeekNumberByDate(lastMonday.value)+ "주차") 
-
+const thisWeekNumber = ref(getWeekNumberByDate(thisMonday.value) + "주차");
+const lastWeekNumber = ref(getWeekNumberByDate(lastMonday.value) + "주차");
+const excelExportDate = ref(formatDate(adjustDate(getThisMonday(), -7)));
 const selectedWeek = ref(null); // 주 입력 값
-const handleWeekChange = () => {  
-  const tempDate = formatDateTime(getMondayFromInsertedDate(selectedWeek.value))
-  console.log(tempDate)
-  lastMonday.value = formatDate(tempDate);
-  thisMonday.value = formatDate(adjustDate(tempDate , 7));  
-  thisWeekNumber.value = getWeekNumberByDate(thisMonday.value).toString() + "주차"
-  lastWeekNumber.value = getWeekNumberByDate(lastMonday.value).toString() + "주차"
-};
+const handleWeekChange = () => {
+  const tempDate = formatDateTime(
+    getMondayFromInsertedDate(selectedWeek.value)
+  );
 
+  lastMonday.value = formatDate(tempDate);
+  thisMonday.value = formatDate(adjustDate(tempDate, 7));
+
+  console.log(lastMonday.value)
+  console.log(thisMonday.value)
+
+
+  thisWeekNumber.value =
+    getWeekNumberByDate(thisMonday.value).toString() + "주차";
+  lastWeekNumber.value =
+    getWeekNumberByDate(lastMonday.value).toString() + "주차";
+};
 
 // Define the type for measurement data
 const dailyMeasInfo = reactive<DailyMeasInfo[]>([]);
@@ -251,18 +275,26 @@ function processMeasurementData(
   return data;
 }
 
+watch(selectedWeek , (newVal, oldVal) => {
+  const tempDate = formatDateTime(
+    getMondayFromInsertedDate(selectedWeek.value)
+  );
+  excelExportDate.value = selectedWeek.value
+  console.log(tempDate)
+})
+
 // Watch 기능: thisMonday가 변경될 때 트리거
 watch(thisMonday, async (newVal, oldVal) => {
   console.log(`thisMonday changed: ${oldVal} -> ${newVal}`);
   isLoad.value = false;
   // Fetch new data
-  const newThisWeekData =  processMeasurementData(
+  const newThisWeekData = processMeasurementData(
     await getWhcMeasurementHistoryQuantityByDate(formatDate(thisMonday.value))
   );
-  const newLastWeekData =  processMeasurementData(
+  const newLastWeekData = processMeasurementData(
     await getWhcMeasurementHistoryQuantityByDate(formatDate(lastMonday.value))
   );
-  
+
   // Update thisWeek and lastWeek reactively
   Object.assign(thisWeek.value, newThisWeekData);
   Object.assign(lastWeek.value, newLastWeekData);
@@ -288,6 +320,8 @@ onMounted(async () => {
   lastWeek.value = processMeasurementData(
     await getWhcMeasurementHistoryQuantityByDate(lastMonday.value)
   );
+  
+  console.log(excelExportDate.value)
 
   dailyMeasInfo.length = 0; // 기존 데이터를 비움
   dailyMeasInfo.push(...(await getDailyData(thisMonday.value)));

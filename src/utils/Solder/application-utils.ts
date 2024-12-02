@@ -2,6 +2,52 @@ import { ElMessage, ElMessageBox, ElNotification } from "element-plus";
 import axios from "axios";
 import { ApplicationData as solderApplication } from "../../interface/solderAppInterface";
 
+export async function downloadExcel(date: string) {
+  try {
+    const url = "/solder/get_excel_by_date/" + date;
+
+    // Send request to download file
+    const response = await axios.get(url, {
+      responseType: "blob", // Handle binary data
+    });
+
+    // Extract file name from Content-Disposition header
+    const contentDisposition = response.headers["content-disposition"];
+    let fileName = "download.xlsx"; // Default file name
+
+    if (contentDisposition) {
+      // Check for `filename*` and decode it
+      const filenameMatch = contentDisposition.match(/filename\*=utf-8''(.+)/);
+      if (filenameMatch && filenameMatch[1]) {
+        fileName = decodeURIComponent(filenameMatch[1]); // Decode URI-encoded file name
+      } else {
+        // Fallback to `filename` if `filename*` is not present
+        const fallbackMatch = contentDisposition.match(/filename="?(.+)"?/);
+        if (fallbackMatch && fallbackMatch[1]) {
+          fileName = fallbackMatch[1];
+        }
+      }
+    }
+
+    // Create a blob and download the file
+    const blob = new Blob([response.data], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName; // Use the server-provided file name
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    console.log("Download successful:", fileName);
+  } catch (error) {
+    console.error("Download failed:", error);
+  }
+}
+
+
+
 export function updateMeasurementDataByClient(
   solderApplication: solderApplication,
   client: string
