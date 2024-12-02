@@ -8,7 +8,7 @@ export async function getDailyData(date: string): Promise<DailyMeasInfo[]> {
     "특성 평가",
     "PDT(Manual_수탑)",
     "PDT(SMT)",
-    "ESD",
+    "PS 신뢰성",
     "TCF",
     "비선형",
   ];
@@ -18,18 +18,18 @@ export async function getDailyData(date: string): Promise<DailyMeasInfo[]> {
     let dailyMeasInfo: DailyMeasInfo[] = response.data;
 
     // PS 신뢰성을 ESD로 변경
-    const updatedServerData = dailyMeasInfo.map((item) => {
-      if (item.measurement_type === "PS 신뢰성") {
-        return {
-          ...item,
-          measurement_type: "ESD",
-        };
-      }
-      return item;
-    });
+    // const updatedServerData = dailyMeasInfo.map((item) => {
+    //   if (item.measurement_type === "PS 신뢰성") {
+    //     return {
+    //       ...item,
+    //       measurement_type: "ESD",
+    //     };
+    //   }
+    //   return item;
+    // });
 
     // 우선순위에 따라 정렬
-    const sortedServerData = updatedServerData.sort((a, b) => {
+    const sortedServerData = dailyMeasInfo.sort((a, b) => {
       const aIndex = priorityOrder.indexOf(a.measurement_type);
       const bIndex = priorityOrder.indexOf(b.measurement_type);
 

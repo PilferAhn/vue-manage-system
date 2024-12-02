@@ -231,7 +231,7 @@ function processMeasurementData(
   const value = data["PS 신뢰성"];
   const solderMes = data["특성 평가"];
   // 기존 키 삭제
-  delete data["PS 신뢰성"];
+  // delete data["PS 신뢰성"];
   delete data["내전력"];
   if (value) {
     // 객체를 배열로 변환하여 순서 조작
@@ -239,7 +239,7 @@ function processMeasurementData(
 
     // 새로운 키를 추가 및 삽입
     const targetIndex = 2; // 원하는 인덱스 설정
-    entries.splice(targetIndex, 0, ["ESD", value]);
+    // entries.splice(targetIndex, 0, ["ESD", value]);
 
     entries.splice(0, 0, ["특성 평가", solderMes]);
 
@@ -256,8 +256,12 @@ watch(thisMonday, async (newVal, oldVal) => {
   console.log(`thisMonday changed: ${oldVal} -> ${newVal}`);
   isLoad.value = false;
   // Fetch new data
-  const newThisWeekData = await getWhcMeasurementHistoryQuantityByDate(formatDate(thisMonday.value));
-  const newLastWeekData = await getWhcMeasurementHistoryQuantityByDate(formatDate(lastMonday.value));
+  const newThisWeekData =  processMeasurementData(
+    await getWhcMeasurementHistoryQuantityByDate(formatDate(thisMonday.value))
+  );
+  const newLastWeekData =  processMeasurementData(
+    await getWhcMeasurementHistoryQuantityByDate(formatDate(lastMonday.value))
+  );
   
   // Update thisWeek and lastWeek reactively
   Object.assign(thisWeek.value, newThisWeekData);
