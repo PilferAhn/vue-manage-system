@@ -15,7 +15,6 @@
         justify-content: space-between;
       "
     >
-      
       <div style="display: flex; align-items: center">
         <el-select
           v-model="searchCategory"
@@ -33,11 +32,17 @@
           class="search-input mr10"
           clearable
           @clear="handleClear"
-          style="width: 300px; margin-left: 10px"
+          style="width: 300px; margin-left: 15px"
         ></el-input>
+
+        <el-switch
+          v-model="isRunningFab"
+          active-text="모든 공정 보기"
+          inactive-text="완료 공정 보기"
+          style="margin-left: 20px"
+        ></el-switch>
       </div>
 
-      
       <!-- <div style="display: flex; align-items: center">
         <el-date-picker
           v-model="firstDate"
@@ -367,7 +372,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, ref, computed } from "vue";
+import { defineProps, ref, computed, watch } from "vue";
 
 import {
   handleDateChange as externalHandleDateChange,
@@ -381,6 +386,8 @@ import type { FabApplicationForm } from "../../../interface/mes-interface";
 import DialogTemplate from "./ApplicationLinksDialog.vue";
 import { cn69ModelNames } from "../SampleStatus/Cn69List";
 import type { ModifiedFabDataInterface } from "../../../interface/fab";
+import { getRunningFabReqeust } from "../../../utils/Fab/fab-application-utils";
+
 const props = defineProps<{
   processData: FabApplicationForm[];
 }>();
@@ -388,14 +395,14 @@ const props = defineProps<{
 // 라우터 및 현재 경로 가져오기
 const searchTerm = ref("");
 const searchCategory = ref("modelName"); // 기본 검색 기준을 "Lot ID"로 설정
-
+const isRunningFab = ref(true);
 // Clear the search input
 function handleClear() {
   searchTerm.value = ""; // Reset search term
 }
 
-const firstDate = adjustDate(getTodayDatetime(), -30)
-const lastDate = getTodayDatetime()
+const firstDate = adjustDate(getTodayDatetime(), -30);
+const lastDate = getTodayDatetime();
 
 const dialogTableVisible = ref(false);
 const selectApplicationId = ref("");
@@ -420,11 +427,32 @@ const isFiltered = ref(false);
 const temp = ref<FabApplicationForm[]>([]);
 // 특정 material_id가 포함된 항목들만 필터링한 배열
 
+// watch(isRunningFab , (newVal , oldVal)=> {
+
+//   isRunningFab.value = newVal
+//   console.log(isRunningFab.value)
+
+// })
+
 const filteredData = computed(() => {
+  // 다시 생각해보기,
+  // 일단..
+  // running === ture 의 의미를 정리하기
+  // 한개라도 완료된게 아니면 아직 running이다.
+  const tempApp = ref<FabApplicationForm[]>([]);
+
+  if (isRunningFab.value) {
+    tempApp.value = props.processData;
+  } else {
+    tempApp.value = getRunningFabReqeust(props.processData);
+  }
+
+  console.log(tempApp.value);
+
   if (isFiltered.value) {
     temp.value = [];
 
-    props.processData.forEach((item) => {
+    tempApp.value.forEach((item) => {
       const modelName = item.modelName.split("@")[0].toLowerCase();
 
       // cn69ModelNames와 비교
@@ -436,7 +464,7 @@ const filteredData = computed(() => {
     return temp.value;
   }
 
-  return props.processData;
+  return tempApp.value;
 });
 
 // 필터 토글 함수

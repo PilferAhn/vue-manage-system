@@ -6,7 +6,7 @@
   </template>
 
 <script setup lang="ts">
-import { getApplicationByModelName } from '../../../utils/fab-application-utils';
+import { getApplicationByModelName } from '../../../utils/Fab/fab-application-utils';
 import type { FabApplicationInterface } from '../../../interface/fab';
 import type {ApplicationData as SolderApplicationInterface} from '../../../interface/solderAppInterface'
 import { initializeApplicationData, initializeApplicationData2 } from '../../../utils/solderApplicationUtil';
