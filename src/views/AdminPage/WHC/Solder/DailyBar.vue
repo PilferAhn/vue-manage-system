@@ -113,7 +113,7 @@ const options = {
     x: {
       title: {
         display: true,
-        text: "요일별 측정 항목",
+        // text: "요일별 측정 항목",
         font: {
           size: 18,
           weight: "bold",

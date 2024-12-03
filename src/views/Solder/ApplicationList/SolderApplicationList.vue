@@ -90,7 +90,7 @@ async function refreshData() {
 
 
 // Timer variable
-const autoRefresh = ref(120);
+const autoRefresh = ref(300);
 let intervalId: ReturnType<typeof setInterval> | undefined;
 
 
@@ -101,7 +101,7 @@ onMounted(() => {
 
     // When timer reaches 0
     if (autoRefresh.value <= 0) {
-      autoRefresh.value = 120; // Reset the timer
+      autoRefresh.value = 300; // Reset the timer
       refreshData()
     }
   }, 1000); // Interval every 1 second

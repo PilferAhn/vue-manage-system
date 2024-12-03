@@ -129,7 +129,7 @@ export function updateMeasurementDataByClient(
       } else if (meas.measurementType === "PS 신뢰성") {
         meas.isMeasured = true;
         meas.quantity = 15;
-        meas.detail = "ESD: 200V(5)/250V(5)/300V(5)";
+        meas.detail = "ESD: 250V(15)";
       } else if (meas.measurementType === "TCF") {
         meas.isMeasured = true;
         meas.quantity = 2;
