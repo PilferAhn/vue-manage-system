@@ -130,6 +130,9 @@ const options = {
         },
       },
       beginAtZero: true,
+      ticks: {
+        stepSize: 10, // Y축의 단위를 10으로 고정
+      },
     },
   },
 };
