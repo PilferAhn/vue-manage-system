@@ -26,7 +26,8 @@
         ></el-date-picker>
       </div>
 
-      <div style="display: flex; gap: 10px; margin-left: auto;"> <!-- 오른쪽 정렬 -->
+      <div style="display: flex; gap: 10px; margin-left: auto">
+        <!-- 오른쪽 정렬 -->
         <!-- 버튼 컨테이너 추가 -->
         <el-button
           type="primary"
@@ -64,6 +65,7 @@
           class="bar-container"
           :serverData="lastdailyMeasInfo"
           :title="lastWeekNumber"
+          :y-max="dailyYMax"
           v-if="isLoad"
         />
       </div>
@@ -72,6 +74,7 @@
           class="bar-container"
           :serverData="dailyMeasInfo"
           :title="thisWeekNumber"
+          :y-max="dailyYMax"
           v-if="isLoad"
         />
       </div>
@@ -129,11 +132,15 @@ import {
 import { downloadExcel } from "../../../../utils/Solder/application-utils";
 import axios from "axios";
 import { format } from "path";
-import { getDailyData } from "./solder-static-utils";
+import {
+  getDailyData,
+  getYMaxFromDailyData,
+  roundUpToNearestTen,
+} from "./solder-static-utils";
 
 const thisMonday = ref(formatDate(adjustDate(getThisMonday(), 7)));
 const lastMonday = ref(formatDate(getThisMonday()));
-
+const dailyYMax = ref(0);
 const thisWeekNumber = ref(getWeekNumberByDate(thisMonday.value) + "주차");
 const lastWeekNumber = ref(getWeekNumberByDate(lastMonday.value) + "주차");
 const excelExportDate = ref(formatDate(adjustDate(getThisMonday(), -7)));
@@ -145,10 +152,6 @@ const handleWeekChange = () => {
 
   lastMonday.value = formatDate(tempDate);
   thisMonday.value = formatDate(adjustDate(tempDate, 7));
-
-  console.log(lastMonday.value)
-  console.log(thisMonday.value)
-
 
   thisWeekNumber.value =
     getWeekNumberByDate(thisMonday.value).toString() + "주차";
@@ -242,7 +245,6 @@ function prioritizeKeys(
     }, {} as Record<string, number[]>),
   };
 
-  console.log(sortedData);
   return sortedData;
 }
 
@@ -275,17 +277,15 @@ function processMeasurementData(
   return data;
 }
 
-watch(selectedWeek , (newVal, oldVal) => {
+watch(selectedWeek, (newVal, oldVal) => {
   const tempDate = formatDateTime(
     getMondayFromInsertedDate(selectedWeek.value)
   );
-  excelExportDate.value = selectedWeek.value
-  console.log(tempDate)
-})
+  excelExportDate.value = selectedWeek.value;
+});
 
 // Watch 기능: thisMonday가 변경될 때 트리거
 watch(thisMonday, async (newVal, oldVal) => {
-  console.log(`thisMonday changed: ${oldVal} -> ${newVal}`);
   isLoad.value = false;
   // Fetch new data
   const newThisWeekData = processMeasurementData(
@@ -306,6 +306,10 @@ watch(thisMonday, async (newVal, oldVal) => {
   lastdailyMeasInfo.length = 0;
   lastdailyMeasInfo.push(...(await getDailyData(lastMonday.value)));
 
+  dailyYMax.value = roundUpToNearestTen(
+    getYMaxFromDailyData(dailyMeasInfo, lastdailyMeasInfo)
+  );
+
   isLoad.value = true;
 });
 
@@ -320,16 +324,16 @@ onMounted(async () => {
   lastWeek.value = processMeasurementData(
     await getWhcMeasurementHistoryQuantityByDate(lastMonday.value)
   );
-  
-  console.log(excelExportDate.value)
 
   dailyMeasInfo.length = 0; // 기존 데이터를 비움
   dailyMeasInfo.push(...(await getDailyData(thisMonday.value)));
 
   lastdailyMeasInfo.length = 0;
   lastdailyMeasInfo.push(...(await getDailyData(lastMonday.value)));
-  // Generate transformed data for the second chart
-  // transformedData.value = transformData(lastWeek.value);
+
+  dailyYMax.value = roundUpToNearestTen(
+    getYMaxFromDailyData(dailyMeasInfo, lastdailyMeasInfo)
+  );
 
   isLoad.value = true;
 });

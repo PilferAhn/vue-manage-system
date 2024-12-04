@@ -34,6 +34,7 @@ Chart.register(
 const props = defineProps<{
   serverData: DailyMeasInfo[];
   title: string;
+  yMax : number;
 }>();
 
 // 고유한 canvasId 생성
@@ -130,6 +131,7 @@ const options = {
         },
       },
       beginAtZero: true,
+      max: props.yMax, // yMax를 올림하여 설정
       ticks: {
         stepSize: 10, // Y축의 단위를 10으로 고정
       },

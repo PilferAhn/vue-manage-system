@@ -2,6 +2,30 @@ import type { DailyMeasInfo } from "../../../../interface/solderAppInterface";
 import { reactive } from "vue";
 import axios from "axios";
 
+export function getYMaxFromDailyData(
+  lastWeek: DailyMeasInfo[],
+  thisWeek: DailyMeasInfo[]
+): number {
+  // 최대값을 계산하는 헬퍼 함수
+  const findMaxFinishedTask = (data: DailyMeasInfo[]): number => {
+    return data.reduce((max, item) => {
+      return item.finished_task > max ? item.finished_task : max;
+    }, 0); // 초기값 0
+  };
+
+  // 두 배열에서 각각 최대값 계산
+  const lastWeekMax = findMaxFinishedTask(lastWeek);
+  const thisWeekMax = findMaxFinishedTask(thisWeek);
+
+  // 둘 중 큰 값을 반환
+  return Math.max(lastWeekMax, thisWeekMax);
+}
+
+// 가장 가까운 10의 배수로 올림하는 함수
+export const roundUpToNearestTen = (num: number): number => {
+  return Math.ceil(num / 10) * 10;
+};
+
 export async function getDailyData(date: string): Promise<DailyMeasInfo[]> {
   const url = "/solder/test1/" + date;
   const priorityOrder = [
