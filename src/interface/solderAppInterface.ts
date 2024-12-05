@@ -11,6 +11,7 @@ export interface Measurement {
   wantedFinishedDate?: string;
   createdDate? : string;
   finishedDate? : string;  
+  detailInHanoi? : string;
 }
 
 export interface Segment {

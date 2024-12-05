@@ -107,8 +107,30 @@
             :value="item.value"
           />
         </el-select>
+        　        
+      </el-descriptions-item>
+      <el-descriptions-item span="3">
+        <template #label>
+          <div class="cell-item">
+            <el-icon :style="iconStyle">
+              <office-building />
+            </el-icon>
+            측정 진행 사항 (WHC)
+          </div>
+        </template>
+        <el-input v-model="meas.detailInHanoi" :disabled="!meas.isMeasured"></el-input>
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template #label>
+          <div class="cell-item">
+            <el-icon :style="iconStyle">
+              <office-building />
+            </el-icon>
+            Action
+          </div>
+        </template>
         　
-        <el-button type="primary"  @click="updateMeasurement(meas)">Update</el-button>
+        <el-button type="primary" style="width: 150px;" @click="updateMeasurement(meas)">Update</el-button>
       </el-descriptions-item>
     </el-descriptions>
   </div>
