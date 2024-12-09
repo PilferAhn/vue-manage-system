@@ -37,8 +37,8 @@
 
         <el-switch
           v-model="isRunningFab"
-          active-text="모든 공정 보기"
-          inactive-text="완료 공정 보기"
+          active-text="진행 공정 보기"
+          inactive-text="모든 공정 보기"
           style="margin-left: 20px"
         ></el-switch>
       </div>
@@ -441,14 +441,12 @@ const filteredData = computed(() => {
   // 한개라도 완료된게 아니면 아직 running이다.
   const tempApp = ref<FabApplicationForm[]>([]);
 
-  if (isRunningFab.value) {
+  if (!isRunningFab.value) {
     tempApp.value = props.processData;
   } else {
     tempApp.value = getRunningFabReqeust(props.processData);
   }
-
-  console.log(tempApp.value);
-
+  
   if (isFiltered.value) {
     temp.value = [];
 
