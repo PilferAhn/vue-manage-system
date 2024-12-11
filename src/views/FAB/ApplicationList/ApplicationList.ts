@@ -2,20 +2,28 @@ import axios from "axios";
 import { ref } from "vue";
 import { convertToCamelCase } from "../Common/Application";
 import { convertPep8ToCamelCase2 } from "../../../utils/key-converter";
-import type { LotStatus, FabApplicationForm } from "./../../../interface/mes-interface";
+import type {
+  LotStatus,
+  FabApplicationForm,
+} from "./../../../interface/mes-interface";
 import { convertKeysToPEP8 } from "../../../utils/key-converter";
 import { convertKeysToCamelCase } from "../../../utils/key-converter";
-import type { ModifiedFabDataInterface, ModifiedFabLotDataInterface } from "../../../interface/fab";
+import type {
+  ModifiedFabDataInterface,
+  ModifiedFabLotDataInterface,
+} from "../../../interface/fab";
 import { adjustDate } from "../../../utils/date-utils";
 
 // Define the processData ref in case you want to use it directly
 export const processData = ref<FabApplicationForm[]>([]);
 
-export async function downloadFabPlanExcel(FabExcel: ModifiedFabDataInterface[]) {
+export async function downloadFabPlanExcel(
+  FabExcel: ModifiedFabDataInterface[]
+) {
   try {
     // 배열의 각 요소를 변환하여 새 배열 생성
     const values = FabExcel.map((item) => convertKeysToPEP8(item));
-    console.log(values)
+    console.log(values);
     const url = "/test/download_fab_plan_excel";
 
     // 파일 다운로드 요청
@@ -38,6 +46,44 @@ export async function downloadFabPlanExcel(FabExcel: ModifiedFabDataInterface[])
   } catch (error) {
     console.error("다운로드 실패:", error);
   }
+}
+
+const operatioMaxTaime: Record<string, number> = {
+  
+  TRANSIT : -1,
+  //OP07003030 : -1, // 샘플 1차 프로브  
+  //OP0E002020 : -1, // 개발 프로브 1차
+  // OP0E002040 : 24 // 개발 프로브 2차
+  OP07001015 : -1, // 샘플 F/O 보관
+  OP09003030 : -1, // 출하
+  OP08003030 : 48, // 전수검사
+  OP08003020 : 48, // AOI
+  OPF01 : -1, // 불량창고
+  
+};
+
+export function testFabOutAlarm(operationId : string, moveinDate : string) {
+  let max_time = 24;
+  
+  if (Object.prototype.hasOwnProperty.call(operatioMaxTaime, operationId)) {
+    max_time = operatioMaxTaime[operationId];
+  }
+
+  if (max_time < 0) {return false}
+
+  // 현재 시간을 Date 객체로 가져오기
+  const now = new Date();
+
+  // moveinDate를 Date 객체로 변환
+  const movein = new Date(moveinDate);
+
+  // 시간 차이를 밀리초 단위로 계산
+  const timeDifference = now.getTime() - movein.getTime();
+
+  // max_time을 밀리초로 변환 (시간 -> ms)
+  const maxTimeInMs = max_time * 60 * 60 * 1000;
+
+  return timeDifference > maxTimeInMs;
 }
 
 export function createTableData(
@@ -66,6 +112,17 @@ export function createTableData(
 
         lotExcel.value.currentOperationTime = lot.moveinDate;
         lotExcel.value.currentOperationName = lot.operation.name;
+        ex.value.isAlarm = testFabOutAlarm(
+          lot.operation.operationId,
+          lot.moveinDate
+        );
+        // console.log(lot.operation.operationId)
+        // console.log(lot.operation.siteId)
+        // console.log(lot.moveinDate)
+        // console.log(lot.operation.name)
+
+        for (const key in lot) {
+        }
 
         let result = "";
 
@@ -108,7 +165,7 @@ export function createTableData(
         } else {
           lotExcel.value.whcArrivalDate = lot.hanoiCsp.creationDate;
           lotExcel.value.assyIn = lot.hanoiCsp.moveinDate;
-          
+
           traverseLotStatus(lot.hanoiCsp, lotExcel.value, 0);
         }
 
@@ -119,7 +176,6 @@ export function createTableData(
   });
   return FabExcelList;
 }
-
 
 function traverseLotStatus(
   lotStatus: LotStatus,
@@ -144,7 +200,6 @@ function traverseLotStatus(
 
   traverseLotStatus(lotStatus.child, lotExcel, depth + 1);
 }
-
 
 export const showInfo = async (processData: FabApplicationForm[]) => {
   const idList = [];
@@ -245,7 +300,7 @@ export const fetchProcessData = async (fabList: FabApplicationForm[]) => {
     const response = await axios.post(url, formData);
 
     // 필터링 소요 시간 계산
-    
+
     fabList = response.data.map((fab) => convertPep8ToCamelCase2(fab));
 
     const endFilterTime = performance.now();

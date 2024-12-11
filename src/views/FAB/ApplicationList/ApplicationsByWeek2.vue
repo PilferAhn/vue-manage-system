@@ -115,8 +115,8 @@
         fixed="left"
       >
         <template #default="scope">
-          <span v-for="(item, index) in scope.row.lotStatus" :key="index">
-            {{ item.lotId }}
+          <span v-for="(item, index) in scope.row.lotStatus" :key="index" >
+            {{ item.lotId }} 
             <br />
           </span>
         </template>
@@ -128,7 +128,7 @@
         </template>
       </el-table-column>
       <el-table-column label="FAB 투입일" :align="'center'" width="130">
-        <template #default="scope">
+        <template #default="scope"> 
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             {{ formatDate(item.creationDate) }}
             <br />
@@ -143,15 +143,17 @@
           </span>
         </template>
       </el-table-column>
+      
       <el-table-column
         label="FAB 현위치(투입시간)"
         :align="'center'"
         width="270"
       >
         <template #default="scope">
-          <span v-for="(item, index) in scope.row.lotStatus" :key="index">
+          <span v-for="(item, index) in scope.row.lotStatus" :key="index" :style="testFabOutAlarm(item.operation.operationId, item.moveinDate) ? 'color: red;' : ''">
             {{ item["operation"]["name"] }}
             {{ formatDateTime(item.moveinDate) }}
+            <!-- {{ item.operation.operationId }} -->
             <br />
           </span>
         </template>
@@ -343,7 +345,7 @@
         width="150"
         :align="'center'"
       ></el-table-column>
-      <!-- <el-table-column
+      <el-table-column
         fixed="right"
         label="Action"
         width="100"
@@ -355,7 +357,7 @@
             의뢰서
           </el-button></template
         >
-      </el-table-column> -->
+      </el-table-column>
     </el-table>
     <DialogTemplate
       v-model:visible="dialogTableVisible"
@@ -378,7 +380,7 @@ import {
   handleDateChange as externalHandleDateChange,
   updateStatus,
 } from "./ApplicationsByWeek";
-import { createTableData, downloadFabPlanExcel } from "./ApplicationList";
+import { createTableData, downloadFabPlanExcel, testFabOutAlarm } from "./ApplicationList";
 import { formatDate, formatDateTime } from "../Common/Application";
 import { getTodayDatetime, adjustDate } from "../../../utils/date-utils";
 import MyApplicationList from "../../Mdr/General/ApplicationList/MyApplicationList.vue";
@@ -497,7 +499,8 @@ function handleExcelSubmit() {
     filteredData.value,
     modifiedFabData.value
   );
-  downloadFabPlanExcel(modifiedFabData.value);
+  console.log(modifiedFabData.value)
+  // downloadFabPlanExcel(modifiedFabData.value);
 }
 </script>
 
