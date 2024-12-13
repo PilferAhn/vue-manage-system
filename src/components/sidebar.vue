@@ -104,6 +104,7 @@ import { computed } from "vue";
 import { useSidebarStore } from "../store/sidebar";
 import { useRoute } from "vue-router";
 import { permission, title } from "process";
+import { fabSilderBarList } from "./fab-sidebar";
 
 const items = [
   {
@@ -158,66 +159,7 @@ const items = [
       },
     ],
   },
-  {
-    icon: "DocumentAdd",
-    index: "3",
-    title: "개발 SAMPLE",
-    permiss: "11",
-    subs: [
-      {
-        index: "/fab/create-application",
-        title: "투입 계획서 작성",
-        permiss: "11",
-      },
-      {
-        index: "/fab/my-application-status",
-        title: "투입 계획서 현황",
-        permiss: "11",
-      },
-      {
-        index: "/fab/feb-application-list",
-        title: "투입 계획서 검토",
-        permiss: "11",
-      },
-      {
-        index: "/fab/feb-application-list2",
-        title: "개발 Sample Monitor",
-        permiss: "11",
-      },
-      {
-        index: "/fab/mes",
-        title: "기타 사이트",
-        permiss: "11",
-        subs: [
-          {
-            index: "/fab/mes/sample_status",
-            title: "개발 SPL 현황 - HQ",
-            permiss: "11",
-          },
-          // {
-          //   index: "/fab/sample_status",
-          //   title: "개발 SPL 현황 - WHC(WLP)",
-          //   permiss: "11",
-          // },
-          // {
-          //   index: "/fab/sample_status",
-          //   title: "개발 SPL 현황 - WHC(CSP)",
-          //   permiss: "11",
-          // },
-          // {
-          //   index: "/fab/china69",
-          //   title: "중화69과제(테스트)",
-          //   permiss: "11",
-          // },
-        ],
-      },
-      // {
-      //   index: "/fab/mes_sample_status",
-      //   title: "개발 SPL 현황 (MES)",
-      //   permiss: "11",
-      // },
-    ],
-  },
+  fabSilderBarList,
   {
     icon: "Pear",
     index: "4",
@@ -286,12 +228,12 @@ const items = [
     icon: "Edit",
     index: "5",
     title: "측정 통계",
-    permiss: "4",
+    permiss: "2",
     subs: [
       {
         index: "/admin/pdt",
         title: "PDT 측정",
-        permiss: "5",
+        permiss: "2",
         subs: [
           {
             index: "/admin/pdt/application-list",
@@ -306,14 +248,14 @@ const items = [
           {
             index: "/admin/pdt/statistic",
             title: "PDT 측정 통계",
-            permiss: "5",
+            permiss: "2",
           },
         ],
       },
       {
         index: "/admin/teg/teg_application",
         title: "TEG 측정",
-        permiss: "5",
+        permiss: "2",
         subs: [
           {
             index: "/admin/teg/teg-application-list",
@@ -323,7 +265,7 @@ const items = [
           {
             index: "/statistic/chart",
             title: "TEG 측정 통계",
-            permiss: "5",
+            permiss: "2",
           },
           // {
           //   index: "/admin/teg/teg-waiting-list",
@@ -335,12 +277,12 @@ const items = [
       {
         index: "/admin/whc/solder-application",
         title: "WHC 측정",
-        permiss: "5",
+        permiss: "2",
         subs: [
           {
             index: "/admin/whc/solder-application-statistic",
             title: "WHC 측정 통계",
-            permiss: "5",
+            permiss: "2",
           },
         ],
       },
