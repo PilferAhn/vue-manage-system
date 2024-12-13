@@ -16,7 +16,8 @@
 </template>
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
-import { fetchProcessData } from "./ApplicationList";
+import { fetchProcessData, getApplicationByUserName } from "./ApplicationList";
+import { getUserName } from "../../../utils/account-utils";
 import ApplicationsByWeek from "./ApplicationsByWeek2.vue";
 import type { FabApplicationForm } from "../../../interface/mes-interface";
 
@@ -38,8 +39,14 @@ const whcWlp = ref<FabApplicationForm[]>([]); // For next week's data
 let tempName = "";
 onMounted(async () => {
   // fetchProcessData 함수로 데이터 가져오기
-  processDataArray.value = await fetchProcessData(processDataArray.value);
 
+  if(getUserName() === "admin"){
+    processDataArray.value = await fetchProcessData(processDataArray.value);
+  }
+  else{
+    processDataArray.value = await getApplicationByUserName(getUserName() , processDataArray.value)
+  }
+  
   // getMaxHistorySeqAndIndexFromProcessData(processDataArray.value);
   // showInfoByWeek(processDataArray.value)
 

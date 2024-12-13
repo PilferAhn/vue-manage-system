@@ -483,6 +483,7 @@ const cellClass = ({ row, rowIndex, column, columnIndex }) => {
   if ([5, 7, 9, 12].includes(columnIndex)) {
     return "even-row";
   }
+  
   return "";
 };
 
@@ -499,7 +500,6 @@ function handleExcelSubmit() {
     filteredData.value,
     modifiedFabData.value
   );
-  console.log(modifiedFabData.value)
   // downloadFabPlanExcel(modifiedFabData.value);
 }
 </script>

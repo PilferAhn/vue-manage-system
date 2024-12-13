@@ -49,27 +49,27 @@ export async function downloadFabPlanExcel(
 }
 
 const operatioMaxTaime: Record<string, number> = {
-  
-  TRANSIT : -1,
-  //OP07003030 : -1, // 샘플 1차 프로브  
+  TRANSIT: -1,
+  //OP07003030 : -1, // 샘플 1차 프로브
   //OP0E002020 : -1, // 개발 프로브 1차
   // OP0E002040 : 24 // 개발 프로브 2차
-  OP07001015 : -1, // 샘플 F/O 보관
-  OP09003030 : -1, // 출하
-  OP08003030 : 48, // 전수검사
-  OP08003020 : 48, // AOI
-  OPF01 : -1, // 불량창고
-  
+  OP07001015: -1, // 샘플 F/O 보관
+  OP09003030: -1, // 출하
+  OP08003030: 48, // 전수검사
+  OP08003020: 48, // AOI
+  OPF01: -1, // 불량창고
 };
 
-export function testFabOutAlarm(operationId : string, moveinDate : string) {
+export function testFabOutAlarm(operationId: string, moveinDate: string) {
   let max_time = 24;
-  
+
   if (Object.prototype.hasOwnProperty.call(operatioMaxTaime, operationId)) {
     max_time = operatioMaxTaime[operationId];
   }
 
-  if (max_time < 0) {return false}
+  if (max_time < 0) {
+    return false;
+  }
 
   // 현재 시간을 Date 객체로 가져오기
   const now = new Date();
@@ -277,6 +277,39 @@ export const downloadExcel = async (processData: FabApplicationForm[]) => {
     document.body.removeChild(link);
   } catch (error) {
     console.error("Error:", error);
+  }
+};
+
+export const getApplicationByUserName = async (
+  userName: string,
+  fabList: FabApplicationForm[]
+) => {
+  try {
+    let startTime = performance.now();
+    const formData = new FormData();
+
+    formData.append("lot_status", "true");
+    formData.append("order_by", "week_number");
+    formData.append("order_dir", "asc");
+    formData.append("designer_confirm", "false");
+    formData.append("name", userName);
+    const url = "/fab_monitoring/get_fab_request_list_person/";
+
+    // 시작 시간 기록
+    const startFilterTime = performance.now();
+    const response = await axios.post(url, formData);
+
+    // 필터링 소요 시간 계산
+
+    fabList = response.data.map((fab) => convertPep8ToCamelCase2(fab));
+
+    const endFilterTime = performance.now();
+    const filterTime = ((endFilterTime - startFilterTime) / 1000).toFixed(3);
+
+    return fabList;
+  } catch (error) {
+    console.error("Failed to fetch process data:", error);
+    return [];
   }
 };
 
