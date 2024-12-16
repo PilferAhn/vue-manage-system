@@ -54,6 +54,13 @@ export function formatDate(dateString: string): string {
   return `${year}-${month}-${day}`;
 }
 
+export function convertDateTimeToDateTimeString(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 // Utility function to format date to "YYYY-MM-DD HH:MM"
 export function formatDateTime(dateString: string): string {
   if (!dateString) return "";
@@ -101,7 +108,8 @@ export function getThisMonday(): string {
   // 이번 주 월요일 날짜 계산
   const thisMonday = new Date(today);
   thisMonday.setDate(
-    today.getDate() - (daysSinceMonday >= 0 ? daysSinceMonday : 7 + daysSinceMonday)
+    today.getDate() -
+      (daysSinceMonday >= 0 ? daysSinceMonday : 7 + daysSinceMonday)
   );
 
   // 문자열로 반환 (YYYY-MM-DD HH:mm:ss 형식)
@@ -114,7 +122,6 @@ export function getThisMonday(): string {
 
   return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
 }
-
 
 export function getThisSunday(): string {
   const today = new Date(); // 오늘 날짜 가져오기
@@ -166,7 +173,6 @@ export function getMondayFromInsertedDate(dateStr: string): string {
   return `${year}-${month}-${dayOfMonth}`;
 }
 
-
 /**
  * 입력된 날짜(YYYY-MM-DD) 기준으로 주 번호를 계산하여 반환
  * @param dateStr 날짜 문자열 (예: "2024-11-15")
@@ -180,15 +186,18 @@ export function getWeekNumberByDate(dateStr: string): number {
   }
 
   // ISO-8601 주 계산: 월요일 시작, 첫 주는 1월 4일을 포함해야 함
-  const tempDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const tempDate = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+  );
 
   // ISO 주 계산용 시작 요일 설정 (0: 일요일, 1: 월요일 ...)
   const dayOfWeek = tempDate.getUTCDay() === 0 ? 7 : tempDate.getUTCDay(); // 0일 경우 7(일요일을 월요일 이후로 계산)
   tempDate.setUTCDate(tempDate.getUTCDate() + 4 - dayOfWeek); // 해당 주의 목요일로 이동 (ISO 주 기준)
 
   const yearStart = new Date(Date.UTC(tempDate.getUTCFullYear(), 0, 1)); // 해당 연도의 첫 번째 날
-  const weekNumber = Math.ceil(((tempDate.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+  const weekNumber = Math.ceil(
+    ((tempDate.getTime() - yearStart.getTime()) / 86400000 + 1) / 7
+  );
 
   return weekNumber;
 }
-
