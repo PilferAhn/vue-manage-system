@@ -32,7 +32,8 @@ export const userLogin = async (id: string, password: string) => {
         status: response.data.status,
         password : response.data.password,
         email : response.data.email,
-        department : response.data.department,                        
+        department : response.data.department,        
+        role : response.data.role                
       };
     } else {
       return {

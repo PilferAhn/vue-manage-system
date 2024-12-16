@@ -17,7 +17,7 @@
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
 import { fetchProcessData, getApplicationByUserName } from "./ApplicationList";
-import { getUserName } from "../../../utils/account-utils";
+import { getUserName, getRole } from "../../../utils/account-utils";
 import ApplicationsByWeek from "./ApplicationsByWeek2.vue";
 import type { FabApplicationForm } from "../../../interface/mes-interface";
 
@@ -43,10 +43,18 @@ onMounted(async () => {
   if(getUserName() === "admin"){
     processDataArray.value = await fetchProcessData(processDataArray.value);
   }
+  else if(getRole() === "group leader"){
+    processDataArray.value = await fetchProcessData(processDataArray.value);
+  }
   else{
     processDataArray.value = await getApplicationByUserName(getUserName() , processDataArray.value)
   }
   
+  // processDataArray.value.forEach((processData, index) => {
+  //   if(processData.modelName === "XM03ATJ@2A"){
+  //     console.log(processData)
+  //   }
+  // })
   // getMaxHistorySeqAndIndexFromProcessData(processDataArray.value);
   // showInfoByWeek(processDataArray.value)
 

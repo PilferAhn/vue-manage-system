@@ -119,6 +119,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
           localStorage.setItem("ms_username", response.user_name);
           localStorage.setItem("id" , param.username)
           localStorage.setItem("email", response.user_name);
+          localStorage.setItem("role", response.role)
 
           // 기타 사용자 정의 로직
           // 예: 권한 설정, 로컬 스토리지 업데이트 등
