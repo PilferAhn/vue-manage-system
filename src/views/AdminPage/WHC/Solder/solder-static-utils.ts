@@ -1,6 +1,50 @@
 import type { DailyMeasInfo } from "../../../../interface/solderAppInterface";
+import { formatDateTime } from "../../../../utils/date-utils";
 import { reactive } from "vue";
+import type { MeasurementData } from "./temp";
 import axios from "axios";
+
+
+export function getDateRanges() {
+  const now = new Date();
+
+  // 저번 달의 첫 시작 날짜와 가장 빠른 시간
+  const firstDayOfLastMonth = new Date(
+    now.getFullYear(),
+    now.getMonth() - 1,
+    1
+  );
+  firstDayOfLastMonth.setHours(0, 0, 0, 0); // 00:00:00
+
+  // 이번 달의 마지막 날짜와 가장 늦은 시간
+  const lastDayOfThisMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  lastDayOfThisMonth.setHours(23, 59, 59, 999); // 23:59:59
+
+  return {
+    lastMonthFirstDate: formatDateTime(firstDayOfLastMonth.toString()),
+    thisMonthLastDate: formatDateTime(lastDayOfThisMonth.toString()),
+  };
+}
+
+// Function to fetch measurement history quantity
+export async function getMeasurementHistoryByDate(startDate : string, endDate: string  
+): Promise<MeasurementData[]> {
+  const url = "/solder/get_measurement_history_by_date";
+
+  const form = new FormData()
+  form.append("start_date" , startDate)
+  form.append("end_date", endDate)
+
+  try {
+    const response = await axios.post(url, form);
+    
+    return response.data;
+    // return prioritizeKeys(response.data);
+  } catch (error) {
+    console.error("Error fetching measurement data:", error);
+    return [];
+  }
+}
 
 export function getYMaxFromDailyData(
   lastWeek: DailyMeasInfo[],

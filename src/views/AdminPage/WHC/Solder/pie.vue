@@ -1,52 +1,43 @@
 <template>
   <div style="max-width: 500px; max-height: 400px;">
-    <canvas :id="canvasId" width="500" height="400"></canvas>
+    <canvas ref="chartCanvas" width="500" height="400"></canvas>
   </div>
 </template>
-
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from "vue";
 import { Chart, ArcElement, Tooltip, Legend, Title, PieController } from "chart.js";
 
-
-// Register Chart.js modules
 Chart.register(PieController, ArcElement, Tooltip, Legend, Title);
 
 const props = defineProps<{
-  data: Record<string, number[]>; // { measurement_type: [total_quantity, finished_quantity] }
+  data: Record<string, number[]>; 
   title: string;
 }>();
 
 let pieChartInstance: Chart<"pie", number[], string> | null = null;
 
-// Generate a unique ID for the canvas
-const canvasId = ref(`pieChart-${Math.random().toString(36).substr(2, 9)}`);
+// Canvas 참조용 ref
+const chartCanvas = ref<HTMLCanvasElement | null>(null);
 
 const renderPieCharts = () => {
-  const ctx = document.getElementById(canvasId.value) as HTMLCanvasElement;
-
-  // Check if the canvas context exists
-  if (!ctx) {
+  if (!chartCanvas.value) {
     console.error("Canvas element not found");
     return;
   }
 
-  // Destroy the previous chart instance if it exists
   if (pieChartInstance) {
     pieChartInstance.destroy();
     pieChartInstance = null;
   }
 
-  // Data preparation
   const labels = Object.keys(props.data);
   const completedData = Object.values(props.data).map((item) => item[1] || 0);
 
-  // Create the chart instance
-  pieChartInstance = new Chart(ctx, {
+  pieChartInstance = new Chart(chartCanvas.value, {
     type: "pie",
     data: {
-      labels: labels,
+      labels,
       datasets: [
         {
           data: completedData,
@@ -66,44 +57,25 @@ const renderPieCharts = () => {
     options: {
       responsive: true,
       plugins: {
-        legend: {
-          display: true,
-          position: "top",
-        },
-        tooltip: {
-          enabled: true,
-        },
-        title: {
-          display: true,
-          text: props.title + " 합산",
-          font: {
-              size: 25,
-              weight: "bold",
-            },
-        },
+        legend: { display: true, position: "top" },
+        tooltip: { enabled: true },
+        title: { display: true, text: props.title + " 합산", font: { size: 25, weight: "bold" } },
       },
     },
   });
 };
 
-// Re-render the chart when `props.data` changes
 watch(
   () => props.data,
-  () => {
-    renderPieCharts();
-  },
-  { deep: true, immediate: true }
+  () => renderPieCharts(),
+  { deep: true } // immediate: true 제거
 );
 
-// Lifecycle hooks
-onMounted(() => {
-  renderPieCharts();
-});
+onMounted(renderPieCharts);
 
 onUnmounted(() => {
   if (pieChartInstance) {
     pieChartInstance.destroy();
-    pieChartInstance = null;
   }
 });
 </script>

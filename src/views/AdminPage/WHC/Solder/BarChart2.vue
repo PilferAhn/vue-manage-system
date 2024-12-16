@@ -121,26 +121,19 @@
     });
   };
   
-  // 컴포넌트가 언마운트될 때 Chart 제거
-  onUnmounted(() => {
-    if (chartInstance) {
-      chartInstance.destroy();
-      chartInstance = null;
-    }
-  });
-  
-  // 데이터 변경 감지 및 업데이트
-  watch(
-    () => props.data,
-    () => {
-      renderChart();
-    },
-    { deep: true, immediate: true }
-  );
-  
-  // 초기 렌더링
-  onMounted(() => {
-    renderChart();
-  });
+  onMounted(() => renderChart());
+
+onUnmounted(() => {
+  if (chartInstance) {
+    chartInstance.destroy();
+    chartInstance = null;
+  }
+});
+
+watch(
+  () => props.data,
+  () => renderChart(),
+  { deep: true }
+);
   </script>
   

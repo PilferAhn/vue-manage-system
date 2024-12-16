@@ -26,6 +26,17 @@
         ></el-date-picker>
       </div>
 
+      <div style="display: flex; align-items: center; gap: 10px">
+        <span style="font-weight: bold; font-size: 16px"></span>
+        <el-switch
+          v-model="isWeekly"
+          size="large"
+          active-text="주간 통계"
+          inactive-text="월간 통계"
+        />
+        <br />
+      </div>
+
       <div style="display: flex; gap: 10px; margin-left: auto">
         <!-- 오른쪽 정렬 -->
         <!-- 버튼 컨테이너 추가 -->
@@ -58,57 +69,61 @@
         />
       </div>
     </div>
-
-    <div style="display: flex; justify-content: space-between; gap: 20px">
-      <div style="flex: 1">
-        <DailyBar
-          class="bar-container"
-          :serverData="lastdailyMeasInfo"
-          :title="lastWeekNumber"
-          :y-max="dailyYMax"
-          v-if="isLoad"
-        />
+    <div v-if="isWeekly">
+      <div style="display: flex; justify-content: space-between; gap: 20px">
+        <div style="flex: 1">
+          <DailyBar
+            class="bar-container"
+            :serverData="lastdailyMeasInfo"
+            :title="lastWeekNumber"
+            :y-max="dailyYMax"
+            v-if="isLoad"
+          />
+        </div>
+        <div style="flex: 1">
+          <DailyBar
+            class="bar-container"
+            :serverData="dailyMeasInfo"
+            :title="thisWeekNumber"
+            :y-max="dailyYMax"
+            v-if="isLoad"
+          />
+        </div>
       </div>
-      <div style="flex: 1">
-        <DailyBar
-          class="bar-container"
-          :serverData="dailyMeasInfo"
-          :title="thisWeekNumber"
-          :y-max="dailyYMax"
-          v-if="isLoad"
-        />
+
+      <div style="display: flex; justify-content: space-between; gap: 20px">
+        <div style="flex: 1">
+          <BarChart2
+            class="bar-container"
+            v-if="isLoad"
+            :title="lastWeekNumber"
+            :y_max="300"
+            :data="lastWeek"
+          />
+        </div>
+        <div style="flex: 1">
+          <BarChart2
+            class="bar-container"
+            v-if="isLoad"
+            :title="thisWeekNumber"
+            :y_max="300"
+            :data="thisWeek"
+          />
+        </div>
+      </div>
+
+      <!-- Pie Charts Row -->
+      <div style="display: flex; justify-content: space-between; gap: 20px">
+        <div class="pie-container">
+          <pieChart v-if="isLoad" :title="lastWeekNumber" :data="lastWeek" />
+        </div>
+        <div class="pie-container">
+          <pieChart v-if="isLoad" :title="thisWeekNumber" :data="thisWeek" />
+        </div>
       </div>
     </div>
-
-    <div style="display: flex; justify-content: space-between; gap: 20px">
-      <div style="flex: 1">
-        <BarChart2
-          class="bar-container"
-          v-if="isLoad"
-          :title="lastWeekNumber"
-          :y_max="300"
-          :data="lastWeek"
-        />
-      </div>
-      <div style="flex: 1">
-        <BarChart2
-          class="bar-container"
-          v-if="isLoad"
-          :title="thisWeekNumber"
-          :y_max="300"
-          :data="thisWeek"
-        />
-      </div>
-    </div>
-
-    <!-- Pie Charts Row -->
-    <div style="display: flex; justify-content: space-between; gap: 20px">
-      <div class="pie-container">
-        <pieChart v-if="isLoad" :title="lastWeekNumber" :data="lastWeek" />
-      </div>
-      <div class="pie-container">
-        <pieChart v-if="isLoad" :title="thisWeekNumber" :data="thisWeek" />
-      </div>
+    <div v-else>
+      <MontlySection :dateString="lastMonday"></MontlySection>
     </div>
   </div>
 </template>
@@ -120,6 +135,7 @@ import BarChart2 from "./BarChart2.vue";
 import pieChart from "./pie.vue";
 import DailyBar from "./DailyBar.vue";
 import { serverData } from "./temp-date";
+import MontlySection from "./MontlySection.vue";
 import type { DailyMeasInfo } from "../../../../interface/solderAppInterface";
 import {
   getThisMonday,
@@ -138,6 +154,8 @@ import {
   roundUpToNearestTen,
 } from "./solder-static-utils";
 
+const isWeekly = ref(true)
+
 const thisMonday = ref(formatDate(adjustDate(getThisMonday(), 7)));
 const lastMonday = ref(formatDate(getThisMonday()));
 const dailyYMax = ref(0);
@@ -153,11 +171,14 @@ const handleWeekChange = () => {
   lastMonday.value = formatDate(tempDate);
   thisMonday.value = formatDate(adjustDate(tempDate, 7));
 
+
+
   thisWeekNumber.value =
     getWeekNumberByDate(thisMonday.value).toString() + "주차";
   lastWeekNumber.value =
     getWeekNumberByDate(lastMonday.value).toString() + "주차";
 };
+
 
 // Define the type for measurement data
 const dailyMeasInfo = reactive<DailyMeasInfo[]>([]);
