@@ -46,9 +46,13 @@ const firstDate = ref("");
 const lastDate = ref("");
 
 watch(
-  () => referenceMonth,
+  () => props.dateString,
   async (newVal, oldVal) => {
     isLoad.value = false;
+
+    referenceMonth.value = getAdjustedMonthDate(props.dateString, 0);
+    previousMonth.value = getAdjustedMonthDate(props.dateString, -1);
+
     result1.value = getMonthStartAndEnd(referenceMonth.value);
     result2.value = getMonthStartAndEnd(previousMonth.value);
 
