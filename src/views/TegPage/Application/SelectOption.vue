@@ -26,7 +26,7 @@ const props = defineProps<{
   prop: string;
   rules: FormItemRule | FormItemRule[] | null;  // FormItemRule 또는 FormItemRule 배열로 지정
   placeholder: string;
-  options: string[]; // options는 문자열 배열로 지정
+  options: string[] | number[]; // options는 문자열 배열로 지정
 }>();
 
 const emit = defineEmits(["update:modelValue"]);

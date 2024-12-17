@@ -14,7 +14,7 @@ import { ElInput, FormItemRule } from "element-plus";  // FormItemRule 타입 �
 
 // Props 정의
 const props = defineProps<{
-  modelValue: string;
+  modelValue: string | any;
   label: string;
   prop: string;
   rules: FormItemRule | FormItemRule[] | null;  // FormItemRule 또는 배열로 명시

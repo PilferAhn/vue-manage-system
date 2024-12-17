@@ -286,8 +286,8 @@ export const applicationPriority = [
   "차세대공법그룹",
   "차세대SAW그룹 - TEG",
   "상품화개발 - TEG",
-  "차세대SAW그룹 - CHIP",
-  "상품화개발 - CHIP",
+  "차세대SAW그룹 - CHIP", // 제품(Product)
+  "상품화개발 - CHIP", // 제품(Product)
 ];
 
 export const maskChanges = ["O", "X"];

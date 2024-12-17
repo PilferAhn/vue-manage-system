@@ -73,27 +73,24 @@
 <script lang="ts" setup>
 import { ref, watch, defineProps, defineEmits } from "vue";
 import type { waferInformation } from "./../../../utils/tegTypes";
-import {getStatusText, updateStatus} from "./WaferInformation"
+import { getStatusText, updateStatus } from "./WaferInformation";
+import type { FormItemRule } from "element-plus"; // Element Plus의 FormItemRule 타입 가져오기
 
 const role = localStorage.getItem("ms_username");
 const props = defineProps<{
   label?: string;
   placeHolder?: string;
-  rules?: Array<any>;
+  rules: FormItemRule | FormItemRule[] | null; // FormItemRule 또는 FormItemRule 배열로 지정
   prop?: string;
   waferQuantity: number;
   waferInformation: waferInformation[];
 }>();
-
-
 
 const emit = defineEmits(["update-wafer"]);
 const localWaferQuantity = ref(props.waferQuantity);
 const localWaferInformation = ref<waferInformation[]>([
   ...props.waferInformation,
 ]);
-
-
 
 const initializeWaferInformation = () => {
   localWaferInformation.value = Array.from(

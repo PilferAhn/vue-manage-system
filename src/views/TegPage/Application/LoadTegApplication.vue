@@ -6,34 +6,33 @@
     label-position="top"
     label-width="100px"
   >
-    <div v-if="role === 'admin'" class="container">
+    <!-- <div v-if="role === 'admin'" class="container">
       <QR :application-uuid="route.params.uuid"></QR>
-    </div>
-
+    </div> -->
 
     <div class="container">
       <div class="split-layout">
         <div class="form-box">
           <div class="meas-types-container">
             <div v-if="role === 'admin'">
-            <el-form-item label="고유 식별 번호">
-              <el-col :span="11">
-                <InputText
-                  v-model="route.params.uuid"
-                  label=""
-                  prop="amin"                  
-                  placeholder="운영자"
-                />
-              </el-col>
-            </el-form-item>
-          </div>
+              <el-form-item label="고유 식별 번호">
+                <el-col :span="11">
+                  <InputText
+                    v-model="route.params.uuid"
+                    label=""
+                    prop="amin"
+                    rules=""
+                    placeholder="운영자"
+                  />
+                </el-col>
+              </el-form-item>
+            </div>
             <el-form-item label="상태">
               <el-col :span="11">
                 <ApplicationStatus
                   v-model="tegApplicationForm.status"
                   label=""
-                  prop="designer"
-                  :rules="rules.designer"
+                  prop="designer"                  
                   placeholder="상태"
                   :wafer-information="tegApplicationForm.waferInformation"
                 />
@@ -70,6 +69,16 @@
                 />
               </el-col>
             </el-form-item>
+
+            <SelectOptionsNew2
+              v-model="tegApplicationForm.applicationType"
+              label="의뢰 구분"
+              prop="applicationType"
+              :rules="rules"
+              placeholder="의뢰 구분"
+              :options="applicationGroupOptions"
+            ></SelectOptionsNew2>
+            
             <select-option
               v-model="tegApplicationForm.applicationType"
               label="의뢰 구분"
@@ -331,9 +340,11 @@ import {
   sendRemoveRequest,
   moveToAnotherRoute,
 } from "./LoadTegApplication";
+import { applicationGroupOptions } from "../../../utils/dropdown-options";
 import { download } from "./../../../utils/tegUtility";
 
 // 하위 component 정의
+import SelectOptionsNew2 from "../../Common/SelectOptionsNew2.vue";
 import ApplicationStatus from "./ApplicationStatus.vue";
 import InputText from "./InputText.vue"; // assuming generic text input component
 import LongInputText from "./LongInputText.vue"; // assuming generic text input component
@@ -344,7 +355,7 @@ import Segmentation from "./Segmentation.vue";
 import MeasTemperature from "./LoadMeasTemperature.vue";
 import Wafer from "../Wafer.vue";
 import WaferInformationUpdate from "./WaferInfomationLoad.vue";
-import QR from "./QR.vue";
+
 
 const route = useRoute();
 const router = useRouter();

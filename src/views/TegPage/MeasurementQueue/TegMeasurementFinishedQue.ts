@@ -52,54 +52,55 @@ export async function downloadZip(applicationUuid: string) {
 }
 
 export async function downloadPpt(applicationUuid: string) {
-    try {
-      const response = await fetch(`/deembed/download_ppt/${applicationUuid}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-        },
-      });
-  
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-  
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-  
-      // 서버에서 전달된 파일 이름을 사용하여 다운로드
-      const contentDisposition = response.headers.get('Content-Disposition');
-      console.log(contentDisposition)
-      let fileName = `${applicationUuid}.pptx`; // 기본 파일 이름
-  
-      if (contentDisposition) {
-        const fileNameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
-        console.log(fileNameMatch)
-        if (fileNameMatch && fileNameMatch.length > 1) {
-          fileName = fileNameMatch[1];
-        }
-      }
-  
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-  
-      ElMessage({
-        message: 'PPT 파일이 성공적으로 다운로드되었습니다!',
-        type: 'success',
-      });
-    } catch (error) {
-      console.error('There was a problem with the fetch operation:', error);
-      ElMessage({
-        message: 'PPT 파일 다운로드에 실패했습니다.',
-        type: 'error',
-      });
+  try {
+    const response = await fetch(`/deembed/download_ppt/${applicationUuid}`, {
+      method: "GET",
+      headers: {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
     }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.style.display = "none";
+    a.href = url;
+
+    // 서버에서 전달된 파일 이름을 사용하여 다운로드
+    const contentDisposition = response.headers.get("Content-Disposition");
+    console.log(contentDisposition);
+    let fileName = `${applicationUuid}.pptx`; // 기본 파일 이름
+
+    if (contentDisposition) {
+      const fileNameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+      console.log(fileNameMatch);
+      if (fileNameMatch && fileNameMatch.length > 1) {
+        fileName = fileNameMatch[1];
+      }
+    }
+
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+
+    ElMessage({
+      message: "PPT 파일이 성공적으로 다운로드되었습니다!",
+      type: "success",
+    });
+  } catch (error) {
+    console.error("There was a problem with the fetch operation:", error);
+    ElMessage({
+      message: "PPT 파일 다운로드에 실패했습니다.",
+      type: "error",
+    });
   }
+}
 
 export async function getPath(applicationUuid: string) {
   try {

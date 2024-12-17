@@ -31,14 +31,15 @@
                 />
               </el-col>
             </el-form-item>
-            <select-option
+            <SelectOptionsNew2
               v-model="tegApplicationForm.applicationType"
               label="의뢰 구분"
               prop="applicationType"
-              :rules="rules.applicationType"
+              :rules="rules"
               placeholder="의뢰 구분"
-              :options="applicationPriority"
-            ></select-option>
+              :options="applicationGroupOptions"
+            ></SelectOptionsNew2>
+            
 
             <InputText
               v-model="tegApplicationForm.modelName"
@@ -282,11 +283,13 @@ import {
 } from "./../../../utils/tegTypes";
 import { tegApplicationRules } from "./../../../utils/tegApplicationRules";
 import { submitForm, download } from "./../../../utils/tegUtility";
+import { applicationGroupOptions } from "../../../utils/dropdown-options";
 import {
   cloneApplicationDetail
 } from "./LoadTegApplication";
 
 // 하위 component 정의
+import SelectOptionsNew2 from "../../Common/SelectOptionsNew2.vue";
 import InputText from "./InputText.vue"; // assuming generic text input component
 import LongInputText from "./LongInputText.vue"; // assuming generic text input component
 import MeasType from "./MeasType.vue";

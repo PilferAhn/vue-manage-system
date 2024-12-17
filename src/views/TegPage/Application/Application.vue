@@ -52,14 +52,15 @@
                 </el-form-item>
               </el-col>
             </el-form-item>
-            <select-option
+
+            <SelectOptionsNew2
               v-model="tegApplicationForm.applicationType"
               label="의뢰 구분"
               prop="applicationType"
-              :rules="rules.applicationType"
+              :rules="rules"
               placeholder="의뢰 구분"
-              :options="applicationPriority"
-            ></select-option>
+              :options="applicationGroupOptions"
+            ></SelectOptionsNew2>
 
             <InputText
               v-model="tegApplicationForm.modelName"
@@ -272,7 +273,7 @@
               >의뢰서 작성</el-button
             ></span
           >
-          
+
           <!-- <span>
             <el-button
               type="primary"
@@ -307,6 +308,7 @@ import type {
 import { tegApplicationRules } from "./../../../utils/tegApplicationRules";
 import { submitForm, download } from "./../../../utils/tegUtility";
 
+import { applicationGroupOptions } from "../../../utils/dropdown-options";
 // 기능
 
 import { tegTypes } from "../Common/utility";
@@ -322,6 +324,7 @@ import Segmentation from "./Segmentation.vue";
 import MeasTemperature from "./MeasTemperature.vue";
 import Wafer from "../Wafer.vue";
 import WaferInformationUpdate from "./WaferInfomation.vue";
+import SelectOptionsNew2 from "../../Common/SelectOptionsNew2.vue";
 
 // Define props to receive processData
 const props = defineProps<{
