@@ -12,6 +12,7 @@ export interface Measurement {
   createdDate? : string;
   finishedDate? : string;  
   detailInHanoi? : string;
+  measurer? : string
 }
 
 export interface Segment {
@@ -100,7 +101,7 @@ export interface ApplicationData {
   
   reelId? : string
   reelLoc? : string
-
+  numOfActivateMeas? : number
 }
 
 

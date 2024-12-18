@@ -12,16 +12,58 @@ import {
   FabApplicationForm,
 } from "../../../interface/mes-interface";
 
-import { convertKeysToPEP8 } from "../../../utils/key-converter";
-
-import { ref } from "vue";
-import { FabExcel } from "../../../interface/fab";
 
 export const statusList = [
   { key: "created", value: "created", label: "Waiting" },
   { key: "in progress", value: "in progress", label: "In Progress" },
   { key: "finished", value: "finished", label: "FINISH" },
 ];
+
+export const handleButtonClick = (value: string): void => {
+  console.log(value);
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    // 클립보드 API 지원 확인
+    navigator.clipboard.writeText(value)
+      .then(() => {
+        ElMessage({
+          message: `경로: ${value} 가 클립보드에 복사되었습니다`,
+          type: 'success',
+        });
+      })
+      .catch(() => {
+        ElMessage({
+          message: '복사에 실패했습니다.',
+          type: 'error',
+        });
+      });
+  } else {
+    // 대체 방법: textarea를 사용한 복사
+    const textArea = document.createElement('textarea');
+    textArea.value = value;
+    textArea.style.position = 'fixed';
+    textArea.style.opacity = '0';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      document.execCommand('copy');
+      ElMessage({
+        message: `경로: ${value} 가 클립보드에 복사되었습니다`,
+        type: 'success',
+      });
+    } catch (err) {
+      ElMessage({
+        message: '복사에 실패했습니다.',
+        type: 'error',
+      });
+    }
+
+    document.body.removeChild(textArea);
+  }
+};
+
 
 function traverseLotStatus(
   app: ApplicationData,
@@ -82,6 +124,24 @@ export function getMyApplicationList(applicationData: ApplicationData[]) {
   return myApplicationList;
 }
 
+export function modiMeasTypName(applicationData: ApplicationData[]){
+
+  applicationData.forEach((app)=>{
+    app.measurements.forEach((meas)=>{
+      if(meas.measurementType === "특성 평가"){
+        meas.measurementType = "Solder Measurement"
+      }
+      else if(meas.measurementType === "PS 신뢰성"){
+        meas.measurementType = "ESD"
+      }
+      else if(meas.measurementType === "비선형"){
+        meas.measurementType = "Non-Linearity"
+      }
+    })
+  })
+
+}
+
 export function updateReelInfo(applicationData : ApplicationData[]) {
   
   applicationData.forEach((app , index) => {
@@ -140,10 +200,7 @@ export async function findLotHistoryFromFabRequest(
         // }
 
         fabApplicationData[j].lotStatus.forEach((lot, index) => {
-          if (lot.hanoiCsp !== null) {
-            if(fabApplicationData[j].modelName === "XM71ATM@2C"){
-              console.log(fabApplicationData[j].lotStatus)
-            }
+          if (lot.hanoiCsp !== null) {            
             traverseLotStatus(applicationData[i], lot.hanoiCsp, 0);
           }
           else{

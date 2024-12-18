@@ -201,3 +201,10 @@ export function getWeekNumberByDate(dateStr: string): number {
 
   return weekNumber;
 }
+
+export function getEarliestTimeOfCurrentMonth(): Date {
+  const today = new Date(); // 오늘 날짜
+  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1, 0, 0, 0, 0); // 이번 달의 첫 번째 날 00:00:00
+
+  return firstDayOfMonth;
+}

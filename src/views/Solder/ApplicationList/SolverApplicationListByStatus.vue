@@ -22,7 +22,7 @@
       ></el-input>
       <el-button type="primary" @click="handleSearch">검색</el-button>
 
-      <div class="legend">        
+      <div class="legend">
         <div class="legend-item">
           <el-button class="btn-in-progress" disabled>진행 중</el-button>
           <span>진행 중</span>
@@ -67,7 +67,8 @@
               :class="getStatusClass(measurement.status)"
               size="small"
               class="fixed-size"
-              disabled
+              @click="handleButtonClick(measurement.status)"
+              :disabled="measurement.status !== 'finished'"
               plain
             >
               <i
@@ -78,7 +79,8 @@
                 v-if="measurement.status === 'finished'"
                 class="el-icon-check mr5"
               ></i>
-              {{
+              {{ measurement.measurementType }}
+              <!-- {{
                 measurement.measurementType.toUpperCase() === "비선형"
                   ? "Non-Linearity"
                   : measurement.measurementType.toUpperCase() === "PS 신뢰성"
@@ -88,7 +90,7 @@
                   : measurement.measurementType.toUpperCase() === "특성 평가"
                   ? "Solder Measurement"
                   : measurement.measurementType.toUpperCase()
-              }}
+              }} -->
             </el-button>
           </div>
         </template>
@@ -224,7 +226,11 @@ import { useRouter, useRoute } from "vue-router";
 import { downloadFileByUrl } from "../Application/LoadSolderApplication";
 import { updateStatusByUuid } from "../Application/SolderApplication";
 import SelectOptions from "../../Common/SelectOptions.vue";
-import { statusList, confirmDelete } from "./SolderApplicationList";
+import {
+  statusList,
+  confirmDelete,
+  handleButtonClick,
+} from "./SolderApplicationList";
 import { convertPythonTimeToVue } from "../../Common/utility";
 import {
   sendApplicationData2,
@@ -252,8 +258,6 @@ onMounted(() => {
     searchTerm.value = localStorage.getItem("searchTerm") as string;
   }
 });
-
-
 
 // 검색어가 변경될 때마다 `localStorage`에 저장
 watch(searchTerm, (newTerm) => {
@@ -352,6 +356,10 @@ const handleUpdate = async (uuid, assayLotId) => {
     // 에러 메시지 표시
   }
 };
+</script>
+
+<script lang="ts">
+export default {};
 </script>
 
 <style lang="scss" scoped>

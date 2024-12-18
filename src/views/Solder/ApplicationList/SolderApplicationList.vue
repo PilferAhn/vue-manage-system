@@ -1,9 +1,17 @@
 <template>
   <div>
     <el-tabs v-model="activeTab" type="border-card">
+      <el-tab-pane label="Dashboard" name="dashboard">
+        <Dashboard
+        :total="applicationList"
+        :wait="createdData"
+        :in-progress="progressData"
+        :fishied="finishedData"
+        :wait-and-progress="waitAndProgress"></Dashboard>
+      </el-tab-pane>
       <el-tab-pane label="Ongoing" name="created">
         <SolverApplicationListByStatus
-          :applicationData="progressData"
+          :applicationData="waitAndProgress"
           :applicationType="'created'"
           @status-updated="refreshData"
         />
@@ -23,23 +31,25 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import SolverApplicationListByStatus from "./SolverApplicationListByStatus.vue";
 import {
-  get_application_list_by_status,
+  modiMeasTypName,
   get_application_list,
   getMyApplicationList,
   findLotHistoryFromFabRequest,
   updateReelInfo
 } from "./SolderApplicationList";
+import Dashboard from "../DashBoard/SolderDashBoard.vue";
 import type { ApplicationData } from "../../../interface/solderAppInterface";
 
 const name = localStorage.getItem("ms_username");
 const userId = localStorage.getItem("id");
 
 // Tab management
-const activeTab = ref("created");
+const activeTab = ref("dashboard");
 
 // Data for each status
 const finishedData = ref<ApplicationData[]>([]);
 const progressData = ref<ApplicationData[]>([]);
+const waitAndProgress = ref<ApplicationData[]>([]);
 const createdData = ref<ApplicationData[]>([]);
 const filteredData = ref<ApplicationData[]>([]);
 
@@ -60,23 +70,23 @@ async function refreshData() {
   try {
 
     applicationList.value = await get_application_list();
-        
+    modiMeasTypName(applicationList.value)
     applicationList.value = getMyApplicationList(applicationList.value)
     
-
-    updateReelInfo(applicationList.value)    
-
-    // applicationList.value.forEach((app, index) => {
-    //   if (app.modelName === "DG45FA4@2A") {
-    //     console.log(app)
-    //   }
-    // });
-    
+    updateReelInfo(applicationList.value)            
     findLotHistoryFromFabRequest(applicationList.value)
     // findLots(applicationList.value);
     applicationList.value = sortByCreatedDateDesc(applicationList.value);
 
+    createdData.value = applicationList.value.filter((app) => {
+      return ["created"].includes(app.status);
+    });
+
     progressData.value = applicationList.value.filter((app) => {
+      return ["in progress"].includes(app.status);
+    });
+
+    waitAndProgress.value = applicationList.value.filter((app) => {
       return ["created", "in progress"].includes(app.status);
     });
 

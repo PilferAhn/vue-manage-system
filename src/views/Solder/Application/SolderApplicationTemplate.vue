@@ -619,7 +619,7 @@ const keys = ref<string[]>([]); // keys를 빈 배열로 초기화
 onMounted(() => {
   application.value = props.applicationData;
   sortApplicationDataByNumber(application.value);
-  console.log(application.value.measurements);
+  
   loading.value = false;
 });
 
@@ -855,6 +855,10 @@ function moveRounterbyApplicationUuid(vueRouterName: string, uuid: string) {
     params: { applicationUuid: uuid },
   });
 }
+</script>
+
+<script lang="ts">
+export default {};
 </script>
 
 <style scoped>
