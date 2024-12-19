@@ -67,7 +67,7 @@
               :class="getStatusClass(measurement.status)"
               size="small"
               class="fixed-size"
-              @click="handleButtonClick(measurement.status)"
+              @click="handleButtonClick(scope.row,  measurement)"
               :disabled="measurement.status !== 'finished'"
               plain
             >

@@ -44,7 +44,7 @@ const name = localStorage.getItem("ms_username");
 const userId = localStorage.getItem("id");
 
 // Tab management
-const activeTab = ref("dashboard");
+const activeTab = ref("created");
 
 // Data for each status
 const finishedData = ref<ApplicationData[]>([]);

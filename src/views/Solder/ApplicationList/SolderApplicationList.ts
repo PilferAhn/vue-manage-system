@@ -1,12 +1,13 @@
 import axios from "axios";
+
 import type {
   ApplicationData,
-  SolderFile,
+  Measurement as MeasInterface,
 } from "../../../interface/solderAppInterface";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { removeApplicationByUuid } from "../Application/SolderApplication";
 import { getUserName } from "../../../utils/account-utils";
-// import type { LotStatus, FabApplicationForm } from "../../FAB/Interface/mes-interface";
+import { extractYearFromDateTime } from "../../../utils/date-utils";
 import {
   LotStatus,
   FabApplicationForm,
@@ -19,15 +20,42 @@ export const statusList = [
   { key: "finished", value: "finished", label: "FINISH" },
 ];
 
-export const handleButtonClick = (value: string): void => {
-  console.log(value);
+export const handleButtonClick = (app : ApplicationData , meas: MeasInterface): void => {
+
+  
+  const year = extractYearFromDateTime(meas.createdDate) 
+  const productName = app.modelName
+  let measType = ""
+  if(meas.measurementType === "Solder Measurement"){
+    measType = "01.Solder_Measurement"
+  }
+  else if(meas.measurementType === "PDT(SMT)"){
+    measType = "02.PDT"
+  }
+  else if(meas.measurementType === "PDT(Manual_수탑)"){
+    measType = "02.PDT"
+  }
+  else if(meas.measurementType === "ESD"){
+    measType = "03.ESD"
+  }
+  else if(meas.measurementType === "TCF"){
+    measType = "04.TCF"
+  }
+  else if(meas.measurementType === "Non-Linearity"){
+    measType = "05.Non-Linearity"
+  }
+  else{
+    // 에러 발생시키기
+  }
+  
+  const path = `\\\\10.20.10.25\\www_new\\RFRND\\지원파트\\01.측정(제품)\\99.WHC측정\\${year}\\${productName}\\${measType}`
 
   if (navigator.clipboard && navigator.clipboard.writeText) {
     // 클립보드 API 지원 확인
-    navigator.clipboard.writeText(value)
+    navigator.clipboard.writeText(path)
       .then(() => {
         ElMessage({
-          message: `경로: ${value} 가 클립보드에 복사되었습니다`,
+          message: `경로: ${path} 가 클립보드에 복사되었습니다`,
           type: 'success',
         });
       })
@@ -40,7 +68,7 @@ export const handleButtonClick = (value: string): void => {
   } else {
     // 대체 방법: textarea를 사용한 복사
     const textArea = document.createElement('textarea');
-    textArea.value = value;
+    textArea.value = path;
     textArea.style.position = 'fixed';
     textArea.style.opacity = '0';
     document.body.appendChild(textArea);
@@ -50,7 +78,7 @@ export const handleButtonClick = (value: string): void => {
     try {
       document.execCommand('copy');
       ElMessage({
-        message: `경로: ${value} 가 클립보드에 복사되었습니다`,
+        message: `경로: ${path} 가 클립보드에 복사되었습니다`,
         type: 'success',
       });
     } catch (err) {

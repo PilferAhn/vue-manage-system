@@ -56,8 +56,6 @@ import type { ApplicationData } from "../../../interface/solderAppInterface";
 import { Measurement, analizeData, getSumByMeasStatus } from "./Waiting";
 import WaitingPieChart from "./WaitingPieChart.vue";
 
-
-
 // props로 ApplicationData 배열 받음
 const props = defineProps<{
   applications: ApplicationData[];
@@ -101,6 +99,10 @@ watch(
   { immediate: true, deep: true }
 );
 console.log(measurements.value)
+</script>
+
+<script lang="ts">
+export default {};
 </script>
 
 <style scoped>

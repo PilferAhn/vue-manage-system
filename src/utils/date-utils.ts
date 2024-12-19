@@ -10,6 +10,21 @@ export function getCurrentWeekNumber(): number {
   return Math.ceil((pastDaysOfYear + dayOfWeekAdjustment) / 7);
 }
 
+
+/**
+ * 문자열에서 첫 번째 연도(4자리 숫자)를 추출하는 함수
+ * @param dateTimeString 연도가 포함된 날짜 및 시간 문자열 (예: "2024-12-16T14:48:09")
+ * @returns 연도(4자리 숫자)를 문자열로 반환, 연도가 없으면 null 반환
+ */
+export function extractYearFromDateTime(dateTimeString: string): string | null {
+  // 정규 표현식: 문자열의 시작(^)에서 4자리 숫자 (\d{4})를 찾음
+  const yearMatch = dateTimeString.match(/^\d{4}/);
+
+  // 매칭된 결과가 있으면 첫 번째 결과(yearMatch[0]) 반환, 없으면 null 반환
+  return yearMatch ? yearMatch[0] : null;
+}
+
+
 export function getTodayDatetime() {
   const now = new Date();
   const cururentTime =

@@ -114,6 +114,10 @@ watch(
 );
 </script>
 
+<script lang="ts">
+export default {};
+</script>
+
 <style scoped>
 .container {
   display: grid;
