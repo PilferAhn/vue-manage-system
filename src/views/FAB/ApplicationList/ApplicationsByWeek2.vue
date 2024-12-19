@@ -414,6 +414,7 @@ function handleVisible(status: boolean, id: string) {
   selectApplicationId.value = id;
 }
 
+
 const filteredApplicationData = computed(() => {
   const term = searchTerm.value.toLowerCase();
 

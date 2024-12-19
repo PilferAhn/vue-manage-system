@@ -274,12 +274,15 @@ function processMeasurementData(
 ): Record<string, number[]> {
   if (!data) return {};
 
+  console.log(data)
+
   // 1. "PS 신뢰성" 값을 저장
   const value = data["PS 신뢰성"];
   const solderMes = data["특성 평가"];
   // 기존 키 삭제
   // delete data["PS 신뢰성"];
   delete data["내전력"];
+  delete data["특성 평가"];
   if (value) {
     // 객체를 배열로 변환하여 순서 조작
     const entries = Object.entries(data);
@@ -288,8 +291,8 @@ function processMeasurementData(
     const targetIndex = 2; // 원하는 인덱스 설정
     // entries.splice(targetIndex, 0, ["ESD", value]);
 
-    entries.splice(0, 0, ["특성 평가", solderMes]);
-
+    entries.splice(0, 0, ["Solder Measurement", solderMes]);
+    
     const updatedData = Object.fromEntries(entries);
 
     return updatedData;
