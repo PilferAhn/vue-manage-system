@@ -214,6 +214,7 @@ async function getWhcMeasurementHistoryQuantityByDate(
   const url = "/solder/get_measured_vs_requested_by_date/" + date;
   try {
     const response = await axios.get(url);
+    console.log(response.data)
     return response.data;
     // return prioritizeKeys(response.data);
   } catch (error) {
@@ -274,7 +275,7 @@ function processMeasurementData(
 ): Record<string, number[]> {
   if (!data) return {};
 
-  console.log(data)
+
 
   // 1. "PS 신뢰성" 값을 저장
   const value = data["PS 신뢰성"];
@@ -283,6 +284,7 @@ function processMeasurementData(
   // delete data["PS 신뢰성"];
   delete data["내전력"];
   delete data["특성 평가"];
+  
   if (value) {
     // 객체를 배열로 변환하여 순서 조작
     const entries = Object.entries(data);

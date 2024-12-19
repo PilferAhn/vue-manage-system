@@ -522,6 +522,17 @@ export async function sendFilesWithUuid(
 function updateMeasurementStatus(applicationData: ApplicationData) {
 
   applicationData.measurements.forEach((meas, index) => {
+
+    if(meas.measurementType === "Solder Measurement"){
+      meas.measurementType = "특성 평가"
+    }
+    else if(meas.measurementType === "ESD"){
+      meas.measurementType = "PS 신뢰성"
+    }
+    else if(meas.measurementType === "Non-Linearity"){
+      meas.measurementType = "비선형"
+    }
+
     if (meas.wantedFinishedDate === "" || meas.wantedFinishedDate === null) {
       meas.wantedFinishedDate = undefined;
     } else if (meas.wantedFinishedDate === undefined) {

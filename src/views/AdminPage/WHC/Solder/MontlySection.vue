@@ -38,6 +38,7 @@ const result2 = ref<any>({});
 const rawData1 = ref<MeasurementData[]>([]);
 const rawData2 = ref<MeasurementData[]>([]);
 const isLoad = ref(false);
+const yMax = ref(0);
 
 referenceMonth.value = getAdjustedMonthDate(props.dateString, 0);
 previousMonth.value = getAdjustedMonthDate(props.dateString, -1);
@@ -65,6 +66,7 @@ watch(
       result2.value.endDate
     );
 
+    console.log(rawData1.value)
     isLoad.value = true;
   }
 );
