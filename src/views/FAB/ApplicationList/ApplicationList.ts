@@ -280,6 +280,34 @@ export const downloadExcel = async (processData: FabApplicationForm[]) => {
   }
 };
 
+export function getLateFab(fabList: FabApplicationForm[]) {
+  const LateFabList = ref<FabApplicationForm[]>([]);
+
+  fabList.forEach((fab) => {
+    const tempLots = ref<LotStatus[]>([]);
+    let isLate = false;
+    for (let i = 0; i < fab.lotStatus.length; i++) {
+      if (
+        testFabOutAlarm(
+          fab.lotStatus[i].operation.operationId,
+          fab.lotStatus[i].moveinDate
+        )
+      ) {
+
+        isLate = true;
+        tempLots.value.push(fab.lotStatus[i])
+      }
+    }
+
+    if (isLate) {
+      fab.lotStatus = tempLots.value
+      LateFabList.value.push(fab);
+    }
+  });
+
+  return LateFabList.value;
+}
+
 export const getApplicationByUserName = async (
   userName: string,
   fabList: FabApplicationForm[]

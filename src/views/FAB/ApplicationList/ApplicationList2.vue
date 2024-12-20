@@ -11,6 +11,9 @@
       <el-tab-pane :label="wlpLabel" name="wlp">
         <ApplicationsByWeek :processData="whcWlp" />
       </el-tab-pane>
+      <el-tab-pane :label="'ETC'" name="etc">
+        <ApplicationsByWeek :processData="etc" />
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -35,6 +38,7 @@ const handleTabClick = (tab: any) => {
 const processDataArray = ref<FabApplicationForm[]>([]); // For this week's data
 const whcCsp = ref<FabApplicationForm[]>([]); // For last week's data
 const whcWlp = ref<FabApplicationForm[]>([]); // For next week's data
+const etc  = ref<FabApplicationForm[]>([]); // For next week's data
 
 let tempName = "";
 onMounted(async () => {
@@ -64,6 +68,7 @@ onMounted(async () => {
     } else if (processData["destination"] === "WHC_WLP") {
       whcWlp.value.push(processData);
     } else {
+      etc.value.push(processData)
     }
   });
 });

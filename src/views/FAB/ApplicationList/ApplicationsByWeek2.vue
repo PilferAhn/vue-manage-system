@@ -369,6 +369,9 @@
   <el-button type="primary" @click="toggleFilter" class="buttun-section">
     {{ isFiltered ? "원래 데이터 보기" : "중화 69 과제 보기" }}
   </el-button>
+  <el-button type="warning" @click="toggleLateFilter" class="buttun-section">
+    {{ isDealyFab ? "원래 데이터 보기" : "지연 과제 보기" }}
+  </el-button>
   <el-button type="primary" @click="handleExcelSubmit" class="buttun-section">
     개발 샘플 진행 상황 EXCEL
   </el-button>
@@ -381,7 +384,7 @@ import {
   handleDateChange as externalHandleDateChange,
   updateStatus,
 } from "./ApplicationsByWeek";
-import { createTableData, downloadFabPlanExcel, testFabOutAlarm } from "./ApplicationList";
+import { createTableData, getLateFab, testFabOutAlarm } from "./ApplicationList";
 import { formatDate, formatDateTime } from "../Common/Application";
 import { getTodayDatetime, adjustDate } from "../../../utils/date-utils";
 import MyApplicationList from "../../Mdr/General/ApplicationList/MyApplicationList.vue";
@@ -399,6 +402,7 @@ const props = defineProps<{
 const searchTerm = ref("");
 const searchCategory = ref("modelName"); // 기본 검색 기준을 "Lot ID"로 설정
 const isRunningFab = ref(true);
+const isDealyFab = ref(false);
 // Clear the search input
 function handleClear() {
   searchTerm.value = ""; // Reset search term
@@ -464,6 +468,13 @@ const filteredData = computed(() => {
     tempApp.value = getRunningFabReqeust(props.processData);
   }
   
+  if (isDealyFab.value){
+    tempApp.value = getLateFab(tempApp.value)
+  }
+  else{
+    tempApp.value = tempApp.value
+  }
+
   if (isFiltered.value) {
     temp.value = [];
 
@@ -485,6 +496,10 @@ const filteredData = computed(() => {
 // 필터 토글 함수
 const toggleFilter = () => {
   isFiltered.value = !isFiltered.value;
+};
+
+const toggleLateFilter = () => {
+  isDealyFab.value = !isDealyFab.value;
 };
 
 // emit 정의
