@@ -293,7 +293,7 @@ export const getApplicationByUserName = async (
     formData.append("order_dir", "asc");
     formData.append("designer_confirm", "false");
     formData.append("name", userName);
-    const url = "/fab_monitoring/get_fab_request_list_person/";
+    const url = "/fab_monitoring/get_fab_request_list_person";
 
     // 시작 시간 기록
     const startFilterTime = performance.now();
