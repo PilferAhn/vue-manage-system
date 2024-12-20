@@ -1,7 +1,7 @@
 // dataProcessor.ts
 
 export interface MeasurementData {
-  date: string;
+  date?: string;
   measurement_type: string;
   finished_task: number;
 }
@@ -26,7 +26,7 @@ export const MEASUREMENT_ORDER = [
   "비선형",
 ];
 
-export function sumTotalData(data: MeasurementData[]): TotalResult[] {
+export function sumTotalData(data: MeasurementData[]): MeasurementData[] {
   const totalData: { [key: string]: number } = {};
 
   data.forEach((item) => {
@@ -44,7 +44,11 @@ export function sumTotalData(data: MeasurementData[]): TotalResult[] {
   }));
 }
 
-export function sortTotalMeasurementTypes(data: TotalResult[]): TotalResult[] {
+export function getMaxNumFromResult(data : TotalResult[]){
+  return Math.max(...data.map(item => item.finished_task));
+}
+
+export function sortTotalMeasurementTypes(data: MeasurementData[]): MeasurementData[] {
   return data.sort((a, b) => {
     const indexA = MEASUREMENT_ORDER.indexOf(a.measurement_type);
     const indexB = MEASUREMENT_ORDER.indexOf(b.measurement_type);

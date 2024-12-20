@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import Chart from "chart.js/auto";
 import { rawData } from "../../../../utils/Solder/demo-data";
 import type { TotalResult } from "./temp";
@@ -17,7 +17,8 @@ import type { MeasurementData } from "./temp";
 
 const props = defineProps<{
   chartTitle: string;
-  rawData : MeasurementData[]
+  rawData: MeasurementData[];
+  yMax : number;
 }>();
 
 const chartCanvas = ref<HTMLCanvasElement | null>(null);
@@ -25,6 +26,16 @@ const chartCanvas = ref<HTMLCanvasElement | null>(null);
 onMounted(() => {
   renderChart();
 });
+
+// watch(
+//   () => props.rawData, // rawData의 변화를 감지
+//   () => {
+//     if (chartCanvas.value) {
+//       renderChart();
+//     }
+//   },
+//   { deep: true } // 깊은 감지 활성화
+// );
 
 // 동적 색상 생성 함수
 const generateColors = (count: number) => {
@@ -37,12 +48,12 @@ const generateColors = (count: number) => {
 };
 
 function renderChart() {
-  let totalData: TotalResult[] = sumTotalData(props.rawData);
-  totalData = sortTotalMeasurementTypes(totalData);
+  // let totalData: MeasurementData[] = sumTotalData(props.rawData);
+  let totalData = sortTotalMeasurementTypes(props.rawData);
 
   const labels = totalData.map((item) => item.measurement_type);
   const data = totalData.map((item) => item.finished_task);
-  
+
   // 동적 색상 생성
   const colors = generateColors(totalData.length);
 
@@ -52,7 +63,7 @@ function renderChart() {
       data: {
         labels: labels,
         datasets: [
-          {            
+          {
             data: data,
             backgroundColor: colors, // 동적 색상 적용
             borderColor: colors.map((color) => color.replace("70%", "50%")), // 약간 어두운 색으로 경계선
@@ -99,13 +110,18 @@ function renderChart() {
               font: {
                 size: 18,
                 weight: "bold",
-              },
+              },            
             },
             beginAtZero: true,
+            max : props.yMax
           },
         },
       },
     });
   }
 }
+</script>
+
+<script lang="ts">
+export default {};
 </script>

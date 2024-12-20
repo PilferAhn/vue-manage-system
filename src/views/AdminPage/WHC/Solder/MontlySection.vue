@@ -1,18 +1,17 @@
 <template>
-  <div
-    v-if="isLoad"
-    style="display: flex; justify-content: space-between; gap: 20px"
-  >
+  <div v-if="isLoad" style="display: flex; justify-content: space-between; gap: 20px">
     <div style="flex: 1">
       <SolderWeekly
         :chart-title="previousMonth.split('-')[1]"
         :raw-data="rawData2"
+        :y-max="yMax"
       ></SolderWeekly>
     </div>
     <div style="flex: 1">
       <SolderWeekly
         :chart-title="referenceMonth.split('-')[1]"
         :raw-data="rawData1"
+        :y-max="yMax"
       ></SolderWeekly>
     </div>
   </div>
@@ -26,7 +25,9 @@ import {
   convertDateTimeToDateTimeString,
 } from "../../../../utils/date-utils";
 import { getMeasurementHistoryByDate } from "./solder-static-utils";
-import type { MeasurementData } from "./temp";
+import { MeasurementData, sumTotalData, getMaxNumFromResult } from "./temp";
+import { roundUpToNextPowerOfTen } from "../../../../utils/rounding";
+
 const props = defineProps<{
   dateString: string;
 }>();
@@ -38,13 +39,11 @@ const result2 = ref<any>({});
 const rawData1 = ref<MeasurementData[]>([]);
 const rawData2 = ref<MeasurementData[]>([]);
 const isLoad = ref(false);
-const yMax = ref(0);
+const yMax = ref<number>(0);
 
 referenceMonth.value = getAdjustedMonthDate(props.dateString, 0);
 previousMonth.value = getAdjustedMonthDate(props.dateString, -1);
 
-const firstDate = ref("");
-const lastDate = ref("");
 
 watch(
   () => props.dateString,
@@ -61,12 +60,15 @@ watch(
       result1.value.startDate,
       result1.value.endDate
     );
+      
     rawData2.value = await getMeasurementHistoryByDate(
       result2.value.startDate,
       result2.value.endDate
     );
 
-    console.log(rawData1.value)
+    rawData1.value = sumTotalData(rawData1.value)
+    rawData2.value = sumTotalData(rawData2.value)
+    yMax.value = roundUpToNextPowerOfTen(Math.max(getMaxNumFromResult(rawData1.value) , getMaxNumFromResult(rawData2.value)))
     isLoad.value = true;
   }
 );
@@ -84,6 +86,9 @@ onMounted(async () => {
     result2.value.endDate
   );
 
+  rawData1.value = sumTotalData(rawData1.value)
+  rawData2.value = sumTotalData(rawData2.value)
+  yMax.value = roundUpToNextPowerOfTen(Math.max(getMaxNumFromResult(rawData1.value) , getMaxNumFromResult(rawData2.value)))
   isLoad.value = true;
 });
 

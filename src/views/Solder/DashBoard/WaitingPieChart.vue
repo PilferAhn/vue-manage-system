@@ -89,7 +89,7 @@ const createChart = () => {
         scales: {
           x: {
             ticks: {
-              font: { size: 10 },
+              font: { size: 7 },
               maxRotation: 0, // X축 라벨을 수평으로 유지
               minRotation: 0,
             },
