@@ -348,7 +348,7 @@ export const fetchProcessData = async (fabList: FabApplicationForm[]) => {
 
     formData.append("lot_status", "true");
 
-    formData.append("order_by", "week_number");
+    formData.append("order_by", "wanted_fab_start_date");
 
     formData.append("order_dir", "asc");
 

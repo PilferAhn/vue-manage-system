@@ -120,7 +120,7 @@ const createChart = () => {
           y: {
             stacked: true, // 스택 모드 활성화
             beginAtZero: true,
-            max: props.maxY * 2,
+            max: props.maxY * 2.5,
           },
         },
       },

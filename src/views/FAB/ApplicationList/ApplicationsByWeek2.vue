@@ -81,13 +81,7 @@
         :align="'center'"
       ></el-table-column>
 
-      <el-table-column
-        :fixed="'left'"
-        label="주차"
-        width="70"
-        prop="weekNumber"
-        :align="'center'"
-      ></el-table-column>
+      
 
       <el-table-column
         :fixed="'left'"
@@ -344,6 +338,12 @@
       <el-table-column
         label="WHC 개발팀 입고"
         width="150"
+        :align="'center'"
+      ></el-table-column>
+      <el-table-column        
+        label="주차"
+        width="70"
+        prop="weekNumber"
         :align="'center'"
       ></el-table-column>
       <el-table-column
