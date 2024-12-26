@@ -13,78 +13,73 @@ import {
   FabApplicationForm,
 } from "../../../interface/mes-interface";
 
-
 export const statusList = [
   { key: "created", value: "created", label: "Waiting" },
   { key: "in progress", value: "in progress", label: "In Progress" },
   { key: "finished", value: "finished", label: "FINISH" },
 ];
 
-export const handleButtonClick = (app : ApplicationData , meas: MeasInterface): void => {
-
-  
-  const year = extractYearFromDateTime(meas.createdDate) 
-  const productName = app.modelName
-  let measType = ""
-  if(meas.measurementType === "Solder Measurement"){
-    measType = "01.Solder_Measurement"
-  }
-  else if(meas.measurementType === "PDT(SMT)"){
-    measType = "02.PDT"
-  }
-  else if(meas.measurementType === "PDT(Manual_수탑)"){
-    measType = "02.PDT"
-  }
-  else if(meas.measurementType === "ESD"){
-    measType = "03.ESD"
-  }
-  else if(meas.measurementType === "TCF"){
-    measType = "04.TCF"
-  }
-  else if(meas.measurementType === "Non-Linearity"){
-    measType = "05.Non-Linearity"
-  }
-  else{
+export const handleButtonClick = (
+  app: ApplicationData,
+  meas: MeasInterface
+): void => {
+  const year = extractYearFromDateTime(meas.createdDate);
+  const productName = app.modelName;
+  let measType = "";
+  if (meas.measurementType === "Solder Measurement") {
+    measType = "01.Solder_Measurement";
+  } else if (meas.measurementType === "PDT(SMT)") {
+    measType = "02.PDT";
+  } else if (meas.measurementType === "PDT(Manual_수탑)") {
+    measType = "02.PDT";
+  } else if (meas.measurementType === "ESD") {
+    measType = "03.ESD";
+  } else if (meas.measurementType === "TCF") {
+    measType = "04.TCF";
+  } else if (meas.measurementType === "Non-Linearity") {
+    measType = "05.Non-Linearity";
+  } else {
     // 에러 발생시키기
   }
-  
-  const path = `\\\\10.20.10.25\\www_new\\RFRND\\지원파트\\01.측정(제품)\\99.WHC측정\\${year}\\${productName}\\${measType}`
+
+  const path = `\\\\10.20.10.25\\www_new\\RFRND\\지원파트\\01.측정(제품)\\99.WHC측정\\${year}\\${productName}\\${measType}`;
 
   if (navigator.clipboard && navigator.clipboard.writeText) {
     // 클립보드 API 지원 확인
-    navigator.clipboard.writeText(path)
+    navigator.clipboard
+      .writeText(path)
       .then(() => {
         ElMessage({
           message: `경로: ${path} 가 클립보드에 복사되었습니다`,
-          type: 'success',
+          type: "success",
         });
       })
       .catch(() => {
         ElMessage({
-          message: '복사에 실패했습니다.',
-          type: 'error',
+          message: "복사에 실패했습니다.",
+          type: "error",
         });
       });
   } else {
     // 대체 방법: textarea를 사용한 복사
-    const textArea = document.createElement('textarea');
+    const textArea = document.createElement("textarea");
     textArea.value = path;
-    textArea.style.position = 'fixed';
-    textArea.style.opacity = '0';
+    textArea.style.position = "fixed";
+    textArea.style.opacity = "0";
     document.body.appendChild(textArea);
     textArea.focus();
     textArea.select();
 
     try {
-      document.execCommand('copy');
+      document.execCommand("copy");
       ElMessage({
         message: `경로: ${path} 가 클립보드에 복사되었습니다`,
-        type: 'success',
+        type: "success",
       });
     } catch (err) {
       ElMessage({
-        message: '복사에 실패했습니다.',
-        type: 'error',
+        message: "복사에 실패했습니다.",
+        type: "error",
       });
     }
 
@@ -92,14 +87,12 @@ export const handleButtonClick = (app : ApplicationData , meas: MeasInterface): 
   }
 };
 
-
 function traverseLotStatus(
   app: ApplicationData,
   lotStatus: LotStatus | null,
-  depth : number
+  depth: number
 ): void {
   if (lotStatus === null || depth >= 6) return; // Null 체크 및 최대 깊이 제한
-
 
   // console.log(`Depth: ${depth}, Lot ID: ${lotStatus.lotId}`);
   // console.log(`Operation Name: ${lotStatus.operation.name}`);
@@ -123,8 +116,7 @@ function traverseLotStatus(
       app.childStageName = "STEP4";
       app.receivedDate = lotStatus.moveinDate;
       // console.log(lotStatus);
-    }
-    else if (depth == 5) {
+    } else if (depth == 5) {
       app.childStageName = "출하";
       app.receivedDate = lotStatus.moveinDate;
       // console.log(lotStatus);
@@ -137,7 +129,17 @@ function traverseLotStatus(
 }
 
 export function getMyApplicationList(applicationData: ApplicationData[]) {
-  if (["admin", "안지민", "엄정은", "whcRD", "Jeremy"].includes(getUserName())) {
+  if (
+    [
+      "admin",
+      "안지민",
+      "엄정은",
+      "whcRD",
+      "Jeremy",
+      "박두철",
+      "MinhyePark",
+    ].includes(getUserName())
+  ) {
     return applicationData;
   }
 
@@ -152,43 +154,34 @@ export function getMyApplicationList(applicationData: ApplicationData[]) {
   return myApplicationList;
 }
 
-export function modiMeasTypName(applicationData: ApplicationData[]){
-
-  applicationData.forEach((app)=>{
-    app.measurements.forEach((meas)=>{
-      if(meas.measurementType === "특성 평가"){
-        meas.measurementType = "Solder Measurement"
+export function modiMeasTypName(applicationData: ApplicationData[]) {
+  applicationData.forEach((app) => {
+    app.measurements.forEach((meas) => {
+      if (meas.measurementType === "특성 평가") {
+        meas.measurementType = "Solder Measurement";
+      } else if (meas.measurementType === "PS 신뢰성") {
+        meas.measurementType = "ESD";
+      } else if (meas.measurementType === "비선형") {
+        meas.measurementType = "Non-Linearity";
       }
-      else if(meas.measurementType === "PS 신뢰성"){
-        meas.measurementType = "ESD"
-      }
-      else if(meas.measurementType === "비선형"){
-        meas.measurementType = "Non-Linearity"
-      }
-    })
-  })
-
+    });
+  });
 }
 
-export function updateReelInfo(applicationData : ApplicationData[]) {
-  
-  applicationData.forEach((app , index) => {
-    if(app.stocks.length > 0){
-      
-      app.stocks.forEach((stock) =>{
-        if (stock.operationType === "reel"){
-          app.reelId = stock.reelId
-          app.reelLoc = stock.location
-          
+export function updateReelInfo(applicationData: ApplicationData[]) {
+  applicationData.forEach((app, index) => {
+    if (app.stocks.length > 0) {
+      app.stocks.forEach((stock) => {
+        if (stock.operationType === "reel") {
+          app.reelId = stock.reelId;
+          app.reelLoc = stock.location;
+        } else {
+          app.jigSolderId = stock.reelId;
+          app.jigSolderLoc = stock.location;
         }
-        else{
-          app.jigSolderId = stock.reelId
-          app.jigSolderLoc = stock.location          
-        }
-      })
+      });
     }
-  })
-
+  });
 }
 
 export async function findLotHistoryFromFabRequest(
@@ -228,27 +221,21 @@ export async function findLotHistoryFromFabRequest(
         // }
 
         fabApplicationData[j].lotStatus.forEach((lot, index) => {
-          if (lot.hanoiCsp !== null) {            
+          if (lot.hanoiCsp !== null) {
             traverseLotStatus(applicationData[i], lot.hanoiCsp, 0);
-          }
-          else{
-
+          } else {
             // if(!["OPF01", "OP07001015", "OP07003015"].includes(lot.operation.operationId)){
-
             //   if(applicationData[i].modelName === "HG72EXH@M2"){
             //     console.log(lot)
             //   }
-              
             //   if(applicationData[i].childOperation === undefined){
             //     applicationData[i].childOperation  = lot.operation.name + ", "
             //   }
             //   else{
             //     applicationData[i].childOperation = applicationData[i].childOperation + lot.operation.name + ", "
-            //   }              
+            //   }
             //   applicationData[i].childStageName = "FAB";
-
             // }
-            
           }
         });
         // console.log(applicationData[i]);

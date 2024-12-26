@@ -65,7 +65,7 @@ onMounted(async () => {
   processDataArray.value.forEach((processData, index) => {
     if (["WHC_CSP", "WHC-CSP"].includes(processData["destination"])) {
       whcCsp.value.push(processData);
-    } else if (processData["destination"] === "WHC_WLP") {
+    } else if (["WHC_WLP","WHC-WLP","WHC_BDMP","WHC-BDMP"].includes(processData["destination"])) {
       whcWlp.value.push(processData);
     } else {
       etc.value.push(processData)

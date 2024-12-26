@@ -384,7 +384,7 @@ import {
   handleDateChange as externalHandleDateChange,
   updateStatus,
 } from "./ApplicationsByWeek";
-import { createTableData, getLateFab, testFabOutAlarm } from "./ApplicationList";
+import { createTableData, getLateFab, testFabOutAlarm, downloadFabPlanExcel } from "./ApplicationList";
 import { formatDate, formatDateTime } from "../Common/Application";
 import { getTodayDatetime, adjustDate } from "../../../utils/date-utils";
 import MyApplicationList from "../../Mdr/General/ApplicationList/MyApplicationList.vue";
@@ -530,7 +530,7 @@ function handleExcelSubmit() {
     filteredData.value,
     modifiedFabData.value
   );
-  // downloadFabPlanExcel(modifiedFabData.value);
+  downloadFabPlanExcel(modifiedFabData.value);
 }
 </script>
 

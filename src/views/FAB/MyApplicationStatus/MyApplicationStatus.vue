@@ -142,14 +142,19 @@ const fetchProcessData = async () => {
   try {
     const formData = new FormData();
     formData.append("name", localStorage.getItem("ms_username"));
-    console.log(localStorage.getItem("ms_username"));
+
+    formData.append("lot_status", "true");
+
+    formData.append("order_by", "week_number");
+
+    formData.append("order_dir", "asc");
+
+    formData.append("designer_confirm", "false");
     const response = await axios.post(
-      "/fab_monitoring/get_fab_request_list_person",
+      "/fab_monitoring/get_fab_request_list",
       formData
     );
 
-    // processData.value = convertToCamelCase(response.data["data"]); // Convert fetched data to camelCase
-    // console.log(processData.value);
     processData.value = convertToCamelCase(response.data); // Convert fetched data to camelCase
   } catch (error) {
     console.error("Failed to fetch process data:", error);
@@ -173,14 +178,12 @@ const deleteAction = (id: string) => {
 const handleRowClick = (id: string) => {
   // For example, navigate to a detailed page with the row's UUID
   router.push({ name: "LoadSolderApplication", params: { id: id } });
-  
 };
 
-const handleConfirm = (modelName : string) => {
-  confirmApplication(modelName)
-}
+const handleConfirm = (modelName: string) => {
+  confirmApplication(modelName);
+};
 
-console.log(processData)
 // Call fetchProcessData when the component is mounted
 onMounted(() => {
   fetchProcessData();
@@ -188,7 +191,6 @@ onMounted(() => {
 
 const router = useRouter(); // Access the Vue Router
 const name = localStorage.getItem("ms_username");
-
 </script>
 
 <style scoped>

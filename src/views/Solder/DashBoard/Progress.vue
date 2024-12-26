@@ -54,21 +54,23 @@ watch(
     newApplications.forEach((app) => {
       const measuredItems = app.measurements?.filter((m) => m.isMeasured) || [];
       measuredItems.forEach((meas) => {
-
-        let isSample = true
-        if(app.jigSolderId === undefined && app.reelId === undefined){
-          isSample = false
+        let isSample = true;
+        if (app.jigSolderId === undefined && app.reelId === undefined) {
+          isSample = false;
         }
 
-        expandedApplications.value.push({
-          modelName: app.modelName,
-          measurementType: meas.measurementType,
-          quantity: meas.quantity,
-          measurer: app.measurer.toUpperCase(),
-          rowspan: measuredItems.length,
-          wantedFinishedDate: formatDate(meas.wantedFinishedDate),
-          isSample : isSample
-        });
+        if (meas.status !== "finished") {
+          expandedApplications.value.push({
+            modelName: app.modelName,
+            measurementType: meas.measurementType,
+            quantity: meas.quantity,
+            measurer: app.measurer.toUpperCase(),
+            rowspan: measuredItems.length,
+            wantedFinishedDate: formatDate(meas.wantedFinishedDate),
+            isSample: isSample,
+          });
+        }
+
         // 중복되지 않는 measurer만 추가
       });
       if (
