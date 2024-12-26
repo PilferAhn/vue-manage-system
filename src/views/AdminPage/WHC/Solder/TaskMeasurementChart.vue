@@ -154,31 +154,32 @@ import {
   roundUpToNearestTen,
 } from "./solder-static-utils";
 
-const isWeekly = ref(true)
+const isWeekly = ref(true);
 
-const thisMonday = ref(formatDate(adjustDate(getThisMonday(), 7)));
-const lastMonday = ref(formatDate(getThisMonday()));
+const thisMonday = ref(formatDate(getThisMonday()));
+const lastMonday = ref(formatDate(adjustDate(getThisMonday() , -7)));
 const dailyYMax = ref(0);
+
 const thisWeekNumber = ref(getWeekNumberByDate(thisMonday.value) + "주차");
 const lastWeekNumber = ref(getWeekNumberByDate(lastMonday.value) + "주차");
 const excelExportDate = ref(formatDate(adjustDate(getThisMonday(), -7)));
 const selectedWeek = ref(null); // 주 입력 값
 const handleWeekChange = () => {
+
+
   const tempDate = formatDateTime(
     getMondayFromInsertedDate(selectedWeek.value)
   );
-
-  lastMonday.value = formatDate(tempDate);
-  thisMonday.value = formatDate(adjustDate(tempDate, 7));
-
-
-
+  console.log(selectedWeek.value)
+  console.log(tempDate)
+  thisMonday.value = formatDate(tempDate);
+  lastMonday.value = formatDate(adjustDate(tempDate, -7));
+  
   thisWeekNumber.value =
     getWeekNumberByDate(thisMonday.value).toString() + "주차";
   lastWeekNumber.value =
     getWeekNumberByDate(lastMonday.value).toString() + "주차";
 };
-
 
 // Define the type for measurement data
 const dailyMeasInfo = reactive<DailyMeasInfo[]>([]);
@@ -275,8 +276,6 @@ function processMeasurementData(
 ): Record<string, number[]> {
   if (!data) return {};
 
-
-
   // 1. "PS 신뢰성" 값을 저장
   const value = data["PS 신뢰성"];
   const solderMes = data["특성 평가"];
@@ -294,7 +293,7 @@ function processMeasurementData(
     // entries.splice(targetIndex, 0, ["ESD", value]);
 
     entries.splice(0, 0, ["Solder Measurement", solderMes]);
-    
+
     const updatedData = Object.fromEntries(entries);
 
     return updatedData;
