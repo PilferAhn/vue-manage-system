@@ -35,6 +35,13 @@
           AMR
           <el-progress :percentage="1" color="#f56c6c"></el-progress>
         </el-card>
+        <el-card shadow="hover" style="height: 100px">
+          <template #header>
+            <div class="clearfix">              
+              <recent-app-list></recent-app-list>
+            </div>
+          </template>          
+        </el-card>
       </el-col>
       <el-col :span="16">
         <el-row :gutter="20" class="mgb20">
@@ -72,10 +79,11 @@
             </el-card>
           </el-col>
         </el-row>
-        <RecentAppList></RecentAppList>
+        <Calender></Calender>
+        <!-- <RecentAppList></RecentAppList> -->
       </el-col>
     </el-row>
-    <el-row :gutter="20">
+    <!-- <el-row :gutter="20">
       <el-col :span="12">
         <el-card shadow="hover">
           <WeeklyTEGSummaryGraph2> </WeeklyTEGSummaryGraph2>
@@ -84,10 +92,10 @@
       <el-col :span="12">
         <el-card shadow="hover">
           <MonthlyTEGSummaryGraph></MonthlyTEGSummaryGraph>
-          <!-- <Pie></Pie> -->
+          
         </el-card>
       </el-col>
-    </el-row>
+    </el-row> -->
   </div>
 </template>
 
@@ -100,7 +108,7 @@ import MonthlyTEGSummaryGraph from "./MonthlyTEGSummaryGraph.vue";
 import WeeklyTEGSummaryGraph from "./WeeklyTEGSummaryGraph.vue";
 // import WeeklyProductSummaryGraph from "../../views/DashboardPage/WeeklyProductSummaryGraph.vue";
 import RecentAppList from '../../views/DashboardPage/RecentAppList.vue';
-
+import Calender from "./Calender.vue";
 import imgurl from "../../assets/img/img.jpg";
 import chipIcon from "../../assets/img/chipIcon.webp";
 import waferIcone from "../../assets/img/waferIcon.webp";
