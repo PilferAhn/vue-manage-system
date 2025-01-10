@@ -16,7 +16,7 @@
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
 import { fetchProcessData, getApplicationByUserName } from "./ApplicationList";
-import { getUserName, getRole } from "../../../utils/account-utils";
+import { getUserName, getRole, getDepartment } from "../../../utils/account-utils";
 import ApplicationsByWeek from "./ApplicationsByWeek2.vue";
 import type { FabApplicationForm } from "../../../interface/mes-interface";
 
@@ -42,7 +42,10 @@ onMounted(async () => {
 
   if (getUserName() === "admin") {
     processDataArray.value = await fetchProcessData(processDataArray.value);
-  } else if (getRole() === "group leader") {
+  } else if(getRole() === "요소기술그룹"){
+    processDataArray.value = await fetchProcessData(processDataArray.value);
+  }
+  else if (getRole() === "group leader") {
     processDataArray.value = await fetchProcessData(processDataArray.value);
   } else {
     processDataArray.value = await getApplicationByUserName(
