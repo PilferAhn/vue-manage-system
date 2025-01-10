@@ -3,6 +3,7 @@ import type { ProcessData } from "../Interface/ApplicationInterface";
 import { ElMessageBox, ElMessage } from "element-plus";
 import axios from "axios";
 import { chipPackageList } from "../../../utils/ChipPackageList";
+import { OptionInterface } from "../../../interface/option";
 
 // Reactive initialization
 export const processData = reactive<ProcessData>({
@@ -107,8 +108,6 @@ export const confirmApplication = async (modelName: string) => {
     }
   }
 };
-
-
 
 // Delete Application Function
 export const deleteApplication = async (id: string) => {
@@ -294,10 +293,11 @@ export const sendFormData = async (url: string, processData: ProcessData) => {
       wantedFabStartDate: processData.wantedFabStartDate
         ? formatDateForServer(processData.wantedFabStartDate)
         : null,
-        wantedFabFinishDate: processData.wantedFabFinishDate
+      wantedFabFinishDate: processData.wantedFabFinishDate
         ? formatDateForServer(processData.wantedFabFinishDate)
         : null,
     };
+    processData.destination = processData.destination + "-" + processData.packageType
     const convertedData = convertToPep8(formattedData);
     const response = await axios.post(url, convertedData, {
       headers: {
@@ -329,12 +329,13 @@ export const groupList = [
 ];
 
 export const processList = [
-  { key: "ns", label: "NS", value: "ns" },
-  { key: "tc", label: "TC", value: "tc" },
-  { key: "hs", label: "HS", value: "hs" },
+  { key: "NS", label: "NS", value: "NS" },
+  { key: "TC", label: "TC", value: "TC" },
+  { key: "HS", label: "HS", value: "HS" },
 ];
 
 export const priorityList = [
+  { key: "S", label: "S", value: "S" },
   { key: "A", label: "A", value: "A" },
   { key: "B", label: "B", value: "B" },
   { key: "C", label: "C", value: "C" },
@@ -347,17 +348,26 @@ export const packageList = [
 ];
 
 export const destinationList = [
-  { key: "HQ_CSP", label: "HQ_CSP", value: "HQ_CSP" },
-  { key: "WHC-CSP", label: "WHC-CSP", value: "WHC-CSP" },
-  { key: "WHC_WLP", label: "WHC_WLP", value: "WHC_WLP" },
-  { key: "WTC", label: "WTC", value: "WTC" },
-  { key: "WTC_CSP", label: "WTC_CSP", value: "WTC_CSP" },
-  { key: "X", label: "X (해당없음)", value: "X" },
+  { key : "WTC", label : "WTC", value : "WTC"},
+  { key : "WHC", label : "WHC", value : "WHC"},
+  { key: "개발전달", label: "개발전달", value: "개발전달" },
 ];
 
-export const codeList = [
-  { key: "C", label: "C", value: "C" },
-  { key: "H", label: "H", value: "H" },
+export const filterTypeOptions = [
+  { key: "DPX", label: "DPX", value: "DPX" },
+  { key: "QPX", label: "QPX", value: "QPX" },
+  { key: "RX", label: "RX", value: "RX" },
+  { key: "TRX", label: "TRX", value: "TRX" },
+  { key: "DDPX (6 Port)", label: "DDPX (6 Port)", value: "DDPX (6 Port)" },
+  { key: "DUAL (2X1/1X2)", label: "DUAL (2X1/1X2)", value: "DUAL (2X1/1X2)" },
+  { key: "DUAL (2X2)", label: "DUAL (2X2)", value: "DUAL (2X2)" },
+  { key: "기타", label: "기타", value: "기타" },
+];
+
+
+export const codeList :OptionInterface[] = [
+  { key: 1, label: "C", value: "C" },
+  { key: 2, label: "H", value: "H" },
 ];
 
 export const waferComList = [
@@ -378,5 +388,3 @@ export const machineList = [
   { key: "아넬바#2", label: "아넬바#2", value: "아넬바#2" },
   { key: "신크론", label: "신크론", value: "신크론" },
 ];
-
-

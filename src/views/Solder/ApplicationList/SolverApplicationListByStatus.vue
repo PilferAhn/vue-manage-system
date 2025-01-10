@@ -25,15 +25,25 @@
       <div class="legend">
         <div class="legend-item">
           <el-button class="btn-in-progress" disabled>진행 중</el-button>
-          <span>진행 중</span>
+          <!-- <span>진행 중</span> -->
         </div>
         <div class="legend-item">
           <el-button class="btn-finished" disabled>완료</el-button>
-          <span>완료</span>
+          <!-- <span>완료</span> -->
         </div>
         <div class="legend-item">
           <el-button class="btn-waiting" disabled>대기 중</el-button>
-          <span>대기 중</span>
+          <!-- <span>대기 중</span> -->
+        </div>
+        <div class="legend-item">
+          <el-button class="btn-waiting-feedback" disabled
+            >개발자 FeedBack 요청</el-button
+          >
+          <!-- <span>대기 중</span> -->
+        </div>
+        <div class="legend-item">
+          <el-button class="btn-re-measure" disabled>재측정</el-button>
+          <!-- <span>대기 중</span> -->
         </div>
       </div>
     </div>
@@ -49,13 +59,13 @@
         type="index"
         label="No"
         :align="'center'"
-        width="70"
+        width="50"
       ></el-table-column>
 
       <el-table-column
         prop="modelName"
         label="Product Name"
-        width="120"
+        width="130"
         :align="'center'"
       ></el-table-column>
       <el-table-column label="Stage" :align="'center'" width="460">
@@ -67,7 +77,7 @@
               :class="getStatusClass(measurement.status)"
               size="small"
               class="fixed-size"
-              @click="handleButtonClick(scope.row,  measurement)"
+              @click="handleButtonClick(scope.row, measurement)"
               :disabled="measurement.status !== 'finished'"
               plain
             >
@@ -99,7 +109,7 @@
       <el-table-column
         sortable
         label="Request"
-        width="130"
+        width="110"
         :align="'center'"
         prop="createdDate"
       >
@@ -111,7 +121,7 @@
       <el-table-column
         v-if="props.applicationType === 'finished'"
         label="Finish"
-        width="130"
+        width="100"
         :align="'center'"
       >
         <template #default="scope">
@@ -129,7 +139,7 @@
       <el-table-column
         prop="designer"
         label="Designer"
-        width="150"
+        width="80"
         :align="'center'"
       >
         <template #default="scope">
@@ -137,7 +147,7 @@
         >
       </el-table-column>
 
-      <el-table-column label="Measurer" width="180" :align="'center'">
+      <el-table-column label="Measurer" width="100" :align="'center'">
         <template #default="scope">
           <div>
             <el-input
@@ -328,6 +338,10 @@ function getStatusClass(status: string) {
       return "btn-finished";
     case "created":
       return "btn-waiting";
+    case "waiting feedback":
+      return "btn-waiting-feedback";
+    case "remeasure_request":
+      return "btn-re-measure";
     default:
       return "";
   }
@@ -458,6 +472,16 @@ export default {};
   background-color: #d3d3d3; /* 밝은 회색 */
   color: #555 !important; /* 중간 회색 텍스트 */
   border: 1px solid #c0c0c0; /* 연한 회색 테두리 */
+}
+
+.btn-waiting-feedback {
+  background-color: #e68a13; /* 밝은 회색 */
+  color: #ffffff !important; /* 중간 회색 텍스트 */
+}
+
+.btn-re-measure {
+  background-color: #f13c3c; /* 밝은 회색 */
+  color: #ffffff !important; /* 중간 회색 텍스트 */
 }
 
 .button-grid-container {

@@ -1,10 +1,6 @@
 <template>
   <div>
-    <el-tabs
-      v-model="activeTab"
-      type="border-card"
-      @tab-click="handleTabClick" 
-    >
+    <el-tabs v-model="activeTab" type="border-card" @tab-click="handleTabClick">
       <el-tab-pane :label="cspLabel" name="csp">
         <ApplicationsByWeek :processData="whcCsp" />
       </el-tab-pane>
@@ -38,40 +34,38 @@ const handleTabClick = (tab: any) => {
 const processDataArray = ref<FabApplicationForm[]>([]); // For this week's data
 const whcCsp = ref<FabApplicationForm[]>([]); // For last week's data
 const whcWlp = ref<FabApplicationForm[]>([]); // For next week's data
-const etc  = ref<FabApplicationForm[]>([]); // For next week's data
+const etc = ref<FabApplicationForm[]>([]); // For next week's data
 
 let tempName = "";
 onMounted(async () => {
   // fetchProcessData 함수로 데이터 가져오기
 
-  if(getUserName() === "admin"){
+  if (getUserName() === "admin") {
     processDataArray.value = await fetchProcessData(processDataArray.value);
-  }
-  else if(getRole() === "group leader"){
+  } else if (getRole() === "group leader") {
     processDataArray.value = await fetchProcessData(processDataArray.value);
+  } else {
+    processDataArray.value = await getApplicationByUserName(
+      getUserName(),
+      processDataArray.value
+    );
   }
-  else{
-    processDataArray.value = await getApplicationByUserName(getUserName() , processDataArray.value)
-  }
-  
-  // processDataArray.value.forEach((processData, index) => {
-  //   if(processData.modelName === "XM03ATJ@2A"){
-  //     console.log(processData)
-  //   }
-  // })
-  // getMaxHistorySeqAndIndexFromProcessData(processDataArray.value);
-  // showInfoByWeek(processDataArray.value)
 
   processDataArray.value.forEach((processData, index) => {
     if (["WHC_CSP", "WHC-CSP"].includes(processData["destination"])) {
       whcCsp.value.push(processData);
-    } else if (["WHC_WLP","WHC-WLP","WHC_BDMP","WHC-BDMP"].includes(processData["destination"])) {
+    } else if (
+      ["WHC_WLP", "WHC-WLP", "WHC_BDMP", "WHC-BDMP", "BDMP"].includes(
+        processData["destination"]
+      )
+    ) {
       whcWlp.value.push(processData);
     } else {
-      etc.value.push(processData)
+      etc.value.push(processData);
     }
   });
 });
+
 </script>
 
 <style scoped>
@@ -89,5 +83,4 @@ onMounted(async () => {
 .uppercase {
   text-transform: uppercase;
 }
-
 </style>

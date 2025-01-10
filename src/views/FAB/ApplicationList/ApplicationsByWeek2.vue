@@ -43,26 +43,6 @@
           style="margin-left: 20px"
         ></el-switch>
       </div>
-
-      <!-- <div style="display: flex; align-items: center">
-        <el-date-picker
-          v-model="firstDate"
-          type="date"
-          placeholder="시작 날짜"
-          style="width: 150px; margin-right: 5px"
-        ></el-date-picker>
-
-        <span style="margin: 0 5px">~</span>
-
-        <el-date-picker
-          v-model="lastDate"
-          type="date"
-          placeholder="종료 날짜"
-          style="width: 150px; margin-right: 10px"
-        ></el-date-picker>
-
-        <el-button type="primary" style="margin-left: 10px"> 검색 </el-button>
-      </div> -->
     </div>
 
     <el-table
@@ -70,6 +50,7 @@
       class="custom-table"
       style="min-width: 1000px"
       height="670"
+      :default-sort="{ prop: 'wantedFabStartDate', order: 'ascending' }"
       :row-style="{ height: '30px' }"
       :cell-class-name="cellClass"
     >
@@ -81,13 +62,11 @@
         :align="'center'"
       ></el-table-column>
 
-      
-
       <el-table-column
         :fixed="'left'"
         prop="modelName"
         label="P/N"
-        width="140"
+        width="150"
         :align="'center'"
       />
 
@@ -110,20 +89,26 @@
         fixed="left"
       >
         <template #default="scope">
-          <span v-for="(item, index) in scope.row.lotStatus" :key="index" >
-            {{ item.lotId }} 
+          <span v-for="(item, index) in scope.row.lotStatus" :key="index">
+            {{ item.lotId }}
             <br />
           </span>
         </template>
       </el-table-column>
 
-      <el-table-column label="FAB 투입 계획일" width="110" :align="'center'">
+      <el-table-column
+        sortable
+        prop="wantedFabStartDate"
+        label="FAB 투입 계획일"
+        width="110"
+        :align="'center'"
+      >
         <template #default="scope">
           {{ formatDate(scope.row.wantedFabStartDate) }}
         </template>
       </el-table-column>
       <el-table-column label="FAB 투입일" :align="'center'" width="130">
-        <template #default="scope"> 
+        <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             {{ formatDate(item.creationDate) }}
             <br />
@@ -138,14 +123,22 @@
           </span>
         </template>
       </el-table-column>
-      
+
       <el-table-column
         label="FAB 현위치(투입시간)"
         :align="'center'"
         width="270"
       >
         <template #default="scope">
-          <span v-for="(item, index) in scope.row.lotStatus" :key="index" :style="testFabOutAlarm(item.operation.operationId, item.moveinDate) ? 'color: red;' : ''">
+          <span
+            v-for="(item, index) in scope.row.lotStatus"
+            :key="index"
+            :style="
+              testFabOutAlarm(item.operation.operationId, item.moveinDate)
+                ? 'color: red;'
+                : ''
+            "
+          >
             {{ item["operation"]["name"] }}
             {{ formatDateTime(item.moveinDate) }}
             <!-- {{ item.operation.operationId }} -->
@@ -340,10 +333,16 @@
         width="150"
         :align="'center'"
       ></el-table-column>
-      <el-table-column        
+      <el-table-column
         label="주차"
         width="70"
         prop="weekNumber"
+        :align="'center'"
+      ></el-table-column>
+      <el-table-column
+        label="Destination"
+        width="120"
+        prop="destination"
         :align="'center'"
       ></el-table-column>
       <el-table-column
@@ -384,7 +383,12 @@ import {
   handleDateChange as externalHandleDateChange,
   updateStatus,
 } from "./ApplicationsByWeek";
-import { createTableData, getLateFab, testFabOutAlarm, downloadFabPlanExcel } from "./ApplicationList";
+import {
+  createTableData,
+  getLateFab,
+  testFabOutAlarm,
+  downloadFabPlanExcel,
+} from "./ApplicationList";
 import { formatDate, formatDateTime } from "../Common/Application";
 import { getTodayDatetime, adjustDate } from "../../../utils/date-utils";
 import MyApplicationList from "../../Mdr/General/ApplicationList/MyApplicationList.vue";
@@ -418,7 +422,6 @@ function handleVisible(status: boolean, id: string) {
   selectApplicationId.value = id;
 }
 
-
 const filteredApplicationData = computed(() => {
   const term = searchTerm.value.toLowerCase();
 
@@ -427,12 +430,12 @@ const filteredApplicationData = computed(() => {
     const field = item[searchCategory.value];
 
     // field가 number 타입이면 toString()으로 변환 후 비교
-    if (typeof field === 'number') {
+    if (typeof field === "number") {
       return field.toString().includes(term);
     }
 
     // field가 string 타입이면 기존 로직 사용
-    if (typeof field === 'string') {
+    if (typeof field === "string") {
       return field.toLowerCase().includes(term);
     }
 
@@ -467,12 +470,11 @@ const filteredData = computed(() => {
   } else {
     tempApp.value = getRunningFabReqeust(props.processData);
   }
-  
-  if (isDealyFab.value){
-    tempApp.value = getLateFab(tempApp.value)
-  }
-  else{
-    tempApp.value = tempApp.value
+
+  if (isDealyFab.value) {
+    tempApp.value = getLateFab(tempApp.value);
+  } else {
+    tempApp.value = tempApp.value;
   }
 
   if (isFiltered.value) {
@@ -513,7 +515,7 @@ const cellClass = ({ row, rowIndex, column, columnIndex }) => {
   if ([5, 7, 9, 12].includes(columnIndex)) {
     return "even-row";
   }
-  
+
   return "";
 };
 
