@@ -1,4 +1,4 @@
-export function getUserName(){
+export function getUserName() : string{
     const name = localStorage.getItem("ms_username");
     return name
 }    
@@ -8,6 +8,12 @@ export function getRole(){
     return role
 }
 
-export function getUserId(){
+export function getUserId() : string{
     const userId = localStorage.getItem("id");
+    return userId
+}
+
+export function getDepartment(): string{
+    const department = localStorage.getItem("department");
+    return department
 }
