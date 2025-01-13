@@ -303,38 +303,6 @@
         </el-col>
       </el-row>
 
-      <!-- <el-row v-if="props.applicationType==='create'" :gutter="20" style="margin-top: 20px">
-        <el-col :span="24">
-          <el-card>
-            <el-divider content-position="center">Picture Upload</el-divider>
-            <el-upload
-              ref="upload"
-              class="upload-demo"
-              :limit="2"
-              :on-exceed="handleExceed"
-              :on-change="handleFileChange"
-              :auto-upload="false"
-              drag
-              multiple
-              accept="image/*"
-            >
-              <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-              <div class="el-upload__text">
-                <em>파일을 이곳에 드래그하거나 클릭하여 업로드하세요</em>
-              </div>
-              <div class="el-upload__tip">
-                파일 최대 2개까지 업로드할 수 있습니다 (그림 형식만 가능합니다).
-              </div>
-              <template #tip>
-                <div class="el-upload__tip">
-                  EVB , Wafer MAP 사진을 선택해주세요
-                </div>
-              </template>
-            </el-upload>
-          </el-card>
-        </el-col>
-      </el-row> -->
-
       <el-divider content-position="center">Segment Information</el-divider>
       <el-row :gutter="20">
         <el-col :span="9">

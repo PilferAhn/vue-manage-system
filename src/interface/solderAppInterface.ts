@@ -13,6 +13,7 @@ export interface Measurement {
   finishedDate? : string;  
   detailInHanoi? : string;
   measurer? : string
+  note? : string
 }
 
 export interface Segment {

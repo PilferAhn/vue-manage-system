@@ -129,7 +129,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Location" :align="'center'" width="150">
+      <el-table-column label="Location" :align="'center'" width="130">
         <template #default="scope">
           {{ scope.row.childStageName }} <br />
           {{ scope.row.childOperation }}
@@ -139,21 +139,21 @@
       <el-table-column
         prop="designer"
         label="Designer"
-        width="80"
+        width="120"
         :align="'center'"
       >
         <template #default="scope">
-          {{ scope.row.designer }} / {{ scope.row.requester }}</template
+          {{ scope.row.designer }} <br> {{ scope.row.requester }}</template
         >
       </el-table-column>
 
-      <el-table-column label="Measurer" width="100" :align="'center'">
+      <el-table-column label="Measurer" width="120" :align="'center'">
         <template #default="scope">
           <div>
             <el-input
               v-model="scope.row.measurer"
               placeholder=""
-              style="width: 150px"
+              style="width: 90px;"
             ></el-input>
           </div>
         </template>

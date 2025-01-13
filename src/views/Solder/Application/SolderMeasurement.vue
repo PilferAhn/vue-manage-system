@@ -21,7 +21,10 @@
             Quantity
           </div>
         </template>
-        <el-input v-model="meas.quantity" :disabled="!meas.isMeasured"></el-input>
+        <el-input
+          v-model="meas.quantity"
+          :disabled="!meas.isMeasured"
+        ></el-input>
       </el-descriptions-item>
       <el-descriptions-item :align="true">
         <template #label>
@@ -97,7 +100,7 @@
           class="m-4"
           v-model="meas.status"
           placeholder="Select"
-          style="width: 150px"
+          style="width: 180px"
           :disabled="!meas.isMeasured"
         >
           <el-option
@@ -107,7 +110,7 @@
             :value="item.value"
           />
         </el-select>
-        　        
+        　
       </el-descriptions-item>
       <el-descriptions-item span="3">
         <template #label>
@@ -118,7 +121,42 @@
             측정 진행 사항 (WHC)
           </div>
         </template>
-        <el-input v-model="meas.detailInHanoi" :disabled="!meas.isMeasured"></el-input>
+        <el-input
+          v-model="meas.detailInHanoi"
+          :disabled="!meas.isMeasured"
+        ></el-input>
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template #label>
+          <div class="cell-item">
+            <el-icon :style="iconStyle">
+              <office-building />
+            </el-icon>
+            측정자
+          </div>
+        </template>
+        <!-- 　 -->
+        <!-- <el-button type="primary" style="width: 150px;" @click="updateMeasurement(meas)">Update</el-button> -->
+        　
+        <el-select v-model="meas.measurer" class="m-4" style="width: 180px">
+          <el-option
+            v-for="operator in operators"
+            :key="operator.id"
+            :label="operator.userName"
+            :value="operator.id"
+          ></el-option>
+        </el-select>
+      </el-descriptions-item>
+      <el-descriptions-item span="3">
+        <template #label>
+          <div class="cell-item">
+            <el-icon :style="iconStyle">
+              <office-building />
+            </el-icon>
+            기타
+          </div>
+        </template>
+        <el-input v-model="meas.note"></el-input>
       </el-descriptions-item>
       <el-descriptions-item>
         <template #label>
@@ -130,7 +168,12 @@
           </div>
         </template>
         　
-        <el-button type="primary" style="width: 150px;" @click="updateMeasurement(meas)">Update</el-button>
+        <el-button
+          type="primary"
+          style="width: 150px"
+          @click="updateMeasurement(meas)"
+          >Update</el-button
+        >
       </el-descriptions-item>
     </el-descriptions>
   </div>
@@ -138,24 +181,20 @@
 
 <script lang="ts" setup>
 import type { Measurement } from "../../../interface/solderAppInterface";
-import { computed, ref } from "vue";
-import {
-  Iphone,
-  Location,
-  OfficeBuilding,
-  Tickets,
-  User,
-} from "@element-plus/icons-vue";
+import { computed, ref, onMounted } from "vue";
+
 import type { ComponentSize } from "element-plus";
 import { statusList } from "../ApplicationList/SolderApplicationList";
 import { updateMeasurement } from "./SolderApplication";
+import { getUserListByDepartment } from "../../../utils/user-utils";
+import type { User } from "../../../interface/user";
 
 const props = defineProps<{
   measurements: Measurement[];
   applicationType: string;
 }>();
 const size = ref<ComponentSize>("default");
-
+const operators = ref<User[]>([]);
 const iconStyle = computed(() => {
   const marginMap = {
     large: "8px",
@@ -177,6 +216,10 @@ const blockMargin = computed(() => {
   };
 });
 
+onMounted(async () => {
+  operators.value = await getUserListByDepartment("whc");
+});
+
 // Sorting Measurements by 'number'
 const sortedMeasurements = computed(() => {
   return [...props.measurements].sort((a, b) => {
@@ -185,6 +228,10 @@ const sortedMeasurements = computed(() => {
     return numA - numB;
   });
 });
+</script>
+
+<script lang="ts">
+export default {};
 </script>
 
 <style scoped>
