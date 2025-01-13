@@ -16,6 +16,8 @@ import {
 export const statusList = [
   { key: "created", value: "created", label: "Waiting" },
   { key: "in progress", value: "in progress", label: "In Progress" },
+  { key: "waiting feedback", value: "waiting feedback", label: "Waiting Feedback" },
+  { key: "remeasure_request", value: "remeasure_request", label: "Re-measure Request" },
   { key: "finished", value: "finished", label: "FINISH" },
 ];
 
