@@ -144,7 +144,7 @@ export function getMyApplicationList(applicationData: ApplicationData[]) {
   ) {
     return applicationData;
   }
-  else if(getDepartment() == "요소기술그룹"){
+  else if(getDepartment() === "요소기술그룹"){
     return applicationData;
   }
 
