@@ -200,7 +200,7 @@ export async function findLotHistoryFromFabRequest(
       tempModelNames += app.modelName + ",";
     }
   });
-  console.log(tempModelNames)
+  
   // 마지막에 추가된 ',' 제거
   if (tempModelNames.endsWith(",")) {
     tempModelNames = tempModelNames.slice(0, -1);
