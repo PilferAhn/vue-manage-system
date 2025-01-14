@@ -76,6 +76,11 @@ onMounted(async () => {
       processData["packageType"] === "WLP"
     ) {
       whcWlp.value.push(processData);
+    } else if (
+      processData["destination"] === "WHC" &&
+      processData["packageType"] === "BDMP"
+    ) {
+      whcWlp.value.push(processData);
     } else {
       etc.value.push(processData);
     }
