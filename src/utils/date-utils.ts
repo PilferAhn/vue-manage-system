@@ -39,6 +39,12 @@ export function getTodayDatetime() {
   return cururentTime;
 }
 
+export function getTodayDate() {
+  const now = new Date();
+  const currentDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  return currentDate;
+}
+
 export function adjustDate(dateString, daysOffset) {
   // 문자열을 Date 객체로 변환
   const date = new Date(dateString);
@@ -194,6 +200,7 @@ export function getMondayFromInsertedDate(dateStr: string): string {
  * @returns 주 번호 (ISO-8601 기준)
  */
 export function getWeekNumberByDate(dateStr: string): number {
+    
   const date = new Date(dateStr);
 
   if (isNaN(date.getTime())) {
