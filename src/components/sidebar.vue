@@ -105,7 +105,8 @@ import { useSidebarStore } from "../store/sidebar";
 import { useRoute } from "vue-router";
 import { permission, title } from "process";
 import { fabSilderBarList } from "./fab-sidebar";
-
+import { whcSilderBarList } from "./whc-sidebar";
+import { moduleSilderBarList } from "./module-sidebar";
 const items = [
   {
     icon: "Odometer",
@@ -160,70 +161,8 @@ const items = [
     ],
   },
   fabSilderBarList,
-  {
-    icon: "Pear",
-    index: "4",
-    title: "WHC 개발 측정",
-    permiss: "11",
-    subs: [
-      {
-        index: "/whc/create-application",
-        title: "측정 의뢰서 작성",
-        permiss: "11",
-      },
-      {
-        index: "/whc/application-list",
-        title: "측정 의뢰 현황",
-        permiss: "11",
-      },
-      {
-        index: "/whc/stock",
-        title: "재고 현황",
-        permiss: "11",
-        subs: [
-          {
-            index: "/whc/stock/solder-stock-management",
-            title: "JIG용 Solder관리",
-            permiss: "11",
-            subs: [
-              {
-                index: "/whc/solder-stock-management/create-stock",
-                title: "Solder 등록",
-                permiss: "11",
-              },
-              {
-                index: "/whc/solder-stock-management/stock-list",
-                title: "보유 현황",
-                permiss: "11",
-              },
-            ],
-          },
-          {
-            index: "/whc/stock-management",
-            title: "완제품(Reel) 관리",
-            permiss: "11",
-            subs: [
-              {
-                index: "/whc/stock-management/create-stock",
-                title: "LOT 등록",
-                permiss: "11",
-              },
-              {
-                index: "/whc/stock-management/stock-list",
-                title: "보유 현황",
-                permiss: "11",
-              },
-            ],
-          },
-        ],
-      },
-      // {
-      //   index: "/whc/network-analyzer",
-      //   title: "TEST",
-      //   permiss: "11",
-      // },
-    ],
-  },
+  whcSilderBarList,
+  moduleSilderBarList,
   {
     icon: "Edit",
     index: "5",
@@ -284,42 +223,13 @@ const items = [
             title: "WHC 측정 통계",
             permiss: "2",
           },
+          {
+            index: "/admin/whc/solder-application-statistic2",
+            title: "WHC 측정 통계 - 월간",
+            permiss: "2",
+          },
         ],
       },
-
-      // {
-      //   index: "/calculator/s-parameter",
-      //   title: "TCF계산기",
-      //   permiss: "5",
-      // },
-      // {
-      //   index: "/calculator/s-parameter_ver2",
-      //   title: "TCF계산기",
-      //   permiss: "5",
-      // },
-
-      // {
-      //   index: "/admin/next-function",
-      //   title: "개발기능",
-      //   permiss: "6",
-      // },
-      // {
-      //   index: "4",
-      //   title: "Sub-menu",
-      //   permiss: "7",
-      //   subs: [
-      //     {
-      //       index: "/editor",
-      //       title: "Rich Text Editor",
-      //       permiss: "8",
-      //     },
-      //     {
-      //       index: "/markdown",
-      //       title: "Markdown Editor",
-      //       permiss: "9",
-      //     },
-      //   ],
-      // },
     ],
   },
 

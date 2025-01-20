@@ -53,6 +53,11 @@ export const whcSilderBarList = {
             },
           ],
         },
+        {
+          index: "/whc/package-management/package-list",
+          title: "Package List",
+          permiss: "11",          
+        }
       ],
     },
   ],

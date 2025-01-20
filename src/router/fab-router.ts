@@ -62,6 +62,30 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
       ),
   },
   {
+    path: "/fab/view-application-list-rev2",
+    name: "FabApplicationListRev2",
+    meta: {
+      title: "투입 계획서 현황2",
+      permiss: "11",
+    },
+    component: () =>
+      import(
+        /* webpackChunkName: "table" */ "../views/FAB/ApplicationList/rev2/ApplicationList.vue"
+      ),
+  },
+  {
+    path: "/fab/load_application2/:productName",
+    name: "LoadApplication2",
+    meta: {
+      title: "LoadApplication2",
+      permiss: "11",
+    },
+    component: () =>
+      import(
+        /* webpackChunkName: "table" */ "../views/FAB/Application/LoadApplication2.vue"
+      ),
+  },
+  {
     path: "/fab/load_application/:uuid",
     name: "LoadApplication",
     meta: {

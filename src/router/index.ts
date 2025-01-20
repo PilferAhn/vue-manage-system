@@ -2,6 +2,8 @@ import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import { usePermissStore } from "../store/permiss";
 import Home from "../views/home.vue";
 import { fabRouteIndexList } from "./fab-router";
+import { whcRouteIndexList } from "./whc-router";
+import { modulesRouteIndexList} from "./modules-router"
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 
@@ -61,6 +63,18 @@ const routes: RouteRecordRaw[] = [
         component: () =>
           import(
             /* webpackChunkName: "table" */ "../views/AdminPage/WHC/Solder/TaskMeasurementChart.vue"
+          ),
+      },
+      {
+        path: "/admin/whc/solder-application-statistic2",
+        name: "SolderApplicationStatistic2",
+        meta: {
+          title: "의뢰서",
+          permiss: "2",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "table" */ "../views/AdminPage/WHC/Solder/SolderStatistic.vue"
           ),
       },
       {
@@ -170,7 +184,7 @@ const routes: RouteRecordRaw[] = [
           import(/* webpackChunkName: "table" */ "../views/MyApplications.vue"),
       },
       {
-        path: "/product/my-application-detail:uuid",
+        path: "/product/my-application-detail/:uuid",
         name: "MyProductApplicationDetail",
         meta: {
           title: "내 의뢰서 보기",
@@ -792,7 +806,9 @@ const routes: RouteRecordRaw[] = [
             /* webpackChunkName: "table" */ "../views/Mdr/General/ApplicationList/MyApplicationList.vue"
           ),
       },
-      ...fabRouteIndexList
+      ...fabRouteIndexList,
+      ...whcRouteIndexList,
+      ...modulesRouteIndexList
     ],
   },
   {
