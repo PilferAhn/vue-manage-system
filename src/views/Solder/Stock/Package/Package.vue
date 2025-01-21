@@ -29,7 +29,7 @@ import { testData as t } from "./testingData";
 import axios from "axios";
 import Stock from "./StockList.vue";
 import type { TabsPaneContext } from "element-plus";
-import { getTodayDate, adjustDate } from "../../../../utils/date-utils";
+import { getTodayDate, adjustDate, formatDate } from "../../../../utils/date-utils";
 
 export interface MaterialStock {
   MaterialId: string; // 재료 ID
@@ -68,10 +68,11 @@ const capacitorList = ref<MaterialStock[]>([]);
 
 const handleClick = (tab: TabsPaneContext, event: Event) => {};
 
-async function fetchData() {
+async function fetchData(date : string) {
   // API URL
+
   const url =
-    "/OpeationMns/ScheduleSample/CSPMaterialStock?date=" + getTodayDate();
+    "/OpeationMns/ScheduleSample/CSPMaterialStock?date=" + date;
 
   // 헤더 설정
   const headers = {
@@ -82,31 +83,7 @@ async function fetchData() {
   try {
     // GET 요청
     const response = await axios.get(url, { headers });
-
-    wholeData.value = response.data.Data;
-
-    for (let i = 0; i < wholeData.value.length; i++) {
-      const material = wholeData.value[i];
-      if (material.Description === "EPOXY"){
-        epoList.value.push(material)
-      }
-      else if(material.Description === "Wire-MKE-UB"){
-        wireList.value.push(material)
-      }
-      else if (material.MaterialId.startsWith("010")) {
-        if (material.MaterialId.startsWith("0102")) {
-          wireList.value.push(material);
-        } else {
-          epoList.value.push(material); // MaterialId가 "010"으로 시작하면 epoList에 추가
-        }
-      } else if (material.MaterialId.startsWith("2203")) {
-        capacitorList.value.push(material); // 그렇지 않으면 packList에 추가
-      } else {
-        packList.value.push(material); // 그렇지 않으면 packList에 추가
-      }
-    }
-
-    isLoad.value = true;
+    return response.data.Data;
   } catch (error) {
     // 요청 실패
     if (axios.isAxiosError(error)) {
@@ -117,8 +94,36 @@ async function fetchData() {
   }
 }
 
+function allocaVals(data : MaterialStock[]) {
+  for (let i = 0; i < data.length; i++) {
+    const material = data[i];
+    if (material.Description === "EPOXY") {
+      epoList.value.push(material);
+    } else if (material.Description === "Wire-MKE-UB") {
+      wireList.value.push(material);
+    } else if (material.MaterialId.startsWith("010")) {
+      if (material.MaterialId.startsWith("0102")) {
+        wireList.value.push(material);
+      } else {
+        epoList.value.push(material); // MaterialId가 "010"으로 시작하면 epoList에 추가
+      }
+    } else if (material.MaterialId.startsWith("2203")) {
+      capacitorList.value.push(material); // 그렇지 않으면 packList에 추가
+    } else {
+      packList.value.push(material); // 그렇지 않으면 packList에 추가
+    }
+  }
+}
+
 onMounted(async () => {
-  await fetchData();
+  wholeData.value = await fetchData(getTodayDate());
+  if (wholeData.value.length >= 1) {
+    allocaVals(wholeData.value)
+  } else {
+    wholeData.value = await fetchData(formatDate(adjustDate(getTodayDate() , -1)))
+    allocaVals(wholeData.value)
+  }
+  isLoad.value = true;
 });
 </script>
 
