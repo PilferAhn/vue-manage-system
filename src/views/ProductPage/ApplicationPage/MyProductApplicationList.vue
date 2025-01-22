@@ -85,24 +85,24 @@
             {{ formatDate(scope.row.date_of_created) }}
           </template>
         </el-table-column>
-        <!-- <el-table-column
+        <el-table-column
           prop="status"
           label="상태"
           :align="'center'"
-        ></el-table-column> -->
+        ></el-table-column>
 
         <el-table-column label="Action" width="150" :align="'center'">
           <template #default="scope">
             <el-button type="" size="small" @click="handleDetail(scope.row)"
               >자세히</el-button
             >
-            <el-button
+            <!-- <el-button
               type="danger"
               size="small"
               :disabled= "!isDisabled(scope.row.status)"
               @click="handleDelete(scope.row)"
               >삭제</el-button
-            >
+            > -->
           </template>
         </el-table-column>
       </el-table>
@@ -163,7 +163,11 @@ const applicationList = ref<ApplicationItem[]>([]);
 
 // 비활성화 조건 함수
 const isDisabled = (status: string): boolean => {
-  return status === "reserved";
+  let flag = false
+  if(["reserved", "created"].includes(status)){
+    flag = true
+  }
+  return flag;
 };
 
 const allData = ref<ApplicationItem[]>([]);

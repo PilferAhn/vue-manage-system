@@ -253,7 +253,6 @@
             </el-col>
           </el-form-item>
 
-
           <el-form-item label="의뢰일">
             <el-col :span="11">
               <el-form-item prop="date1">
@@ -300,9 +299,17 @@
                 
                 >의뢰서 업데이트</el-button
               > -->
-              <el-button type="info" @click="downloadExcel(route.params.uuid)"
+              <el-button
+                type="info"
+                @click="downloadExcel(route.params.uuid)"
                 :disabled="excelUuid === ''"
                 >의뢰서 다운로드</el-button
+              >
+              <el-button
+                type="danger"
+                @click="handleDelete(form)"
+                :disabled="excelUuid === ''"
+                >삭제</el-button
               >
             </div>
           </el-form-item>
@@ -322,10 +329,14 @@ import type { FormInstance, FormRules } from "element-plus";
 import axios from "axios";
 import { getCurrentDate } from "../../../utils/utility";
 import { createApplicationForm } from "../../../utils/form";
-import { checkApplication, downloadExcel } from "../../../utils/applicationUtility"
+import {
+  checkApplication,
+  downloadExcel,
+} from "../../../utils/applicationUtility";
+import { useRouter } from "vue-router";
 import { useRoute } from "vue-router";
 import { utils } from "xlsx";
-
+import type { ApplicationForm } from "../../../utils/types";
 import {
   Chart,
   ScatterDataPoint,
@@ -333,13 +344,15 @@ import {
   registerables,
   ChartType,
 } from "chart.js";
+import { deletePdtApplication } from "../../../utils/Pdt/application-utils";
+import { getYMaxFromDailyData } from "../../AdminPage/WHC/Solder/solder-static-utils";
 
 // useRoute 훅을 사용하여 현재 라우트 객체를 가져옵니다.
 const route = useRoute();
 
 // route.params에서 uuid 값을 추출합니다.
 const uuid = route.params.uuid;
-const excelUuid = ref('')
+const excelUuid = ref("");
 Chart.register(...registerables);
 
 const chartCanvas = ref<HTMLCanvasElement | null>(null);
@@ -360,7 +373,7 @@ const fetchApplicationDetail = async (uuid) => {
     // 받아온 데이터를 reactive form 객체에 할당합니다.
 
     form.requestNumber = response.data.request_number;
-
+    form.uuid = response.data.uuid
     form.status = response.data.status;
 
     form.customerCompany = response.data.customer_company.toUpperCase();
@@ -398,22 +411,28 @@ const fetchApplicationDetail = async (uuid) => {
     form.dateOfCreated = response.data.date_of_created;
 
     excelUuid.value = await checkApplication(uuid);
-    console.log(excelUuid.value)
-
   } catch (error) {
     console.error(error);
   }
 };
 
+const router = useRouter();
 // 컴포넌트가 마운트될 때 데이터를 불러옵니다.
 onMounted(() => {
   fetchApplicationDetail(uuid);
-  
 });
+
+const handleDelete = async (row: ApplicationForm) => {
+  const result = await deletePdtApplication(row.uuid); // 결과를 기다림
+  if (result) {
+    router.push({
+      name: "MyApplications",
+    });
+  }
+};
 
 const updateApplication = async () => {
   try {
-
     const const_data_dict = {
       request_number: form.requestNumber,
       status: form.status,
@@ -453,21 +472,17 @@ const updateApplication = async () => {
       samples: form.samples,
     };
 
-    
     const response = await axios.post(
       "/pdt_application/update_appliction_by_user",
       const_data_dict
     );
 
-    if(response.data.status == false){
+    if (response.data.status == false) {
       ElMessage.error(response.data.message);
-    }
-    else{
+    } else {
       ElMessage.success("의뢰서가 성공적으로 업데이트 되었습니다.");
-    }    
-
+    }
   } catch (error) {
-    
     console.error("Error:", error);
     // Handle the error as needed
   }
