@@ -85,11 +85,11 @@
             {{ formatDate(scope.row.date_of_created) }}
           </template>
         </el-table-column>
-        <el-table-column
+        <!-- <el-table-column
           prop="status"
           label="상태"
           :align="'center'"
-        ></el-table-column>
+        ></el-table-column> -->
 
         <el-table-column label="Action" width="150" :align="'center'">
           <template #default="scope">
