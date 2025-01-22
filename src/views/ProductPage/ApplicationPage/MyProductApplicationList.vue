@@ -18,25 +18,34 @@
         ref="multipleTable"
         header-cell-class-name="table-header"
       >
-        <el-table-column prop="model_name" label="Product Name" align="center">
+        <el-table-column
+          prop="model_name"
+          label="Product Name"
+          :align="'center'"
+        >
           <!-- <template #default="scope">
               <el-input v-model="scope.row.model_name" size="small"></el-input>
             </template> -->
         </el-table-column>
 
-        <el-table-column prop="band" label="Band" align="center" width="100px">
+        <el-table-column
+          prop="band"
+          label="Band"
+          :align="'center'"
+          width="100px"
+        >
           <!-- <template #default="scope">
               <el-input v-model="scope.row.band" size="small"></el-input>
             </template> -->
         </el-table-column>
 
-        <el-table-column prop="condition" label="Condition" align="center">
+        <el-table-column prop="condition" label="Condition" :align="'center'">
         </el-table-column>
 
-        <el-table-column prop="signal_type" label="Signal" align="center">
+        <el-table-column prop="signal_type" label="Signal" :align="'center'">
         </el-table-column>
 
-        <el-table-column prop="test_type" label="TEST" align="center">
+        <el-table-column prop="test_type" label="TEST" :align="'center'">
           <!-- <template #default="scope">
               <el-select
                 v-model="scope.row.test_type"
@@ -51,43 +60,49 @@
             </template> -->
         </el-table-column>
 
-        <el-table-column prop="temperature" label="온도" align="center">
+        <el-table-column prop="temperature" label="온도" :align="'center'">
         </el-table-column>
 
         <el-table-column
           prop="sample_quantity"
           label="수량"
-          align="center"
+          :align="'center'"
           width="65px"
         >
-
-        </el-table-column>
-        
-        <el-table-column prop="designer" label="개발자" align="center">
         </el-table-column>
 
-        <el-table-column prop="requester" label="담당자" align="center">
+        <el-table-column prop="designer" label="개발자" :align="'center'">
         </el-table-column>
 
-        <el-table-column prop="purpose" label="의뢰목적" align="center">
+        <el-table-column prop="requester" label="담당자" :align="'center'">
         </el-table-column>
 
-        <el-table-column label="Action" align="center">
+        <el-table-column prop="purpose" label="의뢰목적" :align="'center'">
+        </el-table-column>
+
+        <el-table-column label="작성일" :align="'center'">
           <template #default="scope">
-            <el-button
-              type=""
-              size="small"
-              style="margin-right: 5px"
-              @click="handleDetail(scope.row)"
+            {{ formatDate(scope.row.date_of_created) }}
+          </template>
+        </el-table-column>
+        <!-- <el-table-column
+          prop="status"
+          label="상태"
+          :align="'center'"
+        ></el-table-column> -->
+
+        <el-table-column label="Action" width="150" :align="'center'">
+          <template #default="scope">
+            <el-button type="" size="small" @click="handleDetail(scope.row)"
               >자세히</el-button
             >
-            <!-- <el-button
-              type=""
+            <el-button
+              type="danger"
               size="small"
-              style="margin-right: 5px"
-              @click="handleDetail(scope.row)"
-              >비슷한 의뢰서 작성</el-button
-            > -->
+              :disabled= "!isDisabled(scope.row.status)"
+              @click="handleDelete(scope.row)"
+              >삭제</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -112,7 +127,6 @@
     >
       <!-- TableEdit 컴포넌트 내용 -->
     </el-dialog>
-    
   </div>
 </template>
 
@@ -120,8 +134,9 @@
 import { ref, reactive, onMounted, defineProps } from "vue";
 import axios from "axios";
 import { ElMessage } from "element-plus";
-import { getLastThursday, formatDate } from "../../../utils/utility";
 import { useRouter } from "vue-router";
+import { deletePdtApplication } from "../../../utils/Pdt/application-utils";
+import { formatDate } from "../../../utils/date-utils";
 
 const query = reactive({
   productName: "",
@@ -135,18 +150,21 @@ interface ApplicationItem {
   model_name: string;
   condition: string;
   designer: string;
-  signal_type : string;
+  signal_type: string;
   requester: string;
   status: string;
   test_type: string;
-  prupose : string;
-  sample_quantity : string;
-  temperature : string
-  
+  prupose: string;
+  sample_quantity: string;
+  temperature: string;
+  date_of_created;
 }
 const applicationList = ref<ApplicationItem[]>([]);
 
-console.log("MyProductApplicationList")
+// 비활성화 조건 함수
+const isDisabled = (status: string): boolean => {
+  return status === "reserved";
+};
 
 const allData = ref<ApplicationItem[]>([]);
 const tableData = ref<ApplicationItem[]>([]);
@@ -158,11 +176,11 @@ const role: string = name === "admin" ? "요소기술그룹" : "요소기술그�
 const fetchData = async () => {
   try {
     const response = await axios.post("pdt_application/get-my-applications", {
-        requester : name
+      requester: name,
     });
+    console.log(response.data);
 
     allData.value = response.data;
-    
 
     filterData();
   } catch (error) {
@@ -210,20 +228,24 @@ const rowData = ref({});
 // useRouter 훅을 사용하여 라우터 인스턴스를 가져옵니다.
 const router = useRouter();
 
+const handleDelete = (row: ApplicationItem) => {
+  if(deletePdtApplication(row.uuid)){
+    filterData()
+  }
+}
+
 const handleDetail = (row: ApplicationItem) => {
   // `application/application_detail` 페이지로 리디렉트하면서 `uuid`를 파라미터로 전달합니다.
-  router.push({ name: "MyProductApplicationDetail", params: { uuid: row.uuid } });
+  router.push({
+    name: "MyProductApplicationDetail",
+    params: { uuid: row.uuid },
+  });
 };
 
 const closeDialog = () => {
   visible.value = false;
   idEdit.value = false;
 };
-
-
-
-
-
 </script>
 
 <style scoped>

@@ -28,7 +28,9 @@
 
         <el-table-column prop="band" label="Band" align="center" width="100px">
           <template #default="scope">
-            <span v-if="scope.row.band.length > 5">{{ scope.row.band.substring(0,4) }}</span>
+            <span v-if="scope.row.band.length > 5">{{
+              scope.row.band.substring(0, 4)
+            }}</span>
             <span v-else>{{ scope.row.band }}</span>
           </template>
         </el-table-column>
@@ -41,7 +43,7 @@
 
         <el-table-column prop="signal_type" label="Signal" align="center">
         </el-table-column>
-        
+
         <el-table-column prop="target_position" label="Target" align="center">
         </el-table-column>
 
@@ -69,9 +71,9 @@
             <span v-else :style="{ color: 'blue' }">측정 종료</span>
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="request_number" label="의뢰 번호" align="center">
-        </el-table-column>      
+        </el-table-column>
         <!-- <el-table-column label="시작" align="center">
           <template #default="scope">
             <span>{{ moment(scope.row.date_of_created).format('YY/MM/DD') }}</span>            
@@ -79,12 +81,14 @@
         </el-table-column> -->
         <el-table-column label="측정 완료" align="center">
           <template #default="scope">
-            <span v-if="scope.row.status === 'finished'">{{ moment(scope.row.date_of_finished).format('YY/MM/DD') }}</span>            
+            <span v-if="scope.row.status === 'finished'">{{
+              moment(scope.row.date_of_finished).format("YY/MM/DD")
+            }}</span>
             <span v-else>-</span>
-          </template>        
+          </template>
         </el-table-column>
 
-        <el-table-column label="Action" width="100" align="center">
+        <el-table-column label="Action" width="150" align="center">
           <template #default="scope">
             <el-button
               type="primary"
@@ -92,6 +96,12 @@
               @click="handleDetail(scope.row)"
               >자세히</el-button
             >
+            <!-- <el-button
+              type="danger"
+              size="small"
+              @click="handleDelete(scope.row)"
+              >삭제</el-button
+            > -->
           </template>
         </el-table-column>
       </el-table>
@@ -130,7 +140,8 @@ import { ElMessage } from "element-plus";
 import { getLastThursday, formatDate } from "../../../utils/utility";
 import { applicationRules } from "../../../utils/FromRule";
 import { useRouter } from "vue-router";
-import moment from 'moment';
+import moment from "moment";
+import { deletePdtApplication } from "../../../utils/Pdt/application-utils";
 
 const props = defineProps<{
   testType: string;
@@ -192,14 +203,12 @@ interface ApplicationItem {
   signal_type: string;
   request_number: string;
   target_position: string;
-  date_of_created : string;
-  date_of_finished : string;
+  date_of_created: string;
+  date_of_finished: string;
 }
 
 const name = localStorage.getItem("ms_username");
 const role: string = name === "admin" ? "RF개발팀" : "RF개발팀";
-
-
 
 const allData = ref<ApplicationItem[]>([]);
 const tableData = ref<ApplicationItem[]>([]);
@@ -219,7 +228,7 @@ const fetchData = async () => {
     );
 
     allData.value = response.data;
-    console.log(allData)
+    console.log(allData);
     filterData();
   } catch (error) {
     ElMessage.error("데이터를 불러오는 데 실패했습니다.");
@@ -281,6 +290,10 @@ const handleDetail = (row: ApplicationItem) => {
   // `application/application_detail` 페이지로 리디렉트하면서 `uuid`를 파라미터로 전달합니다.
 
   router.push({ name: "MeasurementInfo", params: { uuid: row.uuid } });
+};
+
+const handleDelete = (row: ApplicationItem) => {
+  deletePdtApplication(row.uuid);
 };
 
 // const visible1 = ref(false);
