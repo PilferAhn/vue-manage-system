@@ -10,7 +10,7 @@
         <el-table-column prop="unit" label="Unit" width="100" />
         <el-table-column prop="size" label="Size" width="100" />
         <el-table-column prop="materialType" label="Material Type" width="150" />
-        <el-table-column prop="description" label="Description" width="250" />
+        <el-table-column prop="description" label="Description" width="300" />
         <!-- <el-table-column prop="inputTime" label="Input Time" width="150" />
         <el-table-column prop="actualDate" label="Actual Date" width="150" />
         <el-table-column prop="expiryDate" label="Expiry Date" width="150" /> -->

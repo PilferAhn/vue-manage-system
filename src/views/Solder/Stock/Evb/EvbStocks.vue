@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div >
     <el-card shadow="always">
       <el-tabs v-model="activeTab" type="card">
+        <el-tab-pane label="EVB Sheet" name="evbSheet">
+          <EvbSheetTable :evbSheetList="evbSheetList" />
+        </el-tab-pane>
         <el-tab-pane label="EVB for solder measure" name="evb">
           <EvbTable :evbList="evbList" />
-        </el-tab-pane>
-        <el-tab-pane label="EVB Sheet Table" name="evbSheet">
-          <EvbSheetTable :evbSheetList="evbSheetList" />
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -54,7 +54,7 @@ export interface EvbInfo {
 // Ref 선언
 const evbList = ref<EvbInfo[]>([]);
 const evbSheetList = ref<EvbSheetInfo[]>([]);
-const activeTab = ref("evb"); // 현재 활성화된 탭
+const activeTab = ref("evbSheet"); // 현재 활성화된 탭
 
 // API URL과 헤더
 const evbUrl = "/OpeationMns/ScheduleSample/GetEVBStock";

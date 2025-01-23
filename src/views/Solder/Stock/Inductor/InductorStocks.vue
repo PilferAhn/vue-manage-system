@@ -1,20 +1,21 @@
 <template>
-  <div>
+  <div class="container">
     <el-table :data="inductorList" style="width: 100%">
-      <el-table-column prop="productType" label="Product Type" width="150" />
+      <el-table-column type="index" label="Index" width="100"></el-table-column>
+      <!-- <el-table-column prop="productType" label="Product Type" width="150" /> -->
       <el-table-column prop="position" label="Position" width="150" />
       <!-- <el-table-column prop="uid" label="U ID" width="250" /> -->
       <el-table-column prop="materialCode" label="Material Code" width="200" />
-      <el-table-column prop="lotNo" label="Lot No" width="250" />
+      <el-table-column prop="lotNo" label="Lot No" width="300" />
       <el-table-column prop="quantity" label="Quantity" width="100" />
-      <el-table-column prop="createTime" label="Create Time" width="150" />
+      <!-- <el-table-column prop="createTime" label="Create Time" width="150" />
       <el-table-column prop="shippingDate" label="Shipping Date" width="150" />
-      <el-table-column prop="expiryDate" label="Expiry Date" width="150" />
-      <el-table-column
+      <el-table-column prop="expiryDate" label="Expiry Date" width="150" /> -->
+      <!-- <el-table-column
         prop="daysExpiryRemain"
         label="Days Expiry Remain"
         width="150"
-      />
+      /> -->
     </el-table>
   </div>
 </template>
