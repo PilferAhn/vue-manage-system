@@ -13,4 +13,28 @@ export const whcRouteIndexList: RouteRecordRaw[] = [
         /* webpackChunkName: "table" */ "../views/Solder/Stock/Package/Package.vue"
       ),
   },
+  {
+    path: "/whc/inductor-management/inductor-list",
+    name: "WHC Inductor List",
+    meta: {
+      title: "Inductor List",
+      permiss: "11",
+    },
+    component: () =>
+      import(
+        /* webpackChunkName: "table" */ "../views/Solder/Stock/Inductor/InductorStocks.vue"
+      ),
+  },
+  {
+    path: "/whc/evb-management/evb-list",
+    name: "WHC EVB List",
+    meta: {
+      title: "EVB List",
+      permiss: "11",
+    },
+    component: () =>
+      import(
+        /* webpackChunkName: "table" */ "../views/Solder/Stock/Evb/EvbStocks.vue"
+      ),
+  },
 ];

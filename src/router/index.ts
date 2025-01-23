@@ -3,7 +3,9 @@ import { usePermissStore } from "../store/permiss";
 import Home from "../views/home.vue";
 import { fabRouteIndexList } from "./fab-router";
 import { whcRouteIndexList } from "./whc-router";
-import { modulesRouteIndexList} from "./modules-router"
+import { modulesRouteIndexList } from "./modules-router";
+import { tegRouteIndexList } from "./teg-router";
+import { pdtRouteIndexList } from "./pdt-router";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 
@@ -492,7 +494,7 @@ const routes: RouteRecordRaw[] = [
           import(
             /* webpackChunkName: "table" */ "../views/Rules/PdtRulesNew.vue"
           ),
-      },      
+      },
       {
         path: "/table",
         name: "basetable",
@@ -808,7 +810,9 @@ const routes: RouteRecordRaw[] = [
       },
       ...fabRouteIndexList,
       ...whcRouteIndexList,
-      ...modulesRouteIndexList
+      ...modulesRouteIndexList,
+      ...tegRouteIndexList,
+      ...pdtRouteIndexList,
     ],
   },
   {

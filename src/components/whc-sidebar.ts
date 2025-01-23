@@ -1,54 +1,54 @@
 export const whcSilderBarList = {
   icon: "Pear",
   index: "4",
-  title: "WHC 개발 측정",
+  title: "WHC Measurement",
   permiss: "11",
   subs: [
     {
       index: "/whc/create-application",
-      title: "측정 의뢰서 작성",
+      title: "Create Request Form",
       permiss: "11",
     },
     {
       index: "/whc/application-list",
-      title: "측정 의뢰 현황",
+      title: "Measurement monitor",
       permiss: "11",
     },
     {
       index: "/whc/stock",
-      title: "재고 현황",
+      title: "Stock",
       permiss: "11",
       subs: [
         {
           index: "/whc/stock/solder-stock-management",
-          title: "JIG용 Solder관리",
+          title: "JIG - Solder",
           permiss: "11",
           subs: [
             {
               index: "/whc/solder-stock-management/create-stock",
-              title: "Solder 등록",
+              title: "Solder Registration",
               permiss: "11",
             },
             {
               index: "/whc/solder-stock-management/stock-list",
-              title: "보유 현황",
+              title: "Stock List",
               permiss: "11",
             },
           ],
         },
         {
           index: "/whc/stock-management",
-          title: "완제품(Reel) 관리",
+          title: "Finished Product (Reel) ",
           permiss: "11",
           subs: [
             {
               index: "/whc/stock-management/create-stock",
-              title: "LOT 등록",
+              title: "LOT Registration",
               permiss: "11",
             },
             {
               index: "/whc/stock-management/stock-list",
-              title: "보유 현황",
+              title: "Stock List",
               permiss: "11",
             },
           ],
@@ -56,6 +56,16 @@ export const whcSilderBarList = {
         {
           index: "/whc/package-management/package-list",
           title: "Package List",
+          permiss: "11",          
+        },
+        {
+          index: "/whc/inductor-management/inductor-list",
+          title: "Inductor List",
+          permiss: "11",          
+        },
+        {
+          index: "/whc/evb-management/evb-list",
+          title: "EVB List",
           permiss: "11",          
         }
       ],

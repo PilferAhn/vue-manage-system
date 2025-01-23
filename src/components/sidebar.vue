@@ -117,22 +117,22 @@ const items = [
   {
     icon: "Calendar",
     index: "1",
-    title: "내전력(PDT)",
+    title: "Power Durability Test",
     permiss: "2",
     subs: [
       {
         index: "/product/create-application",
-        title: "의뢰서 작성",
+        title: "Create Request Form",
         permiss: "2",
       },
       {
         index: "/product/reserved-application-list",
-        title: "측정 진행 현황",
+        title: "In Progress",
         permiss: "2",
       },
       {
         index: "/product/completed-application-list",
-        title: "측정 완료 현황",
+        title: "Completed",
         permiss: "2",
       },
     ],
@@ -140,70 +140,70 @@ const items = [
   {
     icon: "Calendar",
     index: "2",
-    title: "개발 프로브",
+    title: "Teg Measurement",
     permiss: "2",
     subs: [
       {
         index: "/teg/create-teg-application2",
-        title: "의뢰서 작성",
+        title: "Create Reqeust Form",
         permiss: "2",
       },
       {
         index: "/teg/waiting-list",
-        title: "측정 진행 현황",
+        title: "In Progress",
         permiss: "2",
       },
       {
         index: "/teg/finished-list",
-        title: "측정 완료 현황",
+        title: "Completed",
         permiss: "2",
       },
     ],
   },
   fabSilderBarList,
   whcSilderBarList,
-  moduleSilderBarList,
+  // moduleSilderBarList,
   {
     icon: "Edit",
     index: "5",
-    title: "측정 통계",
+    title: "Statistics",
     permiss: "2",
     subs: [
       {
         index: "/admin/pdt",
-        title: "PDT 측정",
+        title: "PDT",
         permiss: "2",
         subs: [
           {
             index: "/admin/pdt/application-list",
-            title: "PDT 측정 현황",
+            title: "In Progress",
             permiss: "5",
           },
           {
             index: "/admin/pdt/machine-list",
-            title: "측정 장비 현황",
+            title: "Machine List",
             permiss: "5",
           },
           {
             index: "/admin/pdt/statistic",
-            title: "PDT 측정 통계",
+            title: "PDT Statistics",
             permiss: "2",
           },
         ],
       },
       {
         index: "/admin/teg/teg_application",
-        title: "TEG 측정",
+        title: "TEG Measurement",
         permiss: "2",
         subs: [
           {
             index: "/admin/teg/teg-application-list",
-            title: "TEG 측정 현황",
+            title: "In Progress",
             permiss: "5",
           },
           {
             index: "/statistic/chart",
-            title: "TEG 측정 통계",
+            title: "TEG Statistics",
             permiss: "2",
           },
           // {
@@ -215,19 +215,19 @@ const items = [
       },
       {
         index: "/admin/whc/solder-application",
-        title: "WHC 측정",
+        title: "WHC Measurement",
         permiss: "2",
         subs: [
           {
             index: "/admin/whc/solder-application-statistic",
-            title: "WHC 측정 통계",
+            title: "WHC Statistics",
             permiss: "2",
           },
-          {
-            index: "/admin/whc/solder-application-statistic2",
-            title: "WHC 측정 통계 - 월간",
-            permiss: "2",
-          },
+          // {
+          //   index: "/admin/whc/solder-application-statistic2",
+          //   title: "WHC 측정 통계 - 월간",
+          //   permiss: "2",
+          // },
         ],
       },
     ],
@@ -236,12 +236,12 @@ const items = [
   {
     icon: "Calendar",
     index: "6",
-    title: "개발지원도구",
+    title: "Tools",
     permiss: "11",
     subs: [
       {
         index: "/calculator/s-parameter_ver2",
-        title: "TCF 계산기",
+        title: "TCF Calculator",
         permiss: "11",
       },
       // {
@@ -327,7 +327,7 @@ const items = [
     icon: "search",
     // index: "/rules",
     index: "/rules",
-    title: "규정집",
+    title: "Rules",
     permiss: "2",
     subs: [
       // {

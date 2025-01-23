@@ -1,37 +1,37 @@
 export const fabSilderBarList =  {
     icon: "DocumentAdd",
     index: "3",
-    title: "개발 SAMPLE",
+    title: "Development SAMPLE",
     permiss: "11",
     subs: [
       {
         index: "/fab/create-application",
-        title: "투입 계획서 작성",
+        title: "Create Request Form",
         permiss: "11",
       },
       {
         index: "/fab/my-application-status",
-        title: "투입 계획서 현황",
+        title: "Application Plan Status",
         permiss: "11",
       },
       {
         index: "/fab/feb-application-list",
-        title: "투입 계획서 검토",
+        title: "Form Review",
         permiss: "11",
       },
       {
         index: "/fab/feb-application-list2",
-        title: "개발 Sample Monitor",
+        title: "Sample Monitor",
         permiss: "11",
       },
       {
         index: "/fab/mes",
-        title: "기타 사이트",
+        title: "Other Sites",
         permiss: "11",
         subs: [
           {
             index: "/fab/mes/sample_status",
-            title: "개발 SPL 현황 - HQ",
+            title: "SPL Status - HQ",
             permiss: "11",
           },
           // {
