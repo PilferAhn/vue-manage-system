@@ -147,7 +147,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="HQ 출하 예정일" :align="'center'" width="120">
+      <el-table-column label="HQ 출하 예정일" :align="'center'" width="100">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             <span v-if="item['operation']['operationId'] === 'OP0E002040'">
@@ -189,7 +189,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="HQ 출하" :align="'center'" width="120">
+      <el-table-column label="HQ 출하" :align="'center'" width="100">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             <span v-if="item['operation']['name'] === 'Transit 공정'">
