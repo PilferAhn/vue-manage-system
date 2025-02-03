@@ -147,7 +147,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="WHC 출하 예정일" :align="'center'" width="120">
+      <el-table-column label="HQ 출하 예정일" :align="'center'" width="120">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             <span v-if="item['operation']['operationId'] === 'OP0E002040'">
@@ -189,7 +189,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="WHC 출하" :align="'center'" width="120">
+      <el-table-column label="HQ 출하" :align="'center'" width="120">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             <span v-if="item['operation']['name'] === 'Transit 공정'">
@@ -345,7 +345,7 @@
         prop="destination"
         :align="'center'"
       ></el-table-column>
-      <el-table-column
+      <!-- <el-table-column
         fixed="right"
         label="Action"
         width="100"
@@ -357,12 +357,12 @@
             의뢰서
           </el-button></template
         >
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
-    <DialogTemplate
+    <!-- <DialogTemplate
       v-model:visible="dialogTableVisible"
       :fabApplicationId="selectApplicationId"
-    ></DialogTemplate>
+    ></DialogTemplate> -->
   </div>
 
   <el-button type="primary" @click="toggleFilter" class="buttun-section">
