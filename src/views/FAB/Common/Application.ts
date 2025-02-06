@@ -297,7 +297,7 @@ export const sendFormData = async (url: string, processData: ProcessData) => {
         ? formatDateForServer(processData.wantedFabFinishDate)
         : null,
     };
-    processData.destination = processData.destination + "-" + processData.packageType
+    
     const convertedData = convertToPep8(formattedData);
     const response = await axios.post(url, convertedData, {
       headers: {

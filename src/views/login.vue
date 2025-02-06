@@ -120,7 +120,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
           localStorage.setItem("id" , param.username)
           localStorage.setItem("email", response.user_name);
           localStorage.setItem("role", response.role)
-
+          localStorage.setItem("department", response.department)
           // 기타 사용자 정의 로직
           // 예: 권한 설정, 로컬 스토리지 업데이트 등
           const keys = JSON.parse(response.ms_keys);          

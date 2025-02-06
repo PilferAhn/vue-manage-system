@@ -48,7 +48,7 @@ onMounted(async () => {
     processDataArray.value = await fetchProcessData(processDataArray.value);
   } else if (getRole() === "요소기술그룹") {
     processDataArray.value = await fetchProcessData(processDataArray.value);
-  } else if (getRole() === "group leader") {
+  } else if (["group leader", "boss"].includes(getRole())) {
     processDataArray.value = await fetchProcessData(processDataArray.value);
   } else {
     processDataArray.value = await getApplicationByUserName(
