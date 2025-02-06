@@ -13,18 +13,16 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
         /* webpackChunkName: "table" */ "../views/FAB/Application/CreateApplication.vue"
       ),
   },
-  {
-    path: "/fab/create-application2",
-    name: "FabApplication2",
-    meta: {
-      title: "새로운 의뢰서 작성",
-      permiss: "11",
-    },
-    component: () =>
-      import(
-        /* webpackChunkName: "table" */ "../views/FAB/Application/CreateApplicationRev2.vue"
-      ),
-  },
+  // {
+  //   path: "/fab/create-application2",
+  //   name: "FabApplication2",
+  //   meta: {
+  //     title: "새로운 의뢰서 작성",
+  //     permiss: "11",
+  //   },
+  //   component: () =>
+  //     import("../views/FAB/Application/CreateApplicationRev2.vue"),
+  // },
   {
     path: "/fab/feb-application-list",
     name: "FabApplicationList",
@@ -61,30 +59,30 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
         /* webpackChunkName: "table" */ "../views/FAB/MyApplicationStatus/MyApplicationStatus.vue"
       ),
   },
-  {
-    path: "/fab/view-application-list-rev2",
-    name: "FabApplicationListRev2",
-    meta: {
-      title: "투입 계획서 현황2",
-      permiss: "11",
-    },
-    component: () =>
-      import(
-        /* webpackChunkName: "table" */ "../views/FAB/ApplicationList/rev2/ApplicationList.vue"
-      ),
-  },
-  {
-    path: "/fab/load_application2/:productName",
-    name: "LoadApplication2",
-    meta: {
-      title: "LoadApplication2",
-      permiss: "11",
-    },
-    component: () =>
-      import(
-        /* webpackChunkName: "table" */ "../views/FAB/Application/LoadApplication2.vue"
-      ),
-  },
+  // {
+  //   path: "/fab/view-application-list-rev2",
+  //   name: "FabApplicationListRev2",
+  //   meta: {
+  //     title: "투입 계획서 현황2",
+  //     permiss: "11",
+  //   },
+  //   component: () =>
+  //     import(
+  //       /* webpackChunkName: "table" */ "../views/FAB/ApplicationList/rev2/ApplicationList.vue"
+  //     ),
+  // },
+  // {
+  //   path: "/fab/load_application2/:productName",
+  //   name: "LoadApplication2",
+  //   meta: {
+  //     title: "LoadApplication2",
+  //     permiss: "11",
+  //   },
+  //   component: () =>
+  //     import(
+  //       /* webpackChunkName: "table" */ "../views/FAB/Application/LoadApplication2.vue"
+  //     ),
+  // },
   {
     path: "/fab/load_application/:uuid",
     name: "LoadApplication",

@@ -31,11 +31,16 @@ export const tegTypes = ref([
   },
   {
     index: 5,
-    name: "TEG-2",
+    name: "TEG-N",
     options: { ...defaultTestTypeOptions },
   },
   {
     index: 6,
+    name: "TEG-2",
+    options: { ...defaultTestTypeOptions },
+  },
+  {
+    index: 7,
     name: "TEG-3",
     options: { ...defaultTestTypeOptions },
   },

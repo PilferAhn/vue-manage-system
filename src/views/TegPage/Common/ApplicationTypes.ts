@@ -25,7 +25,7 @@ export const measTypes: string[] = [
   "TEP-P",
   "CPW",
   "TEG-1",
-  "TEG-1.5",
+  "TEG-1.5",  
   "TEG-2",
   "TEG-3",
   "PDT",

@@ -255,13 +255,13 @@
         <div class="form-box">
           <div class="meas-types-container">
             <MeasType @updateMeasInfo="updateMeasInfo" />
-
+            
             <MeasTemperature
               :measInfo="tegApplicationForm.measInfo"
               :tegTypes="tegTypes"
               @updateTemperature="handleTemperatures"
             ></MeasTemperature>
-
+            
             <Segmentation
               :measInfo="tegApplicationForm.measInfo"
               @forwardUpdate="handleFinalUpdate"
