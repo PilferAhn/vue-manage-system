@@ -15,6 +15,8 @@ const props = defineProps<{
   title: string;
 }>();
 
+console.log(props.data)
+
 let pieChartInstance: Chart<"pie", number[], string> | null = null;
 
 // Canvas 참조용 ref

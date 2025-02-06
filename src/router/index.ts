@@ -761,18 +761,6 @@ const routes: RouteRecordRaw[] = [
           ),
       },
       {
-        path: "/whc/create-application-by-fab-form/:modelName",
-        name: "CreateApplicationByFabForm",
-        meta: {
-          title: "Create Application By Fab Form",
-          permiss: "11",
-        },
-        component: () =>
-          import(
-            /* webpackChunkName: "table" */ "../views/Solder/Application/CreateApplicationByFabRequestForm.vue"
-          ),
-      },
-      {
         path: "/whc/network-analyzer",
         name: "NetworkAnalyzer",
         meta: {

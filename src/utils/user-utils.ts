@@ -2,6 +2,7 @@ import { sendPostRequest } from "./httpProtocol";
 import { convertKeysToCamelCase } from "./key-converter";
 import type { User } from "../interface/user";
 import { ref } from "vue";
+import { finished } from "stream";
 
 export async function getUserListByDepartment(department: string) {
   const users = ref<User[]>([]);

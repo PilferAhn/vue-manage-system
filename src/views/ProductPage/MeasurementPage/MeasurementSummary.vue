@@ -12,50 +12,78 @@
       >
 
       <div>
-        <el-table :data="calculatedSummaries" border style="width: 100%">
+        <el-table :data="calculatedSummaries" :border="true" style="width: 100%">
           <el-table-column
             v-if="name !== 'admin'"
             prop="sampleNumber"
             label="Sample Number"
             width="180"
           ></el-table-column>
-          <el-table-column label="Sample Number" v-else>
+          <el-table-column label="Sample Number" width="200" v-else>
             <template #default="scope">
               <el-input v-model="scope.row.sampleNumber"></el-input>
             </template>
           </el-table-column>
-          
+
           <!-- <el-table-column prop="dbm3" :label="db3Label"></el-table-column> -->
 
-          <el-table-column label="System Freq (A)">
-            <template #default="scope">
+          <el-table-column
+            label="System Freq (A)"
+            :align="'center'"
+            width="150"
+          >
+            <template #default="">
               <span> {{ systemBand }} </span>
             </template>
           </el-table-column>
 
-          <el-table-column label="Δf [MHz] (B)">
+          <el-table-column label="Δf [MHz] (B)" :align="'center'" width="110">
             <template #default="scope">
               {{ (-1 * (systemBand - scope.row.targetFreq)).toFixed(2) }}
             </template>
           </el-table-column>
 
           <el-table-column
+            :align="'center'"
+            width="150"
             prop="targetFreq"
             label="Target Freq (A + B)"
           ></el-table-column>
 
-          <el-table-column prop="p1Input" label="P1[dBm]"></el-table-column>
-          <el-table-column prop="p2Input" label="P2[dBm]"></el-table-column>
+          <el-table-column
+            prop="p1Input"
+            label="P1[dBm]"
+            :align="'center'"
+            width="100"
+          ></el-table-column>
+          <el-table-column
+            prop="p2Input"
+            label="P2[dBm]"
+            :align="'center'"
+            width="100"
+          ></el-table-column>
           <el-table-column
             prop="p1Output"
             label="Pout@P1[dBm]"
+            :align="'center'"
+            width="130"
           ></el-table-column>
 
-          <el-table-column v-if="name === 'admin'" label="Action">
+          <el-table-column label="Action" :align="'center'">
             <template #default="scope">
-              <el-button type="success" @click="handleSampleNumberUpdate(scope.row.pdtSampleUuid, scope.row.sampleNumber)"
+              <el-button
+                v-if="name === 'admin'"
+                type="success"
+                @click="
+                  handleSampleNumberUpdate(
+                    scope.row.pdtSampleUuid,
+                    scope.row.sampleNumber
+                  )
+                "
                 >업데이트</el-button
               >
+              <el-button type="info" disabled>후기치</el-button>
+              <el-button type="info" disabled>Decap</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -166,10 +194,9 @@ const name = localStorage.getItem("ms_username");
 
 function getSystemBand() {
   let systemBand = 0;
-  if (props.targetPosition === undefined){
-    systemBand = -999
-  }
-  else if (props.targetPosition === "HIGH") {
+  if (props.targetPosition === undefined) {
+    systemBand = -999;
+  } else if (props.targetPosition === "HIGH") {
     systemBand = Number(props.systemBandInfo[1]);
   } else {
     systemBand = Number(props.systemBandInfo[0]);

@@ -40,6 +40,11 @@ const updateValue = () => {
 };
 </script>
 
+<script lang="ts">
+export default {};
+</script>
+
+
 <style scoped>
 /* Add your scoped styles here */
 </style>

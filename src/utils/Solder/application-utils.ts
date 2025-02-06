@@ -1,6 +1,47 @@
 import { ElMessage, ElMessageBox, ElNotification } from "element-plus";
 import axios from "axios";
 import { ApplicationData as solderApplication } from "../../interface/solderAppInterface";
+import type { FabApplicationInterface } from "../../interface/fab";
+import { FabRequestForm } from "../../interface/fab-application-rev2";
+
+export function allocFabFormToWhcForm(
+  fabApp: FabRequestForm,
+  solderApp: solderApplication
+) {
+  for (const key in fabApp) {
+    if (
+      fabApp.hasOwnProperty(key) && // fabApp에 해당 키가 존재하는지 확인
+      solderApp.hasOwnProperty(key) && // tegApp에 해당 키가 존재하는지 확인
+      typeof (fabApp as any)[key] === typeof (solderApp as any)[key] // 타입 비교
+    ) {      
+      solderApp[key] = fabApp[key];
+      // (pdtApp as any)[key] = (fabApp as any)[key]; // 값을 복사
+    }
+  }
+
+  solderApp.modelName = fabApp.productName;
+  solderApp.requester = fabApp.requester.userName;
+  solderApp.designer = fabApp.designer.userName;
+  
+  solderApp.pkgType =  fabApp.wafer.sawTypeId + " - " + fabApp.packageId
+
+}
+
+export async function insertDataFromFabRequestForm(
+  solderApp: solderApplication,
+  fabApp: FabApplicationInterface
+) {
+  // 임시 코드 더러워도 참자
+  let process = fabApp.process;
+
+  if (process === "TC") {
+    process = "TS";
+  }
+
+  let packageType = fabApp.packageType;
+
+  solderApp.pkgType = process + " - " + packageType;
+}
 
 export async function downloadExcel(date: string) {
   try {
@@ -46,8 +87,6 @@ export async function downloadExcel(date: string) {
   }
 }
 
-
-
 export function updateMeasurementDataByClient(
   solderApplication: solderApplication,
   client: string
@@ -65,9 +104,9 @@ export function updateMeasurementDataByClient(
         meas.quantity = 9;
         meas.detail = "ESD: 200V(3)/250V(3)/300V(3)";
       } else if (meas.measurementType === "TCF") {
-        meas.isMeasured = true;        
+        meas.isMeasured = true;
         meas.quantity = 2;
-        meas.detail = "TEMP(-30 25 55 85)"
+        meas.detail = "TEMP(-30 25 55 85)";
       } else if (meas.measurementType === "비선형") {
         meas.isMeasured = true;
         meas.quantity = 2;
@@ -91,7 +130,7 @@ export function updateMeasurementDataByClient(
       } else if (meas.measurementType === "TCF") {
         meas.isMeasured = true;
         meas.quantity = 2;
-        meas.detail = "TEMP(-30 25 55 85)"
+        meas.detail = "TEMP(-30 25 55 85)";
       } else {
         meas.isMeasured = false;
         meas.quantity = 0;
@@ -112,7 +151,7 @@ export function updateMeasurementDataByClient(
       } else if (meas.measurementType === "TCF") {
         meas.isMeasured = true;
         meas.quantity = 2;
-        meas.detail = "TEMP(-30 25 55 85)"
+        meas.detail = "TEMP(-30 25 55 85)";
       } else {
         meas.isMeasured = false;
         meas.quantity = 0;
@@ -133,7 +172,7 @@ export function updateMeasurementDataByClient(
       } else if (meas.measurementType === "TCF") {
         meas.isMeasured = true;
         meas.quantity = 2;
-        meas.detail = "TEMP(-40 -30 25 55 85 105)"
+        meas.detail = "TEMP(-40 -30 25 55 85 105)";
       } else {
         meas.isMeasured = false;
         meas.quantity = 0;

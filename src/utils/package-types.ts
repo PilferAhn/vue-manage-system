@@ -16,12 +16,12 @@ export const packgeList = [
       value: "TS - CSP",
     },
     {
-      label: "TC - WLP",
-      value: "TC - WLP",
+      label: "TS - WLP",
+      value: "TS - WLP",
     },
     {
-      label: "TC - BDMP",
-      value: "TC - BDMP",
+      label: "TS - BDMP",
+      value: "TS - BDMP",
     },
     {
       label: "HS - CSP",

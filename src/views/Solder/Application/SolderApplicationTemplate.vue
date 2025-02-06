@@ -1,4 +1,5 @@
 <template>
+  <!-- {{ props.applicationData }} -->
   <el-form
     :model="applicationData"
     :rules="rules"
@@ -46,10 +47,14 @@
 
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form-item label="개발자" style="width: 525px" prop="designer">
+                <el-form-item
+                  label="개발자"
+                  style="width: 525px"
+                  prop="designer"
+                >
                   <el-autocomplete
                     v-model="applicationData.designer"
-                    placeholder="개발자를 입력하세요"                    
+                    placeholder="개발자를 입력하세요"
                     :fetch-suggestions="
                       (queryString, cb) =>
                         querySearch(queryString, cb, 'designer')
@@ -61,7 +66,11 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="의뢰자" style="width: 525px" prop="requester">
+                <el-form-item
+                  label="의뢰자"
+                  style="width: 525px"
+                  prop="requester"
+                >
                   <el-autocomplete
                     v-model="applicationData.requester"
                     placeholder="의뢰자를 입력하세요"
@@ -236,12 +245,16 @@
 
       <el-divider content-position="center">Measurement Infomation</el-divider>
       <el-card>
+        <SolderMeasureList
+          :measurements="applicationData.measurements"
+          :application-type="props.applicationType"
+        ></SolderMeasureList>
         <SolderMeasurement
           :measurements="applicationData.measurements"
           :application-type="props.applicationType"
         ></SolderMeasurement>
       </el-card>
-      
+
       <el-row
         v-if="props.applicationType === 'create'"
         :gutter="20"
@@ -510,6 +523,7 @@ import { formatDate } from "../../FAB/Common/Application";
 import { removeApplicationHandler } from "../../../utils/Solder/application-utils";
 import { optionList } from "../../Calculator/SParameter/sparameter";
 import SolderMeasurement from "./SolderMeasurement.vue";
+import SolderMeasureList from "./SolderMeasurementList.vue";
 const router = useRouter();
 
 // Define props to receive processData
@@ -587,7 +601,7 @@ const keys = ref<string[]>([]); // keys를 빈 배열로 초기화
 onMounted(() => {
   application.value = props.applicationData;
   sortApplicationDataByNumber(application.value);
-  
+
   loading.value = false;
 });
 

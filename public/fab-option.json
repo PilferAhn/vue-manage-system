@@ -1,0 +1,262 @@
+[
+  {
+    "sawTypeId": "NS",
+    "wafers": [
+      {
+        "waferId": 1,
+        "size": 4,
+        "sawTypeId": "NS",
+        "waferType": "BLT",
+        "waferCompany": "S",
+        "recommendations": [
+          {
+            "waferAngle": 42,
+            "waferThickness": 150
+          },
+          {
+            "waferAngle": 42,
+            "waferThickness": 200
+          },
+          {
+            "waferAngle": 42,
+            "waferThickness": 250
+          },
+          {
+            "waferAngle": 46.3,
+            "waferThickness": 150
+          },
+          {
+            "waferAngle": 46.3,
+            "waferThickness": 200
+          }
+        ]
+      }
+    ],
+    "idtTypes": [
+      {
+        "idtId": 1,
+        "idtProcessId": "Etching",
+        "layers": [
+          {
+            "idx": 1,
+            "material": "Ti"
+          },
+          {
+            "idx": 2,
+            "material": "Al"
+          }
+        ]
+      },
+      {
+        "idtId": 2,
+        "idtProcessId": "Lift-off",
+        "layers": [
+          {
+            "idx": 1,
+            "material": "Ti"
+          },
+          {
+            "idx": 2,
+            "material": "Cu"
+          },
+          {
+            "idx": 3,
+            "material": "Al"
+          },
+          {
+            "idx": 4,
+            "material": "Ti"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "sawTypeId": "TS",
+    "pstTypes": [
+      {
+        "pstId": 1,
+        "sawTypeId": "TS",
+        "name": "Cr/Cu/Cr",
+        "layers": [
+          {
+            "pstId": 1,
+            "idx": 1,
+            "material": "Cr"
+          },
+          {
+            "pstId": 1,
+            "idx": 2,
+            "material": "Cu"
+          },
+          {
+            "pstId": 1,
+            "idx": 3,
+            "material": "CR"
+          }
+        ]
+      }
+    ],
+    "wafers": [
+      {
+        "waferId": 1,
+        "sawTypeId": "TS",
+        "waferType": "BLT",
+        "waferCompany": "S",
+        "recommendations": [
+          {
+            "waferAngle": 42,
+            "waferThickness": 150
+          },
+          {
+            "waferAngle": 42,
+            "waferThickness": 200
+          },
+          {
+            "waferAngle": 42,
+            "waferThickness": 250
+          },
+          {
+            "waferAngle": 46.3,
+            "waferThickness": 150
+          },
+          {
+            "waferAngle": 46.3,
+            "waferThickness": 200
+          }
+        ]
+      }
+    ],
+    "idtTypes": [
+      {
+        "idtId": 1,
+        "idtProcessId": "Lift-off",
+        "layers": [
+          {
+            "idx": 1,
+            "material": "Cr"
+          },
+          {
+            "idx": 2,
+            "material": "Ag"
+          },
+          {
+            "idx": 3,
+            "material": "Cu"
+          },
+          {
+            "idx": 4,
+            "material": "Ti"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "sawTypeId": "HS",
+    "pstTypes": [
+      {
+        "pstId": 2,
+        "sawTypeId": "HS",
+        "name": "dPST",
+        "layers": [
+          {
+            "pstId": 2,
+            "idx": 1,
+            "material": "dPST"
+          }
+        ]
+      },
+      {
+        "pstId": 3,
+        "sawTypeId": "HS",
+        "name": "mPST",
+        "layers": [
+          {
+            "pstId": 3,
+            "idx": 1,
+            "material": "mPST"
+          }
+        ]
+      }
+    ],
+    "wafers": [
+      {
+        "waferId": 1,
+        "size" : 6,
+        "sawTypeId": "HS",
+        "waferType": "BLT",
+        "waferCompany": "S",
+        "recommendations": [
+          {
+            "waferAngle": 42,
+            "waferThickness": 500
+          }
+        ]
+      },
+      {
+        "waferId": 2,
+        "size" : 6,
+        "sawTypeId": "HS",
+        "waferType": "BLT",
+        "waferCompany": "NGK",
+        "recommendations": [
+          {
+            "waferAngle": 43,
+            "waferThickness": 500
+          }
+        ]
+      }
+    ],
+    "idtTypes": [
+      {
+        "idtId": 1,
+        "idtProcessId": "Lift-off",
+        "layers": [
+          {
+            "idx": 1,
+            "material": "Ti"
+          },
+          {
+            "idx": 2,
+            "material": "Cu"
+          },
+          {
+            "idx": 3,
+            "material": "AlCu"
+          },
+          {
+            "idx": 4,
+            "material": "Ti"
+          }
+        ]
+      },
+      {
+        "idtId": 2,
+        "idtProcessId": "Lift-off",
+        "layers": [
+          {
+            "idx": 1,
+            "material": "Ti"
+          },
+          {
+            "idx": 2,
+            "material": "Cu"
+          },
+          {
+            "idx": 3,
+            "material": "AlCu"
+          },
+          {
+            "idx": 4,
+            "material": "Cu"
+          },
+          {
+            "idx": 5,
+            "material": "Ti"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, defineProps, defineEmits } from "vue";
+import { ref, watch, defineProps, defineEmits, onMounted } from "vue";
 import type { waferInformation } from "./../../../utils/tegTypes";
 import type { FormItemRule } from "element-plus"; // Element Plus의 FormItemRule 타입 가져오기
 
@@ -68,9 +68,16 @@ watch(
   { deep: true }
 );
 
+onMounted(()=> {
+  if(props.waferQuantity >= 1){
+    initializeWaferInformation();
+  }
+})
+
 watch(
   () => props.waferQuantity,
   (newVal) => {
+    
     localWaferQuantity.value = newVal;
   }
 );

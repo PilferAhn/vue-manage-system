@@ -12,6 +12,8 @@ export interface ModifiedFabDataInterface {
   fabOutDate?: string;
   whcDevelopmentTeamReceiving?: string;
   fabLotStatusExcel? : ModifiedFabLotDataInterface[]
+  isAlarm? : boolean | false
+  
 }
 
 export interface ModifiedFabLotDataInterface {

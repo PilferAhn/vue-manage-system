@@ -151,7 +151,7 @@
         :align="'center'"
       />
 
-      <el-table-column label="비고" prop="note" width="300" :align="'center'"/>
+      <el-table-column label="비고" prop="note" width="300" :align="'center'"/> 
       <el-table-column label="HS W/F 조건" prop="hsWaferInfo" width="300" :align="'center'"/>
       <el-table-column
         fixed="right"

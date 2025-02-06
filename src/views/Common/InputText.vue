@@ -47,3 +47,7 @@ const updateValue = () => {
   emit("update:modelValue", internalValue.value);
 };
 </script>
+
+<script lang="ts">
+export default {};
+</script>

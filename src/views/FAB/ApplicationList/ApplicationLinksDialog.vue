@@ -1,12 +1,14 @@
 <template>
   <el-dialog v-model="isVisible" title="의뢰서 선택">
-    <h2>{{ props.fabApplicationId }}</h2>
+    <h2>{{ props.fabApplication.productName }}</h2>
     <br />
     <el-table :data="ApplicationTypes">
       <el-table-column prop="name" label="측정 의뢰서 항목"></el-table-column>
       <el-table-column label="Action">
         <template #default="scope"
-          ><el-button :disabled="!scope.row.status" @click="createApplication(props.fabApplicationId, scope.row.type)"
+          ><el-button
+            :disabled="!scope.row.status"
+            @click="createApplication(props.fabApplication, scope.row.type)"
             >의뢰서 생성</el-button
           ></template
         >
@@ -23,17 +25,29 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 import { Router, useRouter } from "vue-router";
+import type { FabRequestForm } from "../../../interface/fab-application-rev2";
+
 const props = defineProps<{
   visible: boolean;
-  fabApplicationId: string;
+  fabApplication: FabRequestForm;
 }>();
 
 const router = useRouter();
-function createApplication(modelName: string, type: string) {
+function createApplication(fabApplication: FabRequestForm, type: string) {
   if (type === "whc") {
     router.push({
-      name: "CreateApplicationByFabForm",
-      params: { modelName: modelName },
+      name: "CreateWhcAppByFabRequestForm",
+      params: { productName: fabApplication.productName },
+    });
+  } else if (type === "pdt") {
+    router.push({
+      name: "CreatePdtApplicationByFabForm",
+      params: { productName: fabApplication.productName },
+    });
+  } else if (type === "teg") {
+    router.push({
+      name: "CreateTegApplicationByFabForm",
+      params: { productName: fabApplication.productName },
     });
   }
 }
@@ -56,14 +70,9 @@ function handleCreateApplication(type: string, applicationId: string) {}
 
 const ApplicationTypes = [
   {
-    name: "PDT 측정 의뢰서",
-    type: "pdt",
-    status: false,
-  },
-  {
     name: "TEG 측정 의뢰서",
     type: "teg",
-    status: false,
+    status: true,
   },
   {
     name: "WHC 측정 의뢰서",
@@ -71,9 +80,19 @@ const ApplicationTypes = [
     status: true,
   },
   {
-    name: "BOM List",
-    type: "bom",
-    status: false,
+    name: "PDT 측정 의뢰서",
+    type: "pdt",
+    status: true,
   },
+
+  // {
+  //   name: "BOM List",
+  //   type: "bom",
+  //   status: false,
+  // },
 ];
+</script>
+
+<script lang="ts">
+export default {};
 </script>

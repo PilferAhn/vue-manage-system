@@ -98,9 +98,22 @@ export function getSystemBand(signalType: string, band: string) {
   return ["1" , "2"]
 }
 
+const createPdtRequestForm = async (application : any) => {
 
-export const downloadExcel = async (application_excel_uuid: string) => {
+  
+
+}
+
+export const downloadExcel = async (application_excel_uuid: any) => {
   try {
+
+    const form = new FormData
+    form.append("uuid" , application_excel_uuid)
+    const appRequest = await axios.post(`pdt_application/get_application_by_uuid`, form)
+    const application = appRequest.data
+    
+    console.log(application)
+    
     const response = await axios.get(
       `/pdt_application/download_application_excel/${application_excel_uuid}`,
       { responseType: "blob" } // 서버로부터 blob 형태로 데이터를 받기 위해 설정

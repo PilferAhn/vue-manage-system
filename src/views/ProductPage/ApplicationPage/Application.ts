@@ -5,6 +5,7 @@ import { ElMessage, FormInstance } from "element-plus";
 import { bandInformationDict } from "../../../utils/frequancyInfo";
 import { containSPL } from "./ApplicationValidation";
 import PDTRequestForm from "./PDTRequestForm.vue";
+import { OptionInterface } from "../../../interface/option";
 
 export const signalTypeOptions = [];
 
@@ -17,6 +18,12 @@ export const dutyList = ref(["40", "50", "60"]);
 export const testPostionList = ["High", "Low", "ETC"];
 
 export const upAndDown = ["Up Link", "Down Link", "ETC"];
+
+export const transcevierModeOptions: OptionInterface[] = [
+  { key: 0, label: "TX", value: "Up Link" },
+  { key: 1, label: "RX", value: "Down Link" },
+  { key: 2, label: "ETC", value: "ETC" },
+];
 
 export const testOptions = [
   "Max Fuse",
@@ -72,7 +79,7 @@ export function computeChannelBandwidth(testType: string, duplexMode: string) {
       return ["1.4Mhz"];
     }
   } else if (testType === "AMR") {
-    return ["5Mhz"];    
+    return ["5Mhz"];
   } else if (["Life", "Max Fuse", "Step Stress"].includes(testType)) {
     return ["1.4Mhz", "5Mhz", "10Mhz", "20Mhz"];
   } else {
@@ -114,7 +121,6 @@ function convertInterfaceToDict(application: PDTRequestFormType) {
 }
 
 export async function downloadExcel(application: any) {
-  console.log(application.value);
   try {
     const response = await axios.get(
       `/pdt_application/download_application_excel/${application.value.applicationUuid}`,
@@ -355,6 +361,50 @@ export function usePDTRequestForm() {
   };
 }
 
+export function usePDTRequestForm2() {
+  const form = ref<PDTRequestFormType>({
+    applicationUuid: "",
+    customerCompany: "",
+    specTemperature: "",
+    specPower: "",
+    isSpecEdit: false,
+
+    modelName: "",
+    condition: "",
+
+    signalType: "",
+    band: "",
+    duplexMode: "",
+    bandwidth: "",
+
+    designer: "",
+    requester: "",
+    purpose: "",
+
+    temperature: "85",
+    duty: "",
+    dateOfSampleConvey: "",
+    dateOfCreate: "",
+
+    waferType: "",
+    packageType: "",
+
+    testType: "",
+    targetPosition: "",
+
+    link: "",
+
+    sampleQuantity: 0,
+    samples: [],
+    detail: "",
+
+    requestNumber: "",
+    status: "",
+  });
+
+  return form.value;
+}
+
 export function hasDuplicates(array: any[]): boolean {
   return new Set(array).size !== array.length;
 }
@@ -395,6 +445,7 @@ export function resetForm(applicationForm: any, requesterName: string) {
     samples: [],
     detail: "",
   };
+
   saveForm(applicationForm); // Save the reset form to localStorage
 }
 
@@ -510,18 +561,16 @@ export function watchCustomerCompany(
         applicationForm.value.specTemperature = "";
         applicationForm.value.specPower = "";
       } else if (newVal === "중화") {
-
         // if(applicationForm.value.signal_type === "WIFI"){
-          
+
         // }
         // else{
         //   applicationForm.value.specPower = "31dBm";
         // }
         applicationForm.value.specPower = "25dBm";
-        applicationForm.value.specTemperature = "50";        
-        applicationFormBoolean.value.specTemperature = true;        
+        applicationForm.value.specTemperature = "50";
+        applicationFormBoolean.value.specTemperature = true;
         applicationFormBoolean.value.specPower = true;
-
       } else if (newVal === "K1") {
         applicationForm.value.specTemperature = "85";
         applicationForm.value.specPower = "29dBm";
@@ -545,7 +594,6 @@ export function setBandwidthOptions(
       applicationForm.value.bandwidth = "";
       applicationForm.value.duty = "";
 
-      
       if (applicationForm.value.testType === "Aging") {
         if (applicationForm.duplexMode === "TDD") {
           bandwidthList.value = ["5Mhz"];
@@ -794,9 +842,8 @@ export async function updateNote(application: PDTRequestFormType) {
     // const applicationDictData = convertInterfaceToDict(application);
 
     const formData = new FormData();
-    formData.append("detail", application.detail)
-    formData.append("pdt_application_uuid", application.applicationUuid)
-    
+    formData.append("detail", application.detail);
+    formData.append("pdt_application_uuid", application.applicationUuid);
 
     const response = await axios.post(
       "/pdt_application/update_detail_by_uuid",
@@ -805,7 +852,7 @@ export async function updateNote(application: PDTRequestFormType) {
 
     if (response.status === 200) {
       if (response.data.status) {
-        ElMessage.success("의뢰서가 성공적으로 작성되었습니다.");        
+        ElMessage.success("의뢰서가 성공적으로 작성되었습니다.");
       } else {
         ElMessage.error("의뢰서 작성에 실패했습니다. 잠시 후에 시도하세요");
       }

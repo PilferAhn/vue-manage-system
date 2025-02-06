@@ -1,6 +1,11 @@
 <template>
   <el-form-item :label="label" :prop="prop" :rules="rules">
-    <el-input v-model.number="internalValue" @input="updateValue" :placeholder="placeholder" :disabled="props.disable"/>
+    <el-input
+      v-model.number="internalValue"
+      @input="updateValue"
+      :placeholder="placeholder"
+      :disabled="props.disable"
+    />
   </el-form-item>
 </template>
 
@@ -14,7 +19,7 @@ const props = defineProps({
   prop: String,
   rules: Array,
   placeholder: String,
-  disable: Boolean
+  disable: Boolean,
 });
 
 const emit = defineEmits(["update:modelValue"]);
@@ -41,4 +46,8 @@ watch(
 const updateValue = () => {
   emit("update:modelValue", internalValue.value);
 };
+</script>
+
+<script lang="ts">
+export default {};
 </script>

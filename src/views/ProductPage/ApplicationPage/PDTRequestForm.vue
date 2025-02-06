@@ -204,14 +204,14 @@
           class="wide-select"
           :options="testPostionList"
         ></selectOption>
-        <selectOption
+        <SelectOptionsNew2
           v-model="applicationForm.link"
           label=""
-          prop="link"
-          placeholder="Up / Down"
-          :options="upAndDown"
+          prop="packageType"
+          placeholder="TX / RX"
+          :options="transcevierModeOptions"
           class="wide-select"
-        ></selectOption>
+        ></SelectOptionsNew2>
       </div>
 
       <selectNumberOption
@@ -283,6 +283,7 @@ import { FormInstance } from "element-plus";
 import inputText from "../../Common/InputText.vue";
 import inputNumber from "../../Common/InputNumber.vue";
 import longInputText from "../../Common/LongInputText.vue";
+import SelectOptionsNew2 from "../../Common/SelectOptionsNew2.vue";
 import selectOption from "../../Common/SelectOption.vue";
 import selectNumberOption from "../../Common/SelectNumberOption.vue";
 import pdtSample from "./PDTSample.vue";
@@ -319,7 +320,8 @@ import {
   sampleRequestMode,
   setMode,
   submitPdtApplicationForm,
-  downloadExcel
+  downloadExcel,
+  transcevierModeOptions,
 } from "./Application";
 
 const { form: applicationForm } = usePDTRequestForm();
@@ -399,4 +401,4 @@ function handleDownload() {
 
 
 </style>
-./Application1
+

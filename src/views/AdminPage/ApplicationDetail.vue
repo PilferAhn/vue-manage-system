@@ -14,7 +14,18 @@
           placeholder="의뢰번호를 입력하세요."
           class="flex-item form-item"
         ></inputText>
-        <el-button type="success" :disabled="applicationForm.status !== 'created'" @click="updateApplicationNumber(uuid.toString() , applicationForm.requestNumber, applicationForm)">의뢰 접수</el-button>
+        <el-button
+          type="success"
+          :disabled="applicationForm.status !== 'created'"
+          @click="
+            updateApplicationNumber(
+              uuid.toString(),
+              applicationForm.requestNumber,
+              applicationForm
+            )
+          "
+          >의뢰 접수</el-button
+        >
       </div>
       <div class="inline-fields">
         <el-form-item label="상태" class="flex-item form-item">
@@ -25,7 +36,17 @@
             <el-option label="측정 진행중" value="in progress"></el-option>
           </el-select>
         </el-form-item>
-        <el-button type="success" @click="updateApplicationStatus(uuid.toString(), applicationForm.requestNumber, applicationForm.status)">업데이트</el-button>
+        <el-button
+          type="success"
+          @click="
+            updateApplicationStatus(
+              uuid.toString(),
+              applicationForm.requestNumber,
+              applicationForm.status
+            )
+          "
+          >업데이트</el-button
+        >
       </div>
       <selectOption
         v-model="applicationForm.testType"
@@ -183,7 +204,7 @@
         class="form-item"
         :disable="applicationFormBoolean.temperature"
       ></inputText>
-      
+
       <el-form-item label="작성일">
         <el-col :span="11">
           <el-form-item prop="dateOfCreate">
@@ -292,7 +313,9 @@
         >
 
         <el-button type="danger" @click="handleDelete()">삭제</el-button>
-        <el-button type="success" @click="handleDownload">의뢰서 다운로드</el-button>
+        <el-button type="success" @click="handleDownload"
+          >의뢰서 다운로드</el-button
+        >
       </el-form-item>
     </div>
   </el-form>
@@ -308,7 +331,7 @@ import selectOption from "../Common/SelectOption.vue";
 import selectNumberOption from "../Common/SelectNumberOption.vue";
 import pdtSample from "../ProductPage/ApplicationPage/PDTSample.vue";
 import pdtSampleTab from "../ProductPage/ApplicationPage/PDTSampleTab.vue";
-import applicationDetail from "./ApplicationDetailSample.vue"
+import applicationDetail from "./ApplicationDetailSample.vue";
 
 import {
   applicationRules,
@@ -339,8 +362,12 @@ import {
   SampleInformation,
   getSystemFreq,
 } from "../ProductPage/ApplicationPage/Application";
-import { deleteApplicationByUuid, updateApplicationNumber, updateApplicationStatus } from "./ApplicationDetail";
-import {downloadExcel} from "../ProductPage/ApplicationPage/Application"
+import {
+  deleteApplicationByUuid,
+  updateApplicationNumber,
+  updateApplicationStatus,
+} from "./ApplicationDetail";
+import { downloadExcel } from "../ProductPage/ApplicationPage/Application";
 
 import { useRoute } from "vue-router";
 const { form: applicationForm } = usePDTRequestForm();
@@ -373,7 +400,7 @@ const formRef = ref(null);
 // });
 
 function handleDownload() {
-  downloadExcel(applicationForm)
+  downloadExcel(applicationForm);
 }
 
 watch(
@@ -399,7 +426,6 @@ function handleDelete() {
 }
 
 function handleUpdate() {
-
   formRef.value.validate((valid: boolean) => {
     if (valid) {
       console.log("Form is valid and ready for submission!");
@@ -408,7 +434,6 @@ function handleUpdate() {
       console.log("Form validation failed");
     }
   });
-  
 }
 
 const fetchApplicationDetail = async () => {
@@ -452,7 +477,7 @@ const fetchApplicationDetail = async () => {
     applicationForm.value.targetPosition =
       response.data.target_position.toUpperCase();
 
-    applicationForm.value.dateOfCreate = response.data.date_of_created
+    applicationForm.value.dateOfCreate = response.data.date_of_created;
 
     applicationForm.value.samples = response.data.samples;
     applicationForm.value.sampleQuantity = response.data.sample_quantity;

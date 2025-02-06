@@ -48,7 +48,9 @@ watch(
 );
 </script>
 
-
+<script lang="ts">
+export default {};
+</script>
 <!-- <template>
   <el-form-item :label="label" :prop="prop" :rules="rules">
     <el-select
