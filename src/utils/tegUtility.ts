@@ -2,7 +2,7 @@ import axios from "axios";
 // tegUtility.ts
 import { ref, nextTick } from "vue";
 import { ElMessage, FormInstance } from "element-plus";
-import { TegApplication, waferInformation, MeasInfo } from "./tegTypes";
+import { TegApplication, waferInformation, MeasInfo } from "../interface/teg/teg-interface";
 import { TegApplication as oldTegApplication } from "./waferMeasurementHelper";
 import { measTypes } from "./waferApplicationHelper";
 import cloneDeep from "lodash/cloneDeep";

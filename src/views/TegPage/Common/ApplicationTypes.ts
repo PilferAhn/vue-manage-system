@@ -79,7 +79,8 @@ export interface TegApplication {
   chipQuantity: string;
   maskName: string;
   isMaskChange: string;
-  isAOI: string;
+  isAoi: string;
+  isDvr: string;
   port: string;
 
   detail: string;

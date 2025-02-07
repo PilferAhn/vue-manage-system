@@ -57,3 +57,7 @@
   font-size: 1.1em;
 }
 </style>
+
+<script lang="ts">
+export default {};
+</script>

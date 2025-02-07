@@ -51,16 +51,16 @@ export const fabSilderBarList =  {
           // },
         ],
       },
-      {
-        index: "/fab/create-application2",
-        title: "투입 계획서 작성2",
-        permiss: "11",
-      },
-      {
-        index: "/fab/view-application-list-rev2",
-        title: "투입 계획서 현황2",
-        permiss: "11",
-      }
+      // {
+      //   index: "/fab/create-application2",
+      //   title: "투입 계획서 작성2",
+      //   permiss: "11",
+      // },
+      // {
+      //   index: "/fab/view-application-list-rev2",
+      //   title: "투입 계획서 현황2",
+      //   permiss: "11",
+      // }
       // {
       //   index: "/fab/mes_sample_status",
       //   title: "개발 SPL 현황 (MES)",

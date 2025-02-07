@@ -2,6 +2,7 @@
 import { useRouter } from "vue-router";
 import { ElMessageBox } from "element-plus";
 import type { TegApplication as TegApplicationInterface } from "../Common/ApplicationTypes";
+import type { TegApplication } from "../../../interface/teg/teg-interface";
 import axios from "axios";
 
 export const priorityList = [1, 2, 3, 4, 5];
@@ -24,7 +25,7 @@ export async function getApplicationDetail(uuid, tegApplication) {
   }
 }
 
-export async function cloneApplicationDetail(uuid : string, tegApplication : TegApplicationInterface) {
+export async function cloneApplicationDetail(uuid : string, tegApplication : TegApplication) {
   if (uuid) {
     try {
       const response = await axios.get(
@@ -45,6 +46,7 @@ export async function cloneApplicationDetail(uuid : string, tegApplication : Teg
       tegApplication["maskName"] = response.data["maskName"]      
       tegApplication["isMaskChange"] = response.data["isMaskChange"]      
       tegApplication["port"] = response.data["port"]
+      tegApplication["isDvr"] = response.data["is_dvr"]
 
       tegApplication["shortPatternNo"] = response.data["shortPatternNo"]
       tegApplication["thruPatternNo"] = response.data["thruPatternNo"]

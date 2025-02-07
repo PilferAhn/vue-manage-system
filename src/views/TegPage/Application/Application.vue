@@ -161,7 +161,7 @@
           <el-row :gutter="20">
             <el-col :span="12">
               <select-option
-                v-model="tegApplicationForm.isAOI"
+                v-model="tegApplicationForm.isAoi"
                 label="AOI 여부"
                 prop="isAOI"
                 :rules="null"
@@ -169,6 +169,16 @@
                 :options="maskChanges"
               ></select-option>
             </el-col>
+            <!-- <el-col :span="12">
+              <select-option
+                v-model="tegApplicationForm.isDvr"
+                label="DVR 여부"
+                prop="isAOI"
+                :rules="null"
+                placeholder="AOI 여부"
+                :options="maskChanges"
+              ></select-option>
+            </el-col> -->
           </el-row>
           <el-row :gutter="20">
             <el-col :span="12">
@@ -305,6 +315,7 @@ import type {
   TegApplication as TegApplicationInterface,
   TestTypeOptions as TestTypeOptionsInterface,
 } from "../Common/ApplicationTypes";
+import type { TegApplication } from "../../../interface/teg/teg-interface";
 import { tegApplicationRules } from "./../../../utils/tegApplicationRules";
 import { submitForm, download } from "./../../../utils/tegUtility";
 
@@ -328,7 +339,7 @@ import SelectOptionsNew2 from "../../Common/SelectOptionsNew2.vue";
 
 // Define props to receive processData
 const props = defineProps<{
-  applicationData: TegApplicationInterface;
+  applicationData: TegApplication;
   applicationType: string;
 }>();
 
