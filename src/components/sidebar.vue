@@ -164,7 +164,7 @@ const items = [
   },
   fabSilderBarList,
   whcSilderBarList,
-  dv2SilderBarList,
+  // dv2SilderBarList,
   // moduleSilderBarList,
   {
     icon: "Edit",
