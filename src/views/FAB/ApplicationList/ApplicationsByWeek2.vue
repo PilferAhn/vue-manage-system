@@ -213,8 +213,8 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Assy In 예정일" :align="'center'" width="105">
-      </el-table-column>
+      <!-- <el-table-column label="Assy In 예정일" :align="'center'" width="105">
+      </el-table-column> -->
 
       <el-table-column label="Assy In" :align="'center'" width="110">
         <template #default="scope">

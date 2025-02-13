@@ -6,6 +6,7 @@ import { whcRouteIndexList } from "./whc-router";
 import { modulesRouteIndexList } from "./modules-router";
 import { tegRouteIndexList } from "./teg-router";
 import { pdtRouteIndexList } from "./pdt-router";
+import { dv2RouteIndexList } from "./dv2-router";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 
@@ -810,6 +811,7 @@ const routes: RouteRecordRaw[] = [
       },
       ...fabRouteIndexList,
       ...whcRouteIndexList,
+      ...dv2RouteIndexList,
       // ...modulesRouteIndexList,
       // ...tegRouteIndexList,
       // ...pdtRouteIndexList,

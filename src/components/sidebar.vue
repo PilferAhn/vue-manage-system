@@ -107,6 +107,8 @@ import { permission, title } from "process";
 import { fabSilderBarList } from "./fab-sidebar";
 import { whcSilderBarList } from "./whc-sidebar";
 import { moduleSilderBarList } from "./module-sidebar";
+import { dv2SilderBarList } from "./dv2-sidebar";
+
 const items = [
   {
     icon: "Odometer",
@@ -162,6 +164,7 @@ const items = [
   },
   fabSilderBarList,
   whcSilderBarList,
+  dv2SilderBarList,
   // moduleSilderBarList,
   {
     icon: "Edit",
