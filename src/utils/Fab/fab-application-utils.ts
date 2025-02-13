@@ -5,7 +5,7 @@ import type {
 import { ref, reactive } from "vue";
 import axios from "axios";
 import type { FabApplicationInterface } from "../../interface/fab";
-import { convertKeysToCamelCase, convertKeysToPEP8 } from "./../key-converter";
+import { convertKeysToCamelCase, convertKeysToPEP8, convertPep8ToCamelCase2 } from "./../key-converter";
 import {
   SawType,
   FabRequestForm,
@@ -14,7 +14,11 @@ import {
 } from "../../interface/fab-application-rev2";
 import User from "../../views/user.vue";
 import { ElMessage, ElNotification } from "element-plus";
-import { sendGetRequest, sendPostRequest } from "../httpProtocol";
+import {
+  sendGetRequest,
+  sendGetRequest2,
+  sendPostRequest,
+} from "../httpProtocol";
 import { formatDateTime } from "../date-utils";
 import { OptionInterface } from "../../interface/option";
 import { Option } from "element-plus/es/components/select-v2/src/select.types";
@@ -31,7 +35,8 @@ export function initFabApplication3(bom: Bom) {
 
     designerConfirm: false,
     weekNumber: undefined,
-    isAoi: false,
+    isAoi: true,
+    isDvr: false,
     quantity: 0,
     waferType: "",
     wantedFabStartDate: undefined,
@@ -45,7 +50,6 @@ export function initFabApplication3(bom: Bom) {
     isNeedSio2Seed: false,
     status: "",
     createdDate: undefined,
-    bandCombinationId: "",
     isActive: true,
     note: "",
     code: "",
@@ -60,9 +64,32 @@ export function initFabApplication3(bom: Bom) {
     requester: { userName: "" },
     designer: { userName: "" },
     idtType: undefined,
-
+    is_idt_xoi: false,
+    is_need_extra_shot: false,
+    is_tone_inverted: false,
     bom: bom,
-    // bom : null
+    photo: {
+      photoProcesses: [
+        {
+          processName: "IDT",
+          machineName: "",
+          reticleName: "",
+          isMutable: true,
+        },
+        {
+          processName: "PAD",
+          machineName: "Nikon",
+          reticleName: "",
+          isMutable: false,
+        },
+        {
+          processName: "SiO",
+          machineName: "Nikon",
+          reticleName: "",
+          isMutable: false,
+        },
+      ],
+    },
 
     chip: {
       hori: 0,
@@ -97,27 +124,30 @@ export function initFabApplication2() {
 
     designerConfirm: false,
     weekNumber: undefined,
-    isAoi: false,
+    isAoi: true,
+    isDvr: false,
     quantity: 10,
-    waferType: "",
+    waferType: "HS",
+    band: "B1",
+    filterType: "Single",
     wantedFabStartDate: undefined,
     wantedFabFinishDate: undefined,
     hsTrimingTarget: null,
     destinationId: "WHC",
-    packageId: undefined,
+    packageId: "WLP",
     priorityId: "S",
     group: "",
     purpose: "의뢰서 테스트",
     isNeedSio2Seed: false,
     status: "",
     createdDate: undefined,
-    bandCombinationId: "",
     isActive: true,
     note: "",
     code: "",
     waferId: undefined,
     waferAngle: undefined,
     waferThickness: undefined,
+
     idtMachineName: undefined,
     idtId: null,
     pstId: null,
@@ -127,6 +157,28 @@ export function initFabApplication2() {
     designer: { userName: "" },
     idtType: undefined,
 
+    photo: {
+      photoProcesses: [
+        {
+          processName: "IDT",
+          machineName: "",
+          reticleName: "",
+          isMutable: true,
+        },
+        {
+          processName: "PAD",
+          machineName: "Nikon",
+          reticleName: "",
+          isMutable: false,
+        },
+        {
+          processName: "SiO",
+          machineName: "Nikon",
+          reticleName: "",
+          isMutable: false,
+        },
+      ],
+    },
     bom: {
       finishedProductSize: null,
       size: undefined,
@@ -153,10 +205,10 @@ export function initFabApplication2() {
       verti: 0,
     },
 
-    chipX: 0,
-    chipY: 0,
-    shotX: 0,
-    shotY: 0,
+    chipX: 1,
+    chipY: 2,
+    shotX: 3,
+    shotY: 4,
 
     hsType: null,
     idtLayers: [],
@@ -173,9 +225,9 @@ const serverUrl = "http://10.29.11.124:40000";
 
 export async function receivefilterTypeList(): Promise<OptionInterface[]> {
   const fileterTypeList = ref<OptionInterface[]>([]);
-  const data = await sendGetRequest(
-    serverUrl,
-    "fab_monitoring_rev2/get_fab_filter_types_list"
+
+  const data = await sendGetRequest2(
+    serverUrl + "/fab_monitoring_rev2/get_fab_filter_types_list"
   );
   for (let i = 0; i < data.length; i++) {
     const temp = convertKeysToCamelCase(data[i]);
@@ -191,17 +243,22 @@ export async function receivefilterTypeList(): Promise<OptionInterface[]> {
 
 export async function receivePriorityList(): Promise<OptionInterface[]> {
   const priorityList = ref<OptionInterface[]>([]);
-  const data = await sendGetRequest(
-    serverUrl,
-    "fab_monitoring_rev2/get_fab_priorities_list"
-  );
-  for (let i = 0; i < data.length; i++) {
-    const temp = convertKeysToCamelCase(data[i]);
-    priorityList.value.push({
-      key: i,
-      label: temp.priorityId,
-      value: temp.priorityId,
-    });
+
+  try {
+    const data = await sendGetRequest2(
+      serverUrl + "/fab_monitoring_rev2/get_fab_priorities_list"
+    );
+
+    for (let i = 0; i < data.length; i++) {
+      const temp = convertKeysToCamelCase(data[i]);
+      priorityList.value.push({
+        key: i,
+        label: temp.priorityId,
+        value: temp.priorityId,
+      });
+    }
+  } catch (error) {
+    console.error("ㄹ 목록 가져오기 실패:", error);
   }
 
   return priorityList.value;
@@ -209,10 +266,10 @@ export async function receivePriorityList(): Promise<OptionInterface[]> {
 
 export async function receiveDestinationList(): Promise<OptionInterface[]> {
   const destinationList = ref<OptionInterface[]>([]);
-  const data = await sendGetRequest(
-    serverUrl,
-    "fab_monitoring_rev2/get_fab_destinations_list"
+  const data = await sendGetRequest2(
+    serverUrl + "/fab_monitoring_rev2/get_fab_destinations_list"
   );
+
   for (let i = 0; i < data.length; i++) {
     const temp = convertKeysToCamelCase(data[i]);
     destinationList.value.push({
@@ -221,16 +278,14 @@ export async function receiveDestinationList(): Promise<OptionInterface[]> {
       value: temp.destinationId,
     });
   }
-
   return destinationList.value;
 }
 
 export async function getBandList(): Promise<band[]> {
   const bandList = ref<band[]>([]);
 
-  const data = await sendGetRequest(
-    "http://10.29.11.124:40000/band",
-    "get_band_combinations_list"
+  const data = await sendGetRequest2(
+    serverUrl + "/band/get_band_combinations_list"
   );
 
   for (let i = 0; i < data.length; i++) {
@@ -249,7 +304,6 @@ export function allocFabFormToTegForm(
       tegApp.hasOwnProperty(key) && // tegApp에 해당 키가 존재하는지 확인
       typeof (fabApp as any)[key] === typeof (tegApp as any)[key] // 타입 비교
     ) {
-
       tegApp[key] = fabApp[key];
       // (tegApp as any)[key] = (fabApp as any)[key]; // 값을 복사
     }
@@ -274,7 +328,7 @@ export async function getAppRev2ByProductName(
   productName: string
 ): Promise<FabRequestForm> {
   const form = new FormData();
-  const url = "http://10.29.11.124:40000/fab_monitoring_rev2/get_fab_request";
+  const url = "/fab_monitoring_rev2/get_fab_request";
   form.append("product_name", productName);
 
   try {
@@ -302,7 +356,7 @@ export async function getApplicationList(
   // formData.append("observer_id", userId);
 
   const data = (await sendPostRequest(
-    "http://10.29.11.124:40000/fab_monitoring_rev2/get_fab_requests_list",
+    serverUrl + "/fab_monitoring_rev2/get_fab_requests_list",
     formData
   )) as object[];
 
@@ -314,6 +368,9 @@ export async function getApplicationList(
 }
 
 export function validateIdtLayers(layers: Layer[]): boolean {
+  if (layers === null) {
+    return true;
+  }
   if (layers.length > 0) {
     for (const layer of layers) {
       // layer.thinckness 값이 undefined, null, NaN 또는 0보다 작으면 false 반환
@@ -327,7 +384,6 @@ export function validateIdtLayers(layers: Layer[]): boolean {
 }
 
 export function validatingForm(applciation: FabRequestForm) {
-
   if (!validateIdtLayers(applciation.idtLayers)) {
     ElMessage({
       message: "IDT 레이어의 두께 값이 유효하지 않습니다. 값을 확인해주세요.",
@@ -344,7 +400,10 @@ export function validatingForm(applciation: FabRequestForm) {
     return false;
   }
 
-  if (!validateIdtLayers(applciation.tcLayers)) {
+  if (
+    ["NS", "HS"].includes(applciation.waferType) &&
+    !validateIdtLayers(applciation.tcLayers)
+  ) {
     ElMessage({
       message: "TC 레이어의 두께 값이 유효하지 않습니다. 값을 확인해주세요.",
       type: "error",
@@ -362,31 +421,25 @@ export function validatingForm(applciation: FabRequestForm) {
  * @param type - A string parameter (not currently used in logic but may be relevant in future updates).
  */
 export async function dvrChecker(application: FabRequestForm, type: string) {
-  if(application.isDvr){
-
-    if(application.note === ""){
-      application.note = "DVR 해당 기종입니다."  
+  if (application.isDvr) {
+    if (application.note === "") {
+      application.note = "DVR 해당 기종입니다.";
+    } else {
+      application.note += "\nDVR 해당 기종입니다.";
     }
-    else{
-      application.note += "\nDVR 해당 기종입니다."
-    }    
-  }
-  else{
-
-    let lines = application.note.split("\n")
-    let newNote = ""
-    for(let i = 0 ; i < lines.length; i++){
-      if(lines[i] !== "DVR 해당 기종입니다."){
-
-        if(i + 1 == lines.length){
-          newNote += lines[i]
-        }
-        else{
-          newNote += lines[i] + "\n"
+  } else {
+    let lines = application.note.split("\n");
+    let newNote = "";
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i] !== "DVR 해당 기종입니다.") {
+        if (i + 1 == lines.length) {
+          newNote += lines[i];
+        } else {
+          newNote += lines[i] + "\n";
         }
       }
     }
-    application.note = newNote
+    application.note = newNote;
   }
 }
 
@@ -396,27 +449,26 @@ export async function dvrChecker(application: FabRequestForm, type: string) {
  * @param application - The FabRequestForm object containing application details.
  * @param type - A string parameter (not currently used in logic but may be relevant in future updates).
  */
-export async function packageChecker(application: FabRequestForm, type: string) {
-
-  if(application.packageId !== "CSP"){
-    application.bom = null
+export async function packageChecker(
+  application: FabRequestForm,
+  type: string
+) {
+  if (application.packageId !== "CSP") {
+    application.bom = null;
   }
 }
 
-
 export async function sendingForm(application: FabRequestForm, type: string) {
   if (validatingForm(application)) {
-
-    
     let url = ""; // 조건문 외부에서 선언
     if (type === "submit") {
-      url = "http://10.29.11.124:40000/fab_monitoring_rev2/create_fab_request";
+      url = serverUrl + "/fab_monitoring_rev2/create_fab_request";
     } else {
-      url = "http://10.29.11.124:40000/fab_monitoring_rev2/update_fab_request";
+      url = serverUrl + "/fab_monitoring_rev2/update_fab_request";
     }
 
-    dvrChecker(application , type)
-    packageChecker(application , type)
+    dvrChecker(application, type);
+    packageChecker(application, type);
     try {
       if (application.wantedFabFinishDate !== undefined) {
         application.wantedFabFinishDate = formatDateTime(
@@ -430,8 +482,9 @@ export async function sendingForm(application: FabRequestForm, type: string) {
       }
       const app = convertKeysToPEP8(application);
       const response = await axios.post(url, app);
-
-      Object.assign(application, convertKeysToCamelCase(response.data));
+      console.log(response.data);
+      console.log(convertPep8ToCamelCase2(response.data));
+      Object.assign(application, convertPep8ToCamelCase2(response.data));
 
       // 성공 알림
       ElNotification({

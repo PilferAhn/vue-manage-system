@@ -162,7 +162,7 @@ const items = [
   },
   fabSilderBarList,
   whcSilderBarList,
-  // moduleSilderBarList,
+  moduleSilderBarList,
   {
     icon: "Edit",
     index: "5",

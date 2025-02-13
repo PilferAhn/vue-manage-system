@@ -1,4 +1,5 @@
 import { reactive } from "vue";
+import { OptionInterface } from "../interface/option";
 
 // Exporting the wafer size list for use in other files
 export const waferSizeList: string[] = [
@@ -20,6 +21,36 @@ export const measTypes: string[] = [
   "Delay Line",
   "Harmonic",
 ];
+
+export const packageList : OptionInterface[] = [
+  { key : 1,
+    value : "CSP",
+    label : "CSP"
+  },
+  { key : 2,
+    value : "WLP",
+    label : "WLP"
+  },
+  { key : 3,
+    value : "BDMP",
+    label : "BDMP"
+  }
+]
+
+export const waferTypeList : OptionInterface[] = [
+  { key : 1,
+    value : "TC",
+    label : "TC"
+  },
+  { key : 2,
+    value : "HS",
+    label : "HS"
+  },
+  { key : 3,
+    value : "NS",
+    label : "NS"
+  }
+]
 
 interface shotInformation {
   shots: string[];
@@ -69,6 +100,8 @@ export interface TegApplication{
   maskName: string;
   isMaskChange: string;
   isAOI : string;
+  isDvr? : boolean;
+  packageType? : string;
   port: string;
 
   detail: string;
@@ -78,8 +111,9 @@ export interface TegApplication{
   openPatternNo: string;
   rawPatternNo: string;
   preTegPatternMeasShot : string;
-
+  waferType? : string;
   waferQuantity: number;
+  
   waferIDList: string[];
   waferSize: string;
   activeShots: string[];
@@ -120,6 +154,7 @@ export const defaultTegApplicationForm = (): TegApplication => reactive({
   maskName: "",
   isMaskChange: "",
   isAOI: "",
+  isDvr : false,
   port: "",
   detail: "",
   shortPatternNo: "",

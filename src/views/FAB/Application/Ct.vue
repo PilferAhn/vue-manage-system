@@ -3,7 +3,6 @@
     class="tc-selection-container"
     v-if="props.sawType.tcTypes && props.sawType.tcTypes.length > 0"
   >
-    
     <!-- Thickness 선택 -->
     <section class="section">
       <h3 class="section-title">SiO2</h3>
@@ -24,12 +23,7 @@
 
     <!-- Layer 테이블 -->
     <section class="section">
-      <h3 class="section-title">Layer 설정</h3>
-      <el-table
-        :data="layerOptions"
-        stripe        
-        class="custom-table"
-      >
+      <el-table :data="layerOptions" stripe class="custom-table">
         <!-- Index 컬럼 -->
         <el-table-column
           prop="idx"
@@ -58,13 +52,16 @@
         </el-table-column>
       </el-table>
     </section>
-
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, watch, onMounted } from "vue";
-import type { SawType, FabRequestForm, Layer } from "../../../interface/fab-application-rev2";
+import type {
+  SawType,
+  FabRequestForm,
+  Layer,
+} from "../../../interface/fab-application-rev2";
 import { getLayerOptions } from "../../../utils/Fab/fab-application-tc-utils";
 
 // Props 정의
@@ -77,16 +74,24 @@ const layerOptions = ref<Layer[]>([]);
 
 onMounted(() => {
   if (Object.keys(props.sawType).length !== 0) {
-    layerOptions.value = props.fabApplication.tcLayers
+    layerOptions.value = props.fabApplication.tcLayers;
   }
 });
 
 // waferType 변경 감지
 watch(
   () => props.fabApplication.waferType,
-  () => {
-    props.fabApplication.pstId = undefined;
-    props.fabApplication.tcLayers = [];
+  (newVal) => {
+    if (newVal === "TC") {
+      if (props.sawType.tcTypes.length == 1) {
+        props.fabApplication.tcId = props.sawType.tcTypes[0].tcId;
+      } else {
+        props.fabApplication.tcLayers = [];
+      }
+    } else {
+      props.fabApplication.tcId = null;
+      props.fabApplication.tcLayers = [];
+    }
   }
 );
 
@@ -94,8 +99,10 @@ watch(
 watch(
   () => props.fabApplication.tcId,
   (newVal) => {
-    layerOptions.value = getLayerOptions(newVal, props.sawType.tcTypes);
-    props.fabApplication.tcLayers = layerOptions.value
+    if (newVal !== undefined && newVal !== null) {
+      layerOptions.value = getLayerOptions(newVal, props.sawType.tcTypes);
+      props.fabApplication.tcLayers = layerOptions.value;
+    }
   }
 );
 </script>

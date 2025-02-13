@@ -10,7 +10,7 @@ import Application from "./Application.vue";
 import { initTegApplication2, initTegApplication } from "../Common/utility";
 import type { TegApplication as TegApplicationInterface } from "../Common/ApplicationTypes";
 
-const application: TegApplicationInterface = initTegApplication();
+const application: TegApplicationInterface = initTegApplication2();
 </script>
 
 <style></style>

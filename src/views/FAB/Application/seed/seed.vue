@@ -1,12 +1,19 @@
 <template>
   <div class="deposition-container">
+    <section class="section">
+      <idt-process
+        :fab-application="props.fabApplication"
+        :saw-type="props.sawType"
+      />
+    </section>
+    <br />
     <div class="align-center">
-      <h3 class="section-title">Seed 정보</h3>
+      <h3 class="section-title">SiO2Seed</h3>
       <!-- Seed 버튼 -->
     </div>
     <br />
     <el-checkbox-button size="large" v-model="isSeedActive"
-      >Seed 정보 활성화</el-checkbox-button
+      >Activate Seed Information</el-checkbox-button
     >
     <!-- Seed 버튼이 활성화된 경우에만 정보 표시 -->
     <section v-if="isSeedActive" class="section">
@@ -18,8 +25,8 @@
           :value="opt.key"
         ></el-option>
       </el-select>
-      <br>
-      <br>
+      <br />
+      <br />
       <el-table :data="props.fabApplication.seedLayers">
         <el-table-column label="IDX" prop="idx"></el-table-column>
         <el-table-column label="Material" prop="material"></el-table-column>
@@ -41,6 +48,7 @@ import {
   type SawType,
 } from "../../../../interface/fab-application-rev2";
 import type { OptionInterface } from "../../../../interface/option";
+import IdtProcess from "../IdtProcess.vue";
 
 // props 정의
 const props = defineProps<{

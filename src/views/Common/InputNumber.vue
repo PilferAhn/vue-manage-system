@@ -14,7 +14,7 @@ import { ref, watch, computed } from "vue";
 import { ElInput } from "element-plus";
 
 const props = defineProps({
-  modelValue: Number,
+  modelValue: [Number, String], // ✅ 숫자 또는 문자열 허용
   label: String,
   prop: String,
   rules: Array,
@@ -23,28 +23,27 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update:modelValue"]);
-const internalValue = ref(props.modelValue);
+const internalValue = ref(props.modelValue?.toString() || ""); // ✅ 문자열로 초기화
 
 watch(
   () => props.modelValue,
   (newValue) => {
-    if (newValue !== internalValue.value) {
-      internalValue.value = newValue;
+    if (newValue?.toString() !== internalValue.value) {
+      internalValue.value = newValue?.toString() || "";
     }
   }
 );
 
 const computedDisable = computed(() => props.disable);
 
-watch(
-  () => props.disable,
-  (newValue) => {
-    // console.log(`disable changed to ${newValue}`);
-  }
-);
+const handleInput = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  internalValue.value = target.value; // ✅ 문자열 그대로 유지하여 입력 방해 X
+};
 
 const updateValue = () => {
-  emit("update:modelValue", internalValue.value);
+  const numValue = parseFloat(internalValue.value);
+  emit("update:modelValue", isNaN(numValue) ? "" : numValue); // ✅ 블러 시 숫자로 변환
 };
 </script>
 

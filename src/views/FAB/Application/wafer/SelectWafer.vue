@@ -1,10 +1,10 @@
 <template>
   <section class="section">
-    <h3 class="section-title">Wafer 선택</h3>
+    <h3 class="section-title">Wafer</h3>
     <br>
     <el-select
       v-model="props.fabApplication.waferId"
-      placeholder="Wafer 조건 선택"
+      placeholder="Select Wafer"
       class="custom-select"
       clearable
     >
@@ -54,8 +54,12 @@ watch(
     props.fabApplication.waferId = undefined
     availableWafer.value = []
     availableWafer.value = createWaferOptions(props.sawType);
+    
+    if(availableWafer.value.length == 1){
+      props.fabApplication.waferId = availableWafer.value[0].key
+    }
     props.fabApplication.waferAngle = undefined
-    props.fabApplication.hsTrimingTarget = null
+    props.fabApplication.hsTrimingTarget = null    
   }
 );
 

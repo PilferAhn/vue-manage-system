@@ -25,9 +25,19 @@ export interface Bom {
   className? : string
 }
 
+export interface Photo {
+  photoProcesses? : PhotoProcess[]
+}
 
-
+export interface PhotoProcess{
+  processName : string
+  machineName? : string
+  reticleName? : string
+  isMutable? : boolean
+}
+ 
 export interface FabRequestForm {
+  photo? : Photo;
   productName?: string;
   requesterId?: string;
   designerId?: string;
@@ -44,7 +54,8 @@ export interface FabRequestForm {
   packageId?: string;
   priorityId?: string;
   group?: string;
-  bandCombinationId? : string;
+  bandGroupId? : string;
+  band? : string;
   status?: string;
   createdDate?: string;
   trimming?: string;
@@ -58,6 +69,7 @@ export interface FabRequestForm {
   waferAngle?: number;
   waferThickness?: number;
   hsTrimingTarget? : number | null;
+  freqRange? : string;
   idtId?: number;
   hsId? : number;
   pstId?: number;
@@ -69,6 +81,10 @@ export interface FabRequestForm {
   passivationId? : number
   bom? : Bom
   wafer? : FabWafer;
+  isAllowBridge? : boolean;
+  is_idt_xoi? : boolean;
+  is_need_extra_shot? : boolean;
+  is_tone_inverted? : boolean;
   chip? : {
     hori : number
     verti : number
@@ -108,7 +124,7 @@ export interface band {
 export interface passivationType {
   passivationId : number;
   name : string;
-  layers? : Layer[];
+  layers? : Layer[];  
 }
 
 export interface seedType {
@@ -141,6 +157,7 @@ export interface PstType {
   sawTypeId?: string;
   name?: string;
   layers?: PstLayer[];
+  description? : string;
 }
 
 export interface PstLayer {
@@ -180,8 +197,17 @@ export interface FabWafer {
   waferType?: string;
   waferCompany?: string;
   size?: number;
-  recommendations?: FabWaferRecommendation[];
+  recommendedThicknesses?: FabRecommendationWaferThickness[];
+  recommendedAngles? : FabRecommendationWaferAngle[];
   hsTypes? : HsType[]
+}
+
+export interface FabRecommendationWaferThickness {
+  waferThickness: number;
+}
+
+export interface FabRecommendationWaferAngle {
+  waferAngle: number;
 }
 
 export interface FabWaferRecommendation {

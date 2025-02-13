@@ -297,7 +297,8 @@ export const sendFormData = async (url: string, processData: ProcessData) => {
         ? formatDateForServer(processData.wantedFabFinishDate)
         : null,
     };
-    processData.destination = processData.destination + "-" + processData.packageType
+    processData.destination =
+      processData.destination + "-" + processData.packageType;
     const convertedData = convertToPep8(formattedData);
     const response = await axios.post(url, convertedData, {
       headers: {
@@ -348,8 +349,8 @@ export const packageList = [
 ];
 
 export const destinationList = [
-  { key : "WTC", label : "WTC", value : "WTC"},
-  { key : "WHC", label : "WHC", value : "WHC"},
+  { key: "WTC", label: "WTC", value: "WTC" },
+  { key: "WHC", label: "WHC", value: "WHC" },
   { key: "개발전달", label: "개발전달", value: "개발전달" },
 ];
 
@@ -364,8 +365,7 @@ export const filterTypeOptions = [
   { key: "기타", label: "기타", value: "기타" },
 ];
 
-
-export const codeList :OptionInterface[] = [
+export const codeList: OptionInterface[] = [
   { key: 1, label: "C", value: "C" },
   { key: 2, label: "H", value: "H" },
 ];
@@ -387,4 +387,10 @@ export const machineList = [
   { key: "아넬바#1", label: "아넬바#1", value: "아넬바#1" },
   { key: "아넬바#2", label: "아넬바#2", value: "아넬바#2" },
   { key: "신크론", label: "신크론", value: "신크론" },
+];
+
+export const freqRangeList: OptionInterface[] = [
+  { key: 0, value: "Low", label: "Low(1GHz 이하)" },
+  { key: 1, value: "Mid", label: "Mid(1GHz ~ 2.3GHz)" },
+  { key: 2, value: "High", label: "High(2.3GHz ~ 2.7GHz)" },
 ];

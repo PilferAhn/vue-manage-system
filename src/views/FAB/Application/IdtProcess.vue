@@ -4,7 +4,7 @@
     v-if="['NS', 'HS'].includes(props.fabApplication.waferType)"
     class="section"
   >
-    <h3>공정 정보[HS / NS]</h3>    
+    <h3>Extra Process Information [HS / NS]</h3>    
     <!-- <div v-if="props.fabApplication.packageId === 'CSP'" class="checkbox-group"> -->
     <div class="checkbox-group">
       <el-checkbox
@@ -12,7 +12,7 @@
         label="브릿지"
       ></el-checkbox>
       <el-checkbox
-        v-model="props.sawType.isAllowBridge"
+        v-model="props.fabApplication.is_idt_xoi"
         label="IDT-Oxi"
       ></el-checkbox>      
       <span
@@ -21,22 +21,22 @@
           props.fabApplication.idtProcessId === 'Lift-off'
         "
       >
-        <el-checkbox
+        <!-- <el-checkbox
           v-model="props.sawType.isAllowBridge"
           label="Dual IDT"
         ></el-checkbox>
         <el-checkbox
-          v-model="props.sawType.isAllowBridge"
+          v-model="props.fabApplication.isAllowBridge"
           label="산포 개선 노광량 사용"
-        ></el-checkbox>
+        ></el-checkbox> -->
       </span>
 
       <el-checkbox
-        v-model="props.sawType.isAllowBridge"
+        v-model="props.fabApplication.is_need_extra_shot"
         label="TEG Shot 추가(더블샷)"
       ></el-checkbox>
       <el-checkbox
-        v-model="props.sawType.isAllowBridge"
+        v-model="props.fabApplication.is_idt_xoi"
         label="PAD 6um 적용(톤반전)"
       ></el-checkbox>
     </div>
@@ -54,7 +54,7 @@ import type {
 const props = defineProps<{
   fabApplication: FabRequestForm;
   sawType: SawType;
-  idtType: IdtType;
+  
 }>();
 </script>
 

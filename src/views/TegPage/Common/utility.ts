@@ -44,7 +44,7 @@ export const tegTypes = ref([
 export const initTegApplication2 = (): TegApplicationInterface =>
   reactive({
     uuid: "",
-    designer: "",
+    designer: "안지민",
     requester: "",
     purpose: "신규 의뢰서 양식 테스트",
     lotID: "NCHDE04703",
@@ -64,6 +64,9 @@ export const initTegApplication2 = (): TegApplicationInterface =>
     preTegPatternMeasShot: "",
     waferQuantity: 0,
     waferIDList: [],
+    waferType : "NS",
+    packageType : "CSP",
+    isDvr:true,
     waferSize: "",
     activeShots: [],
     measInfo: [],
@@ -99,6 +102,8 @@ export const initTegApplication = (): TegApplicationInterface =>
     maskName: "",
     isMaskChange: "",
     isAOI: "",
+    isDvr : true,
+    waferType : null,
     port: "",
     detail: "",
     shortPatternNo: "",

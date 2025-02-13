@@ -58,6 +58,11 @@ onMounted(async () => {
   }
 
   processDataArray.value.forEach((processData, index) => {
+
+    if(processData.modelName === "X733EHS@2"){
+      console.log(processData)
+    }
+
     if (["WHC_CSP", "WHC-CSP"].includes(processData["destination"])) {
       whcCsp.value.push(processData);
     } else if (

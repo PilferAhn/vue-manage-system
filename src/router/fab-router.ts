@@ -26,6 +26,18 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
       ),
   },
   {
+    path: "/fab/create-application3",
+    name: "FabApplication3",
+    meta: {
+      title: "새로운 의뢰서 작성",
+      permiss: "11",
+    },
+    component: () =>
+      import(
+        /* webpackChunkName: "table" */ "../views/FAB/Application/ApplicationTemplate2.vue"
+      ),
+  },
+  {
     path: "/fab/feb-application-list",
     name: "FabApplicationList",
     meta: {

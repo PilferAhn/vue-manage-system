@@ -1,24 +1,30 @@
 <template>
   <el-row :gutter="20" class="demo-form-inline">
-    <el-col :span="12">
-      <el-form-item label="개발자">
+    <el-col :span="6">
+      <el-form-item label="Designer">
         <el-autocomplete
-          v-model="props.fabApplication.designer.userName"          
+          v-model="props.fabApplication.designer.userName"
           placeholder="개발자를 입력하세요"
           :fetch-suggestions="
             (queryString, cb) => querySearch(queryString, cb, 'designer')
           "
           @select="(item) => handleSelect(item, 'designer')"
           value-key="label"
-          class="wide-select"          
+          class="wide-select"
         ></el-autocomplete>
       </el-form-item>
     </el-col>
-    <el-form-item label="개발자 ID" :prop="props.designerProp">
-      <el-input v-model="props.fabApplication.designer.id" disabled style="width:220px"></el-input>
-    </el-form-item>
-    <el-col :span="12">
-      <el-form-item label="의뢰자">
+    <el-col :span="6">
+      <el-form-item label="Desinger ID" :prop="props.designerProp">
+        <el-input
+          v-model="props.fabApplication.designer.id"
+          disabled
+          style="width: 220px"
+        ></el-input>
+      </el-form-item>
+    </el-col>
+    <el-col :span="6">
+      <el-form-item label="Requester">
         <el-autocomplete
           v-model="props.fabApplication.requester.userName"
           placeholder="의뢰자를 입력하세요"
@@ -31,9 +37,15 @@
         ></el-autocomplete>
       </el-form-item>
     </el-col>
-    <el-form-item label="의뢰자 ID" :prop="'requesterId'">
-      <el-input v-model="props.fabApplication.requester.id" disabled style="width:220px"></el-input>
-    </el-form-item>
+    <el-col :span="6">
+      <el-form-item label="Requester ID" :prop="'requesterId'">
+        <el-input
+          v-model="props.fabApplication.requester.id"
+          disabled
+          style="width: 220px"
+        ></el-input>
+      </el-form-item>
+    </el-col>
   </el-row>
 </template>
 
@@ -46,21 +58,21 @@ import type { User } from "../../interface/user";
 const { userOptions } = useUserOptions();
 const props = defineProps<{
   fabApplication: FabRequestForm;
-  designerProp : string,
-  requesterProp : string,
+  designerProp: string;
+  requesterProp: string;
 }>();
 
 watch(
   () => props.fabApplication.designer.id,
   (newVal, oldVal) => {
-    props.fabApplication.designerId = newVal
+    props.fabApplication.designerId = newVal;
   }
 );
 
 watch(
   () => props.fabApplication.requester.id,
   (newVal, oldVal) => {
-    props.fabApplication.requesterId = newVal
+    props.fabApplication.requesterId = newVal;
   }
 );
 
@@ -106,7 +118,7 @@ const handleSelect = (
 }
 
 .wide-select {
-  width: 100%;  
+  width: 100%;
 }
 </style>
 

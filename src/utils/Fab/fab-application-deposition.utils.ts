@@ -18,7 +18,7 @@ export function getIdtTypeByIdtId(idtTypes: IdtType[], idtId: number) {
 export function genIdtProcessOptions(idtTypes: IdtType[], idtId: number) {
   // const idx = idtId.toString();
   const idtProcesses = ref<idtProcess[]>();
-  idtProcesses.value = idtTypes[idtId-1].idtProcesses
+  idtProcesses.value = idtTypes[idtId - 1].idtProcesses;
   const options = ref<OptionInterface[]>([]);
 
   for (let i = 0; i < idtProcesses.value.length; i++) {
@@ -27,10 +27,10 @@ export function genIdtProcessOptions(idtTypes: IdtType[], idtId: number) {
       label: idtProcesses.value[i].idtProcessId,
       value: idtProcesses.value[i].idtProcessId,
     };
-    options.value.push(temp)
+    options.value.push(temp);
   }
 
-  return options.value
+  return options.value;
 }
 
 export function generateIdtOptions(idtTypes: IdtType[]) {
@@ -43,6 +43,31 @@ export function generateIdtOptions(idtTypes: IdtType[]) {
       value: idtType.idtId.toString(),
     };
     options.value.push(temp);
+  });
+
+  return options.value;
+}
+
+export function generateIdtOptions2(idtTypes: IdtType[], idtProcessId: string) {
+  const options = ref<OptionInterface[]>([]);
+
+  idtTypes.forEach((idtType, index) => {
+    
+    let isValid = false;
+    idtType.idtProcesses.forEach((idtProcess, index) => {
+      if (idtProcess.idtProcessId === idtProcessId) {
+        isValid = true;
+      }
+    });
+
+    if (isValid) {
+      const temp: OptionInterface = {
+        key: idtType.idtId,
+        label: `${idtType.name}`,
+        value: idtType.idtId.toString(),
+      };
+      options.value.push(temp);
+    }
   });
 
   return options.value;

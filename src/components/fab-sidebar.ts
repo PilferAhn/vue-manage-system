@@ -52,6 +52,11 @@ export const fabSilderBarList =  {
         ],
       },
       {
+        index: "/fab/create-application3",
+        title: "투입 계획서 작성3",
+        permiss: "11",
+      },
+      {
         index: "/fab/create-application2",
         title: "투입 계획서 작성2",
         permiss: "11",

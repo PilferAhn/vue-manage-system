@@ -4,7 +4,7 @@
       ref="fabFormRef"
       :model="props.fabApplication"
       :rules="fabRequestFormRules"
-      :label-position="'right'"
+      :label-position="'top'"
       label-width="auto"
     >
       <!-- Split Screen Layout -->
@@ -21,12 +21,8 @@
           <ApplicationContent
             v-model:fabApplication="props.fabApplication"
             :sawType="sawType"
-            :bandList="props.bandList"
           ></ApplicationContent>
-          <Bom v-if="props.fabApplication.packageId === 'CSP'"
-            v-model:fabApplication="props.fabApplication"
-            :sawType="sawType"
-          ></Bom>
+
           <Buttons
             v-model:fabApplication="props.fabApplication"
             :fabFormRef="fabFormRef"
@@ -36,17 +32,15 @@
 
         <!-- Right Side: Wafer and Deposition -->
         <div style="flex: 1; padding-left: 10px">
+          <PhotoSection
+            v-model:fabApplication="props.fabApplication"
+            :sawType="sawType"            
+          />
           <Wafer
             v-model:fabApplication="props.fabApplication"
             :sawType="sawType"
             :applicationType="props.applicationType"
           />
-
-          <Seed
-            v-if="sawType && sawType.seedTypes && sawType.seedTypes.length > 0"
-            v-model:fabApplication="props.fabApplication"
-            :sawType="sawType"
-          ></Seed>
           <Deposition
             v-model:fabApplication="props.fabApplication"
             :sawType="sawType"
@@ -63,6 +57,11 @@
             v-model:fabApplication="props.fabApplication"
             :sawType="sawType"
           ></Passivation>
+          <Seed
+            v-if="sawType && sawType.seedTypes && sawType.seedTypes.length > 0"
+            v-model:fabApplication="props.fabApplication"
+            :sawType="sawType"
+          ></Seed>
         </div>
       </div>
     </el-form>
@@ -83,7 +82,7 @@ import ProductName from "./ProductName.vue";
 import Buttons from "./Buttons.vue";
 import ApplicationContent from "./ApplicationContent.vue";
 import type { FabRequestForm } from "./../../../interface/fab-application-rev2";
-
+import PhotoSection from "./photo/photo.vue";
 import { fabRequestFormRules } from "../../../utils/rules/fab-application";
 import type { FormInstance } from "element-plus";
 import Bom from "./bom/Bom.vue";
@@ -91,7 +90,6 @@ const fabFormRef = ref<FormInstance | null>(null);
 
 const props = defineProps<{
   fabApplication: FabRequestForm;
-  bandList: band[];
   applicationType: string;
   options: SawType[];
   sawType: SawType;
@@ -103,7 +101,6 @@ watch(
   () => props.fabApplication.waferType,
   (newVal, oldVal) => {
     Object.assign(sawType, defineSawTypeByWaferType(newVal, props.options));
-    console.log(sawType)
   }
 );
 </script>

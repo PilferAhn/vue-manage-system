@@ -1,34 +1,76 @@
 <template>
   <section class="section">
-    <h3 class="section-title">Wafer 세부 설정</h3>
-    <br />
-    <div class="flex-container">
-      <el-form-item class="custom-form-item" prop="waferAngle">
-        <el-input
-          v-model="props.fabApplication.waferAngle"
-          placeholder="Enter Angle"
-          class="custom-input"
-          style="width: 230px"
-        >
-          <template #prepend>LT CUT</template>
-        </el-input>
-      </el-form-item>
+    <!-- <h3 class="section-title">Set Wafer Details</h3> -->
 
-      <el-form-item
-        class="custom-form-item"
-        prop="waferThickness"
-        v-if="props.fabApplication.waferType !== 'HS'"
-      >
-        <el-input
-          v-model="props.fabApplication.waferThickness"
-          placeholder="Enter Thickness"
-          class="custom-input"
-          style="width: 230px"
+    <el-row :gutter="20">
+      <el-col :span="7">
+        <el-form-item class="custom-form-item" prop="waferAngle">
+          <el-input
+            v-model="props.fabApplication.waferAngle"
+            placeholder="Enter Angle"
+            style="width: 250px"
+          >
+            <template #prepend>{{ cutLabel }}</template>
+          </el-input>
+        </el-form-item>
+      </el-col>
+      <el-col :span="3">
+        <el-form-item
+          v-if="['NS', 'TC'].includes(props.fabApplication.waferType)"
+          class="custom-form-item"
+          prop="Angle Options"
         >
-          <template #prepend>Thickness</template>
-        </el-input>
-      </el-form-item>
-    </div>
+          <el-select
+            v-model="props.fabApplication.waferAngle"
+            placeholder="Select Anlge"
+            style="width: 200px"
+          >
+            <!-- <el-options></el-options> -->
+            <el-option
+              v-for="angleOption in angleOptions"
+              :key="angleOption.key"
+              :label="angleOption.label"
+              :value="angleOption.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+      </el-col>
+
+      <el-col :span="7">
+        <el-form-item
+          class="custom-form-item"
+          prop="waferThickness"
+          v-if="props.fabApplication.waferType !== 'HS'"
+        >
+          <el-input
+            v-model="props.fabApplication.waferThickness"
+            placeholder="Enter Thickness"
+            style="width: 250px"
+          >
+            <template #prepend>Thickness</template>
+          </el-input>
+        </el-form-item>
+      </el-col>
+      <el-col :span="3"
+        ><el-select
+          v-model="props.fabApplication.waferThickness"
+          placeholder="Select Anlge"
+          style="width: 200px"
+          v-if="props.fabApplication.waferType !== 'HS'"
+        >
+          <!-- <el-options></el-options> -->
+          <el-option
+            v-for="angleOption in thickOptions"
+            :key="angleOption.key"
+            :label="angleOption.label"
+            :value="angleOption.value"
+          ></el-option> </el-select
+      ></el-col>
+    </el-row>
+    <div
+      class="flex-container"
+      v-if="props.fabApplication.waferType !== 'HS'"
+    ></div>
   </section>
 </template>
 
@@ -36,8 +78,10 @@
 import { defineProps, defineEmits, ref, watch, onMounted } from "vue";
 import {
   getFabWaferFromWaferId,
-  createAngleAndThickOptions,
+  
   createHsWaferCondition,
+  createAngleOptions,
+  createThicknessOptions,
 } from "../../../../utils/Fab/fab_application-wafer-utils";
 import type { OptionInterface } from "../../../../interface/option";
 import type {
@@ -58,9 +102,11 @@ const props = defineProps<{
   applicationType: string;
 }>();
 
-const angleAndThickOption = ref<OptionInterface[]>([]);
-const wafer = ref<FabWafer>({});
+const cutLabel = ref<String>("LT CUT");
 
+const wafer = ref<FabWafer>({});
+const angleOptions = ref<OptionInterface[]>([]);
+const thickOptions = ref<OptionInterface[]>([]);
 // 로컬 상태 정의
 
 const waferThickness = ref(0);
@@ -79,39 +125,66 @@ onMounted(() => {
       props.sawType.wafers
     );
     if (props.fabApplication.waferType === "HS") {
-        // props.fabApplication.waferThickness = 500;
-        emit("update:hsWaferOptions", createHsWaferCondition(wafer.value));
-        emit("update:wafer", wafer.value);
-        emit("update:hsLayers", createHsWaferCondition(wafer.value));
-      }
+      // props.fabApplication.waferThickness = 500;
+      emit("update:hsWaferOptions", createHsWaferCondition(wafer.value));
+      emit("update:wafer", wafer.value);
+      emit("update:hsLayers", createHsWaferCondition(wafer.value));
+    }
   }
 });
 
 watch(
+  () => props.fabApplication.waferType,
+  (newVal) => {
+    if (newVal === "TC") {
+      cutLabel.value = "LN CUT";
+    }
+    // else if(newVal === "NS"){
+    //   props.sawType.wafers
+    // }
+    else {
+      cutLabel.value = "LT CUT";
+    }
+  }
+);
+
+watch(
   () => props.fabApplication.waferId,
   (newVal) => {
-    angleAndThickOption.value = [];
-    props.fabApplication.waferAngle = 43;
+    
+    if (props.fabApplication.waferType === "TC") {
+      props.fabApplication.waferAngle = 126;
+    } else {
+      props.fabApplication.waferAngle = 43;
+    }
+
     props.fabApplication.waferThickness = 0;
     waferThickness.value = 0;
     angAndThink.value = "";
 
     if (props.fabApplication.waferId !== undefined) {
-      wafer.value = getFabWaferFromWaferId(newVal.toString(), props.sawType.wafers);
-      props.fabApplication.waferId = parseInt(newVal.toString());
-      angleAndThickOption.value = createAngleAndThickOptions(
-        props.sawType,
-        wafer.value.size,
-        wafer.value.waferCompany,
-        wafer.value.waferType,
-        props.fabApplication.waferType
+      wafer.value = getFabWaferFromWaferId(
+        newVal.toString(),
+        props.sawType.wafers
       );
+      props.fabApplication.waferId = parseInt(newVal.toString());
+
 
       if (props.fabApplication.waferType === "HS") {
         props.fabApplication.waferThickness = 500;
         emit("update:hsWaferOptions", createHsWaferCondition(wafer.value));
         emit("update:wafer", wafer.value);
         emit("update:hsLayers", createHsWaferCondition(wafer.value));
+
+      } else if (["NS", "TC"].includes(props.fabApplication.waferType)) {
+        angleOptions.value = createAngleOptions(
+          props.sawType,
+          parseInt(newVal.toString())
+        );
+        thickOptions.value = createThicknessOptions(
+          props.sawType,
+          parseInt(newVal.toString())
+        );
       }
     }
   }

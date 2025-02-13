@@ -54,6 +54,18 @@
             </el-form-item>
 
             <SelectOptionsNew2
+            v-model:="tegApplicationForm.waferType"
+            label="Wafer Type"
+            placeholder="HS / NS / TC"
+            :options="waferTypeList"></SelectOptionsNew2>
+
+            <SelectOptionsNew2
+            v-model:="tegApplicationForm.packageType"
+            label="Package Type"
+            placeholder="CSP / WLP / BDMP"
+            :options="packageList"></SelectOptionsNew2>
+
+            <SelectOptionsNew2
               v-model="tegApplicationForm.applicationType"
               label="의뢰 구분"
               prop="applicationType"
@@ -162,12 +174,26 @@
             <el-col :span="12">
               <select-option
                 v-model="tegApplicationForm.isAOI"
-                label="AOI 여부"
+                label="AOI 유무"
                 prop="isAOI"
                 :rules="null"
-                placeholder="AOI 여부"
+                placeholder="AOI 유무"
                 :options="maskChanges"
               ></select-option>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="DVR 유무"
+                ><el-switch v-model="tegApplicationForm.isDvr"></el-switch
+              ></el-form-item>
+
+              <!-- <select-option
+                v-model="tegApplicationForm.isAOI"
+                label="DVR 여부"
+                prop="isDvr"
+                :rules="null"
+                placeholder="DVR 여부"
+                :options="maskChanges"
+              ></select-option> -->
             </el-col>
           </el-row>
           <el-row :gutter="20">
@@ -298,6 +324,8 @@ import {
   maskChanges,
   portOptions,
   waferSizeList,
+  waferTypeList,
+  packageList
 } from "./../../../utils/tegTypes";
 
 import { getWaferInfoBySize } from "./../../../utils/waferApplicationHelper";

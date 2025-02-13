@@ -1,18 +1,18 @@
 <template>
   <div class="input-container">
     <el-row :gutter="10" class="inline-row">
-      <el-form-item label="기종명" prop="productName">
+      <el-form-item label="Product Name" prop="productName">
         <!-- Model Name Input -->
         <el-input
           v-model="props.fabApplication.productName"
           placeholder="Model Name"
           class="small-input"
-          style="width: 140px; margin-right: 20px;"
+          style="width: 220px; margin-right: 20px;"
           @input="syncInputValuesFromProductName"
         ></el-input>
 
         <!-- Character Inputs -->
-        <el-input
+        <!-- <el-input
           v-for="(char, index) in inputValues"
           :key="index"
           v-model="inputValues[index]"
@@ -20,7 +20,7 @@
           placeholder=" "
           class="small-input"
           @input="syncProductNameFromInputValues"
-        ></el-input>
+        ></el-input> -->
       </el-form-item>
     </el-row>
   </div>

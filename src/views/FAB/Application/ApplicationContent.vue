@@ -1,12 +1,25 @@
 <template>
   <div class="fab-application-form">
-    <SelectOptionsNew2
-      v-model="props.fabApplication.waferType"
-      label="공정 선택"
-      :needBold="false"
-      :disable="false"
-      :options="getWaferList()"
-    />
+    <el-row :gutter="20" class="form-row">
+      <el-col :span="12">
+        <SelectOptionsNew2
+          v-model="props.fabApplication.waferType"
+          label="Filter Tech"
+          :needBold="false"
+          :disable="false"
+          :options="getWaferList()"
+        />
+      </el-col>
+      <el-col :span="12">
+        <SelectOptionsNew2
+          v-model="props.fabApplication.bandGroupId"
+          label="Freq Range"
+          :needBold="false"
+          :disable="false"
+          :options="freqRangeList"
+        />
+      </el-col>
+    </el-row>
     <ProductName
       v-model:fabApplication="props.fabApplication"
       :sawType="sawType"
@@ -17,41 +30,22 @@
       designer-prop="designerId"
       requester-prop="requesterId"
     ></User2>
-    <el-row :gutter="20" class="form-row">
-      <el-col :span="12">
-        <SelectOptionsNew2
-          label="Filter Type"
-          prop="filterType"
-          v-model="props.fabApplication.filterType"
-          :options="filterTypeList"
-        ></SelectOptionsNew2>
-      </el-col>
-      <el-col :span="5">
-        <BooleanInput
-          v-model="props.fabApplication.isAoi"
-          label="AOI 유무"
-          prop="isAoi"
-          :disable="false"
-          :rules="[]"
-          class="wide-select"
-        />
-      </el-col>
-      <el-col :span="5">
-        <BooleanInput
-          v-model="props.fabApplication.isDvr"
-          label="DVR 유무"
-          prop="isDvr"
-          :disable="false"
-          :rules="[]"
-          class="wide-select"
-        />
-      </el-col>
-    </el-row>
+    
 
     <!-- 두 번째 행 -->
     <el-row :gutter="20" class="form-row">
       <el-col :span="12">
-        <el-form-item label="Band">
+        
+          <InputText :model-value="props.fabApplication.band"
+          label="Band"
+          prop="band"
+          :rules="[]"
+          placeholder="Enter Band Info"
+          ></InputText>
+        
+        <!-- <BandSection :fab-application="props.fabApplication"
+        :band-list="props.bandList"></BandSection> -->
+        <!-- <el-form-item label="Band">
           <el-select v-model="props.fabApplication.bandCombinationId">
             <el-option
               v-for="band in props.bandList"
@@ -60,7 +54,7 @@
               :value="band.bandCombinationId"
             ></el-option>
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
       </el-col>
       <el-col :span="12">
         <SelectOptionsNew2
@@ -74,7 +68,59 @@
         />
       </el-col>
     </el-row>
-
+    <el-row :gutter="20" class="form-row">
+      <el-col :span="12">
+        <SelectOptionsNew2 v-if="props.fabApplication.destinationId !== '개발전달'"
+          label="Filter Type"
+          prop="filterType"
+          v-model="props.fabApplication.filterType"
+          :options="filterTypeList"
+        ></SelectOptionsNew2>
+      </el-col>
+      <el-col :span="2.5">
+        <!-- <el-checkbox 
+        label = "AOI 유무"
+        v-model="props.fabApplication.isAoi"></el-checkbox> -->
+        <SelectCheckBox
+          v-model="props.fabApplication.isAoi"
+          label="AOI"
+          prop="isAoi"
+          :disable="false"
+          :rules="[]"
+          class="wide-select"
+        />
+        <!-- <SelectButton
+          v-model="props.fabApplication.isAoi"
+          label="　AOI"
+          prop="isAoi"
+          :disable="false"
+          :rules="[]"
+          :button-color="'white'"
+          :button-name="'AOI'"
+          class="wide-select"
+        ></SelectButton> -->
+      </el-col>
+      <el-col :span="2.5">
+        <SelectCheckBox
+          v-model="props.fabApplication.isDvr"
+          label="DVR2"
+          prop="isDvr"
+          :disable="false"
+          :rules="[]"
+          class="wide-select"
+        />
+        <!-- <SelectButton
+          v-model="props.fabApplication.isDvr"
+          label="　DVR2"
+          prop="isDvr"
+          :disable="false"
+          :rules="[]"
+          :button-color="'white'"
+          :button-name="'DVR'"
+          class="wide-select"
+        ></SelectButton> -->
+      </el-col>
+    </el-row>
     <el-row :gutter="20" class="form-row">
       <el-col :span="12">
         <SelectOptionsNew2
@@ -99,7 +145,8 @@
         />
       </el-col>
     </el-row>
-
+    
+    <!--  MHM08AA4001A , MH748AA40L1A -->
     <ApplicationChip
       v-model:fabApplication="props.fabApplication"
     ></ApplicationChip>
@@ -108,7 +155,7 @@
       <el-col :span="12">
         <SelectNumberOption
           v-model="props.fabApplication.quantity"
-          label="Quantity"
+          label="Quantity (Wafer)"
           prop="process"
           placeholder="EX) Filter Type"
           :options="getOptionNumbers(1, 10)"
@@ -119,7 +166,7 @@
       <el-col :span="12">
         <SelectOptionsNew2
           v-model="props.fabApplication.code"
-          label="Code"
+          label="C/H Code"
           placeholder="EX) C or H"
           :options="codeList"
           :disable="false"
@@ -131,10 +178,10 @@
     <!-- 날짜 선택 -->
     <el-row :gutter="20" class="form-row">
       <el-col :span="12">
-        <el-form-item label="FAB 시작일" class="date-picker-container">
+        <el-form-item label="FAB Est Start (Fab 투입 예정일)">
           <el-date-picker
             type="date"
-            placeholder="FAB 시작일"
+            placeholder="FAB Est Start"
             v-model="props.fabApplication.wantedFabStartDate"
             class="custom-date-picker"
             :label-position="'left'"
@@ -142,10 +189,11 @@
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item label="FAB 종료일" class="date-picker-container">
+        <!-- <el-form-item label="FAB 완료 예정일" class="date-picker-container"> -->
+        <el-form-item label="FAB Est Out (Fab 완료 예정일)">
           <el-date-picker
             type="date"
-            placeholder="FAB 종료일"
+            placeholder="FAB Est Complete"
             v-model="props.fabApplication.wantedFabFinishDate"
             class="custom-date-picker"
           />
@@ -153,19 +201,26 @@
       </el-col>
     </el-row>
     <!-- 용도 / 목적 -->
+    <Bom
+      v-if="props.fabApplication.packageId === 'CSP' && props.fabApplication.destinationId !== '개발전달'"
+      v-model:fabApplication="props.fabApplication"
+      :sawType="sawType"
+    ></Bom>
     <div class="form-row">
       <LongInputText
         v-model="props.fabApplication.note"
         label="용도 / 목적"
         class="custom-input"
+        :row-cnt="'3'"
       />
     </div>
     <div class="form-row">
-      <!-- <long-input-text
+      <long-input-text
         v-model="props.fabApplication.purpose"
         label="기타 상세"
         class="custom-input"
-      /> -->
+        :row-cnt="'3'"
+      />
     </div>
   </div>
 </template>
@@ -179,10 +234,12 @@ import type {
   band,
 } from "../../../interface/fab-application-rev2";
 import SelectOptions from "../../Common/SelectOptions.vue";
+import SelectCheckBox from "../../Common/SelectCheckBox.vue";
+import SelectButton from "../../Common/SelectButton.vue";
 import InputText from "../../Common/InputText.vue";
 import InputNumber from "../../Common/InputNumber.vue";
 import BooleanInput from "../../Common/SelectBoolean.vue";
-import LongInputText from "../../Common/LongInputText.vue";
+import LongInputText from "../../Common/LongInputText2.vue";
 import SelectOptionsNew2 from "../../Common/SelectOptionsNew2.vue";
 import User2 from "../../Common/User2.vue";
 import ProductName from "./ProductName.vue";
@@ -196,6 +253,7 @@ import {
   receivefilterTypeList,
 } from "../../../utils/Fab/fab-application-utils";
 import Dvb from "./dvr/Dvr.vue";
+import BandSection from "./band/band.vue"
 
 import {
   groupList,
@@ -208,16 +266,20 @@ import {
   waferComList,
   machineList,
   sendFormData,
+  freqRangeList
 } from "../Common/Application";
 import axios from "axios";
 import { Option } from "element-plus/es/components/select-v2/src/select.types";
 import { initBom } from "../../../utils/Fab/bom-utils";
+import Bom from "./bom/Bom.vue";
+import { rules } from "../../Solder/Stock/Common/ApplicationRules";
 
 const props = defineProps<{
   fabApplication: FabRequestForm;
   sawType: SawType;
-  bandList: band[];
 }>();
+
+
 
 const destinationList = ref<OptionInterface[]>([]);
 const priorityList = ref<OptionInterface[]>([]);
@@ -228,6 +290,16 @@ onMounted(async () => {
   priorityList.value = await receivePriorityList();
   filterTypeList.value = await receivefilterTypeList();
 });
+
+watch(()=>props.fabApplication.destinationId, (newVal) => {
+  if(newVal === "개발전달"){
+    props.fabApplication.filterType = null
+    props.fabApplication.bom = null
+  }
+  else{
+    props.fabApplication.bom = initBom()
+  }
+})
 
 // watch(
 //   () => props.fabApplication.packageId,

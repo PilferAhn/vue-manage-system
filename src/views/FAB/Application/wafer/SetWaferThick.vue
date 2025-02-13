@@ -1,18 +1,18 @@
 <template>
   <section class="section">
-    <h3 class="section-title">HS Wafer 구조 선택</h3>
-    <br>
+    <h3 class="section-title">HS Wafer Structure</h3>
+    <br />
     <el-row :gutter="20" class="align-center">
-      <el-col :span="11">
+      <el-col :span="20">
         <el-form-item>
           <el-select
             v-model="props.fabApplication.hsId"
-            placeholder="성막 조건 선택"
+            placeholder="Select Wafer"
             class="custom-select"
             clearable
           >
             <el-option
-              v-for="opt in hsWaferOptions"
+              v-for="opt in props.hsWaferOptions"
               :key="opt.key"
               :label="opt.label"
               :value="opt.key"
@@ -22,43 +22,59 @@
       </el-col>
     </el-row>
 
-    <el-table :data="hsLayers">
-      <el-table-column label="Index" prop="idx" :align="'center'" />
-      <el-table-column label="Name" prop="material" :align="'center'" />
-      <el-table-column label="Thickness" :align="'center'">
+    <!-- <pre>hsLayers: {{ hsLayers }}</pre>
+    <pre>columns: {{ columns }}</pre>
+    <pre>newTableData: {{ newTableData }}</pre> -->
+
+    <el-table :data="newTableData">
+      <el-table-column
+        v-for="(col, index) in columns"
+        :key="index"
+        :prop="col.prop"
+        :label="col.label"
+        :align="'center'"
+      >
         <template #default="scope">
-          <el-input v-model="scope.row.thickness" :disabled="true"></el-input>
+          <el-input v-model="scope.row[col.prop]" :disabled="true"></el-input>
         </template>
       </el-table-column>
     </el-table>
-    <br>
-    <el-form-item
-      class="custom-form-item"      
-    >
+
+    <br />
+    <el-form-item class="custom-form-item">
       <el-input
         v-model="props.fabApplication.hsTrimingTarget"
-        placeholder="Enter Trimming Value"
+        placeholder="Enter Target Value (LT)"
         class="custom-input"
-        style="width: 300px"
+        style="width: 400px"
       >
-        <template #prepend>Trimming</template>
+        <template #prepend>Target Value After Trimming </template>
       </el-input>
     </el-form-item>
-    <el-alert v-if="ltThick !== undefined && props.fabApplication.hsTrimingTarget >= ltThick" title="Trimming 값은 LT 값보다 클 수 없습니다" type="error" />
+
+    <el-alert
+      v-if="
+        ltThick !== undefined && props.fabApplication.hsTrimingTarget >= ltThick
+      "
+      title="Trimming 값은 LT 값보다 클 수 없습니다"
+      type="error"
+    />
   </section>
 </template>
 
 <script lang="ts" setup>
-import { defineProps, defineEmits, watch, ref, onMounted } from "vue";
+import { defineProps, defineEmits, watch, ref, computed, onMounted } from "vue";
 import type {
   FabWafer,
   Layer,
-  FabRequestForm
+  FabRequestForm,
 } from "../../../../interface/fab-application-rev2";
 import type { OptionInterface } from "../../../../interface/option";
-import { createHsWaferLayerOption, getHsWaferAngle, getLtThickness } from "../../../../utils/Fab/fab_application-wafer-utils";
-import { fabRequestFormRules } from "../../../../utils/rules/fab-application";
-
+import {
+  createHsWaferLayerOption,
+  getHsWaferAngle,
+  getLtThickness,
+} from "../../../../utils/Fab/fab_application-wafer-utils";
 
 const props = defineProps<{
   fabApplication: FabRequestForm;
@@ -68,40 +84,61 @@ const props = defineProps<{
   wafer: FabWafer;
 }>();
 
-
-onMounted(() => {
-  if(props.fabApplication.hsType !== null && Object.keys(props.fabApplication.hsType).length !== 0){
-    // hsLayers.value = createHsWaferLayerOption(props.fabApplication.hsId.toString(), props.wafer);
-    // console.log(hsLayers.value)
-    hsLayers.value = props.fabApplication.hsType.layers
-  }
-  
-})
-
-
 const haLayerStackId = ref(props.hsLayerstackId);
 const hsLayers = ref<Layer[]>([]);
-const ltThick = ref<number | undefined>(undefined)
+const newTableData = ref<object[]>([]);
+const ltThick = ref<number | undefined>(undefined);
+
+// 📌 컬럼 데이터 (hsLayers 기반 동적 생성)
+const columns = computed(() => {
+  console.log("컬럼 업데이트:", props.hsLayers);
+  return hsLayers.value.map((layer) => ({
+    label: layer.material, // 컬럼 헤더
+    prop: layer.material, // 데이터 바인딩 키
+  }));
+});
+
+// 📌 테이블 데이터 업데이트 함수
+function updateTable() {
+  newTableData.value = [];
+  const temp: Record<string, number> = {};
+
+  for (let i = 0; i < hsLayers.value.length; i++) {
+    temp[hsLayers.value[i].material] = hsLayers.value[i].thickness;
+  }
+
+  console.log("테이블 데이터 업데이트:", temp);
+  newTableData.value.push(temp);
+}
+
+// 📌 onMounted 시 초기 테이블 설정
+onMounted(() => {
+  if (props.fabApplication.hsType && Object.keys(props.fabApplication.hsType).length !== 0) {
+    hsLayers.value = props.fabApplication.hsType.layers;
+    updateTable();
+  }
+  props.fabApplication.hsId = undefined;
+});
+
+// 📌 HS Wafer 변경 감지
 watch(
   () => props.fabApplication.hsId,
   (newVal) => {
-    if (props.fabApplication.hsId !== undefined) {
-                
+    if (newVal !== undefined) {
       hsLayers.value = createHsWaferLayerOption(newVal.toString(), props.wafer);
-      ltThick.value = getLtThickness(hsLayers.value)
-      props.fabApplication.waferAngle = getHsWaferAngle(newVal.toString(), props.wafer)
+      ltThick.value = getLtThickness(hsLayers.value);
+      props.fabApplication.waferAngle = getHsWaferAngle(newVal.toString(), props.wafer);
+      updateTable();
     }
-  }
+  },
+  { immediate: true }
 );
 
 const emit = defineEmits(["update:hsLayerstackId"]);
 </script>
-<script lang="ts">
-export default {};
-</script>
+
 <style scoped>
 .section {
   margin-bottom: 24px;
 }
-
 </style>

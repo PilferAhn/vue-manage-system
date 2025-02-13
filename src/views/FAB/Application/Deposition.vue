@@ -1,13 +1,25 @@
 <template>
   <div class="deposition-container">
     <section class="section">
-      <h3 class="section-title">IDT 구조 선택</h3>
+      <h3 class="section-title">IDT (1st Metal)</h3>
       <el-row :gutter="20" class="align-center">
+        <el-col :span="8">
+          <el-form-item>
+            <el-select v-model="props.fabApplication.idtProcessId">
+              <el-option
+                v-for="idtProcessOption in newidtProcessList"
+                :key="idtProcessOption.key"
+                :label="idtProcessOption.label"
+                :value="idtProcessOption.value"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
         <el-col :span="8">
           <el-form-item>
             <el-select
               v-model="props.fabApplication.idtId"
-              placeholder="성막 조건 선택"
+              placeholder="Select IDT"
               class="custom-select"
               clearable
             >
@@ -20,7 +32,7 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="6">
+        <!-- <el-col :span="6">
           <el-form-item prop="idtId">
             <el-input
               v-model="props.fabApplication.idtProcessId"
@@ -32,25 +44,21 @@
         <el-col :span="6">
           <el-form-item v-if="idtProcessIdList.length > 1" prop="idtId">
             <el-select v-model="props.fabApplication.idtProcessId">
-              <el-option v-for="idtProcessOption in idtProcessIdList"
-              :key="idtProcessOption.key"
-              :label="idtProcessOption.label"
-              :value="idtProcessOption.value"></el-option>
-            </el-select>
-            <!-- <el-input
-              v-model="props.fabApplication.idtProcessId"
-              :disabled="true"
-              width="200"
-            ></el-input> -->
-
+              <el-option
+                v-for="idtProcessOption in idtProcessIdList"
+                :key="idtProcessOption.key"
+                :label="idtProcessOption.label"
+                :value="idtProcessOption.value"
+              ></el-option>
+            </el-select>            
           </el-form-item>
-        </el-col>
+        </el-col> -->
       </el-row>
     </section>
 
     <!-- IDT 정보 테이블 섹션 -->
     <section class="section">
-      <h3 class="section-title">IDT 정보</h3>
+      <h3 class="section-title2">IDT Thickness</h3>
       <el-table :data="layers" stripe class="custom-table">
         <!-- INDEX 컬럼 -->
         <el-table-column
@@ -81,15 +89,14 @@
         </el-table-column>
       </el-table>
     </section>
-    <section class="section">
+    <!-- <section class="section">
       <idt-process
         :fab-application="props.fabApplication"
-        :saw-type="props.sawType"
-        :idt-type="idtType"
+        :saw-type="props.sawType"      
       />
-    </section>
+    </section> -->
     <section class="section">
-      <h3 class="section-title">설비</h3>
+      <h3 class="section-title2">IDT Deposition Machine</h3>
       <br />
       <el-select v-model="props.fabApplication.idtMachineName">
         <el-option
@@ -112,6 +119,7 @@ import type {
 } from "../../../interface/fab-application-rev2";
 import {
   generateIdtOptions,
+  generateIdtOptions2,
   getLayerNameFromIdtTypes,
   generateMachineOptions,
   getIdtTypeByIdtId,
@@ -136,6 +144,10 @@ const machineOptions = ref<OptionInterface[]>([]);
 const layers = reactive<Layer[]>([]);
 const idtType = reactive<IdtType>({});
 const idtProcessIdList = ref<OptionInterface[]>([]);
+const newidtProcessList = ref<OptionInterface[]>([
+  { key: 1, label: "Etching", value: "Etching" },
+  { key: 2, label: "Lift-off", value: "Lift-off" },
+]);
 
 onMounted(() => {
   if (Object.keys(props.sawType).length !== 0) {
@@ -149,61 +161,92 @@ onMounted(() => {
   }
 });
 
+// IDT Thickness 입력을 활성하게 해주는 Watch
+watch(
+  () => props.fabApplication.idtProcessId,
+  (newVal) => {
+    depositionOptions.value = generateIdtOptions2(
+      props.sawType.idtTypes,
+      newVal
+    );
+
+    
+
+    if(depositionOptions.value.length == 1){
+      props.fabApplication.idtId = parseInt(depositionOptions.value[0].value)
+    }
+
+  }
+);
+
+
 // waferType 변경 감지
 watch(
   () => props.fabApplication.waferType,
-  () => {
-    depositionOptions.value = generateIdtOptions(props.sawType.idtTypes);
+  (newVal) => {
+    // depositionOptions.value = generateIdtOptions(props.sawType.idtTypes);
     layerNames.value = "";
     props.fabApplication.depositionCondi = undefined;
     layers.length = 0;
-    idtProcessIdList.value = []
-    props.fabApplication.idtProcessId = ""
+    idtProcessIdList.value = [];
+    props.fabApplication.idtProcessId = "";
+    depositionOptions.value = [];
+    props.fabApplication.idtId = null;
+    props.fabApplication.idtMachineName = "";
 
-  }
+    if (newVal === "TC") {
+      newidtProcessList.value = [
+        { key: 2, label: "Lift-off", value: "Lift-off" },
+      ];
+      props.fabApplication.idtProcessId = "Lift-off"
+    } else if (["NS", "HS"].includes(newVal)) {
+      newidtProcessList.value = [
+        { key: 1, label: "Etching", value: "Etching" },
+        { key: 2, label: "Lift-off", value: "Lift-off" },
+      ];
+    }
+  }  
 );
 
 // depositionCondi 변경 감지
 watch(
   () => props.fabApplication.idtId,
   () => {
-    Object.assign(
-      idtType,
-      getIdtTypeByIdtId(
+    if (props.fabApplication.idtId != null) {
+      Object.assign(
+        idtType,
+        getIdtTypeByIdtId(props.sawType.idtTypes, props.fabApplication.idtId)
+      );
+      // props.fabApplication.idtProcess = idtType.idtProcessId;
+      // idtProcessIdList.value = [];
+      // props.fabApplication.idtProcessId = "";
+
+      // if (idtType.idtProcesses.length == 1) {
+      //   props.fabApplication.idtProcessId = idtType.idtProcesses[0].idtProcessId;
+      // } else {
+      //   // console.log(props.fabApplication.idtId)
+      //   // console.log(props.sawType.idtTypes)
+      //   idtProcessIdList.value = genIdtProcessOptions(
+      //     props.sawType.idtTypes,
+      //     props.fabApplication.idtId
+      //   );
+      // }
+
+      layerNames.value = getLayerNameFromIdtTypes(
         props.sawType.idtTypes,
-        props.fabApplication.idtId
-      )
-    );
-    // props.fabApplication.idtProcess = idtType.idtProcessId;
-    idtProcessIdList.value = []
-    props.fabApplication.idtProcessId = ""
+        props.fabApplication.idtId,
+        layers
+      );
 
-    if(idtType.idtProcesses.length == 1){
-      props.fabApplication.idtProcessId = idtType.idtProcesses[0].idtProcessId
-      console.log("1")
+
+
+      machineOptions.value = generateMachineOptions(
+        props.sawType.idtTypes,
+        props.fabApplication.idtId.toString()
+      );
+      // props.fabApplication.idtId = parseInt(props.fabApplication.depositionCondi);
+      props.fabApplication.idtLayers = layers;
     }
-    else{
-      // console.log(props.fabApplication.idtId)
-      // console.log(props.sawType.idtTypes)
-      idtProcessIdList.value = genIdtProcessOptions(props.sawType.idtTypes , props.fabApplication.idtId)
-      console.log("2")
-    }
-
-    console.log(idtType.idtProcesses)
-
-
-    layerNames.value = getLayerNameFromIdtTypes(
-      props.sawType.idtTypes,
-      props.fabApplication.idtId,
-      layers
-    );
-
-    machineOptions.value = generateMachineOptions(
-      props.sawType.idtTypes,
-      props.fabApplication.idtId.toString(),
-    );
-    // props.fabApplication.idtId = parseInt(props.fabApplication.depositionCondi);
-    props.fabApplication.idtLayers = layers;
   }
 );
 </script>
@@ -245,6 +288,15 @@ export default {};
   color: #333;
   margin-bottom: 12px;
   border-left: 4px solid #4caf50;
+  padding-left: 8px;
+}
+
+.section-title2 {
+  font-size: 1.0rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 12px;
+  border-left: 4px solid #4c4eaf;
   padding-left: 8px;
 }
 

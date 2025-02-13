@@ -3,7 +3,6 @@
     <SelectWafer
       :fabApplication="props.fabApplication"
       :sawType="sawType"
-    
     ></SelectWafer>
 
     <WaferDetails
@@ -13,7 +12,7 @@
       v-model:hsWaferOptions="hsWaferOptions"
       v-model:hs-layers="hsLayers"
       v-model:wafer="wafer"
-      :applicationType = "props.applicationType"
+      :applicationType="props.applicationType"
     />
 
     <HSWaferSettings
@@ -31,8 +30,7 @@
 import { defineProps, defineEmits, computed, ref, watch } from "vue";
 import {
   getFabWaferFromWaferId,
-  createWaferOptions,
-  createAngleAndThickOptions,
+  createWaferOptions,  
   createHsWaferCondition,
   createHsWaferLayerOption,
 } from "../../../../utils/Fab/fab_application-wafer-utils";
@@ -48,14 +46,12 @@ import WaferDetails from "./SelectWaferDetail.vue";
 import HSWaferSettings from "./SetWaferThick.vue";
 import { OptionInterface } from "../../../../interface/option";
 
-
 // props 및 emit 정의
 const props = defineProps<{
   fabApplication: FabRequestForm;
   sawType: SawType;
-  applicationType : string;
+  applicationType: string;
 }>();
-
 
 const emit = defineEmits(["update:fabApplication"]);
 
@@ -68,8 +64,6 @@ const localFabApplication = computed({
   get: () => props.fabApplication,
   set: (newValue) => emit("update:fabApplication", newValue),
 });
-
-
 </script>
 
 <script lang="ts">

@@ -7,17 +7,18 @@
   >
     <!-- PST 타입 선택 -->
     <section class="section">
-      <h3 class="section-title">PST 타입 선택</h3>
+      
+      <h3 class="section-title">Select Piston</h3>
       <el-select
         v-model="props.fabApplication.pstId"
-        placeholder="PST 타입을 선택해주세요"
+        placeholder="Select Piston"
         class="custom-select"
         clearable
       >
         <el-option
-          v-for="pst in pstTypes"
+          v-for="pst in props.sawType.pstTypes"
           :key="pst.pstId"
-          :label="pst.name"
+          :label="pst.name + ' (' + pst.description + ')'"
           :value="pst.pstId"
         ></el-option>
       </el-select>
@@ -25,7 +26,7 @@
 
     <!-- PST 레이어 테이블 -->
     <section class="section">
-      <h3 class="section-title">PST 레이어 설정</h3>
+      <!-- <h3 class="section-title">Piston Thickness</h3> -->
       <el-table
         :data="layers"
         stripe
@@ -68,6 +69,7 @@ import type {
   Layer,
   PstType,
 } from "../../../interface/fab-application-rev2";
+import { convertKeysToCamelCase } from "../../../utils/key-converter";
 
 // Props 정의
 const props = defineProps<{
@@ -85,13 +87,11 @@ onMounted(() => {
   }
 });
 
-
-
 // waferType 변경 감지
 watch(
   () => props.fabApplication.waferType,
   (newVal) => {
-    console.log(props.sawType)
+
     if (["NS"].includes(props.fabApplication.waferType)) {
       props.fabApplication.pstLayers = [];
       props.fabApplication.pstId = null;
@@ -99,8 +99,17 @@ watch(
       props.fabApplication.pstLayers = [];
       pstTypes.value = props.sawType.pstTypes;
       // pstTypes.value = props.sawType.pstTypes
-      layers.value = [];
-      props.fabApplication.pstId = undefined;
+    
+      if(props.sawType.pstTypes.length == 1){
+        
+        props.fabApplication.pstId = pstTypes.value[0].pstId
+        
+      }
+      else{
+        layers.value = [];      
+        props.fabApplication.pstId = undefined;
+      }
+
     }
   }
 );
@@ -111,8 +120,7 @@ watch(
   (newVal) => {
     if (props.fabApplication.waferType === "NS") {
       props.fabApplication.pstLayers = []
-    } else {
-      console.log(props.sawType.pstTypes)
+    } else {      
       layers.value = getPstLayerOptions(newVal, props.sawType.pstTypes);
       props.fabApplication.pstLayers = layers.value;
     }

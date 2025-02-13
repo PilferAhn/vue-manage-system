@@ -1,7 +1,6 @@
 <template>
   <ApplicationTemplate
-    :fab-application="fabApplication"    
-    :bandList="bandList"
+    :fab-application="fabApplication"        
     applicationType="create"
     :options="sawTypes"
     :sawType="sawType"
@@ -39,7 +38,7 @@ import axios from "axios";
 //   import type { FabApplicationInterface  } from "../../interface/fab";
 
 const bom = initBom();
-const { fabApplication } = initFabApplication3(bom);
+const { fabApplication } = initFabApplication2();
 const bandList = ref<band[]>([]);
 const sawTypes = reactive<SawType[]>([]);
 const sawType = reactive<SawType>({});
@@ -60,7 +59,7 @@ onMounted(async () => {
 
     const rawData = response.data;
 
-    bandList.value = await getBandList();
+    // bandList.value = await getBandList();
 
     Object.assign(sawTypes , convertPep8ToCamelCase2(rawData))
 

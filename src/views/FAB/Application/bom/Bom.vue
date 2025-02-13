@@ -1,19 +1,19 @@
 <template>
-  <div class="deposition-container">
+  <div class>
     <!-- <el-form-item label="Bom 정보"> -->
-    <el-descriptions
+    <el-descriptions v-if="props.fabApplication.bom !== null"
       class="margin-top"
-      title="Bom 정보"
+      title="BOM 정보"
       :column="4"
-      :size="size"
-      border
+      :size="'small'"    
+      border  
     >
       <!-- <template #extra>
           <el-button type="primary">Operation</el-button>
         </template> -->
       <el-descriptions-item span="4">
         <template #label>
-          <div class="cell-item">완제품 규격</div>
+          <div class="cell-item">Final Product Size</div>
         </template>
         <div>
           <el-select v-model="props.fabApplication.bom.finishedProductSize">
@@ -28,7 +28,7 @@
       </el-descriptions-item>
       <el-descriptions-item span="2">
         <template #label>
-          <div class="cell-item">범프볼 규격</div>
+          <div class="cell-item">Bump Size</div>
         </template>
         <div class="cell-value">
           <el-select v-model="props.fabApplication.bom.bump.size">
@@ -43,7 +43,7 @@
       </el-descriptions-item>
       <el-descriptions-item span="2">
         <template #label>
-          <div class="cell-item">범프볼 수</div>
+          <div class="cell-item">Bump Ea</div>
         </template>
         <div class="cell-value">
           <el-select v-model="props.fabApplication.bom.bump.quantity">
@@ -82,7 +82,7 @@
       </el-descriptions-item>
       <el-descriptions-item span="2">
         <template #label>
-          <div>규격</div>
+          <div>Size</div>
         </template>
         <div class="cell-value">
           <el-input
@@ -93,7 +93,7 @@
       </el-descriptions-item>
       <el-descriptions-item span="2">
         <template #label>
-          <div>용도</div>
+          <div>Epoxy Type</div>
         </template>
         <div class="cell-value">
           <el-select v-model="props.fabApplication.bom.epoxy.purpose">
@@ -108,15 +108,15 @@
       </el-descriptions-item>
       <el-descriptions-item span="2">
         <template #label>
-          <div>자제코드</div>
+          <div>Product Code</div>
         </template>
         <div class="cell-value">
           <el-input v-model="props.fabApplication.bom.epoxy.code"></el-input>
         </div>
       </el-descriptions-item>
-      <el-descriptions-item span="6">
+      <el-descriptions-item span="4">
         <template #label>
-          <div>Packge명</div>
+          <div class="cell-item">Package Name</div>
         </template>
         <div>
           <!-- <el-input
@@ -132,14 +132,14 @@
             ></el-option>
           </el-select>
         </div>
-      </el-descriptions-item>
-      <el-descriptions-item span="6">
-        <template #label>
-          <div></div>
-        </template>
-      </el-descriptions-item>
+      </el-descriptions-item>      
+      <el-descriptions-item span="1">
+
+      </el-descriptions-item>  
     </el-descriptions>
-    <!-- </el-form-item> -->
+    
+    
+    <br>
   </div>
 </template>
 
@@ -272,7 +272,7 @@ const size = ref<ComponentSize>("default");
 onMounted(async () => {
   // props.fabApplication.bom = bom;
   packageList.value = await getPackageList();
-  epoList.value = await getEpoInfoList();
+  epoList.value = await getEpoInfoList();  
   // console.log(epoList.value);
 });
 </script>
