@@ -22,6 +22,7 @@
       :hsWaferOptions="hsWaferOptions"
       :hsLayers="hsLayers"
       :wafer="wafer"
+      :applicationType="props.applicationType"
     />
   </div>
 </template>

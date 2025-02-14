@@ -6,37 +6,38 @@
         :saw-type="props.sawType"
       />
     </section>
-    <br />
-    <div class="align-center">
-      <h3 class="section-title">SiO2Seed</h3>
-      <!-- Seed 버튼 -->
-    </div>
-    <br />
-    <el-checkbox-button size="large" v-model="isSeedActive"
+
+    <div v-if="props.fabApplication.isSeedSio2">
+      <div class="align-center">
+        <h3 class="section-title">SiO2Seed</h3>
+        <!-- Seed 버튼 -->
+      </div>
+
+      <!-- <el-checkbox-button size="large" v-model="isSeedActive"
       >Activate Seed Information</el-checkbox-button
-    >
-    <!-- Seed 버튼이 활성화된 경우에만 정보 표시 -->
-    <section v-if="isSeedActive" class="section">
-      <el-select v-model="props.fabApplication.seedId">
+    > -->
+      <!-- Seed 버튼이 활성화된 경우에만 정보 표시 -->
+      <section class="section">
+        <!-- <el-select v-model="props.fabApplication.seedId">
         <el-option
           v-for="opt in seedOptions"
           :key="opt.key"
           :label="opt.label"
           :value="opt.key"
         ></el-option>
-      </el-select>
-      <br />
-      <br />
-      <el-table :data="props.fabApplication.seedLayers">
-        <el-table-column label="IDX" prop="idx"></el-table-column>
-        <el-table-column label="Material" prop="material"></el-table-column>
-        <el-table-column label="Thickness">
-          <template #default="scope">
-            <el-input v-model="scope.row.thickness"></el-input>
-          </template>
-        </el-table-column>
-      </el-table>
-    </section>
+      </el-select> -->
+        <!-- <br />
+      <br /> -->
+        <el-table :data="props.fabApplication.seedLayers">
+          <el-table-column label="Material" prop="material"></el-table-column>
+          <el-table-column label="Thickness">
+            <template #default="scope">
+              <el-input v-model="scope.row.thickness"></el-input>
+            </template>
+          </el-table-column>
+        </el-table>
+      </section>
+    </div>
   </div>
 </template>
 
@@ -62,12 +63,31 @@ const sType = ref<seedType>();
 
 onMounted(() => {
   initializeSeedOptions();
+  props.fabApplication.seedId = null;
+  props.fabApplication.seedLayers = [];
 });
+
+watch(
+  () => props.fabApplication.isSeedSio2,
+  (newVal) => {
+    isSeedActive.value = newVal;
+    props.fabApplication.seedId = null;
+    props.fabApplication.seedLayers = [];
+    
+    if(!newVal){      
+    }
+    else{
+      initializeSeedOptions()
+      // props.fabApplication.seedLayers = sType.value.layers;
+    }
+
+  }
+);
 
 watch(
   () => props.fabApplication.seedId,
   (newVal) => {
-    if (props.fabApplication.seedId !== undefined) {
+    if (props.fabApplication.seedId !== undefined && props.fabApplication.seedId !== null) {
       sType.value = props.sawType.seedTypes.find(
         (seed) => seed.seedId == newVal
       );
@@ -95,6 +115,9 @@ function initializeSeedOptions() {
       label: props.sawType.seedTypes[i].name,
       value: props.sawType.seedTypes[i].seedId.toString(),
     });
+  }
+  if (seedOptions.value.length == 1) {
+    props.fabApplication.seedId = parseInt(seedOptions.value[0].value);
   }
 }
 </script>

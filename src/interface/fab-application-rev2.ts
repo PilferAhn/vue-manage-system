@@ -63,6 +63,7 @@ export interface FabRequestForm {
   isNeedSio2Seed? : boolean
   isActive?: boolean;
   filterType? : string;
+  tcMachineName? : string
   note?: string;
   idtMachineId? : string
   waferId?: number;
@@ -82,9 +83,10 @@ export interface FabRequestForm {
   bom? : Bom
   wafer? : FabWafer;
   isAllowBridge? : boolean;
-  is_idt_xoi? : boolean;
-  is_need_extra_shot? : boolean;
-  is_tone_inverted? : boolean;
+  isIdtXoi? : boolean;
+  isNeedExtraShot? : boolean;
+  isSeedSio2? : boolean;
+  isToneInverted? : boolean;
   chip? : {
     hori : number
     verti : number
@@ -170,6 +172,7 @@ export interface TcType {
   tcId?: number;
   name?: string;
   layers?: PstLayer[];
+  tcMachines? : IdtMachine[];
 }
 
 

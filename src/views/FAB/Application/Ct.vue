@@ -3,55 +3,42 @@
     class="tc-selection-container"
     v-if="props.sawType.tcTypes && props.sawType.tcTypes.length > 0"
   >
+
+  
     <!-- Thickness 선택 -->
-    <section class="section">
+    <section class="section-row">
       <h3 class="section-title">SiO2</h3>
-      <el-select
-        v-model="props.fabApplication.tcId"
-        placeholder="Download Thickness 선택"
-        class="custom-select"
-        clearable
-      >
-        <el-option
-          v-for="optWafer in props.sawType.tcTypes"
-          :key="optWafer.tcId"
-          :label="optWafer.name"
-          :value="optWafer.tcId"
-        ></el-option>
-      </el-select>
-    </section>
-
-    <!-- Layer 테이블 -->
-    <section class="section">
-      <el-table :data="layerOptions" stripe class="custom-table">
-        <!-- Index 컬럼 -->
-        <el-table-column
-          prop="idx"
-          label="Index"
-          :align="'center'"
-          width="100"
-        ></el-table-column>
-
-        <!-- Material Name 컬럼 -->
+      <el-table :data="layerOptions" stripe class="custom-table" border>
         <el-table-column
           prop="material"
           label="Material Name"
           :align="'center'"
-          width="150"
         ></el-table-column>
 
-        <!-- Thickness 컬럼 -->
         <el-table-column label="Thickness" :align="'center'">
           <template #default="scope">
             <el-input
               v-model="scope.row.thickness"
-              placeholder="Enter thickness"
               class="custom-input"
             ></el-input>
           </template>
         </el-table-column>
+        {{ machineList }}
+        <el-table-column label="Machine" :align="'center'">          
+          <template #default="">
+            <el-select v-model="props.fabApplication.tcMachineName">
+              <el-option v-for="machine in machineList"
+              :key="machine.key"
+              :label="machine.label"
+              :value="machine.value"></el-option>
+            </el-select>
+          </template>
+        </el-table-column>
       </el-table>
     </section>
+
+    <!-- Layer 테이블 -->
+    <section class="section"></section>
   </div>
 </template>
 
@@ -62,7 +49,8 @@ import type {
   FabRequestForm,
   Layer,
 } from "../../../interface/fab-application-rev2";
-import { getLayerOptions } from "../../../utils/Fab/fab-application-tc-utils";
+import { getLayerOptions, createMachineList } from "../../../utils/Fab/fab-application-tc-utils";
+import { OptionInterface } from "../../../interface/option";
 
 // Props 정의
 const props = defineProps<{
@@ -70,8 +58,10 @@ const props = defineProps<{
   sawType: SawType;
 }>();
 
-const layerOptions = ref<Layer[]>([]);
+const machineList = ref<OptionInterface[]>([]);
 
+const layerOptions = ref<Layer[]>([]);
+const machineName = ref<string>("")
 onMounted(() => {
   if (Object.keys(props.sawType).length !== 0) {
     layerOptions.value = props.fabApplication.tcLayers;
@@ -85,9 +75,14 @@ watch(
     if (newVal === "TC") {
       if (props.sawType.tcTypes.length == 1) {
         props.fabApplication.tcId = props.sawType.tcTypes[0].tcId;
+        machineList.value = createMachineList(props.sawType.tcTypes[0].tcMachines)
+        console.log(machineList.value)
       } else {
         props.fabApplication.tcLayers = [];
       }
+
+      // machineList.value=props.sawType.tcTypes.
+
     } else {
       props.fabApplication.tcId = null;
       props.fabApplication.tcLayers = [];
@@ -143,30 +138,26 @@ export default {};
   margin-bottom: 24px;
 }
 
+.section-row {
+  display: flex;
+  align-items: center; /* 높이 맞추기 */
+  gap: 16px; /* 제목과 테이블 사이 간격 */
+}
+
 .section-title {
+  white-space: nowrap; /* 줄바꿈 방지 */
   font-size: 1.2rem;
-  font-weight: 600;
-  color: #444;
-  margin-bottom: 12px;
+  font-weight: bold;
+  color: #333;
   border-left: 4px solid #4caf50;
   padding-left: 8px;
+  min-width: 100px; /* 제목의 최소 너비 설정 */
 }
 
-/* 드롭다운 스타일 */
-.custom-select {
-  width: 300px;
-}
-
-/* 테이블 스타일 */
 .custom-table {
-  width: 100%;
+  flex: 1; /* 테이블이 남은 공간 차지 */
   border-radius: 8px;
   overflow: hidden;
-  margin-top: 16px;
 }
 
-/* 입력 필드 스타일 */
-.custom-input {
-  width: 100%;
-}
 </style>

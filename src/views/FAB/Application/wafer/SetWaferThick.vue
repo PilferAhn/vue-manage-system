@@ -1,9 +1,10 @@
 <template>
   <section class="section">
-    <h3 class="section-title">HS Wafer Structure</h3>
-    <br />
+
+    
     <el-row :gutter="20" class="align-center">
-      <el-col :span="20">
+      <h3 class="section-title">HS Wafer Structure</h3>
+      <el-col :span="15">
         <el-form-item>
           <el-select
             v-model="props.fabApplication.hsId"
@@ -82,6 +83,7 @@ const props = defineProps<{
   hsWaferOptions: OptionInterface[];
   hsLayers: Layer[];
   wafer: FabWafer;
+  applicationType : string;
 }>();
 
 const haLayerStackId = ref(props.hsLayerstackId);
@@ -91,7 +93,7 @@ const ltThick = ref<number | undefined>(undefined);
 
 // 📌 컬럼 데이터 (hsLayers 기반 동적 생성)
 const columns = computed(() => {
-  console.log("컬럼 업데이트:", props.hsLayers);
+  
   return hsLayers.value.map((layer) => ({
     label: layer.material, // 컬럼 헤더
     prop: layer.material, // 데이터 바인딩 키
@@ -107,7 +109,7 @@ function updateTable() {
     temp[hsLayers.value[i].material] = hsLayers.value[i].thickness;
   }
 
-  console.log("테이블 데이터 업데이트:", temp);
+  
   newTableData.value.push(temp);
 }
 
@@ -117,7 +119,10 @@ onMounted(() => {
     hsLayers.value = props.fabApplication.hsType.layers;
     updateTable();
   }
-  props.fabApplication.hsId = undefined;
+  if(props.applicationType !== 'load'){
+    props.fabApplication.hsId = undefined;
+  }
+  
 });
 
 // 📌 HS Wafer 변경 감지
@@ -127,7 +132,10 @@ watch(
     if (newVal !== undefined) {
       hsLayers.value = createHsWaferLayerOption(newVal.toString(), props.wafer);
       ltThick.value = getLtThickness(hsLayers.value);
-      props.fabApplication.waferAngle = getHsWaferAngle(newVal.toString(), props.wafer);
+      
+      if(props.applicationType !== "load"){
+        props.fabApplication.waferAngle = getHsWaferAngle(newVal.toString(), props.wafer);
+      }      
       updateTable();
     }
   },

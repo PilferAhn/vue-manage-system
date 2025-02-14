@@ -1,7 +1,6 @@
 <template>
   <section class="section">
     <!-- <h3 class="section-title">Set Wafer Details</h3> -->
-
     <el-row :gutter="20">
       <el-col :span="7">
         <el-form-item class="custom-form-item" prop="waferAngle">
@@ -78,7 +77,6 @@
 import { defineProps, defineEmits, ref, watch, onMounted } from "vue";
 import {
   getFabWaferFromWaferId,
-  
   createHsWaferCondition,
   createAngleOptions,
   createThicknessOptions,
@@ -151,55 +149,56 @@ watch(
 watch(
   () => props.fabApplication.waferId,
   (newVal) => {
-    
-    if (props.fabApplication.waferType === "TC") {
-      props.fabApplication.waferAngle = 126;
-    } else {
-      props.fabApplication.waferAngle = 43;
-    }
 
-    props.fabApplication.waferThickness = 0;
-    waferThickness.value = 0;
-    angAndThink.value = "";
+    if (props.applicationType !== "load") {
 
-    if (props.fabApplication.waferId !== undefined) {
-      wafer.value = getFabWaferFromWaferId(
-        newVal.toString(),
-        props.sawType.wafers
-      );
-      props.fabApplication.waferId = parseInt(newVal.toString());
+      if (props.fabApplication.waferType === "TC") {
+        props.fabApplication.waferAngle = 126;
+      } else {
+        props.fabApplication.waferAngle = 43;
+      }
 
+      props.fabApplication.waferThickness = 0;
+      waferThickness.value = 0;
+      angAndThink.value = "";
 
-      if (props.fabApplication.waferType === "HS") {
-        props.fabApplication.waferThickness = 500;
-        emit("update:hsWaferOptions", createHsWaferCondition(wafer.value));
-        emit("update:wafer", wafer.value);
-        emit("update:hsLayers", createHsWaferCondition(wafer.value));
-
-      } else if (["NS", "TC"].includes(props.fabApplication.waferType)) {
-        angleOptions.value = createAngleOptions(
-          props.sawType,
-          parseInt(newVal.toString())
+      if (props.fabApplication.waferId !== undefined) {
+        wafer.value = getFabWaferFromWaferId(
+          newVal.toString(),
+          props.sawType.wafers
         );
-        thickOptions.value = createThicknessOptions(
-          props.sawType,
-          parseInt(newVal.toString())
-        );
+        props.fabApplication.waferId = parseInt(newVal.toString());
+
+        if (props.fabApplication.waferType === "HS") {
+          props.fabApplication.waferThickness = 500;
+          emit("update:hsWaferOptions", createHsWaferCondition(wafer.value));
+          emit("update:wafer", wafer.value);
+          emit("update:hsLayers", createHsWaferCondition(wafer.value));
+        } else if (["NS", "TC"].includes(props.fabApplication.waferType)) {
+          angleOptions.value = createAngleOptions(
+            props.sawType,
+            parseInt(newVal.toString())
+          );
+          thickOptions.value = createThicknessOptions(
+            props.sawType,
+            parseInt(newVal.toString())
+          );
+        }
       }
     }
   }
 );
 
-watch(
-  () => angAndThink.value,
-  (newVal) => {
-    const tempList = newVal.split(",");
-    if (tempList.length === 2) {
-      props.fabApplication.waferAngle = parseFloat(tempList[0]);
-      props.fabApplication.waferThickness = parseInt(tempList[1]);
-    }
-  }
-);
+// watch(
+//   () => angAndThink.value,
+//   (newVal) => {
+//     const tempList = newVal.split(",");
+//     if (tempList.length === 2) {
+//       props.fabApplication.waferAngle = parseFloat(tempList[0]);
+//       props.fabApplication.waferThickness = parseInt(tempList[1]);
+//     }
+//   }
+// );
 
 // Watch로 부모 업데이트
 //   watch(localAngle, (newValue) => emit("update:angle", newValue));

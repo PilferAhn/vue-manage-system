@@ -12,7 +12,7 @@
         label="브릿지"
       ></el-checkbox>
       <el-checkbox
-        v-model="props.fabApplication.is_idt_xoi"
+        v-model="props.fabApplication.isIdtXoi"
         label="IDT-Oxi"
       ></el-checkbox>      
       <span
@@ -32,12 +32,16 @@
       </span>
 
       <el-checkbox
-        v-model="props.fabApplication.is_need_extra_shot"
+        v-model="props.fabApplication.isNeedExtraShot"
         label="TEG Shot 추가(더블샷)"
       ></el-checkbox>
       <el-checkbox
-        v-model="props.fabApplication.is_idt_xoi"
+        v-model="props.fabApplication.isToneInverted"
         label="PAD 6um 적용(톤반전)"
+      ></el-checkbox>
+      <el-checkbox
+        v-model="props.fabApplication.isSeedSio2"
+        label="SiO2Seed"
       ></el-checkbox>
     </div>
   </div>

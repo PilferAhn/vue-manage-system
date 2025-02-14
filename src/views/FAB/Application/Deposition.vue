@@ -59,8 +59,8 @@
     <!-- IDT 정보 테이블 섹션 -->
     <section class="section">
       <h3 class="section-title2">IDT Thickness</h3>
-      <el-table :data="layers" stripe class="custom-table">
-        <!-- INDEX 컬럼 -->
+      <!-- <el-table :data="layers" stripe class="custom-table" >
+
         <el-table-column
           label="INDEX"
           prop="idx"
@@ -68,7 +68,7 @@
           width="100"
         ></el-table-column>
 
-        <!-- IDT Name 컬럼 -->
+
         <el-table-column
           label="IDT Name"
           prop="material"
@@ -76,7 +76,7 @@
           width="150"
         ></el-table-column>
 
-        <!-- Thickness 컬럼 -->
+
         <el-table-column label="Thickness" :align="'center'">
           <template #default="scope">
             <el-input
@@ -87,7 +87,12 @@
             ></el-input>
           </template>
         </el-table-column>
-      </el-table>
+      </el-table> -->
+      <!-- <el-descriptions title="Layer Details" border :column="2" size="small">
+        <el-descriptions-item v-for="layer in layers" :label="layer.material">{{
+          layer.thickness
+        }}</el-descriptions-item>
+      </el-descriptions> -->
     </section>
     <!-- <section class="section">
       <idt-process
@@ -158,6 +163,10 @@ onMounted(() => {
       props.sawType.idtTypes,
       props.fabApplication.idtId.toString()
     );
+
+    if (machineOptions.value.length == 1) {
+      props.fabApplication.idtMachineName = machineOptions.value[0].value;
+    }
   }
 });
 
@@ -170,15 +179,31 @@ watch(
       newVal
     );
 
-    
-
-    if(depositionOptions.value.length == 1){
-      props.fabApplication.idtId = parseInt(depositionOptions.value[0].value)
+    if (props.fabApplication.waferType === "TC") {
+      // const temp = {
+      //   key : depositionOptions.value[0].key,
+      //   label : "ETC",
+      //   value : "ETC",
+      // }
+      // depositionOptions.value.push(temp)
     }
 
+    if (depositionOptions.value.length == 1) {
+      props.fabApplication.idtId = parseInt(depositionOptions.value[0].value);
+    }
+
+    if (props.fabApplication.idtId !== null) {
+      machineOptions.value = generateMachineOptions(
+        props.sawType.idtTypes,
+        props.fabApplication.idtId.toString()
+      );
+
+      if (machineOptions.value.length == 1) {
+        props.fabApplication.idtMachineName = machineOptions.value[0].value;
+      }
+    }
   }
 );
-
 
 // waferType 변경 감지
 watch(
@@ -198,14 +223,14 @@ watch(
       newidtProcessList.value = [
         { key: 2, label: "Lift-off", value: "Lift-off" },
       ];
-      props.fabApplication.idtProcessId = "Lift-off"
+      props.fabApplication.idtProcessId = "Lift-off";
     } else if (["NS", "HS"].includes(newVal)) {
       newidtProcessList.value = [
         { key: 1, label: "Etching", value: "Etching" },
         { key: 2, label: "Lift-off", value: "Lift-off" },
       ];
     }
-  }  
+  }
 );
 
 // depositionCondi 변경 감지
@@ -217,29 +242,12 @@ watch(
         idtType,
         getIdtTypeByIdtId(props.sawType.idtTypes, props.fabApplication.idtId)
       );
-      // props.fabApplication.idtProcess = idtType.idtProcessId;
-      // idtProcessIdList.value = [];
-      // props.fabApplication.idtProcessId = "";
-
-      // if (idtType.idtProcesses.length == 1) {
-      //   props.fabApplication.idtProcessId = idtType.idtProcesses[0].idtProcessId;
-      // } else {
-      //   // console.log(props.fabApplication.idtId)
-      //   // console.log(props.sawType.idtTypes)
-      //   idtProcessIdList.value = genIdtProcessOptions(
-      //     props.sawType.idtTypes,
-      //     props.fabApplication.idtId
-      //   );
-      // }
 
       layerNames.value = getLayerNameFromIdtTypes(
         props.sawType.idtTypes,
         props.fabApplication.idtId,
         layers
       );
-
-
-
       machineOptions.value = generateMachineOptions(
         props.sawType.idtTypes,
         props.fabApplication.idtId.toString()
@@ -292,7 +300,7 @@ export default {};
 }
 
 .section-title2 {
-  font-size: 1.0rem;
+  font-size: 1rem;
   font-weight: bold;
   color: #333;
   margin-bottom: 12px;

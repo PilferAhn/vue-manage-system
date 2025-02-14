@@ -14,6 +14,7 @@ export interface Application {
   nfApp?: NfApplication;
   measurer?: string;
   estFinishedDate?: string;
+  purpose? : string
 }
 
 export interface NaApplication {}

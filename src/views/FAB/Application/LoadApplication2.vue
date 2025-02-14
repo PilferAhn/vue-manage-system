@@ -5,7 +5,6 @@
     <ApplicationTemplate
       :fab-application="app"
       :options="sawTypes"
-      :bandList="bandList"
       :sawType="sawType"
       applicationType="load"
     ></ApplicationTemplate>
@@ -25,6 +24,7 @@ import type {
 import {
   convertKeysToCamelCase,
   convertPep8ToCamelCase2,
+  
 } from "../../../utils/key-converter";
 import ApplicationTemplate from "./ApplicationTemplate.vue";
 import { useRoute } from "vue-router";
@@ -33,7 +33,7 @@ import { defineSawTypeByWaferType } from "../../../utils/Fab/fab_application-waf
 const route = useRoute(); // Access the route
 const app = reactive<FabRequestForm>({});
 const isLoad = ref<boolean>(false);
-const bandList = ref<band[]>([]);
+
 const sawTypes = reactive<SawType[]>([]);
 const sawType = reactive<SawType>({});
 
@@ -45,25 +45,24 @@ const fetchApplication = async (productName: any) => {
     formData.append("product_name", productName);
 
     const response = await axios.post(url, formData);
-    const convertedData = convertKeysToCamelCase(response.data);
-    console.log(convertedData)
+    const convertedData = convertPep8ToCamelCase2(response.data);
+    
     // Assign the converted data to processData
     Object.assign(app, convertedData);
     
     app.waferType = app.wafer.sawTypeId;
-
-    bandList.value = await getBandList();
-
+    
     const response1 = await axios.get(
       "http://10.29.11.124:40000/fab_monitoring_rev2/get_saw_types_list"
     );
     const rawData = response1.data;
+    
     Object.assign(sawTypes, convertPep8ToCamelCase2(rawData));
     Object.assign(
       sawType,
       defineSawTypeByWaferType(app.wafer.sawTypeId, sawTypes)
     );        
-    
+    console.log(app)
     isLoad.value = true;
   } catch (error) {
     console.error("Error fetching application:", error);

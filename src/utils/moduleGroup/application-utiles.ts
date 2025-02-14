@@ -35,6 +35,7 @@ export function createQuantityOptions(num: number) {
       label: i.toString(),
       value: i.toString(),
     };
+    options.value.push(temp)
   }
 
   return options.value;

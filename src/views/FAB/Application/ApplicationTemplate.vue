@@ -4,38 +4,26 @@
       ref="fabFormRef"
       :model="props.fabApplication"
       :rules="fabRequestFormRules"
-      :label-position="'top'"
+      label-position="top"
       label-width="auto"
     >
       <!-- Split Screen Layout -->
-      <div style="display: flex; gap: 20px; margin-top: 20px">
+      <div class="form-container">
         <!-- Left Side: Application -->
-        <div style="flex: 1; border-right: 1px solid #ccc; padding-right: 10px">
-          <!-- <User
-            v-model:designer="props.fabApplication.designer"
-            v-model:designerId="props.fabApplication.designerId"
-            v-model:requester="props.fabApplication.requester"
-            v-model:requesterId="props.fabApplication.requesterId"
-          ></User> -->
-
+        <div class="left-section">
           <ApplicationContent
             v-model:fabApplication="props.fabApplication"
             :sawType="sawType"
-          ></ApplicationContent>
-
+          />
           <Buttons
             v-model:fabApplication="props.fabApplication"
             :fabFormRef="fabFormRef"
             :application-type="props.applicationType"
-          ></Buttons>
+          />
         </div>
 
         <!-- Right Side: Wafer and Deposition -->
-        <div style="flex: 1; padding-left: 10px">
-          <PhotoSection
-            v-model:fabApplication="props.fabApplication"
-            :sawType="sawType"            
-          />
+        <div class="right-section">
           <Wafer
             v-model:fabApplication="props.fabApplication"
             :sawType="sawType"
@@ -45,28 +33,27 @@
             v-model:fabApplication="props.fabApplication"
             :sawType="sawType"
           />
-          <Pst
+          <Pst v-model:fabApplication="props.fabApplication" :sawType="sawType" />
+          <PhotoSection v-if="props.fabApplication.photo !== null"
             v-model:fabApplication="props.fabApplication"
             :sawType="sawType"
-          ></Pst>
-          <Ct
-            v-model:fabApplication="props.fabApplication"
-            :sawType="sawType"
-          ></Ct>
+          />
+          <Ct v-model:fabApplication="props.fabApplication" :sawType="sawType" />
           <Passivation
             v-model:fabApplication="props.fabApplication"
             :sawType="sawType"
-          ></Passivation>
+          />
           <Seed
-            v-if="sawType && sawType.seedTypes && sawType.seedTypes.length > 0"
+            v-if="sawType?.seedTypes?.length > 0"
             v-model:fabApplication="props.fabApplication"
             :sawType="sawType"
-          ></Seed>
+          />
         </div>
       </div>
     </el-form>
   </div>
 </template>
+
 
 <script lang="ts" setup>
 import { watch, ref, reactive } from "vue";
@@ -112,5 +99,40 @@ export default {
 </script>
 
 <style scoped>
-/* @import "../../../assets/css/fab-request-form.css"; */
+.form-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-between; /* 공백이 없도록 조정 */
+  align-items: flex-start;
+}
+
+.section-box {
+  flex: 1;
+  padding: 20px;
+  box-sizing: border-box; /* 패딩과 테두리를 포함하여 정확한 크기 유지 */
+}
+
+.left-section {
+  width: 50%;
+  margin-right: 10px; /* border-right 대신 margin 사용 */
+}
+
+.right-section {
+  width: 50%;
+}
+
+/* 반응형 디자인 - 화면이 너무 작아질 때 */
+@media (max-width: 1024px) {
+  .form-container {
+    flex-direction: column;
+  }
+
+  .left-section,
+  .right-section {
+    flex: 1 1 auto;
+    width: 100%;
+    border-right: none;
+  }
+}
+
 </style>

@@ -7,7 +7,6 @@
   >
     <!-- PST 타입 선택 -->
     <section class="section">
-      
       <h3 class="section-title">Select Piston</h3>
       <el-select
         v-model="props.fabApplication.pstId"
@@ -91,7 +90,6 @@ onMounted(() => {
 watch(
   () => props.fabApplication.waferType,
   (newVal) => {
-
     if (["NS"].includes(props.fabApplication.waferType)) {
       props.fabApplication.pstLayers = [];
       props.fabApplication.pstId = null;
@@ -99,30 +97,35 @@ watch(
       props.fabApplication.pstLayers = [];
       pstTypes.value = props.sawType.pstTypes;
       // pstTypes.value = props.sawType.pstTypes
-    
-      if(props.sawType.pstTypes.length == 1){
-        
-        props.fabApplication.pstId = pstTypes.value[0].pstId
-        
-      }
-      else{
-        layers.value = [];      
+
+      if (props.sawType.pstTypes.length == 1) {
+        props.fabApplication.pstId = pstTypes.value[0].pstId;
+      } else {
+        layers.value = [];
         props.fabApplication.pstId = undefined;
       }
-
     }
   }
 );
+
+// const newTableData = ref<object[]>([]);
+// function updateTable() {
+//   for (let i = 0; i < layers.value.length; i++) {
+//     newTableData.value[0][layers[i].material] = layers[i].thickness;
+//   }
+// }
 
 // pstId 변경 감지
 watch(
   () => props.fabApplication.pstId,
   (newVal) => {
     if (props.fabApplication.waferType === "NS") {
-      props.fabApplication.pstLayers = []
-    } else {      
+      props.fabApplication.pstLayers = [];
+    } else {
       layers.value = getPstLayerOptions(newVal, props.sawType.pstTypes);
       props.fabApplication.pstLayers = layers.value;
+      
+      // updateTable()
     }
   }
 );

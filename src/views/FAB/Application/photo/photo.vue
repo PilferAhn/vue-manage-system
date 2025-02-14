@@ -1,7 +1,7 @@
 <template>
   <div class="deposition-container">
-    <h3 class="section-title">Photo</h3>
-
+    <h3 class="section-title">Photo</h3>    
+    
     <el-table :data="props.fabApplication.photo.photoProcesses">
       <el-table-column
         label="Process Name"
@@ -12,7 +12,7 @@
         <template #default="scope">
           <el-select
             v-model="scope.row.machineName"
-            :disabled="!scope.row.isMutable"
+            :disabled="scope.row.machineName === 'Nikon'"
           >
             <el-option
               v-for="machine in tempMachineList"
@@ -47,7 +47,6 @@ const props = defineProps<{
   sawType: SawType;
 }>();
 
-
 // Piston 선택에 의해서
 // HS 의 경우에는 Photo 의 PST 을 변경시킨다.
 //
@@ -60,11 +59,18 @@ watch(
 
       for (let j = 0; j < props.sawType.pstTypes.length; j++) {
         if (props.sawType.pstTypes[j].pstId == newVal) {
-          for (let i = 0; i < props.fabApplication.photo.photoProcesses.length; i++) {
-            if(["M_PST", "D_PST"].includes(props.fabApplication.photo.photoProcesses[i].processName)){
-
-              props.fabApplication.photo.photoProcesses[i].processName = props.sawType.pstTypes[j].name
-
+          for (
+            let i = 0;
+            i < props.fabApplication.photo.photoProcesses.length;
+            i++
+          ) {
+            if (
+              ["M_PST", "D_PST"].includes(
+                props.fabApplication.photo.photoProcesses[i].processName
+              )
+            ) {
+              props.fabApplication.photo.photoProcesses[i].processName =
+                props.sawType.pstTypes[j].name;
             }
           }
         }
@@ -77,102 +83,105 @@ watch(
   () => props.fabApplication.waferType,
   (newVal) => {
     let temp: PhotoProcess[] = [];
-    if (newVal === "NS") {
-      temp = [
-        {
-          processName: "IDT",
-          machineName: "",
-          reticleName: "",
-          isMutable: true,
-        },
-        {
-          processName: "브릿지",
-          machineName: "Nikon",
-          reticleName: "",
-          isMutable: false,
-        },
-        {
-          processName: "PAD",
-          machineName: "Nikon",
-          reticleName: "",
-          isMutable: false,
-        },
-        {
-          processName: "SiO",
-          machineName: "Nikon",
-          reticleName: "",
-          isMutable: false,
-        },
-      ];
-    } else if (newVal === "HS") {
-      temp = [
-        {
-          processName: "IDT",
-          machineName: "",
-          reticleName: "",
-          isMutable: true,
-        },
-        {
-          processName: "D_PST",
-          machineName: "",
-          reticleName: "",
-          isMutable: true,
-        },
-        {
-          processName: "브릿지",
-          machineName: "Nikon",
-          reticleName: "",
-          isMutable: false,
-        },
-        {
-          processName: "PAD",
-          machineName: "Nikon",
-          reticleName: "",
-          isMutable: false,
-        },
-        {
-          processName: "SiO",
-          machineName: "Nikon",
-          reticleName: "",
-          isMutable: false,
-        },
-      ];
-    } else {
-      temp = [
-        {
-          processName: "IDT",
-          machineName: "",
-          reticleName: "",
-          isMutable: true,
-        },
-        {
-          processName: "PST",
-          machineName: "",
-          reticleName: "",
-          isMutable: true,
-        },
-        {
-          processName: "COT",
-          machineName: "Nikon",
-          reticleName: "",
-          isMutable: false,
-        },
-        {
-          processName: "PAD",
-          machineName: "Nikon",
-          reticleName: "",
-          isMutable: false,
-        },
-        {
-          processName: "SiO",
-          machineName: "Nikon",
-          reticleName: "",
-          isMutable: false,
-        },
-      ];
-    }
+    
+    if (props.fabApplication.photo.photoProcesses.length <= 2) {
+      if (newVal === "NS") {
+        temp = [
+          {
+            processName: "IDT",
+            machineName: "",
+            reticleName: "",
+            isMutable: true,
+          },
+          {
+            processName: "브릿지",
+            machineName: "Nikon",
+            reticleName: "",
+            isMutable: false,
+          },
+          {
+            processName: "PAD",
+            machineName: "Nikon",
+            reticleName: "",
+            isMutable: false,
+          },
+          {
+            processName: "SiO",
+            machineName: "Nikon",
+            reticleName: "",
+            isMutable: false,
+          },
+        ];
+      } else if (newVal === "HS") {
+        temp = [
+          {
+            processName: "IDT",
+            machineName: "",
+            reticleName: "",
+            isMutable: true,
+          },
+          {
+            processName: "D_PST",
+            machineName: "",
+            reticleName: "",
+            isMutable: true,
+          },
+          {
+            processName: "브릿지",
+            machineName: "Nikon",
+            reticleName: "",
+            isMutable: false,
+          },
+          {
+            processName: "PAD",
+            machineName: "Nikon",
+            reticleName: "",
+            isMutable: false,
+          },
+          {
+            processName: "SiO",
+            machineName: "Nikon",
+            reticleName: "",
+            isMutable: false,
+          },
+        ];
+      } else {
+        temp = [
+          {
+            processName: "IDT",
+            machineName: "",
+            reticleName: "",
+            isMutable: true,
+          },
+          {
+            processName: "PST",
+            machineName: "",
+            reticleName: "",
+            isMutable: true,
+          },
+          {
+            processName: "COT",
+            machineName: "Nikon",
+            reticleName: "",
+            isMutable: false,
+          },
+          {
+            processName: "PAD",
+            machineName: "Nikon",
+            reticleName: "",
+            isMutable: false,
+          },
+          {
+            processName: "SiO",
+            machineName: "Nikon",
+            reticleName: "",
+            isMutable: false,
+          },
+        ];
+      }
 
-    props.fabApplication.photo.photoProcesses = temp;
+      props.fabApplication.photo.photoProcesses = temp;
+    }
   }
 );
 

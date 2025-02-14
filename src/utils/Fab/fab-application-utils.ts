@@ -53,6 +53,7 @@ export function initFabApplication3(bom: Bom) {
     isActive: true,
     note: "",
     code: "",
+    tcMachineName : null,
     waferId: undefined,
     waferAngle: undefined,
     waferThickness: undefined,
@@ -64,30 +65,31 @@ export function initFabApplication3(bom: Bom) {
     requester: { userName: "" },
     designer: { userName: "" },
     idtType: undefined,
-    is_idt_xoi: false,
-    is_need_extra_shot: false,
-    is_tone_inverted: false,
+    isIdtXoi: false,
+    isNeedExtraShot: false,
+    isToneInverted: false,
+    isSeedSio2 : false,
     bom: bom,
     photo: {
       photoProcesses: [
-        {
-          processName: "IDT",
-          machineName: "",
-          reticleName: "",
-          isMutable: true,
-        },
-        {
-          processName: "PAD",
-          machineName: "Nikon",
-          reticleName: "",
-          isMutable: false,
-        },
-        {
-          processName: "SiO",
-          machineName: "Nikon",
-          reticleName: "",
-          isMutable: false,
-        },
+        // {
+        //   processName: "IDT",
+        //   machineName: "",
+        //   reticleName: "",
+        //   isMutable: true,
+        // },
+        // {
+        //   processName: "PAD",
+        //   machineName: "Nikon",
+        //   reticleName: "",
+        //   isMutable: false,
+        // },
+        // {
+        //   processName: "SiO",
+        //   machineName: "Nikon",
+        //   reticleName: "",
+        //   isMutable: false,
+        // },
       ],
     },
 
@@ -118,16 +120,18 @@ export function initFabApplication3(bom: Bom) {
 
 export function initFabApplication2() {
   const fabApplication = reactive<FabRequestForm>({
-    productName: "TEST12345678",
+    productName: "250214",
     requesterId: "",
     designerId: "",
-
+    bandGroupId : "Low",
     designerConfirm: false,
     weekNumber: undefined,
+    seedId : null,
     isAoi: true,
     isDvr: false,
     quantity: 10,
-    waferType: "HS",
+    waferType: "",
+    code : "H",
     band: "B1",
     filterType: "Single",
     wantedFabStartDate: undefined,
@@ -142,8 +146,8 @@ export function initFabApplication2() {
     status: "",
     createdDate: undefined,
     isActive: true,
-    note: "",
-    code: "",
+    tcId : null,
+    note: "",    
     waferId: undefined,
     waferAngle: undefined,
     waferThickness: undefined,
@@ -151,7 +155,10 @@ export function initFabApplication2() {
     idtMachineName: undefined,
     idtId: null,
     pstId: null,
-    tcId: null,
+    isIdtXoi: false,
+    isNeedExtraShot: false,
+    isToneInverted: false,
+    isSeedSio2 : false,
     depositionCondi: undefined,
     requester: { userName: "" },
     designer: { userName: "" },
@@ -216,6 +223,7 @@ export function initFabApplication2() {
     passivationLayers: [],
     seedLayers: [],
     tcLayers: [],
+
   });
   // Return the reactive FabRequestForm object
   return { fabApplication };
@@ -328,7 +336,7 @@ export async function getAppRev2ByProductName(
   productName: string
 ): Promise<FabRequestForm> {
   const form = new FormData();
-  const url = "/fab_monitoring_rev2/get_fab_request";
+  const url = serverUrl + "/fab_monitoring_rev2/get_fab_request";
   form.append("product_name", productName);
 
   try {

@@ -69,7 +69,8 @@ export default {};
 <style scoped>
 /* 전체 폼 컨테이너 */
 .form-container {
-  max-width: 800px;
+  max-width: 765px;
+  display: flex;
   margin: 0 auto;
   padding: 20px;
   background-color: #f9f9f9;
