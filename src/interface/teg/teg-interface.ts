@@ -38,13 +38,15 @@ interface shotInformation {
     requesterId?: string;
     purpose: string;
     lotID: string;
+    waferType?:string;
+    packageType? : string
   
     shotSize: string;
     chipSize: string;
     chipQuantity: string;
     maskName: string;
     isMaskChange: string;
-    isAoi: string;
+    isAOI: string;
     isDvr: string;
     port: string;
   

@@ -53,5 +53,10 @@ export const tegApplicationRules: FormRules = {
   rawPatternNo: [
     { required: true, message: "RAW Pattern 을 입력하세요", trigger: "blur" },
   ],
-
+  waferType: [
+    { required: true, message: "Wafer Type 을 입력하세요", trigger: "blur" },
+  ],
+  packageType: [
+    { required: true, message: "Package Type 을 입력하세요", trigger: "blur" },
+  ],
 };
