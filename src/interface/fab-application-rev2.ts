@@ -34,6 +34,7 @@ export interface PhotoProcess{
   machineName? : string
   reticleName? : string
   isMutable? : boolean
+  order? : number
 }
  
 export interface FabRequestForm {

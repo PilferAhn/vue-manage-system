@@ -1,7 +1,7 @@
 <template>
   <div class="deposition-container">
-    <h3 class="section-title">Photo</h3>    
-    
+    <h3 class="section-title">Photo</h3>
+
     <el-table :data="props.fabApplication.photo.photoProcesses">
       <el-table-column
         label="Process Name"
@@ -50,6 +50,39 @@ const props = defineProps<{
 // Piston 선택에 의해서
 // HS 의 경우에는 Photo 의 PST 을 변경시킨다.
 //
+
+watch(
+  () => props.sawType.isAllowBridge,
+  (newVal) => {
+
+    const temp = {
+      processName: "브릿지",
+      machineName: "Nikon",
+      reticleName: "",
+      isMutable: false,
+      order: 3,
+    };
+
+    if (newVal) {
+      for (let i = 1; i < props.fabApplication.photo.photoProcesses.length; i++) {
+        if (props.fabApplication.photo.photoProcesses[i].order + 1 == temp.order) {
+          props.fabApplication.photo.photoProcesses.splice(i, 0,temp)
+        }
+      }
+
+    } else {
+
+      for (let i = 1; i < props.fabApplication.photo.photoProcesses.length; i++) {
+        if (props.fabApplication.photo.photoProcesses[i].processName === "브릿지") {
+            props.fabApplication.photo.photoProcesses.splice(i - 1, 1);
+            return; // 한 번만 실행되도록 반환
+        }
+    }
+
+    }
+  }
+);
+
 watch(
   () => props.fabApplication.pstId,
   (newVal) => {
@@ -83,7 +116,7 @@ watch(
   () => props.fabApplication.waferType,
   (newVal) => {
     let temp: PhotoProcess[] = [];
-    
+
     if (props.fabApplication.photo.photoProcesses.length <= 2) {
       if (newVal === "NS") {
         temp = [
@@ -92,24 +125,28 @@ watch(
             machineName: "",
             reticleName: "",
             isMutable: true,
+            order: 1,
           },
           {
             processName: "브릿지",
             machineName: "Nikon",
             reticleName: "",
             isMutable: false,
+            order: 3,
           },
           {
             processName: "PAD",
             machineName: "Nikon",
             reticleName: "",
             isMutable: false,
+            order: 4,
           },
           {
             processName: "SiO",
             machineName: "Nikon",
             reticleName: "",
             isMutable: false,
+            order: 5,
           },
         ];
       } else if (newVal === "HS") {
@@ -119,30 +156,35 @@ watch(
             machineName: "",
             reticleName: "",
             isMutable: true,
+            order: 1,
           },
           {
             processName: "D_PST",
             machineName: "",
             reticleName: "",
             isMutable: true,
+            order: 2,
           },
           {
             processName: "브릿지",
             machineName: "Nikon",
             reticleName: "",
             isMutable: false,
+            order: 3,
           },
           {
             processName: "PAD",
             machineName: "Nikon",
             reticleName: "",
             isMutable: false,
+            order: 4,
           },
           {
             processName: "SiO",
             machineName: "Nikon",
             reticleName: "",
             isMutable: false,
+            order: 5,
           },
         ];
       } else {
@@ -152,30 +194,35 @@ watch(
             machineName: "",
             reticleName: "",
             isMutable: true,
+            order: 1,
           },
           {
             processName: "PST",
             machineName: "",
             reticleName: "",
             isMutable: true,
+            order: 2,
           },
           {
             processName: "COT",
             machineName: "Nikon",
             reticleName: "",
             isMutable: false,
+            order: 3,
           },
           {
             processName: "PAD",
             machineName: "Nikon",
             reticleName: "",
             isMutable: false,
+            order: 4,
           },
           {
             processName: "SiO",
             machineName: "Nikon",
             reticleName: "",
             isMutable: false,
+            order: 5,
           },
         ];
       }

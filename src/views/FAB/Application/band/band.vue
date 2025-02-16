@@ -1,6 +1,6 @@
 <template>
   <el-form-item label="Band">
-    <el-select v-model="props.fabApplication.bandCombinationId">
+    <el-select v-model="props.fabApplication.band">
       <el-option v-for="band in newBandList" :key="band.bandCombinationId"
       :label="band.label" :value="band.bandCombinationId"></el-option>
     </el-select>

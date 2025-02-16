@@ -32,85 +32,47 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <!-- <el-col :span="6">
-          <el-form-item prop="idtId">
-            <el-input
-              v-model="props.fabApplication.idtProcessId"
-              :disabled="true"
-              width="200"
-            ></el-input>
-          </el-form-item>
+        <el-col :span="7">
+          <el-select
+            v-model="props.fabApplication.idtMachineName"
+            placeholder="IDT Deposition Machine"
+          >
+            <el-option
+              v-for="machine in machineOptions"
+              :key="machine.key"
+              :label="machine.label"
+              :value="machine.key"
+            ></el-option>
+          </el-select>
         </el-col>
-        <el-col :span="6">
-          <el-form-item v-if="idtProcessIdList.length > 1" prop="idtId">
-            <el-select v-model="props.fabApplication.idtProcessId">
-              <el-option
-                v-for="idtProcessOption in idtProcessIdList"
-                :key="idtProcessOption.key"
-                :label="idtProcessOption.label"
-                :value="idtProcessOption.value"
-              ></el-option>
-            </el-select>            
-          </el-form-item>
-        </el-col> -->
       </el-row>
     </section>
 
     <!-- IDT 정보 테이블 섹션 -->
+    <br />
+
     <section class="section">
-      <h3 class="section-title2">IDT Thickness</h3>
-      <!-- <el-table :data="layers" stripe class="custom-table" >
-
-        <el-table-column
-          label="INDEX"
-          prop="idx"
-          :align="'center'"
-          width="100"
-        ></el-table-column>
-
-
-        <el-table-column
-          label="IDT Name"
-          prop="material"
-          :align="'center'"
-          width="150"
-        ></el-table-column>
-
-
-        <el-table-column label="Thickness" :align="'center'">
-          <template #default="scope">
-            <el-input
-              v-model="scope.row.thickness"
-              placeholder="Enter thickness"
-              width="150"
-              class="custom-input"
-            ></el-input>
-          </template>
-        </el-table-column>
-      </el-table> -->
-      <!-- <el-descriptions title="Layer Details" border :column="2" size="small">
-        <el-descriptions-item v-for="layer in layers" :label="layer.material">{{
-          layer.thickness
-        }}</el-descriptions-item>
-      </el-descriptions> -->
-    </section>
-    <!-- <section class="section">
-      <idt-process
-        :fab-application="props.fabApplication"
-        :saw-type="props.sawType"      
-      />
-    </section> -->
-    <section class="section">
-      <h3 class="section-title2">IDT Deposition Machine</h3>
-      <br />
-      <el-select v-model="props.fabApplication.idtMachineName">
-        <el-option
-          v-for="machine in machineOptions"
-          :key="machine.key"
-          :label="machine.label"
-          :value="machine.value"
-        ></el-option>
-      </el-select>
+      <!-- <h3 class="section-title2">IDT Thickness</h3> -->
+      <div
+        v-if="
+          props.fabApplication.waferType === 'TC' &&
+          props.fabApplication.idtId === 99
+        "
+      >
+        <long-input-text-2 label="성막조건" row-cnt="3"></long-input-text-2>
+      </div>
+      <div v-else>
+        <el-descriptions title="Thickness" :column="4" :border="true">
+          <el-descriptions-item
+            v-for="layer in layers"
+            :key="layer.idx"
+            :label="layer.material"
+            :span="1"
+          >
+            <el-input v-model="layer.thickness"></el-input>
+          </el-descriptions-item>
+        </el-descriptions>
+      </div>
     </section>
   </div>
 </template>
@@ -134,6 +96,7 @@ import IdtProcess from "./IdtProcess.vue";
 import { ref, watch, reactive, onMounted } from "vue";
 import { OptionInterface } from "../../../interface/option";
 import { tr } from "element-plus/es/locale";
+import LongInputText2 from "../../Common/LongInputText2.vue";
 
 // props 정의
 const props = defineProps<{
@@ -179,14 +142,15 @@ watch(
       newVal
     );
 
-    if (props.fabApplication.waferType === "TC") {
-      // const temp = {
-      //   key : depositionOptions.value[0].key,
-      //   label : "ETC",
-      //   value : "ETC",
-      // }
-      // depositionOptions.value.push(temp)
-    }
+    // if (props.fabApplication.waferType === "TC") {
+    //   const temp = {
+    //     key: 99,
+    //     label: "ETC",
+    //     value: "99",
+    //   };
+    //   depositionOptions.value.push(temp);
+    //   props.fabApplication.idtId = parseInt(depositionOptions.value[0].value);
+    // }
 
     if (depositionOptions.value.length == 1) {
       props.fabApplication.idtId = parseInt(depositionOptions.value[0].value);
@@ -248,10 +212,22 @@ watch(
         props.fabApplication.idtId,
         layers
       );
+
+      // console.log(props.fabApplication.idtId);
+      // if (props.fabApplication.waferType === "TC" && props.fabApplication.idtId === "ETC") {
+      // } else {
+      //   machineOptions.value = generateMachineOptions(
+      //     props.sawType.idtTypes,
+      //     props.fabApplication.idtId.toString()
+      //   );
+      // }
       machineOptions.value = generateMachineOptions(
         props.sawType.idtTypes,
         props.fabApplication.idtId.toString()
       );
+      if (machineOptions.value.length == 1) {
+        props.fabApplication.idtMachineName = machineOptions.value[0].value;
+      }
       // props.fabApplication.idtId = parseInt(props.fabApplication.depositionCondi);
       props.fabApplication.idtLayers = layers;
     }
@@ -260,7 +236,9 @@ watch(
 </script>
 
 <script lang="ts">
-export default {};
+export default {
+  components: { LongInputText2 },
+};
 </script>
 
 <style scoped>
@@ -283,11 +261,6 @@ export default {};
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* 섹션 구분 및 타이틀 */
-.section {
-  margin-bottom: 24px;
 }
 
 .section-title {

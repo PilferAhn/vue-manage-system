@@ -35,21 +35,13 @@
   <div v-else>
     <el-form-item label="">
       <el-table :data="props.tegTypes" style="width: 100%" :border="true">
-        <!-- Index Column -->
-        <!-- <el-table-column prop="index" label="Index" width="100">
-                <template #default="scope">
-                  <span>{{ scope.row.index }}</span>
-                </template>
-              </el-table-column> -->
 
-        <!-- Name Column -->
         <el-table-column prop="name" label="Name" width="150" :align="'center'">
           <template #default="scope">
             <span>{{ scope.row.name }}</span>
           </template>
         </el-table-column>
 
-        <!-- TestTypeOptions Buttons -->
         <el-table-column label="측정" width="100" :align="'center'">
           <template #default="scope">
             <!-- Meas Button -->

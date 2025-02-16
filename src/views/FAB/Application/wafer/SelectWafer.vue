@@ -43,7 +43,6 @@ onMounted(()=> {
   
   if(Object.keys(props.sawType).length !== 0){
     availableWafer.value = createWaferOptions(props.sawType);    
-    
   }
 
 })

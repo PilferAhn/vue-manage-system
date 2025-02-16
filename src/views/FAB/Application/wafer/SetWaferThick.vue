@@ -1,28 +1,24 @@
 <template>
   <section class="section">
-
-    
     <el-row :gutter="20" class="align-center">
       <h3 class="section-title">HS Wafer Structure</h3>
-      <el-col :span="15">
-        <el-form-item>
-          <el-select
-            v-model="props.fabApplication.hsId"
-            placeholder="Select Wafer"
-            class="custom-select"
-            clearable
-          >
-            <el-option
-              v-for="opt in props.hsWaferOptions"
-              :key="opt.key"
-              :label="opt.label"
-              :value="opt.key"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-      </el-col>
+      <el-col :span="15"> </el-col>
     </el-row>
-
+    <el-form-item>
+      <el-select
+        v-model="props.fabApplication.hsId"
+        placeholder="Select Wafer"
+        class="custom-select"
+        clearable
+      >
+        <el-option
+          v-for="opt in props.hsWaferOptions"
+          :key="opt.key"
+          :label="opt.label"
+          :value="opt.key"
+        ></el-option>
+      </el-select>
+    </el-form-item>
     <!-- <pre>hsLayers: {{ hsLayers }}</pre>
     <pre>columns: {{ columns }}</pre>
     <pre>newTableData: {{ newTableData }}</pre> -->
@@ -83,7 +79,7 @@ const props = defineProps<{
   hsWaferOptions: OptionInterface[];
   hsLayers: Layer[];
   wafer: FabWafer;
-  applicationType : string;
+  applicationType: string;
 }>();
 
 const haLayerStackId = ref(props.hsLayerstackId);
@@ -93,7 +89,6 @@ const ltThick = ref<number | undefined>(undefined);
 
 // 📌 컬럼 데이터 (hsLayers 기반 동적 생성)
 const columns = computed(() => {
-  
   return hsLayers.value.map((layer) => ({
     label: layer.material, // 컬럼 헤더
     prop: layer.material, // 데이터 바인딩 키
@@ -109,20 +104,21 @@ function updateTable() {
     temp[hsLayers.value[i].material] = hsLayers.value[i].thickness;
   }
 
-  
   newTableData.value.push(temp);
 }
 
 // 📌 onMounted 시 초기 테이블 설정
 onMounted(() => {
-  if (props.fabApplication.hsType && Object.keys(props.fabApplication.hsType).length !== 0) {
+  if (
+    props.fabApplication.hsType &&
+    Object.keys(props.fabApplication.hsType).length !== 0
+  ) {
     hsLayers.value = props.fabApplication.hsType.layers;
     updateTable();
   }
-  if(props.applicationType !== 'load'){
+  if (props.applicationType !== "load") {
     props.fabApplication.hsId = undefined;
   }
-  
 });
 
 // 📌 HS Wafer 변경 감지
@@ -132,10 +128,13 @@ watch(
     if (newVal !== undefined) {
       hsLayers.value = createHsWaferLayerOption(newVal.toString(), props.wafer);
       ltThick.value = getLtThickness(hsLayers.value);
-      
-      if(props.applicationType !== "load"){
-        props.fabApplication.waferAngle = getHsWaferAngle(newVal.toString(), props.wafer);
-      }      
+
+      if (props.applicationType !== "load") {
+        props.fabApplication.waferAngle = getHsWaferAngle(
+          newVal.toString(),
+          props.wafer
+        );
+      }
       updateTable();
     }
   },

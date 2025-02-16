@@ -25,14 +25,24 @@
 
     <!-- PST 레이어 테이블 -->
     <section class="section">
-      <!-- <h3 class="section-title">Piston Thickness</h3> -->
-      <el-table
+      <el-descriptions title="Thickness" :column="4" size="small" :border="true">
+        <el-descriptions-item
+          v-for="layer in layers"
+          :key="layer.idx"
+          :label="layer.material"
+          :span="1"
+        >
+          <el-input v-model="layer.thickness"></el-input>
+        </el-descriptions-item>
+      </el-descriptions>
+
+      <!-- <el-table
         :data="layers"
         stripe
         class="custom-table"
         style="min-width: 600px; width: 100%"
       >
-        <!-- Material 컬럼 -->
+
         <el-table-column
           label="Material"
           :align="'center'"
@@ -43,8 +53,6 @@
             <div class="material-cell">{{ scope.row.material }}</div>
           </template>
         </el-table-column>
-
-        <!-- Thickness 컬럼 -->
         <el-table-column label="Thickness" :align="'center'">
           <template #default="scope">
             <el-input
@@ -54,7 +62,7 @@
             ></el-input>
           </template>
         </el-table-column>
-      </el-table>
+      </el-table> -->
     </section>
   </div>
 </template>
@@ -123,8 +131,7 @@ watch(
       props.fabApplication.pstLayers = [];
     } else {
       layers.value = getPstLayerOptions(newVal, props.sawType.pstTypes);
-      props.fabApplication.pstLayers = layers.value;
-      
+      props.fabApplication.pstLayers = layers.value;      
       // updateTable()
     }
   }

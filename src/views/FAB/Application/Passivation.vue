@@ -1,4 +1,5 @@
 <template>
+  
   <div class="deposition-container" v-if="passOptions.length > 0">
     <h3 class="section-title">Passivation 정보</h3>
     
@@ -12,7 +13,8 @@
         :label="pass.label"
         :value="pass.key"
       ></el-option>
-    </el-select> -->    
+    </el-select> -->      
+    
     <el-table :data="layers">
       <el-table-column label="Mat" prop="material"></el-table-column>
       <!-- <el-table-column label="Thickness" prop="thickness">
@@ -79,6 +81,7 @@ const passvationRandList = [
 // ];
 
 
+
 watch(
   () => props.fabApplication.passivationId,
   (newVal) => {
@@ -88,8 +91,8 @@ watch(
       );
       if (passivation.value === undefined) {
         layers.value = [];
-      } else {
-        layers.value = passivation.value.layers;
+      } else {        
+        layers.value = passivation.value.layers;        
         props.fabApplication.passivationLayers = passivation.value.layers;
       }
     }
@@ -101,8 +104,9 @@ watch(
   () => {
     props.fabApplication.passivationId = undefined;
     props.fabApplication.passivationLayers = [];
-    layers.value.length = 0;
+    // layers.value.length = 0;
     passOptions.value.length = 0;
+    
     if (props.sawType.passivationTypes.length > 0) {
       for (let i = 0; i < props.sawType.passivationTypes.length; i++) {
         passOptions.value.push({

@@ -88,6 +88,7 @@ watch(
   () => props.fabApplication.waferType,
   (newVal, oldVal) => {
     Object.assign(sawType, defineSawTypeByWaferType(newVal, props.options));
+    console.log(sawType.passivationTypes)
   }
 );
 </script>

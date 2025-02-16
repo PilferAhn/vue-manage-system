@@ -3,7 +3,7 @@
     <el-row :gutter="12" class="form-row">
       <el-col :span="12" class="flex-row">
         <!-- Chip Size Inputs -->
-        <el-form-item label="Chip Size [um]" class="inline-item">
+        <el-form-item label="Chip Size [mm]" class="inline-item">
           <el-input v-model="props.fabApplication.chipX" placeholder="Width" />
         </el-form-item>
         <span>＊</span>
@@ -14,7 +14,7 @@
       
       <el-col :span="12" class="flex-row">
         <!-- Shot Size Inputs -->
-        <el-form-item label="Shot Size [um]" class="inline-item">
+        <el-form-item label="Shot Size [mm]" class="inline-item">
           <el-input v-model="props.fabApplication.shotX" placeholder="Width" />
         </el-form-item>
         <span>＊</span>

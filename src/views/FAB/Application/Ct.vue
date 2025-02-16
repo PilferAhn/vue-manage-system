@@ -3,8 +3,6 @@
     class="tc-selection-container"
     v-if="props.sawType.tcTypes && props.sawType.tcTypes.length > 0"
   >
-
-  
     <!-- Thickness 선택 -->
     <section class="section-row">
       <h3 class="section-title">SiO2</h3>
@@ -24,13 +22,15 @@
           </template>
         </el-table-column>
         {{ machineList }}
-        <el-table-column label="Machine" :align="'center'">          
+        <el-table-column label="Machine" :align="'center'">
           <template #default="">
             <el-select v-model="props.fabApplication.tcMachineName">
-              <el-option v-for="machine in machineList"
-              :key="machine.key"
-              :label="machine.label"
-              :value="machine.value"></el-option>
+              <el-option
+                v-for="machine in machineList"
+                :key="machine.key"
+                :label="machine.label"
+                :value="machine.value"
+              ></el-option>
             </el-select>
           </template>
         </el-table-column>
@@ -49,7 +49,10 @@ import type {
   FabRequestForm,
   Layer,
 } from "../../../interface/fab-application-rev2";
-import { getLayerOptions, createMachineList } from "../../../utils/Fab/fab-application-tc-utils";
+import {
+  getLayerOptions,
+  createMachineList,
+} from "../../../utils/Fab/fab-application-tc-utils";
 import { OptionInterface } from "../../../interface/option";
 
 // Props 정의
@@ -61,7 +64,7 @@ const props = defineProps<{
 const machineList = ref<OptionInterface[]>([]);
 
 const layerOptions = ref<Layer[]>([]);
-const machineName = ref<string>("")
+const machineName = ref<string>("");
 onMounted(() => {
   if (Object.keys(props.sawType).length !== 0) {
     layerOptions.value = props.fabApplication.tcLayers;
@@ -75,14 +78,14 @@ watch(
     if (newVal === "TC") {
       if (props.sawType.tcTypes.length == 1) {
         props.fabApplication.tcId = props.sawType.tcTypes[0].tcId;
-        machineList.value = createMachineList(props.sawType.tcTypes[0].tcMachines)
-        console.log(machineList.value)
+        machineList.value = createMachineList(
+          props.sawType.tcTypes[0].tcMachines
+        );
       } else {
         props.fabApplication.tcLayers = [];
       }
 
       // machineList.value=props.sawType.tcTypes.
-
     } else {
       props.fabApplication.tcId = null;
       props.fabApplication.tcLayers = [];
@@ -159,5 +162,4 @@ export default {};
   border-radius: 8px;
   overflow: hidden;
 }
-
 </style>
