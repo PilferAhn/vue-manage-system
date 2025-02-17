@@ -81,11 +81,20 @@ export async function getEvbSolderList() {
     }));
   }
 
+  const tempArr = []
+
   for (let i = 0; i < evbList.value.length; i++) {
     let size = "";
     let quantity = "";
     let mat = "";
 
+    if(tempArr.includes(evbList.value[i].materialCode)){
+      continue
+    }
+    else{
+      tempArr.push(evbList.value[i].materialCode)
+    }
+  
     if (evbList.value[i].materialType !== null) {
       mat = " - Type : " + evbList.value[i].materialType;
     }
