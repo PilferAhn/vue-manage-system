@@ -1,6 +1,10 @@
 import { ElMessage, ElMessageBox, ElNotification } from "element-plus";
 import axios from "axios";
 import { ApplicationData as solderApplication } from "../../interface/solderAppInterface";
+import type { OptionInterface } from "../../interface/option";
+import type { EvbSolder } from "../../interface/evb";
+import { ref } from "vue";
+import { sendGetRequestWithHeader } from "../httpProtocol";
 
 export async function downloadExcel(date: string) {
   try {
@@ -46,7 +50,60 @@ export async function downloadExcel(date: string) {
   }
 }
 
+export async function getEvbSolderList() {
+  const evbUrl = "/OpeationMns/ScheduleSample/GetEVBStock";
+  const headers = {
+    "sample-api-key":
+      "dc5b5fcf95907d906288117541b94ac8bbec1e1e5131593f28f4b1dcf7d8600c",
+  };
 
+  const evbList = ref<EvbSolder[]>([]);
+  const evbSolderList = ref<OptionInterface[]>([]);
+
+  const evbResponse = await sendGetRequestWithHeader(evbUrl, headers);
+  if (Array.isArray(evbResponse["Data"])) {
+    evbList.value = evbResponse["Data"].map((item: any) => ({
+      productType: item["Product Type"],
+      position: item["Position"],
+      uid: item["U ID"],
+      materialCode: item["Material Code"],
+      lotNo: item["LotNo"],
+      quantity: item["Quantity"],
+      unit: item["Unit"],
+      size: item["SIZE"],
+      materialType: item["Material type"],
+      description: item["DESCRIPTION"],
+      inputTime: item["INPUT_TIME"],
+      actualDate: item["Actual Date"],
+      expiryDate: item["Expiry Date"],
+      daysExpiryRemain: item["Days Expiry Remain"],
+      useStatus: item["USE_STATUS"],
+    }));
+  }
+
+  for (let i = 0; i < evbList.value.length; i++) {
+    let size = "";
+    let quantity = "";
+    let mat = "";
+
+    if (evbList.value[i].materialType !== null) {
+      mat = " - Type : " + evbList.value[i].materialType;
+    }
+
+    if (evbList.value[i].quantity !== null) {
+      quantity = " - Quantity : " + evbList.value[i].quantity;
+    }
+
+    if (evbList.value[i].size !== null) {
+      size = " - Size : " + evbList.value[i].size;
+    }
+
+    const val = evbList.value[i].materialCode + mat + quantity + size;
+    evbSolderList.value.push({ key: i, value: val, label: val });
+  }
+
+  return evbSolderList.value
+}
 
 export function updateMeasurementDataByClient(
   solderApplication: solderApplication,
@@ -65,9 +122,9 @@ export function updateMeasurementDataByClient(
         meas.quantity = 9;
         meas.detail = "ESD: 200V(3)/250V(3)/300V(3)";
       } else if (meas.measurementType === "TCF") {
-        meas.isMeasured = true;        
+        meas.isMeasured = true;
         meas.quantity = 2;
-        meas.detail = "TEMP(-30 25 55 85)"
+        meas.detail = "TEMP(-30 25 55 85)";
       } else if (meas.measurementType === "비선형") {
         meas.isMeasured = true;
         meas.quantity = 2;
@@ -91,7 +148,7 @@ export function updateMeasurementDataByClient(
       } else if (meas.measurementType === "TCF") {
         meas.isMeasured = true;
         meas.quantity = 2;
-        meas.detail = "TEMP(-30 25 55 85)"
+        meas.detail = "TEMP(-30 25 55 85)";
       } else {
         meas.isMeasured = false;
         meas.quantity = 0;
@@ -112,7 +169,7 @@ export function updateMeasurementDataByClient(
       } else if (meas.measurementType === "TCF") {
         meas.isMeasured = true;
         meas.quantity = 2;
-        meas.detail = "TEMP(-30 25 55 85)"
+        meas.detail = "TEMP(-30 25 55 85)";
       } else {
         meas.isMeasured = false;
         meas.quantity = 0;
@@ -133,7 +190,7 @@ export function updateMeasurementDataByClient(
       } else if (meas.measurementType === "TCF") {
         meas.isMeasured = true;
         meas.quantity = 2;
-        meas.detail = "TEMP(-40 -30 25 55 85 105)"
+        meas.detail = "TEMP(-40 -30 25 55 85 105)";
       } else {
         meas.isMeasured = false;
         meas.quantity = 0;

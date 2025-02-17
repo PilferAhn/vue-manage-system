@@ -46,10 +46,14 @@
 
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form-item label="개발자" style="width: 525px" prop="designer">
+                <el-form-item
+                  label="개발자"
+                  style="width: 525px"
+                  prop="designer"
+                >
                   <el-autocomplete
                     v-model="applicationData.designer"
-                    placeholder="개발자를 입력하세요"                    
+                    placeholder="개발자를 입력하세요"
                     :fetch-suggestions="
                       (queryString, cb) =>
                         querySearch(queryString, cb, 'designer')
@@ -61,7 +65,11 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="의뢰자" style="width: 525px" prop="requester">
+                <el-form-item
+                  label="의뢰자"
+                  style="width: 525px"
+                  prop="requester"
+                >
                   <el-autocomplete
                     v-model="applicationData.requester"
                     placeholder="의뢰자를 입력하세요"
@@ -194,7 +202,7 @@
                       placeholder="Select EVB Type"
                     >
                       <el-option
-                        v-for="item in evbTypeList"
+                        v-for="item in evbSolderList"
                         :key="item.key"
                         :label="item.label"
                         :value="item.value"
@@ -241,7 +249,7 @@
           :application-type="props.applicationType"
         ></SolderMeasurement>
       </el-card>
-      
+
       <el-row
         v-if="props.applicationType === 'create'"
         :gutter="20"
@@ -507,9 +515,13 @@ import { updateMeasurementDataByClient } from "../../../utils/Solder/application
 import type { UploadInstance, UploadProps, UploadRawFile } from "element-plus";
 import { genFileId, ElMessage } from "element-plus";
 import { formatDate } from "../../FAB/Common/Application";
-import { removeApplicationHandler } from "../../../utils/Solder/application-utils";
+import {
+  removeApplicationHandler,
+  getEvbSolderList,
+} from "../../../utils/Solder/application-utils";
 import { optionList } from "../../Calculator/SParameter/sparameter";
 import SolderMeasurement from "./SolderMeasurement.vue";
+import { OptionInterface } from "../../../interface/option";
 const router = useRouter();
 
 // Define props to receive processData
@@ -584,11 +596,14 @@ const applicationForm = ref();
 const segmentData = ref<any>(null);
 const keys = ref<string[]>([]); // keys를 빈 배열로 초기화
 
-onMounted(() => {
+const evbSolderList = ref<OptionInterface[]>([]);
+
+onMounted(async () => {
   application.value = props.applicationData;
   sortApplicationDataByNumber(application.value);
-  
   loading.value = false;
+
+  evbSolderList.value = await getEvbSolderList();
 });
 
 const { userOptions } = useUserOptions();
