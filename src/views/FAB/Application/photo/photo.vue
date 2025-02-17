@@ -53,8 +53,7 @@ const props = defineProps<{
 
 watch(
   () => props.sawType.isAllowBridge,
-  (newVal) => {
-
+  (newVal, oldVal) => {
     const temp = {
       processName: "브릿지",
       machineName: "Nikon",
@@ -63,22 +62,26 @@ watch(
       order: 3,
     };
 
-    if (newVal) {
-      for (let i = 1; i < props.fabApplication.photo.photoProcesses.length; i++) {
-        if (props.fabApplication.photo.photoProcesses[i].order + 1 == temp.order) {
-          props.fabApplication.photo.photoProcesses.splice(i, 0,temp)
+    console.log(newVal, oldVal);
+
+    if (oldVal !== undefined) {
+      if (newVal) {
+        props.fabApplication.photo.photoProcesses.splice(temp.order - 1, 0, temp);
+      } else {
+        for (
+          let i = props.fabApplication.photo.photoProcesses.length - 1;
+          i >= 0;
+          i--
+        ) {
+          if (
+            props.fabApplication.photo.photoProcesses[i].processName ===
+            "브릿지"
+          ) {
+            props.fabApplication.photo.photoProcesses.splice(i, 1);
+            return; // 한 번만 삭제 후 종료
+          }
         }
       }
-
-    } else {
-
-      for (let i = 1; i < props.fabApplication.photo.photoProcesses.length; i++) {
-        if (props.fabApplication.photo.photoProcesses[i].processName === "브릿지") {
-            props.fabApplication.photo.photoProcesses.splice(i - 1, 1);
-            return; // 한 번만 실행되도록 반환
-        }
-    }
-
     }
   }
 );

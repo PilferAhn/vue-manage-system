@@ -26,10 +26,10 @@
         <template #default="scope">
           <el-select v-model="scope.row.thickness">
             <el-option
-              v-for="opt in passvationRandList"
-              :key="opt"
-              :label="opt"
-              :value="opt"
+              v-for="opt in passRankOptions"
+              :key="opt.key"
+              :label="opt.label"
+              :value="opt.value"
             ></el-option>
           </el-select>
         </template>
@@ -73,6 +73,24 @@ const passvationRandList = [
   "X105",
   "X115",
 ];
+
+const passRankOptions = ref<OptionInterface[]>([
+  { key: 0, label: "X5", value: "5" },
+  { key: 1, label: "X10", value: "10" },
+  { key: 2, label: "X15", value: "15" },
+  { key: 3, label: "X25", value: "25" },
+  { key: 4, label: "X30", value: "30" },
+  { key: 5, label: "X45", value: "45" },
+  { key: 6, label: "X55", value: "55" },
+  { key: 7, label: "X65", value: "65" },
+  { key: 8, label: "X75", value: "75" },
+  { key: 9, label: "X85", value: "85" },
+  { key: 10, label: "X95", value: "95" },
+  { key: 11, label: "X105", value: "105" },
+  { key: 12, label: "X115", value: "115" },
+]);
+
+
 
 // const passvationRandList = [
 //   5,
