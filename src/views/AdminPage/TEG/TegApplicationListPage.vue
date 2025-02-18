@@ -1,10 +1,10 @@
 <template>
   <div class="container">
     <el-tabs v-model="activeTabMain" type="border-card" class="demo-tabs">
-      <el-tab-pane label="측정 대기" name="main1"> 
+      <el-tab-pane label="In Progress" name="main1"> 
         <TegRunningMeasurement></TegRunningMeasurement>
       </el-tab-pane>
-      <el-tab-pane label="접수 대기" name="main2">
+      <el-tab-pane label="Waiting" name="main2">
         <template v-if="activeTabMain === 'main2'">
           <TegMeasurementTab
             :category="'created'"
@@ -13,7 +13,7 @@
           />          
         </template>        
       </el-tab-pane>
-      <el-tab-pane label="측정 완료" name="main3">
+      <el-tab-pane label="Completed" name="main3">
         <template v-if="activeTabMain === 'main3'">
           <TegMeasurementTab
             :category="'finished'"

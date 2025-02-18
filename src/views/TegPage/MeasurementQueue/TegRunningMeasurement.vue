@@ -1,19 +1,19 @@
 <template>
   <div>
     <div class="measurement-header">
-      측정 현황 
+      Wafer Measurement 
     </div>
     <el-table :data="filteredMea" class="table">
       <el-table-column label="Model Name" prop="productName"></el-table-column>
       <el-table-column label="Wafer ID" prop="waferID"></el-table-column>
-      <el-table-column label="진행도">
+      <el-table-column label="Progress">
         <template #default="scope">
           <span>{{ scope.row.shot }} / {{ scope.row.shots }}</span>
         </template>        
       </el-table-column>
-      <el-table-column label="측정 구분" prop="measType"></el-table-column>      
-      <el-table-column label="측정 장비" prop="machine_name"></el-table-column>     
-      <el-table-column label="상태">
+      <el-table-column label="Type" prop="measType"></el-table-column>      
+      <el-table-column label="Machine" prop="machine_name"></el-table-column>     
+      <el-table-column label="Status">
         <template #default="scope">
           <span>{{ getStatus(scope.row.dateOfUpdate) }}</span>
         </template>
