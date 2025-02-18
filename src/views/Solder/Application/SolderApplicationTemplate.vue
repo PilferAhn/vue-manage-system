@@ -188,10 +188,23 @@
             </el-row>
             <el-row :gutter="20">
               <!-- Same column for checkbox and the evbType select/input -->
-              <el-col :span="8">
+              <el-col :span="9">
                 <div style="display: flex; align-items: center">
-                  <!-- Form item that displays either inputText or el-select depending on isManualInput -->
                   <el-form-item
+                    
+                    label="EVB Type"
+                    prop="evbType"
+                    style="flex-grow: 1"
+                  >
+                    <inputText
+                      v-model="applicationData.evbType"
+                      label=""
+                      placeholder="Enter custom EVB Type"
+                      style="width: 100%"
+                    />
+                  </el-form-item>
+                  <!-- Form item that displays either inputText or el-select depending on isManualInput -->
+                  <!-- <el-form-item
                     v-if="applicationData.evbType !== '직접 입력'"
                     label="EVB Type"
                     prop="evbType"
@@ -221,12 +234,30 @@
                       placeholder="Enter custom EVB Type"
                       style="width: 100%"
                     />
-                  </el-form-item>
+                  </el-form-item> -->
                 </div>
               </el-col>
-
-              <el-col :span="4"> </el-col>
-
+              <el-col :span="3">
+                <el-form-item                    
+                    label="　"                    
+                    style="flex-grow: 1"
+                  >
+                  
+                <el-select
+                  v-model="applicationData.evbType"
+                  placeholder="Select EVB Type"
+                >
+                  <el-option
+                    v-for="item in evbSolderList"
+                    :key="item.key"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
               <!-- EVB info input text field -->
               <el-col :span="12">
                 <inputText

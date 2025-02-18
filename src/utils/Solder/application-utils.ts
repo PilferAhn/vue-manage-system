@@ -99,15 +99,15 @@ export async function getEvbSolderList() {
       mat = " - Type : " + evbList.value[i].materialType;
     }
 
-    if (evbList.value[i].quantity !== null) {
-      quantity = " - Quantity : " + evbList.value[i].quantity;
-    }
+    // if (evbList.value[i].quantity !== null) {
+    //   quantity = " - Quantity : " + evbList.value[i].quantity;
+    // }
 
     if (evbList.value[i].size !== null) {
       size = " - Size : " + evbList.value[i].size;
     }
 
-    const val = evbList.value[i].materialCode + mat + quantity + size;
+    const val = evbList.value[i].materialCode + mat + size;
     evbSolderList.value.push({ key: i, value: val, label: val });
   }
 
