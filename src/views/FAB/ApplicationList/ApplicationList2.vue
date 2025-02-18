@@ -44,7 +44,7 @@ let tempName = "";
 onMounted(async () => {
   // fetchProcessData 함수로 데이터 가져오기
 
-  if (getUserName() === "admin") {
+  if (["whcRD","admin"].includes(getUserName())) {
     processDataArray.value = await fetchProcessData(processDataArray.value);
   } else if (getRole() === "요소기술그룹") {
     processDataArray.value = await fetchProcessData(processDataArray.value);
