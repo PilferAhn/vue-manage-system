@@ -7,7 +7,7 @@
           v-model="props.fabApplication.productName"
           placeholder="Model Name"
           class="small-input"
-          style="width: 220px; margin-right: 20px;"
+          style="width: 350px; margin-right: 20px;"
           @input="syncInputValuesFromProductName"
         ></el-input>
 

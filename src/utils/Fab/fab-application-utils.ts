@@ -5,7 +5,11 @@ import type {
 import { ref, reactive } from "vue";
 import axios from "axios";
 import type { FabApplicationInterface } from "../../interface/fab";
-import { convertKeysToCamelCase, convertKeysToPEP8, convertPep8ToCamelCase2 } from "./../key-converter";
+import {
+  convertKeysToCamelCase,
+  convertKeysToPEP8,
+  convertPep8ToCamelCase2,
+} from "./../key-converter";
 import {
   SawType,
   FabRequestForm,
@@ -26,6 +30,29 @@ import { objectEach } from "highcharts";
 import { TegApplication } from "../../interface/Teg/teg";
 import type { TegApplication as TegApplicationInterface } from "../../Common/ApplicationTypes";
 import type { Bom } from "../../interface/fab-application-rev2";
+
+
+export async function getCostomerList() {
+
+  const clientOptions = ref<OptionInterface[]>([])
+  const url = "http://10.29.11.124:40000/customer";
+  const res = await sendGetRequest(url, "get_customer_list");
+  
+  const clients = convertPep8ToCamelCase2(res)
+
+  for(let i = 0 ; i < clients.length; i ++){
+
+    const temp = {
+      key : i,
+      value : clients[i].customerId,
+      label : clients[i].label
+    }
+    clientOptions.value.push(temp)
+
+  }
+
+  return  clientOptions.value
+}
 
 export function initFabApplication3(bom: Bom) {
   const fabApplication = reactive<FabRequestForm>({
@@ -53,7 +80,7 @@ export function initFabApplication3(bom: Bom) {
     isActive: true,
     note: "",
     code: "",
-    tcMachineName : null,
+    tcMachineName: null,
     waferId: undefined,
     waferAngle: undefined,
     waferThickness: undefined,
@@ -68,7 +95,8 @@ export function initFabApplication3(bom: Bom) {
     isIdtXoi: false,
     isNeedExtraShot: false,
     isToneInverted: false,
-    isSeedSio2 : false,
+    isSeedSio2: false,
+    isDoubleIdt: false,
     bom: bom,
     photo: {
       photoProcesses: [
@@ -123,15 +151,15 @@ export function initFabApplication2() {
     productName: "250214",
     requesterId: "",
     designerId: "",
-    bandGroupId : "Low",
+    bandGroupId: "Low",
     designerConfirm: false,
     weekNumber: undefined,
-    seedId : null,
+    seedId: null,
     isAoi: true,
     isDvr: false,
     quantity: 10,
     waferType: "",
-    code : "H",
+    code: "H",
     band: "B1",
     filterType: "Single",
     wantedFabStartDate: undefined,
@@ -146,8 +174,8 @@ export function initFabApplication2() {
     status: "",
     createdDate: undefined,
     isActive: true,
-    tcId : null,
-    note: "",    
+    tcId: null,
+    note: "",
     waferId: undefined,
     waferAngle: undefined,
     waferThickness: undefined,
@@ -158,7 +186,7 @@ export function initFabApplication2() {
     isIdtXoi: false,
     isNeedExtraShot: false,
     isToneInverted: false,
-    isSeedSio2 : false,
+    isSeedSio2: false,
     depositionCondi: undefined,
     requester: { userName: "" },
     designer: { userName: "" },
@@ -223,7 +251,6 @@ export function initFabApplication2() {
     passivationLayers: [],
     seedLayers: [],
     tcLayers: [],
-
   });
   // Return the reactive FabRequestForm object
   return { fabApplication };

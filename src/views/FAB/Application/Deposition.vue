@@ -1,5 +1,6 @@
 <template>
   <div class="deposition-container">
+    {{ props.fabApplication.idtProcessId }}
     <section class="section">
       <h3 class="section-title">IDT (1st Metal)</h3>
       <el-row :gutter="20" class="align-center">
@@ -41,7 +42,7 @@
               v-for="machine in machineOptions"
               :key="machine.key"
               :label="machine.label"
-              :value="machine.key"
+              :value="machine.label"
             ></el-option>
           </el-select>
         </el-col>
@@ -49,17 +50,15 @@
     </section>
 
     <!-- IDT 정보 테이블 섹션 -->
+    <div v-if="props.fabApplication.waferType === 'TC'">
+      *3중막 (Cr/Cu/Cr) 일경우 Ag = 0를 입력하세요.
+    </div>
     <br />
-
+    <br />
     <section class="section">
       <!-- <h3 class="section-title2">IDT Thickness</h3> -->
-      <div
-        v-if="
-          props.fabApplication.waferType === 'TC' &&
-          props.fabApplication.idtId === 99
-        "
-      >
-        <long-input-text-2 label="성막조건" row-cnt="3"></long-input-text-2>
+      <div v-if="props.fabApplication.idtId === 7">
+        <long-input-text-2 label="Photo 비고" row-cnt="3"></long-input-text-2>
       </div>
       <div v-else>
         <el-descriptions title="Thickness" :column="4" :border="true">
@@ -68,10 +67,26 @@
             :key="layer.idx"
             :label="layer.material"
             :span="1"
+            :size="'Large'"
           >
             <el-input v-model="layer.thickness"></el-input>
           </el-descriptions-item>
         </el-descriptions>
+
+        <div v-if="props.fabApplication.isDualIdt">
+          <br />
+
+          <el-descriptions title="Thickness" :column="4" :border="true">
+            <el-descriptions-item
+              v-for="layer in layers2"
+              :key="layer.idx"
+              :label="layer.material"
+              :span="1"
+            >
+              <el-input v-model="layer.thickness"></el-input>
+            </el-descriptions-item>
+          </el-descriptions>
+        </div>
       </div>
     </section>
   </div>
@@ -110,6 +125,7 @@ const layerNames = ref<string | undefined>("");
 const machineName = ref<string>("");
 const machineOptions = ref<OptionInterface[]>([]);
 const layers = reactive<Layer[]>([]);
+const layers2 = reactive<Layer[]>([]);
 const idtType = reactive<IdtType>({});
 const idtProcessIdList = ref<OptionInterface[]>([]);
 const newidtProcessList = ref<OptionInterface[]>([
@@ -133,6 +149,29 @@ onMounted(() => {
   }
 });
 
+watch(
+  () => props.fabApplication.isDualIdt,
+  (newVal) => {
+    if (newVal) {
+      // 깊은 복사하여 layers2 배열 업데이트
+      layers2.splice(0, layers2.length, ...JSON.parse(JSON.stringify(layers)));
+
+      // Vue의 반응성을 유지하려면 spread 연산자로 새로운 배열 할당
+      props.fabApplication.idt2Layers = [...layers2];
+      props.fabApplication.idt2Id = props.fabApplication.idtId;
+    } else {
+      // layers 배열을 완전히 새로운 배열로 대체 (반응성을 유지)
+      layers2.splice(0, layers2.length);
+
+      // Vue의 반응성을 유지하려면 spread 연산자로 새로운 배열 할당
+      props.fabApplication.idt2Layers = [];
+
+      // 다른 상태 초기화
+      props.fabApplication.idt2Id = null;
+    }
+  }
+);
+
 // IDT Thickness 입력을 활성하게 해주는 Watch
 watch(
   () => props.fabApplication.idtProcessId,
@@ -152,7 +191,12 @@ watch(
     //   props.fabApplication.idtId = parseInt(depositionOptions.value[0].value);
     // }
 
-    if (depositionOptions.value.length == 1) {
+    // if (depositionOptions.value.length == 1) {
+    //   props.fabApplication.idtId = parseInt(depositionOptions.value[0].value);
+    // }
+    if (["HS", "NS"].includes(props.fabApplication.waferType)) {
+    } else {
+      // TC CASE
       props.fabApplication.idtId = parseInt(depositionOptions.value[0].value);
     }
 
@@ -164,6 +208,8 @@ watch(
 
       if (machineOptions.value.length == 1) {
         props.fabApplication.idtMachineName = machineOptions.value[0].value;
+      } else if (props.fabApplication.idtProcessId === "Lift-off") {
+        props.fabApplication.idtMachineName = machineOptions.value[2].value;
       }
     }
   }
@@ -230,6 +276,24 @@ watch(
       }
       // props.fabApplication.idtId = parseInt(props.fabApplication.depositionCondi);
       props.fabApplication.idtLayers = layers;
+
+      if (props.fabApplication.isDualIdt) {
+        // 깊은 복사하여 layers2 배열 업데이트
+        layers2.splice(
+          0,
+          layers2.length,
+          ...JSON.parse(JSON.stringify(layers))
+        );
+
+        // Vue의 반응성을 유지하려면 spread 연산자로 새로운 배열 할당
+        props.fabApplication.idt2Layers = [...layers2];
+        props.fabApplication.idt2Id = props.fabApplication.idtId;
+      }
+
+      ///
+      if (props.fabApplication.waferType !== "TC" && props.fabApplication.idtProcessId === "Lift-off") {
+        props.fabApplication.idtMachineName = machineOptions.value[2].value;
+      }
     }
   }
 );

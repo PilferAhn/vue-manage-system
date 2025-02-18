@@ -1,6 +1,7 @@
 <template>
   <section class="section">
     <!-- <h3 class="section-title">Set Wafer Details</h3> -->
+     
     <el-row :gutter="20">
       <el-col :span="7">
         <el-form-item class="custom-form-item" prop="waferAngle">
@@ -183,6 +184,11 @@ watch(
             props.sawType,
             parseInt(newVal.toString())
           );
+
+          if(thickOptions.value.length == 1){
+            props.fabApplication.waferThickness = parseInt(thickOptions.value[0].value)
+          }
+
         }
       }
     }

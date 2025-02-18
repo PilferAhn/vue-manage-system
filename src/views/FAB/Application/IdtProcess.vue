@@ -36,6 +36,10 @@
         label="TEG Shot 추가(더블샷)"
       ></el-checkbox>
       <el-checkbox
+        v-model="props.fabApplication.isDualIdt"
+        label="Dual IDT"
+      ></el-checkbox>
+      <el-checkbox
         v-model="props.fabApplication.isToneInverted"
         label="PAD 6um 적용(톤반전)"
       ></el-checkbox>

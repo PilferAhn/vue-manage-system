@@ -39,6 +39,7 @@ export interface PhotoProcess{
  
 export interface FabRequestForm {
   photo? : Photo;
+  cusomterId? : string;
   productName?: string;
   requesterId?: string;
   designerId?: string;
@@ -73,6 +74,7 @@ export interface FabRequestForm {
   hsTrimingTarget? : number | null;
   freqRange? : string;
   idtId?: number;
+  idt2Id? : number;
   hsId? : number;
   pstId?: number;
   tcId?: number;
@@ -88,6 +90,7 @@ export interface FabRequestForm {
   isNeedExtraShot? : boolean;
   isSeedSio2? : boolean;
   isToneInverted? : boolean;
+  isDualIdt? : boolean;
   chip? : {
     hori : number
     verti : number
@@ -111,6 +114,7 @@ export interface FabRequestForm {
   seedLayers? : Layer[]
   passivationLayers? : Layer[]
   idtLayers?: Layer[];
+  idt2Layers?: Layer[];
   pstLayers?: Layer[];
   tcLayers?: Layer[];
   hsType? : HsType;

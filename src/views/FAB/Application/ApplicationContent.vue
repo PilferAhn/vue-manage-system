@@ -20,10 +20,30 @@
         />
       </el-col>
     </el-row>
-    <ProductName
+    <el-row :gutter="20" class="form-row">
+      <el-col :span="12">
+        <input-text
+          v-model="props.fabApplication.productName"
+          props="ProductName"
+          label="Product Name"                          
+        />
+      </el-col>
+      <el-col :span="12">
+        <SelectOptionsNew2
+          v-model="props.fabApplication.cusomterId"
+          label="Customer (고객사)"
+          prop="cusomterId"
+          placeholder="EX) K1 or 전장"
+          :options="clients"
+          :disable="false"
+          class="wide-select"
+        />
+      </el-col>
+    </el-row>
+    <!-- <ProductName
       v-model:fabApplication="props.fabApplication"
       :sawType="sawType"
-    />
+    /> -->
     <!-- 첫 번째 행 -->
     <User2
       v-model:fabApplication="props.fabApplication"
@@ -251,6 +271,7 @@ import {
   receiveDestinationList,
   receivePriorityList,
   receivefilterTypeList,
+  getCostomerList,
 } from "../../../utils/Fab/fab-application-utils";
 import Dvb from "./dvr/Dvr.vue";
 import BandSection from "./band/band.vue"
@@ -284,11 +305,13 @@ const props = defineProps<{
 const destinationList = ref<OptionInterface[]>([]);
 const priorityList = ref<OptionInterface[]>([]);
 const filterTypeList = ref<OptionInterface[]>([]);
-
+const clients = ref<OptionInterface[]>([]);
 onMounted(async () => {
   destinationList.value = await receiveDestinationList();
   priorityList.value = await receivePriorityList();
   filterTypeList.value = await receivefilterTypeList();
+  clients.value = await getCostomerList()
+  // console.log(await getCostomerList())
 });
 
 watch(()=>props.fabApplication.destinationId, (newVal) => {

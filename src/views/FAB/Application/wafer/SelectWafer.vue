@@ -1,6 +1,7 @@
 <template>
   <section class="section">
     <h3 class="section-title">Wafer</h3>
+    
     <br>
     <el-select
       v-model="props.fabApplication.waferId"
@@ -56,6 +57,9 @@ watch(
     
     if(availableWafer.value.length == 1){
       props.fabApplication.waferId = availableWafer.value[0].key
+    }
+    else if(props.fabApplication.waferType === "TC"){
+      props.fabApplication.waferId = 2
     }
     props.fabApplication.waferAngle = undefined
     props.fabApplication.hsTrimingTarget = null    
