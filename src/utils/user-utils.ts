@@ -1,4 +1,4 @@
-import { sendPostRequest } from "./httpProtocol";
+import { sendPostRequest, sendGetRequest } from "./httpProtocol";
 import { convertKeysToCamelCase } from "./key-converter";
 import type { User } from "../interface/user";
 import { ref } from "vue";
@@ -17,4 +17,16 @@ export async function getUserListByDepartment(department: string) {
   });
 
   return users.value;
+}
+
+export async function getUserList() {
+
+  const url = "/user"
+  const users = ref<User[]>([]);
+  const response = await sendGetRequest(url , "get_user_list")
+  response.forEach((user) => {
+    users.value.push(convertKeysToCamelCase(user) as User);
+  });
+  
+  return users.value
 }
