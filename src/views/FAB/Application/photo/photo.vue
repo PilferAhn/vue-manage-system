@@ -7,7 +7,11 @@
         label="Process Name"
         prop="processName"
         :align="'center'"
-      ></el-table-column>
+      >
+        <!-- <template #default="scope">
+          <el-input v-model="scope.row.processName"></el-input>
+        </template> -->
+      </el-table-column>
       <el-table-column label="Machine Name" :align="'center'">
         <template #default="scope">
           <el-select
@@ -62,11 +66,13 @@ watch(
       order: 3,
     };
 
-    console.log(newVal, oldVal);
-
     if (oldVal !== undefined) {
       if (newVal) {
-        props.fabApplication.photo.photoProcesses.splice(temp.order - 1, 0, temp);
+        props.fabApplication.photo.photoProcesses.splice(
+          temp.order - 1,
+          0,
+          temp
+        );
       } else {
         for (
           let i = props.fabApplication.photo.photoProcesses.length - 1;
@@ -101,13 +107,66 @@ watch(
             i++
           ) {
             if (
-              ["M_PST", "D_PST"].includes(
+              ["M-PST", "D-PST"].includes(
                 props.fabApplication.photo.photoProcesses[i].processName
               )
             ) {
               props.fabApplication.photo.photoProcesses[i].processName =
                 props.sawType.pstTypes[j].name;
             }
+          }
+        }
+      }
+    }
+  }
+);
+
+watch(
+  () => props.fabApplication.packageId,
+  (newVal, oldVal) => {
+    if (
+      props.fabApplication.waferType !== undefined &&
+      props.fabApplication.waferType !== null
+    ) {
+      const temp = {
+        processName: "BDP",
+        machineName: "Nikon",
+        reticleName: "",
+        isMutable: false,
+        order: 10,
+      };
+
+      if (newVal === "BDMP") {
+        // props.fabApplication.photo.photoProcesses.splice(
+        //   temp.order - 1,
+        //   0,
+        //   temp
+        // );
+        for (
+          let i = props.fabApplication.photo.photoProcesses.length - 1;
+          i >= 0;
+          i--
+        ) {
+          if (props.fabApplication.photo.photoProcesses[i].order >= 10) {
+            props.fabApplication.photo.photoProcesses.splice(
+              i-1,
+              0,
+              temp
+            );
+            return
+          }
+        }
+      } else {
+        for (
+          let i = props.fabApplication.photo.photoProcesses.length - 1;
+          i >= 0;
+          i--
+        ) {
+          if (
+            props.fabApplication.photo.photoProcesses[i].processName === "BDP"
+          ) {
+            props.fabApplication.photo.photoProcesses.splice(i, 1);
+            return; // 한 번만 삭제 후 종료
           }
         }
       }
@@ -135,21 +194,21 @@ watch(
             machineName: "Nikon",
             reticleName: "",
             isMutable: false,
-            order: 3,
+            order: 8,
           },
           {
             processName: "PAD",
             machineName: "Nikon",
             reticleName: "",
             isMutable: false,
-            order: 4,
+            order: 12,
           },
           {
             processName: "SiO",
             machineName: "Nikon",
             reticleName: "",
             isMutable: false,
-            order: 5,
+            order: 13,
           },
         ];
       } else if (newVal === "HS") {
@@ -162,32 +221,32 @@ watch(
             order: 1,
           },
           {
-            processName: "D_PST",
+            processName: "D-PST",
             machineName: "",
             reticleName: "",
             isMutable: true,
-            order: 2,
+            order: 5,
           },
           {
             processName: "브릿지",
             machineName: "Nikon",
             reticleName: "",
             isMutable: false,
-            order: 3,
+            order: 8,
           },
           {
             processName: "PAD",
             machineName: "Nikon",
             reticleName: "",
             isMutable: false,
-            order: 4,
+            order: 12,
           },
           {
             processName: "SiO",
             machineName: "Nikon",
             reticleName: "",
             isMutable: false,
-            order: 5,
+            order: 13,
           },
         ];
       } else {
@@ -204,28 +263,28 @@ watch(
             machineName: "",
             reticleName: "",
             isMutable: true,
-            order: 2,
+            order: 4,
           },
           {
             processName: "COT",
             machineName: "Nikon",
             reticleName: "",
             isMutable: false,
-            order: 3,
+            order: 6,
           },
           {
             processName: "PAD",
             machineName: "Nikon",
             reticleName: "",
             isMutable: false,
-            order: 4,
+            order: 12,
           },
           {
             processName: "SiO",
             machineName: "Nikon",
             reticleName: "",
             isMutable: false,
-            order: 5,
+            order: 13,
           },
         ];
       }

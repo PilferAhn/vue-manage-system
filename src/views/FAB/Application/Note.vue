@@ -17,11 +17,21 @@
 <script lang="ts" setup>
 import LongInputText2 from "../../Common/LongInputText2.vue";
 import type { FabRequestForm, SawType } from "../../../interface/fab-application-rev2";
-
+import { watch } from "vue";
 const props = defineProps<{
   fabApplication: FabRequestForm;
   sawType: SawType;
 }>();
+
+watch(()=>props.fabApplication.isToneInverted, (newVal) => {
+  if(newVal){
+    props.fabApplication.photoNote = `PAD 마스크 톤 반전 (칩소형화 패드 변경)\n  노광 에너지 : 230mJ\n  PAD 코팅 : Mark#25, #28\n  PAD 현상 : Mark#12,15 #26`
+  }
+  else{
+    props.fabApplication.photoNote = ``
+  }
+})
+
 
 // 탭 배열 (label과 v-model에 들어갈 키값을 저장)
 const tabs = [
