@@ -2,10 +2,29 @@
   <div>
     <el-table v-if="isLoad" :data="applications">
       <el-table-column
+        prop="quantity"
+        label="매수"
+        :align="'center'"        
+      />
+      <el-table-column
+        prop="code"
+        label="투입코드"
+        :align="'center'"        
+      />
+      <el-table-column
+        prop="dateOfFabInsert"
+        label="투입일"
+        :align="'center'"        
+      />
+      <el-table-column
         prop="productName"
         label="Product Name"
-        width="180"
-        :align="'center'"
+        :align="'center'"        
+      />
+      <el-table-column
+        prop="productName"
+        label="Product Name"
+        :align="'center'"        
       />
       <el-table-column label="P/L" :align="'center'">
         <template #default="scope"
@@ -16,12 +35,12 @@
       <el-table-column
         prop="waferType"
         label="Type"
-        width="180"
+
         :align="'center'"
       >
         <template #default="scope">{{ scope.row.wafer.sawTypeId }}</template>
       </el-table-column>
-      <el-table-column label="Band" width="180" :align="'center'">
+      <el-table-column label="Band" :align="'center'">
         <template #default="scope">
           {{ scope.row.bandCombinationId }}
         </template>
@@ -29,7 +48,7 @@
       <el-table-column
         label="출하"
         prop="destinationId"
-        width="180"
+
         :align="'center'"
       >
       </el-table-column>

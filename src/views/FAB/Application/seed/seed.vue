@@ -1,11 +1,6 @@
 <template>
   <div class="deposition-container">
-    <section class="section">
-      <idt-process
-        :fab-application="props.fabApplication"
-        :saw-type="props.sawType"
-      />
-    </section>
+
 
     <div v-if="props.fabApplication.isSeedSio2">
       <div class="align-center">

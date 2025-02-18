@@ -15,6 +15,7 @@
             v-model:fabApplication="props.fabApplication"
             :sawType="sawType"
           />
+
           <Buttons
             v-model:fabApplication="props.fabApplication"
             :fabFormRef="fabFormRef"
@@ -33,12 +34,20 @@
             v-model:fabApplication="props.fabApplication"
             :sawType="sawType"
           />
-          <Pst v-model:fabApplication="props.fabApplication" :sawType="sawType" />
-          <PhotoSection v-if="props.fabApplication.photo !== null"
+          <Pst
             v-model:fabApplication="props.fabApplication"
             :sawType="sawType"
           />
-          <Ct v-model:fabApplication="props.fabApplication" :sawType="sawType" />
+          <PhotoSection
+            v-if="props.fabApplication.photo !== null"
+            v-model:fabApplication="props.fabApplication"
+            :sawType="sawType"
+          />
+
+          <Ct
+            v-model:fabApplication="props.fabApplication"
+            :sawType="sawType"
+          />
           <Passivation
             v-model:fabApplication="props.fabApplication"
             :sawType="sawType"
@@ -53,7 +62,6 @@
     </el-form>
   </div>
 </template>
-
 
 <script lang="ts" setup>
 import { watch, ref, reactive } from "vue";
@@ -72,6 +80,7 @@ import type { FabRequestForm } from "./../../../interface/fab-application-rev2";
 import PhotoSection from "./photo/photo.vue";
 import { fabRequestFormRules } from "../../../utils/rules/fab-application";
 import type { FormInstance } from "element-plus";
+import IdtProcess from "./IdtProcess.vue";
 import Bom from "./bom/Bom.vue";
 const fabFormRef = ref<FormInstance | null>(null);
 
@@ -88,7 +97,7 @@ watch(
   () => props.fabApplication.waferType,
   (newVal, oldVal) => {
     Object.assign(sawType, defineSawTypeByWaferType(newVal, props.options));
-    console.log(sawType.passivationTypes)
+    console.log(sawType.passivationTypes);
   }
 );
 </script>
@@ -135,5 +144,4 @@ export default {
     border-right: none;
   }
 }
-
 </style>

@@ -1,27 +1,28 @@
 <template>
   <!-- 첫 번째 조건부 섹션 -->
-  <div
-    v-if="['NS', 'HS'].includes(props.fabApplication.waferType)"
-    class="section"
-  >
-    <h3>Extra Process Information [HS / NS]</h3>    
-    <!-- <div v-if="props.fabApplication.packageId === 'CSP'" class="checkbox-group"> -->
-    <div class="checkbox-group">
-      <el-checkbox
-        v-model="props.sawType.isAllowBridge"
-        label="브릿지"
-      ></el-checkbox>
-      <el-checkbox
-        v-model="props.fabApplication.isIdtXoi"
-        label="IDT-Oxi"
-      ></el-checkbox>      
-      <span
-        v-if="
-          props.fabApplication.packageId === 'CSP' &&
-          props.fabApplication.idtProcessId === 'Lift-off'
-        "
-      >
-        <!-- <el-checkbox
+
+    <div
+      v-if="['NS', 'HS'].includes(props.fabApplication.waferType)"
+      class="section"
+    >
+      <h3>Extra Process Information [HS / NS]</h3>
+      <!-- <div v-if="props.fabApplication.packageId === 'CSP'" class="checkbox-group"> -->
+      <div class="checkbox-group">
+        <el-checkbox
+          v-model="props.sawType.isAllowBridge"
+          label="브릿지"
+        ></el-checkbox>
+        <el-checkbox
+          v-model="props.fabApplication.isIdtXoi"
+          label="IDT-Oxi"
+        ></el-checkbox>
+        <span
+          v-if="
+            props.fabApplication.packageId === 'CSP' &&
+            props.fabApplication.idtProcessId === 'Lift-off'
+          "
+        >
+          <!-- <el-checkbox
           v-model="props.sawType.isAllowBridge"
           label="Dual IDT"
         ></el-checkbox>
@@ -29,26 +30,34 @@
           v-model="props.fabApplication.isAllowBridge"
           label="산포 개선 노광량 사용"
         ></el-checkbox> -->
-      </span>
+        </span>
 
-      <el-checkbox
-        v-model="props.fabApplication.isNeedExtraShot"
-        label="TEG Shot 추가(더블샷)"
-      ></el-checkbox>
+        <el-checkbox
+          v-model="props.fabApplication.isNeedExtraShot"
+          label="TEG Shot 추가(더블샷)"
+        ></el-checkbox>
+        <el-checkbox
+          v-model="props.fabApplication.isDualIdt"
+          label="Dual IDT"
+        ></el-checkbox>
+        <el-checkbox
+          v-model="props.fabApplication.isToneInverted"
+          label="PAD 6um 적용(톤반전)"
+        ></el-checkbox>
+        <el-checkbox
+          v-model="props.fabApplication.isSeedSio2"
+          label="SiO2Seed"
+        ></el-checkbox>
+      </div>
+    </div>
+    <div v-else class="section">
+      <h3>Extra Process Information [TC]</h3>
       <el-checkbox
         v-model="props.fabApplication.isDualIdt"
         label="Dual IDT"
       ></el-checkbox>
-      <el-checkbox
-        v-model="props.fabApplication.isToneInverted"
-        label="PAD 6um 적용(톤반전)"
-      ></el-checkbox>
-      <el-checkbox
-        v-model="props.fabApplication.isSeedSio2"
-        label="SiO2Seed"
-      ></el-checkbox>
     </div>
-  </div>
+
 </template>
 
 <script lang="ts" setup>
@@ -62,7 +71,6 @@ import type {
 const props = defineProps<{
   fabApplication: FabRequestForm;
   sawType: SawType;
-  
 }>();
 </script>
 

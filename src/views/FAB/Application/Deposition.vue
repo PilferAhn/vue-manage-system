@@ -1,8 +1,8 @@
 <template>
   <div class="deposition-container">
-    {{ props.fabApplication.idtProcessId }}
     <section class="section">
       <h3 class="section-title">IDT (1st Metal)</h3>
+      <br />
       <el-row :gutter="20" class="align-center">
         <el-col :span="8">
           <el-form-item>
@@ -16,44 +16,9 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="8">
-          <el-form-item>
-            <el-select
-              v-model="props.fabApplication.idtId"
-              placeholder="Select IDT"
-              class="custom-select"
-              clearable
-            >
-              <el-option
-                v-for="condition in depositionOptions"
-                :key="condition.key"
-                :label="condition.label"
-                :value="condition.key"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="7">
-          <el-select
-            v-model="props.fabApplication.idtMachineName"
-            placeholder="IDT Deposition Machine"
-          >
-            <el-option
-              v-for="machine in machineOptions"
-              :key="machine.key"
-              :label="machine.label"
-              :value="machine.label"
-            ></el-option>
-          </el-select>
-        </el-col>
       </el-row>
     </section>
 
-    <!-- IDT 정보 테이블 섹션 -->
-    <div v-if="props.fabApplication.waferType === 'TC'">
-      *3중막 (Cr/Cu/Cr) 일경우 Ag = 0를 입력하세요.
-    </div>
-    <br />
     <br />
     <section class="section">
       <!-- <h3 class="section-title2">IDT Thickness</h3> -->
@@ -62,6 +27,36 @@
       </div>
       <div v-else>
         <el-descriptions title="Thickness" :column="4" :border="true">
+          <template #extra>
+            <div class="extra-container">
+              <el-select
+                v-model="props.fabApplication.idtId"
+                placeholder="Select IDT"
+                class="custom-select"
+                clearable
+              >
+                <el-option
+                  v-for="condition in depositionOptions"
+                  :key="condition.key"
+                  :label="condition.label"
+                  :value="condition.key"
+                ></el-option>
+              </el-select>
+
+              <el-select
+                v-model="props.fabApplication.idtMachineName"
+                placeholder="IDT Deposition Machine"
+              >
+                <el-option
+                  v-for="machine in machineOptions"
+                  :key="machine.key"
+                  :label="machine.label"
+                  :value="machine.label"
+                ></el-option>
+              </el-select>
+            </div>
+          </template>
+
           <el-descriptions-item
             v-for="layer in layers"
             :key="layer.idx"
@@ -72,11 +67,46 @@
             <el-input v-model="layer.thickness"></el-input>
           </el-descriptions-item>
         </el-descriptions>
-
+        <!-- IDT 정보 테이블 섹션 -->
+        <div
+          v-if="props.fabApplication.waferType === 'TC'"
+          style="color: red; margin-top: 10px; text-align: right"
+        >
+          *3중막 (Cr/Cu/Cr) 일경우 Ag = 0를 입력하세요.
+        </div>
         <div v-if="props.fabApplication.isDualIdt">
           <br />
 
           <el-descriptions title="Thickness" :column="4" :border="true">
+            <template #extra>
+              <div class="extra-container">
+                <el-select
+                  v-model="props.fabApplication.idt2Id"
+                  placeholder="Select IDT"
+                  class="custom-select"
+                  clearable
+                >
+                  <el-option
+                    v-for="condition in depositionOptions2"
+                    :key="condition.key"
+                    :label="condition.label"
+                    :value="condition.key"
+                  ></el-option>
+                </el-select>
+
+                <el-select
+                  v-model="props.fabApplication.idt2MachineName"
+                  placeholder="IDT Deposition Machine"
+                >
+                  <el-option
+                    v-for="machine in machineOptions2"
+                    :key="machine.key"
+                    :label="machine.label"
+                    :value="machine.label"
+                  ></el-option>
+                </el-select>
+              </div>
+            </template>
             <el-descriptions-item
               v-for="layer in layers2"
               :key="layer.idx"
@@ -86,6 +116,12 @@
               <el-input v-model="layer.thickness"></el-input>
             </el-descriptions-item>
           </el-descriptions>
+          <div
+            v-if="props.fabApplication.waferType === 'TC'"
+            style="color: red; margin-top: 10px; text-align: right"
+          >
+            *3중막 (Cr/Cu/Cr) 일경우 Ag = 0를 입력하세요.
+          </div>
         </div>
       </div>
     </section>
@@ -121,9 +157,13 @@ const props = defineProps<{
 
 // 상태 관리
 const depositionOptions = ref<OptionInterface[]>([]);
+const depositionOptions2 = ref<OptionInterface[]>([]);
+
 const layerNames = ref<string | undefined>("");
 const machineName = ref<string>("");
 const machineOptions = ref<OptionInterface[]>([]);
+const machineOptions2 = ref<OptionInterface[]>([]);
+
 const layers = reactive<Layer[]>([]);
 const layers2 = reactive<Layer[]>([]);
 const idtType = reactive<IdtType>({});
@@ -159,6 +199,16 @@ watch(
       // Vue의 반응성을 유지하려면 spread 연산자로 새로운 배열 할당
       props.fabApplication.idt2Layers = [...layers2];
       props.fabApplication.idt2Id = props.fabApplication.idtId;
+      depositionOptions2.value.splice(
+        0,
+        depositionOptions.value.length,
+        ...JSON.parse(JSON.stringify(depositionOptions.value))
+      );
+      machineOptions2.value.splice(
+        0,
+        machineOptions.value.length,
+        ...JSON.parse(JSON.stringify(machineOptions.value))
+      );
     } else {
       // layers 배열을 완전히 새로운 배열로 대체 (반응성을 유지)
       layers2.splice(0, layers2.length);
@@ -181,19 +231,6 @@ watch(
       newVal
     );
 
-    // if (props.fabApplication.waferType === "TC") {
-    //   const temp = {
-    //     key: 99,
-    //     label: "ETC",
-    //     value: "99",
-    //   };
-    //   depositionOptions.value.push(temp);
-    //   props.fabApplication.idtId = parseInt(depositionOptions.value[0].value);
-    // }
-
-    // if (depositionOptions.value.length == 1) {
-    //   props.fabApplication.idtId = parseInt(depositionOptions.value[0].value);
-    // }
     if (["HS", "NS"].includes(props.fabApplication.waferType)) {
     } else {
       // TC CASE
@@ -259,14 +296,6 @@ watch(
         layers
       );
 
-      // console.log(props.fabApplication.idtId);
-      // if (props.fabApplication.waferType === "TC" && props.fabApplication.idtId === "ETC") {
-      // } else {
-      //   machineOptions.value = generateMachineOptions(
-      //     props.sawType.idtTypes,
-      //     props.fabApplication.idtId.toString()
-      //   );
-      // }
       machineOptions.value = generateMachineOptions(
         props.sawType.idtTypes,
         props.fabApplication.idtId.toString()
@@ -285,13 +314,27 @@ watch(
           ...JSON.parse(JSON.stringify(layers))
         );
 
+        depositionOptions2.value.splice(
+          0,
+          depositionOptions.value.length,
+          ...JSON.parse(JSON.stringify(depositionOptions.value))
+        );
+        machineOptions2.value.splice(
+          0,
+          machineOptions.value.length,
+          ...JSON.parse(JSON.stringify(machineOptions.value))
+        );
+
         // Vue의 반응성을 유지하려면 spread 연산자로 새로운 배열 할당
         props.fabApplication.idt2Layers = [...layers2];
         props.fabApplication.idt2Id = props.fabApplication.idtId;
       }
 
       ///
-      if (props.fabApplication.waferType !== "TC" && props.fabApplication.idtProcessId === "Lift-off") {
+      if (
+        props.fabApplication.waferType !== "TC" &&
+        props.fabApplication.idtProcessId === "Lift-off"
+      ) {
         props.fabApplication.idtMachineName = machineOptions.value[2].value;
       }
     }
@@ -361,5 +404,15 @@ export default {
 /* 입력 필드 스타일 */
 .custom-input {
   width: 100%;
+}
+
+.extra-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* 요소 간 간격 조정 */
+}
+
+.custom-select {
+  min-width: 200px; /* 선택 박스 최소 크기 설정 */
 }
 </style>

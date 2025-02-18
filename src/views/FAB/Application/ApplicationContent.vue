@@ -25,7 +25,7 @@
         <input-text
           v-model="props.fabApplication.productName"
           props="ProductName"
-          label="Product Name"                          
+          label="Product Name"
         />
       </el-col>
       <el-col :span="12">
@@ -40,29 +40,31 @@
         />
       </el-col>
     </el-row>
-    <!-- <ProductName
-      v-model:fabApplication="props.fabApplication"
-      :sawType="sawType"
-    /> -->
-    <!-- 첫 번째 행 -->
+    <div class="form-row">
+      <LongInputText
+        v-model="props.fabApplication.note"
+        label="용도 / 목적"
+        class="custom-input"
+        :row-cnt="'2'"
+      />
+    </div>
     <User2
       v-model:fabApplication="props.fabApplication"
       designer-prop="designerId"
       requester-prop="requesterId"
     ></User2>
-    
 
     <!-- 두 번째 행 -->
     <el-row :gutter="20" class="form-row">
       <el-col :span="12">
-        
-          <InputText :model-value="props.fabApplication.band"
+        <InputText
+          :model-value="props.fabApplication.band"
           label="Band"
           prop="band"
           :rules="[]"
           placeholder="Enter Band Info"
-          ></InputText>
-        
+        ></InputText>
+
         <!-- <BandSection :fab-application="props.fabApplication"
         :band-list="props.bandList"></BandSection> -->
         <!-- <el-form-item label="Band">
@@ -88,9 +90,11 @@
         />
       </el-col>
     </el-row>
+
     <el-row :gutter="20" class="form-row">
       <el-col :span="12">
-        <SelectOptionsNew2 v-if="props.fabApplication.destinationId !== '개발전달'"
+        <SelectOptionsNew2
+          v-if="props.fabApplication.destinationId !== '개발전달'"
           label="Filter Type"
           prop="filterType"
           v-model="props.fabApplication.filterType"
@@ -165,7 +169,7 @@
         />
       </el-col>
     </el-row>
-    
+
     <!--  MHM08AA4001A , MH748AA40L1A -->
     <ApplicationChip
       v-model:fabApplication="props.fabApplication"
@@ -222,25 +226,29 @@
     </el-row>
     <!-- 용도 / 목적 -->
     <Bom
-      v-if="props.fabApplication.packageId === 'CSP' && props.fabApplication.destinationId !== '개발전달'"
+      v-if="
+        props.fabApplication.packageId === 'CSP' &&
+        props.fabApplication.destinationId !== '개발전달'
+      "
       v-model:fabApplication="props.fabApplication"
       :sawType="sawType"
     ></Bom>
+    <idt-process
+      :fab-application="props.fabApplication"
+      :saw-type="props.sawType"
+    />
+
     <div class="form-row">
-      <LongInputText
-        v-model="props.fabApplication.note"
-        label="용도 / 목적"
-        class="custom-input"
-        :row-cnt="'3'"
-      />
-    </div>
-    <div class="form-row">
-      <long-input-text
+      <!-- <long-input-text
         v-model="props.fabApplication.purpose"
         label="기타 상세"
         class="custom-input"
         :row-cnt="'3'"
-      />
+      /> -->
+      <note-section
+        :fab-application="props.fabApplication"
+        :saw-type="props.sawType"
+      ></note-section>
     </div>
   </div>
 </template>
@@ -273,9 +281,10 @@ import {
   receivefilterTypeList,
   getCostomerList,
 } from "../../../utils/Fab/fab-application-utils";
+import IdtProcess from "./IdtProcess.vue";
 import Dvb from "./dvr/Dvr.vue";
-import BandSection from "./band/band.vue"
-
+import BandSection from "./band/band.vue";
+import NoteSection from "./Note.vue";
 import {
   groupList,
   processList,
@@ -287,7 +296,7 @@ import {
   waferComList,
   machineList,
   sendFormData,
-  freqRangeList
+  freqRangeList,
 } from "../Common/Application";
 import axios from "axios";
 import { Option } from "element-plus/es/components/select-v2/src/select.types";
@@ -300,8 +309,6 @@ const props = defineProps<{
   sawType: SawType;
 }>();
 
-
-
 const destinationList = ref<OptionInterface[]>([]);
 const priorityList = ref<OptionInterface[]>([]);
 const filterTypeList = ref<OptionInterface[]>([]);
@@ -310,19 +317,21 @@ onMounted(async () => {
   destinationList.value = await receiveDestinationList();
   priorityList.value = await receivePriorityList();
   filterTypeList.value = await receivefilterTypeList();
-  clients.value = await getCostomerList()
+  clients.value = await getCostomerList();
   // console.log(await getCostomerList())
 });
 
-watch(()=>props.fabApplication.destinationId, (newVal) => {
-  if(newVal === "개발전달"){
-    props.fabApplication.filterType = null
-    props.fabApplication.bom = null
+watch(
+  () => props.fabApplication.destinationId,
+  (newVal) => {
+    if (newVal === "개발전달") {
+      props.fabApplication.filterType = null;
+      props.fabApplication.bom = null;
+    } else {
+      props.fabApplication.bom = initBom();
+    }
   }
-  else{
-    props.fabApplication.bom = initBom()
-  }
-})
+);
 
 // watch(
 //   () => props.fabApplication.packageId,

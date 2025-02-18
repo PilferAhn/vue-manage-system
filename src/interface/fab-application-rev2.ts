@@ -68,6 +68,7 @@ export interface FabRequestForm {
   tcMachineName? : string
   note?: string;
   idtMachineId? : string
+  idt2MachineId? : string
   waferId?: number;
   waferAngle?: number;
   waferThickness?: number;
@@ -81,6 +82,7 @@ export interface FabRequestForm {
   seedId?: number;
   code? : string;
   idtMachineName? : string
+  idt2MachineName? : string
   idtProcess? : string;
   passivationId? : number
   bom? : Bom
@@ -91,6 +93,13 @@ export interface FabRequestForm {
   isSeedSio2? : boolean;
   isToneInverted? : boolean;
   isDualIdt? : boolean;
+  photoNote? : string
+  metalNote? : string
+  dielectricLayerNote? : string
+  bpThicknessNote? : string
+  bpProbeNote? : string
+  paNote? : string
+  etchingNote? : string
   chip? : {
     hori : number
     verti : number
