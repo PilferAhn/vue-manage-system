@@ -44,3 +44,7 @@ const tabs = [
   { label: "에칭", modelKey: "etchingNote" },
 ];
 </script>
+
+<script lang="ts">
+export default {};
+</script>

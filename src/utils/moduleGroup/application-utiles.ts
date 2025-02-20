@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import type { Application } from "../../interface/Modules/Application/application";
+import { NaApplication, NfApplication, type Application } from "../../interface/Modules/Application/application";
 import { OptionInterface } from "../../interface/option";
 import { Option } from "element-plus/es/components/select-v2/src/select.types";
 
@@ -20,11 +20,34 @@ export function initApplication() {
     nfApp: null,
     measurer: "",
     estFinishedDate: "",
+    isNa : false,
+    isNf : false,
   });
 
   return {
     application,
   };
+}
+
+export function initNf(){
+  const na = ref<NaApplication>({
+    na : "",
+    deMethod : "",
+    loss : false,
+    measMthod : "",
+    sParaType : "",
+    note : ""
+  })
+  return na.value
+}
+
+export function initNa(){
+  const nf = ref<NfApplication>({deMethod : "",
+    capture : false,
+    isRealMatching : false,
+    matchingInfo : "",
+    note : ""})
+  return nf.value
 }
 
 export function createQuantityOptions(num: number) {

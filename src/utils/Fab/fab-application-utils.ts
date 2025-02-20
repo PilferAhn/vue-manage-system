@@ -15,6 +15,7 @@ import {
   FabRequestForm,
   Layer,
   band,
+  BomCode,
 } from "../../interface/fab-application-rev2";
 import User from "../../views/user.vue";
 import { ElMessage, ElNotification } from "element-plus";
@@ -31,6 +32,13 @@ import { TegApplication } from "../../interface/Teg/teg";
 import type { TegApplication as TegApplicationInterface } from "../../Common/ApplicationTypes";
 import type { Bom } from "../../interface/fab-application-rev2";
 
+
+export async function getBomCodeList(){
+  const url = "/api/sapinfo"
+  const bomCodeList = ref<BomCode[]>([]);
+  bomCodeList.value = await sendGetRequest(url, "1") as BomCode[]
+  return bomCodeList.value
+}
 
 export async function getCostomerList() {
 
@@ -96,7 +104,7 @@ export function initFabApplication3(bom: Bom) {
     isNeedExtraShot: false,
     isToneInverted: false,
     isSeedSio2: false,
-    isDoubleIdt: false,
+    isDualIdt: false,
     bom: bom,
     photo: {
       photoProcesses: [
@@ -374,6 +382,23 @@ export async function getAppRev2ByProductName(
     throw error; // 에러를 호출자에게 전달
   }
 }
+
+
+export async function sendAppRemoveRequest(app: FabRequestForm) {
+  const form = new FormData();
+  form.append("product_name", app.productName);
+  const url = serverUrl + "/fab_monitoring_rev2/delete_fab_request";
+
+  try {
+    const data = await sendPostRequest(url, form); // HTTP 요청
+    console.log("삭제 성공:", data); // 서버 응답 확인
+    return true; // 성공 시 true 반환
+  } catch (error) {
+    console.error("Error in sendAppRemoveRequest:", error);
+    return false; // 실패 시 false 반환
+  }
+}
+
 
 export async function getApplicationList(
   UserOption: boolean,

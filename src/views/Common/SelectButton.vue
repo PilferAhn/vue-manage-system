@@ -6,7 +6,7 @@
         :disabled="computedDisable"
         size="large"
       /> -->
-    <el-button size="large" round :class="{
+    <el-button size="small" :class="{
     'active-button': internalValue }" @click="toggleButton">{{ props.buttonName }}</el-button>
   </el-form-item>
 </template>

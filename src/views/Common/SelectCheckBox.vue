@@ -1,6 +1,6 @@
 <template>
   <el-form-item :label="label" :prop="prop" :rules="rules">
-    <el-checkbox
+    　<el-checkbox
       v-model="internalValue"
       @change="updateValue"
       :disabled="computedDisable"

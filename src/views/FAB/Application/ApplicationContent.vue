@@ -28,6 +28,32 @@
           label="Product Name"
         />
       </el-col>
+      <el-col :span="7">
+        <input-text
+          v-model="props.fabApplication.bomMainCode"
+          props="ProductName"
+          label="대표코드"
+          :disable="true"
+        />
+      </el-col>
+      <el-col :span="5">
+        <SelectCheckBox
+          v-model="props.fabApplication.isNewBom"
+          label="신규 BOM"
+          prop="isNewBom"
+          :disable="false"
+          :rules="[]"
+          class="wide-select"          
+        />
+        <!-- <input-text
+          v-model="props.fabApplication.bomMainCode"
+          props="ProductName"
+          label="신규 BOM"
+          :disable="true"
+        /> -->
+      </el-col>
+    </el-row>
+    <el-row :gutter="20" class="form-row">
       <el-col :span="12">
         <SelectOptionsNew2
           v-model="props.fabApplication.cusomterId"
@@ -39,6 +65,7 @@
           class="wide-select"
         />
       </el-col>
+      <el-col :span="12"> </el-col>
     </el-row>
     <div class="form-row">
       <LongInputText
@@ -259,7 +286,7 @@ import { filterTypeOptions } from "../../../utils/dropdown-options";
 import type {
   FabRequestForm,
   SawType,
-  band,
+  BomCode,
 } from "../../../interface/fab-application-rev2";
 import SelectOptions from "../../Common/SelectOptions.vue";
 import SelectCheckBox from "../../Common/SelectCheckBox.vue";
@@ -280,6 +307,7 @@ import {
   receivePriorityList,
   receivefilterTypeList,
   getCostomerList,
+  getBomCodeList,
 } from "../../../utils/Fab/fab-application-utils";
 import IdtProcess from "./IdtProcess.vue";
 import Dvb from "./dvr/Dvr.vue";
@@ -303,12 +331,14 @@ import { Option } from "element-plus/es/components/select-v2/src/select.types";
 import { initBom } from "../../../utils/Fab/bom-utils";
 import Bom from "./bom/Bom.vue";
 import { rules } from "../../Solder/Stock/Common/ApplicationRules";
+import { composeEventHandlers } from "element-plus/es/utils";
 
 const props = defineProps<{
   fabApplication: FabRequestForm;
   sawType: SawType;
 }>();
 
+const bomCodeList = ref<BomCode[]>([]);
 const destinationList = ref<OptionInterface[]>([]);
 const priorityList = ref<OptionInterface[]>([]);
 const filterTypeList = ref<OptionInterface[]>([]);
@@ -318,6 +348,8 @@ onMounted(async () => {
   priorityList.value = await receivePriorityList();
   filterTypeList.value = await receivefilterTypeList();
   clients.value = await getCostomerList();
+  bomCodeList.value = await getBomCodeList();
+
   // console.log(await getCostomerList())
 });
 
@@ -333,14 +365,21 @@ watch(
   }
 );
 
-// watch(
-//   () => props.fabApplication.packageId,
-//   (newVal) => {
-//     if (newVal === "CSP") {
-//       props.fabApplication.bom = initBom();
-//     }
-//   }
-// );
+watch(
+  () => props.fabApplication.productName,
+  (newVal) => {
+    if (newVal.length >= 10) {
+      const tempname = props.fabApplication.productName.slice(1, 9);
+      for (let i = 0; i < bomCodeList.value.length; i++) {
+        if (bomCodeList.value[i].MATNR.slice(1, 9) === tempname) {
+          console.log(bomCodeList.value[i]);
+          props.fabApplication.bomMainCode =
+            bomCodeList.value[i].MAKTX.split(":")[1]?.replace(/\s+/g, "") || "";
+        }
+      }
+    }
+  }
+);
 
 const emit = defineEmits(["update:fabApplication"]);
 // $computed로 props와 emit 동기화

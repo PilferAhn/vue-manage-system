@@ -15,8 +15,24 @@ export interface Application {
   measurer?: string;
   estFinishedDate?: string;
   purpose? : string
+  isNa? : boolean
+  isNf? : boolean  
 }
 
-export interface NaApplication {}
+export interface NaApplication {
+  na? : string;
+  deMethod? : string;
+  loss? : boolean;
+  measMthod? : string;
+  sParaType? : string;
+  note? : string;
 
-export interface NfApplication {}
+}
+
+export interface NfApplication {
+  deMethod? : string;
+  capture? : boolean;
+  isRealMatching? : boolean;
+  matchingInfo? : string;
+  note? : string;
+}

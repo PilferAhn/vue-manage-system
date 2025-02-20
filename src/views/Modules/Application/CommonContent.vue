@@ -2,6 +2,7 @@
   <el-row :gutter="20">
     <el-col :span="24">
       <el-card>
+        <NaNfToogle :application="props.application" />
         <el-divider content-position="center">기본 정보</el-divider>
         <el-row :gutter="20">
           <el-col :span="12">
@@ -70,7 +71,7 @@
               label="의뢰목적"
               prop="quantity"
               :disable="false"
-              placeholder=""              
+              placeholder=""
               :need-bold="false"
             />
           </el-col>
@@ -81,7 +82,7 @@
             <long-input-text-2
               v-model="props.application.productName"
               label="자제 전달 일자"
-              prop="productName"              
+              prop="productName"
               placeholder="ex) XMN5CTV@1A"
               row-cnt="3"
             />
@@ -89,13 +90,144 @@
           <el-col :span="12">
             <long-input-text-2
               v-model="props.application.productName"
-              label="자제 전달 일자"
-              prop="productName"              
+              label="Mold"
+              prop="productName"
               placeholder="ex) XMN5CTV@1A"
               row-cnt="3"
             />
           </el-col>
         </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="완료 요청 일자">
+              <el-date-picker
+                type="dates"
+                placeholder="Pick one or more dates"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <input-text
+              v-model="props.application.purpose"
+              label="Golden Sample 측정"
+              prop="quantity"
+              :disable="false"
+              placeholder=""
+              :need-bold="false"
+            />
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <long-input-text-2
+              v-model="props.application.productName"
+              label="Reference 특성"
+              prop="productName"
+              placeholder="ex) XMN5CTV@1A"
+              row-cnt="2"
+            />
+          </el-col>
+          <el-col :span="12">
+            <long-input-text-2
+              v-model="props.application.productName"
+              label="자제 전달 일자"
+              prop="productName"
+              placeholder="ex) XMN5CTV@1A"
+              row-cnt="2"
+            />
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <input-text
+              v-model="props.application.purpose"
+              label="TCF 측정"
+              prop="quantity"
+              :disable="false"
+              placeholder=""
+              :need-bold="false"
+            />
+          </el-col>
+          <el-col :span="12"> </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <input-text
+              v-model="props.application.purpose"
+              label="TCF 측정 온도"
+              prop="quantity"
+              :disable="false"
+              placeholder=""
+              :need-bold="false"
+            />
+          </el-col>
+          <el-col :span="12">
+            <input-text
+              v-model="props.application.purpose"
+              label="RFFE FIle 선택"
+              prop="quantity"
+              :disable="false"
+              placeholder=""
+              :need-bold="false"
+            />
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <long-input-text-2
+              v-model="props.application.productName"
+              label="측정 항목"
+              prop="productName"
+              placeholder="ex) XMN5CTV@1A"
+              row-cnt="3"
+            />
+          </el-col>
+          <el-col :span="12">
+            <long-input-text-2
+              v-model="props.application.productName"
+              label="EVB 조립 메뉴얼"
+              prop="productName"
+              placeholder="ex) XMN5CTV@1A"
+              row-cnt="2"
+            />
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <input-text
+              v-model="props.application.purpose"
+              label="TCF 측정 온도"
+              prop="quantity"
+              :disable="false"
+              placeholder=""
+              :need-bold="false"
+            />
+          </el-col>
+          <el-col :span="12">
+            <input-text
+              v-model="props.application.purpose"
+              label="RFFE FIle 선택"
+              prop="quantity"
+              :disable="false"
+              placeholder=""
+              :need-bold="false"
+            />
+          </el-col>
+        </el-row>
+
+        <NaSection v-if="props.application.isNa"
+          :application="props.application"
+          :applicationType="props.applicationType"
+        ></NaSection>
+
+        <NfSection v-if="props.application.isNf"
+          :application="props.application"
+          :applicationType="props.applicationType"
+        ></NfSection>
 
         <!-- <el-row :gutter="20">
           <el-col :span="12">
@@ -254,23 +386,48 @@ import InputText from "../../Common/InputText.vue";
 import LongInputText2 from "../../Common/LongInputText2.vue";
 import SelectOptionsNew2 from "../../Common/SelectOptionsNew2.vue";
 import type { OptionInterface } from "../../../interface/option";
-import { onMounted, ref } from "vue";
-
-
+import { onMounted, ref, watch } from "vue";
+import NaNfToogle from "./NaNfToogle.vue";
+import NaSection from "./Na.vue";
+import NfSection from "./Nf.vue"
 const quantityList = ref<OptionInterface[]>([]);
 
-onMounted(()=> {
-  quantityList.value = appUtiles.createQuantityOptions(20)
-})
+onMounted(() => {
+  quantityList.value = appUtiles.createQuantityOptions(20);
+});
 
 const props = defineProps<{
   application: Application;
   applicationType: string;
 }>();
+
+watch(
+  () => props.application.isNa,
+  (newVal) => {
+    if (newVal) {
+      props.application.naApp = appUtiles.initNa();
+    } else if (newVal === null) {
+      props.application.naApp = null;
+    }
+  }
+);
+
+watch(
+  () => props.application.isNf,
+  (newVal) => {
+    if (newVal) {
+      props.application.nfApp = appUtiles.initNf();
+    } else if (newVal === null) {
+      props.application.nfApp = null;
+    }
+  }
+);
 </script>
+
 <script lang="ts">
 export default {
-  components: { LongInputText2 },};
+  components: { LongInputText2 },
+};
 </script>
 
 <style></style>

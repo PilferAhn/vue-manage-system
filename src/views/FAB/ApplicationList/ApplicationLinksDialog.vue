@@ -50,6 +50,14 @@ function createApplication(fabApplication: FabRequestForm, type: string) {
       params: { productName: fabApplication.productName },
     });
   }
+  else if(type === "fabcard"){
+
+    const productName = fabApplication.productName
+    const url = "fabcard://10.29.11.124:40000/fab_monitoring_rev2/get_fab_request_for_fab_card/" + productName;
+  // const url = "fab.exe http://10.29.11.124:40000/fab_monitoring_rev2/get_fab_request_for_fab_card/HSTESTMODEL1"
+
+    window.location.href = url;
+  }
 }
 
 const emit = defineEmits<{
@@ -69,6 +77,11 @@ function closeDialog() {
 function handleCreateApplication(type: string, applicationId: string) {}
 
 const ApplicationTypes = [
+  {
+    name: "Fab Card 작성",
+    type: "fabcard",
+    status: true,
+  },
   {
     name: "TEG 측정 의뢰서",
     type: "teg",

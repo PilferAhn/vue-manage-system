@@ -30,6 +30,7 @@ import ApplicationTemplate from "./ApplicationTemplate.vue";
 import { useRoute } from "vue-router";
 import { getBandList } from "../../../utils/Fab/fab-application-utils";
 import { defineSawTypeByWaferType } from "../../../utils/Fab/fab_application-wafer-utils";
+import { initPhoto } from "../../../utils/Fab/photo-utils";
 const route = useRoute(); // Access the route
 const app = reactive<FabRequestForm>({});
 const isLoad = ref<boolean>(false);
@@ -49,6 +50,14 @@ const fetchApplication = async (productName: any) => {
     
     // Assign the converted data to processData
     Object.assign(app, convertedData);
+
+    if(app.photo === null){
+      app.photo = initPhoto()
+    }
+
+    if(app.idt2Id !== null){
+      app.isDualIdt = true  
+    }
     
     app.waferType = app.wafer.sawTypeId;
     
@@ -62,6 +71,9 @@ const fetchApplication = async (productName: any) => {
       sawType,
       defineSawTypeByWaferType(app.wafer.sawTypeId, sawTypes)
     );        
+
+
+
     console.log(app)
     isLoad.value = true;
   } catch (error) {

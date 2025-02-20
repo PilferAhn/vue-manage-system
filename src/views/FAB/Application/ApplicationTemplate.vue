@@ -39,7 +39,7 @@
             :sawType="sawType"
           />
           <PhotoSection
-            v-if="props.fabApplication.photo !== null"
+            
             v-model:fabApplication="props.fabApplication"
             :sawType="sawType"
           />

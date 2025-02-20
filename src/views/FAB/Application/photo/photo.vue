@@ -2,7 +2,7 @@
   <div class="deposition-container">
     <h3 class="section-title">Photo</h3>
 
-    <el-table :data="props.fabApplication.photo.photoProcesses">
+    <el-table :data="props.fabApplication.photo.photoProcesses" v-if="props.fabApplication.photo !== null">
       <el-table-column
         label="Process Name"
         prop="processName"
@@ -294,7 +294,7 @@ watch(
   }
 );
 
-const tempMachineList = ["ASML#4", "ASML#4.5", "ASML#5"];
+const tempMachineList = ["ASML#4", "ASML#5", "ASML#4,5" ];
 </script>
 
 <script lang="ts">

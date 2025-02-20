@@ -12,6 +12,14 @@ export interface Epoxy {
   code : string
 }
 
+export interface BomCode{
+    MATNR?: string,
+    MAKTX?: string,
+    MEINS?: string,
+    UMREN?: string,
+    DISPO?: string,
+}
+
 export interface Bom {
   finishedProductSize? : string,
   size? : number,
@@ -36,11 +44,15 @@ export interface PhotoProcess{
   isMutable? : boolean
   order? : number
 }
+
+
  
 export interface FabRequestForm {
   photo? : Photo;
   cusomterId? : string;
   productName?: string;
+  bomMainCode? : string;
+  isNewBom? : boolean;
   requesterId?: string;
   designerId?: string;
   designerConfirm?: boolean;

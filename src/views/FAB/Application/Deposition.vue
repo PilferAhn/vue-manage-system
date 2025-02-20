@@ -174,8 +174,10 @@ const newidtProcessList = ref<OptionInterface[]>([
 ]);
 
 onMounted(() => {
+  console.log(6);
   if (Object.keys(props.sawType).length !== 0) {
     depositionOptions.value = generateIdtOptions(props.sawType.idtTypes);
+    depositionOptions2.value = generateIdtOptions(props.sawType.idtTypes);
     Object.assign(layers, props.fabApplication.idtLayers);
     // props.fabApplication.idtProcessId = props.fabApplication.idtType.idtProcessId;
     machineOptions.value = generateMachineOptions(
@@ -183,15 +185,26 @@ onMounted(() => {
       props.fabApplication.idtId.toString()
     );
 
+    machineOptions2.value = generateMachineOptions(
+      props.sawType.idtTypes,
+      props.fabApplication.idtId.toString()
+    );
+
     if (machineOptions.value.length == 1) {
       props.fabApplication.idtMachineName = machineOptions.value[0].value;
+    }
+
+    if (props.fabApplication.idt2Id !== null) {
+      // 이건 왜 있지?
+      Object.assign(layers2 , props.fabApplication.idt2Layers)
     }
   }
 });
 
 watch(
   () => props.fabApplication.isDualIdt,
-  (newVal) => {
+  (newVal, oldVal) => {
+    console.log(5);
     if (newVal) {
       // 깊은 복사하여 layers2 배열 업데이트
       layers2.splice(0, layers2.length, ...JSON.parse(JSON.stringify(layers)));
@@ -226,6 +239,7 @@ watch(
 watch(
   () => props.fabApplication.idtProcessId,
   (newVal) => {
+    console.log(4);
     depositionOptions.value = generateIdtOptions2(
       props.sawType.idtTypes,
       newVal
@@ -256,6 +270,7 @@ watch(
 watch(
   () => props.fabApplication.waferType,
   (newVal) => {
+    console.log(3);
     // depositionOptions.value = generateIdtOptions(props.sawType.idtTypes);
     layerNames.value = "";
     props.fabApplication.depositionCondi = undefined;
@@ -283,27 +298,33 @@ watch(
 // depositionCondi 변경 감지
 watch(
   () => props.fabApplication.idtId,
-  () => {
+  (newVal) => {
+    console.log(2);
     if (props.fabApplication.idtId != null) {
       Object.assign(
         idtType,
         getIdtTypeByIdtId(props.sawType.idtTypes, props.fabApplication.idtId)
       );
 
+      // 이건 왜 있지?
       layerNames.value = getLayerNameFromIdtTypes(
         props.sawType.idtTypes,
         props.fabApplication.idtId,
         layers
       );
 
+      // 증착 장비 옵션 생성
       machineOptions.value = generateMachineOptions(
         props.sawType.idtTypes,
         props.fabApplication.idtId.toString()
       );
+
+      // 만약 증창 장비옵션에 고르기가 1번밖에 없다면 자동적으로 선택됨
       if (machineOptions.value.length == 1) {
         props.fabApplication.idtMachineName = machineOptions.value[0].value;
       }
-      // props.fabApplication.idtId = parseInt(props.fabApplication.depositionCondi);
+
+      // 이것도 왜있?
       props.fabApplication.idtLayers = layers;
 
       if (props.fabApplication.isDualIdt) {
@@ -337,6 +358,29 @@ watch(
       ) {
         props.fabApplication.idtMachineName = machineOptions.value[2].value;
       }
+    }
+  }
+);
+
+watch(
+  () => props.fabApplication.idt2Id,
+  (newVal, oldVal) => {
+    if (newVal !== null && newVal !== undefined) {
+      console.log(1);
+      Object.assign(
+        idtType,
+        getIdtTypeByIdtId(props.sawType.idtTypes, props.fabApplication.idt2Id)
+      );
+
+      // 이건 왜 있지?
+      layerNames.value = getLayerNameFromIdtTypes(
+        props.sawType.idtTypes,
+        props.fabApplication.idt2Id,
+        layers2
+      );
+      // Object.assign(layers2, props.fabApplication.idtLayers);
+
+      props.fabApplication.idt2Layers = [...layers2];
     }
   }
 );
