@@ -394,3 +394,16 @@ export const freqRangeList: OptionInterface[] = [
   { key: 1, value: "Mid", label: "Mid(1GHz ~ 2.3GHz)" },
   { key: 2, value: "High", label: "High(2.3GHz ~ 2.7GHz)" },
 ];
+
+export const samplePurposeOptions: OptionInterface[] = [
+  { key: 0, value: "PIA", label: "PIA" },
+  { key: 1, value: "DVR", label: "DVR" },
+  { key: 2, value: "PVR", label: "PVR" },
+  { key: 3, value: "PRA", label: "PRA" },
+  { key: 4, value: "PCCB", label: "PCCB" },
+];
+
+export const samplePurposeContentOptions: OptionInterface[] = [
+  { key: 0, value: "내부 평가용", label: "내부 평가용" },
+  { key: 1, value: "고객 제출용", label: "고객 제출용" },  
+];

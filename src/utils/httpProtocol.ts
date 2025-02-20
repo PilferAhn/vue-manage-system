@@ -48,6 +48,21 @@ export const sendGetRequestWithHeader = async (
   }
 };
 
+export async function sendPostRequestWithBody(url: string, payload: object) {
+  try {
+    const response = await axios.post(url, payload);
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error("Axios 에러:", error.response?.data || error.message);
+    } else {
+      console.error("알 수 없는 에러:", error);
+    }
+    return null;
+  }
+}
+
 export async function sendPostRequestWithHeader(
   url: string,
   formData: FormData

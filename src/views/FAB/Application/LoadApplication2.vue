@@ -58,6 +58,10 @@ const fetchApplication = async (productName: any) => {
     if(app.idt2Id !== null){
       app.isDualIdt = true  
     }
+
+    if(app.bom !== null){
+      app.isNewBom = true
+    }
     
     app.waferType = app.wafer.sawTypeId;
     

@@ -2,6 +2,7 @@
   <div class="deposition-container">
     <section class="section">
       <h3 class="section-title">IDT (1st Metal)</h3>
+
       <br />
       <el-row :gutter="20" class="align-center">
         <el-col :span="8">
@@ -174,7 +175,7 @@ const newidtProcessList = ref<OptionInterface[]>([
 ]);
 
 onMounted(() => {
-  console.log(6);
+
   if (Object.keys(props.sawType).length !== 0) {
     depositionOptions.value = generateIdtOptions(props.sawType.idtTypes);
     depositionOptions2.value = generateIdtOptions(props.sawType.idtTypes);

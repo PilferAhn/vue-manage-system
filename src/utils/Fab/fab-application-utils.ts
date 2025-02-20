@@ -87,7 +87,8 @@ export function initFabApplication3(bom: Bom) {
     createdDate: undefined,
     isActive: true,
     note: "",
-    code: "",
+    code: "C",
+    assyChipQuantity : 0,
     tcMachineName: null,
     waferId: undefined,
     waferAngle: undefined,
@@ -105,7 +106,13 @@ export function initFabApplication3(bom: Bom) {
     isToneInverted: false,
     isSeedSio2: false,
     isDualIdt: false,
-    bom: bom,
+    isNewBom : false,
+    isNewBom2 : false,
+
+
+    bomMainCode : "",
+    bom: null,
+    bom2 : null,
     photo: {
       photoProcesses: [
         // {

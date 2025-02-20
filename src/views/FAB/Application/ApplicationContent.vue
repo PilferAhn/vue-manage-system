@@ -21,14 +21,14 @@
       </el-col>
     </el-row>
     <el-row :gutter="20" class="form-row">
-      <el-col :span="12">
+      <el-col :span="9">
         <input-text
           v-model="props.fabApplication.productName"
           props="ProductName"
           label="Product Name"
         />
       </el-col>
-      <el-col :span="7">
+      <el-col :span="9">
         <input-text
           v-model="props.fabApplication.bomMainCode"
           props="ProductName"
@@ -36,22 +36,17 @@
           :disable="true"
         />
       </el-col>
-      <el-col :span="5">
+      <el-col :span="3">
         <SelectCheckBox
-          v-model="props.fabApplication.isNewBom"
-          label="신규 BOM"
-          prop="isNewBom"
+          v-model="props.fabApplication.isAoi"
+          label="AOI"
+          prop="isAoi"
           :disable="false"
           :rules="[]"
-          class="wide-select"          
+          class="wide-select"
         />
-        <!-- <input-text
-          v-model="props.fabApplication.bomMainCode"
-          props="ProductName"
-          label="신규 BOM"
-          :disable="true"
-        /> -->
       </el-col>
+      <el-col :span="3"> </el-col>
     </el-row>
     <el-row :gutter="20" class="form-row">
       <el-col :span="12">
@@ -65,7 +60,26 @@
           class="wide-select"
         />
       </el-col>
-      <el-col :span="12"> </el-col>
+      <el-col :span="6">
+        <input-text-by-recommad
+          v-model="props.fabApplication.samplePurpose"
+          label="샘플용도"
+          prop="cusomterId"
+          placeholder="EX) DVR"
+          :options="samplePurposeOptions"
+          :disable="false"
+          class="wide-select"
+      /></el-col>
+      <el-col :span="6">
+        <input-text-by-recommad
+          v-model="props.fabApplication.samplePurposeDetail"
+          label="　"
+          prop="cusomterId"
+          placeholder="EX) 내부 평가용"
+          :options="samplePurposeContentOptions"
+          :disable="false"
+          class="wide-select"
+      /></el-col>
     </el-row>
     <div class="form-row">
       <LongInputText
@@ -128,48 +142,13 @@
           :options="filterTypeList"
         ></SelectOptionsNew2>
       </el-col>
-      <el-col :span="2.5">
-        <!-- <el-checkbox 
-        label = "AOI 유무"
-        v-model="props.fabApplication.isAoi"></el-checkbox> -->
-        <SelectCheckBox
-          v-model="props.fabApplication.isAoi"
-          label="AOI"
-          prop="isAoi"
-          :disable="false"
-          :rules="[]"
-          class="wide-select"
+      <el-col :span="12">
+        <select-number-option
+          label="Assay Chip 수"
+          prop="AssyChipQuantity"
+          v-model="props.fabApplication.assyChipQuantity"     
+          :options="getOptionNumbers(1, 6)"     
         />
-        <!-- <SelectButton
-          v-model="props.fabApplication.isAoi"
-          label="　AOI"
-          prop="isAoi"
-          :disable="false"
-          :rules="[]"
-          :button-color="'white'"
-          :button-name="'AOI'"
-          class="wide-select"
-        ></SelectButton> -->
-      </el-col>
-      <el-col :span="2.5">
-        <SelectCheckBox
-          v-model="props.fabApplication.isDvr"
-          label="DVR2"
-          prop="isDvr"
-          :disable="false"
-          :rules="[]"
-          class="wide-select"
-        />
-        <!-- <SelectButton
-          v-model="props.fabApplication.isDvr"
-          label="　DVR2"
-          prop="isDvr"
-          :disable="false"
-          :rules="[]"
-          :button-color="'white'"
-          :button-name="'DVR'"
-          class="wide-select"
-        ></SelectButton> -->
       </el-col>
     </el-row>
     <el-row :gutter="20" class="form-row">
@@ -253,12 +232,18 @@
     </el-row>
     <!-- 용도 / 목적 -->
     <Bom
-      v-if="
-        props.fabApplication.packageId === 'CSP' &&
-        props.fabApplication.destinationId !== '개발전달'
-      "
+      v-if="props.fabApplication.isNewBom"
       v-model:fabApplication="props.fabApplication"
+      :bom="props.fabApplication.bom"
       :sawType="sawType"
+      :bom-number="'Bom1'"
+    ></Bom>
+    <Bom
+      v-if="props.fabApplication.isNewBom2"
+      v-model:fabApplication="props.fabApplication"
+      :bom="props.fabApplication.bom2"
+      :sawType="sawType"
+      :bom-number="'Bom2'"
     ></Bom>
     <idt-process
       :fab-application="props.fabApplication"
@@ -290,9 +275,10 @@ import type {
 } from "../../../interface/fab-application-rev2";
 import SelectOptions from "../../Common/SelectOptions.vue";
 import SelectCheckBox from "../../Common/SelectCheckBox.vue";
-import SelectButton from "../../Common/SelectButton.vue";
+import InputTextByRecommad from "../../Common/InputTextByRecommad.vue";
 import InputText from "../../Common/InputText.vue";
 import InputNumber from "../../Common/InputNumber.vue";
+
 import BooleanInput from "../../Common/SelectBoolean.vue";
 import LongInputText from "../../Common/LongInputText2.vue";
 import SelectOptionsNew2 from "../../Common/SelectOptionsNew2.vue";
@@ -325,6 +311,8 @@ import {
   machineList,
   sendFormData,
   freqRangeList,
+  samplePurposeOptions,
+  samplePurposeContentOptions,
 } from "../Common/Application";
 import axios from "axios";
 import { Option } from "element-plus/es/components/select-v2/src/select.types";
@@ -332,6 +320,9 @@ import { initBom } from "../../../utils/Fab/bom-utils";
 import Bom from "./bom/Bom.vue";
 import { rules } from "../../Solder/Stock/Common/ApplicationRules";
 import { composeEventHandlers } from "element-plus/es/utils";
+
+console.log(samplePurposeOptions)
+console.log(samplePurposeContentOptions)
 
 const props = defineProps<{
   fabApplication: FabRequestForm;
@@ -343,40 +334,99 @@ const destinationList = ref<OptionInterface[]>([]);
 const priorityList = ref<OptionInterface[]>([]);
 const filterTypeList = ref<OptionInterface[]>([]);
 const clients = ref<OptionInterface[]>([]);
+
 onMounted(async () => {
   destinationList.value = await receiveDestinationList();
   priorityList.value = await receivePriorityList();
   filterTypeList.value = await receivefilterTypeList();
   clients.value = await getCostomerList();
   bomCodeList.value = await getBomCodeList();
-
-  // console.log(await getCostomerList())
 });
 
 watch(
-  () => props.fabApplication.destinationId,
+  () => props.fabApplication.productName,
   (newVal) => {
-    if (newVal === "개발전달") {
-      props.fabApplication.filterType = null;
-      props.fabApplication.bom = null;
-    } else {
+    if (bomCodeList.value.length === 0) {
+      console.warn("bomCodeList.value가 비어 있음");
+      return;
+    }
+
+    if (newVal.length >= 10) {
+      let isFound = false;
+      const tempname = newVal.slice(1, 9);
+
+      for (let i = 0; i < bomCodeList.value.length; i++) {
+        if (bomCodeList.value[i].MATNR.slice(1, 9) === tempname) {
+          props.fabApplication.bomMainCode =
+            bomCodeList.value[i].MAKTX.split(":")[1]?.replace(/\s+/g, "") || "";
+          isFound = true;
+          break; // ✅ `return` 대신 `break` 사용
+        }
+      }
+
+      if (!isFound) {
+        props.fabApplication.bomMainCode = "";
+        props.fabApplication.isNewBom = true;
+      } else {
+        props.fabApplication.isNewBom = false;
+        props.fabApplication.isNewBom2 = false;
+        props.fabApplication.bom = null;
+        props.fabApplication.bom2 = null;
+      }
+    }
+  }
+);
+
+watch(
+  () => props.fabApplication.isNewBom,
+  (newVal) => {
+    if (newVal !== null) {
+      if (newVal) {
+        props.fabApplication.bom = initBom();
+      } else {
+        props.fabApplication.bom = null;
+      }
+    }
+  }
+);
+
+watch(
+  () => props.fabApplication.samplePurpose,
+  (newVal) => {
+    if (newVal !== null && newVal !== undefined) {
+      if (newVal === "DVR") {
+        if (props.fabApplication.note === "") {
+          props.fabApplication.note = "DV2 LOT";
+        } else {
+          props.fabApplication.note += " (DV2 LOT)";
+        }
+      }
+    }
+  }
+);
+
+watch(
+  () => props.fabApplication.packageId,
+  (newVal) => {
+    console.log(props.fabApplication);
+
+    if (
+      newVal === "CSP" &&
+      props.fabApplication.bom === null &&
+      props.fabApplication.bomMainCode === ""
+    ) {
       props.fabApplication.bom = initBom();
     }
   }
 );
 
 watch(
-  () => props.fabApplication.productName,
+  () => props.fabApplication.isNewBom2,
   (newVal) => {
-    if (newVal.length >= 10) {
-      const tempname = props.fabApplication.productName.slice(1, 9);
-      for (let i = 0; i < bomCodeList.value.length; i++) {
-        if (bomCodeList.value[i].MATNR.slice(1, 9) === tempname) {
-          console.log(bomCodeList.value[i]);
-          props.fabApplication.bomMainCode =
-            bomCodeList.value[i].MAKTX.split(":")[1]?.replace(/\s+/g, "") || "";
-        }
-      }
+    if (newVal) {
+      props.fabApplication.bom2 = initBom();
+    } else {
+      props.fabApplication.bom2 = null;
     }
   }
 );

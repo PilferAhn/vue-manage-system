@@ -22,7 +22,7 @@ export interface BomCode{
 
 export interface Bom {
   finishedProductSize? : string,
-  size? : number,
+  size? : string,
   package? : string,    
   partNumber? : string,
   shQuantity? : number,
@@ -31,6 +31,11 @@ export interface Bom {
   epoxy? : Epoxy,
   bump? : Bump
   className? : string
+  pkgTopAuThickness? : string
+  pkgCompany? : string
+  pkgSize? : string
+  usdAverage? : string
+  kwdAverage? : string
 }
 
 export interface Photo {
@@ -53,6 +58,8 @@ export interface FabRequestForm {
   productName?: string;
   bomMainCode? : string;
   isNewBom? : boolean;
+  assyChipQuantity? : number;
+  isNewBom2? : boolean;
   requesterId?: string;
   designerId?: string;
   designerConfirm?: boolean;
@@ -98,6 +105,9 @@ export interface FabRequestForm {
   idtProcess? : string;
   passivationId? : number
   bom? : Bom
+  bom2? : Bom
+  samplePurpose? : string
+  samplePurposeDetail? : string
   wafer? : FabWafer;
   isAllowBridge? : boolean;
   isIdtXoi? : boolean;

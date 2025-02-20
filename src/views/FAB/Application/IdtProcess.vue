@@ -36,7 +36,7 @@
           v-model="props.fabApplication.isNeedExtraShot"
           label="TEG Shot 추가(더블샷)"
         ></el-checkbox>
-        <el-checkbox
+        <el-checkbox v-if="props.fabApplication.idtProcessId === 'Lift-off'"
           v-model="props.fabApplication.isDualIdt"
           label="Dual IDT"
         ></el-checkbox>
@@ -52,7 +52,7 @@
     </div>
     <div v-else class="section">
       <h3>Extra Process Information [TC]</h3>
-      <el-checkbox
+      <el-checkbox v-if="props.fabApplication.idtProcessId === 'Lift-off'"
         v-model="props.fabApplication.isDualIdt"
         label="Dual IDT"
       ></el-checkbox>
