@@ -56,7 +56,7 @@ const props = defineProps<{
 //
 
 watch(
-  () => props.sawType.isAllowBridge,
+  () => props.fabApplication.hasBridge,
   (newVal, oldVal) => {
     const temp = {
       processName: "브릿지",
@@ -98,7 +98,7 @@ watch(
     if (props.fabApplication.waferType === "HS") {
       // pst id == 2 D PST
       // pst id == 3 M PST
-
+      console.log(newVal)
       for (let j = 0; j < props.sawType.pstTypes.length; j++) {
         if (props.sawType.pstTypes[j].pstId == newVal) {
           for (
@@ -106,11 +106,21 @@ watch(
             i < props.fabApplication.photo.photoProcesses.length;
             i++
           ) {
+            
             if (
-              ["M-PST", "D-PST"].includes(
+              ["M_PST", "D_PST"].includes(                
                 props.fabApplication.photo.photoProcesses[i].processName
               )
             ) {
+
+              // let tempName = ""
+              // if(props.fabApplication.photo.photoProcesses[i].processName === "M_PST"){
+              //   tempName = "M-PST"
+              // }
+              // else{
+              //   tempName = "D-PST"
+              // }
+
               props.fabApplication.photo.photoProcesses[i].processName =
                 props.sawType.pstTypes[j].name;
             }
@@ -189,13 +199,7 @@ watch(
             isMutable: true,
             order: 1,
           },
-          {
-            processName: "브릿지",
-            machineName: "Nikon",
-            reticleName: "",
-            isMutable: false,
-            order: 8,
-          },
+
           {
             processName: "PAD",
             machineName: "Nikon",
@@ -226,13 +230,6 @@ watch(
             reticleName: "",
             isMutable: true,
             order: 5,
-          },
-          {
-            processName: "브릿지",
-            machineName: "Nikon",
-            reticleName: "",
-            isMutable: false,
-            order: 8,
           },
           {
             processName: "PAD",

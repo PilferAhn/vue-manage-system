@@ -10,9 +10,6 @@
       :size="'small'"
       border
     >
-      <!-- <template #extra>
-          <el-button type="primary">Operation</el-button>
-        </template> -->
       <el-descriptions-item :span="desSpanSize">
         <template #label>
           <div class="cell-item">Final Product Size</div>
@@ -35,6 +32,16 @@
         <div>
           　<el-checkbox v-model="props.fabApplication.isNewBom2"></el-checkbox>
         </div>
+      </el-descriptions-item>
+      <el-descriptions-item span="2">
+        <template #label>
+          <div class="cell-item">Assy Name</div>
+        </template>
+        <div class="cell-value">
+          <el-input v-model="props.bom.assyName"></el-input>
+        </div>
+      </el-descriptions-item>
+      <el-descriptions-item span="2">
       </el-descriptions-item>
       <el-descriptions-item span="2">
         <template #label>
@@ -192,12 +199,15 @@
             style="max-width: 300px"
             v-model="props.fabApplication.bom.epoxy.code"
           ></el-input> -->
-          <el-select v-model="props.bom.pkgTopAuThickness" :disabled="isCompanyDisabled">
+          <el-select
+            v-model="props.bom.pkgTopAuThickness"
+            :disabled="isCompanyDisabled"
+          >
             <el-option
               v-for="p in bomPkgTopAuThickness"
               :key="p.key"
               :label="p.label"
-              :value="p.value"              
+              :value="p.value"
             ></el-option>
           </el-select>
         </div>
@@ -215,7 +225,7 @@
           <div class="cell-item">이동평균가(KRW 1000EA)</div>
         </template>
         <div>
-          <el-input v-model="props.bom.kwdAverage"></el-input>
+          <el-input v-model="props.bom.krwAverage"></el-input>
         </div>
       </el-descriptions-item>
     </el-descriptions>
@@ -262,8 +272,8 @@ const epoCode = ref<string>("");
 const desSpanSize = ref<string>("4");
 const desTitle = ref<string>("");
 const selectedPackageKey = ref<string | number>("");
-const purePackageList = ref<object[]>([])
-const costList = ref<object[]>([])
+const purePackageList = ref<object[]>([]);
+const costList = ref<object[]>([]);
 onMounted(async () => {
   if (props.bomNumber === "Bom1") {
     desSpanSize.value = "2";
@@ -273,7 +283,7 @@ onMounted(async () => {
     desTitle.value = "Bom2 정보";
   }
   purePackageList.value = await getPackageList();
-  costList.value =  await getCostInfo()
+  costList.value = await getCostInfo();
 });
 
 const sizeList = [
@@ -323,12 +333,15 @@ watch(
   }
 );
 
-watch(()=>props.bom.pkgCompany, (newVal)=>{
-  if(props.bom.pkgSize !== null){
-    console.log(props.bom.pkgSize , newVal)
-    getPrice(props.bom , costList.value, props.bom.pkgSize, newVal)
+watch(
+  () => props.bom.pkgCompany,
+  (newVal) => {
+    if (props.bom.pkgSize !== null) {
+      console.log(props.bom.pkgSize, newVal);
+      getPrice(props.bom, costList.value, props.bom.pkgSize, newVal);
+    }
   }
-})
+);
 
 watch(
   () => props.bom.package,
@@ -337,22 +350,25 @@ watch(
       packageOptioins.value.find((p) => p.value === props.bom.package)?.key ||
       "";
 
-    extractValues(purePackageList.value[selectedPackageKey.value], props.bom)
+    extractValues(purePackageList.value[selectedPackageKey.value], props.bom);
   }
 );
 
-const isCompanyDisabled = ref<boolean>(false)
-watch(()=>props.bom.pkgCompany, (newVal)=>{
-  console.log(newVal)
-  if(newVal !== null){
-    console.log(props.bom.pkgCompany === "Daisho Denshi")
-    if(props.bom.pkgCompany === "Daisho Denshi"){
-      isCompanyDisabled.value = true
-      console.log(isCompanyDisabled.value)
-      props.bom.pkgTopAuThickness = null
+const isCompanyDisabled = ref<boolean>(false);
+watch(
+  () => props.bom.pkgCompany,
+  (newVal) => {
+    console.log(newVal);
+    if (newVal !== null) {
+      console.log(props.bom.pkgCompany === "Daisho Denshi");
+      if (props.bom.pkgCompany === "Daisho Denshi") {
+        isCompanyDisabled.value = true;
+        console.log(isCompanyDisabled.value);
+        props.bom.pkgTopAuThickness = null;
+      }
     }
   }
-})
+);
 
 watch(
   () => props.fabApplication.packageId,
@@ -388,7 +404,7 @@ const extractValues = (data: object, bom: Bom) => {
 
   // 정규 표현식으로 shQuantity 찾기 (ex: 2,668)
   const shQuantityMatch = data["MAKTX"].match(/(\d{1,3}(,\d{3})*)pcs/);
-  bom.shQuantity = shQuantityMatch ? shQuantityMatch[1] : "";
+  bom.shQuantity = shQuantityMatch ? shQuantityMatch[1].replace(/,/g, "") : "";
 
   // return {
   //   size,

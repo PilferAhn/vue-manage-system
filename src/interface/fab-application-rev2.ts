@@ -1,65 +1,64 @@
 import type { User } from "./user";
 
 export interface Bump {
-  size : string,
-  quantity : number
+  size: string;
+  quantity: number;
 }
 
 export interface Epoxy {
-  modelName : string,
-  size : number,
-  purpose : string,
-  code : string
+  modelName: string;
+  size: number;
+  purpose: string;
+  code: string;
 }
 
-export interface BomCode{
-    MATNR?: string,
-    MAKTX?: string,
-    MEINS?: string,
-    UMREN?: string,
-    DISPO?: string,
+export interface BomCode {
+  MATNR?: string;
+  MAKTX?: string;
+  MEINS?: string;
+  UMREN?: string;
+  DISPO?: string;
 }
 
 export interface Bom {
-  finishedProductSize? : string,
-  size? : string,
-  package? : string,    
-  partNumber? : string,
-  shQuantity? : number,
-  company? : string,
-  price? : string,
-  epoxy? : Epoxy,
-  bump? : Bump
-  className? : string
-  pkgTopAuThickness? : string
-  pkgCompany? : string
-  pkgSize? : string
-  usdAverage? : string
-  kwdAverage? : string
+  className?: string;
+  finishedProductSize?: string;
+  package?: string;
+  partNumber?: string;
+  shQuantity?: number;
+  company?: string;
+  price?: string;
+  epoxy?: Epoxy;
+  bump?: Bump;
+  assyName?: string;
+  pkgTopAuThickness?: string;
+  pkgSize?: string;
+  pkgCompany?: string;
+  usdAverage?: string;
+  krwAverage?: string;
 }
 
 export interface Photo {
-  photoProcesses? : PhotoProcess[]
+  photoProcesses?: PhotoProcess[];
 }
 
-export interface PhotoProcess{
-  processName : string
-  machineName? : string
-  reticleName? : string
-  isMutable? : boolean
-  order? : number
+export interface PhotoProcess {
+  processName: string;
+  machineName?: string;
+  reticleName?: string;
+  isMutable?: boolean;
+  order?: number;
 }
 
-
- 
 export interface FabRequestForm {
-  photo? : Photo;
-  cusomterId? : string;
+  photo?: Photo;
+  waferCode? : string
+  cusomterId?: string;
   productName?: string;
-  bomMainCode? : string;
-  isNewBom? : boolean;
-  assyChipQuantity? : number;
-  isNewBom2? : boolean;
+  bomMainCode?: string;
+  isNewBom?: boolean;
+  assyChipQuantity?: number;
+  isNewBom2?: boolean;
   requesterId?: string;
   designerId?: string;
   designerConfirm?: boolean;
@@ -75,65 +74,66 @@ export interface FabRequestForm {
   packageId?: string;
   priorityId?: string;
   group?: string;
-  bandGroupId? : string;
-  band? : string;
+  bandGroupId?: string;
+  band?: string;
   status?: string;
   createdDate?: string;
   trimming?: string;
   hsWaferInfo?: string;
-  isNeedSio2Seed? : boolean
+  isNeedSio2Seed?: boolean;
+  hasBridge? : boolean;
   isActive?: boolean;
-  filterType? : string;
-  tcMachineName? : string
+  filterType?: string;
+  tcMachineName?: string;
   note?: string;
-  idtMachineId? : string
-  idt2MachineId? : string
+  idtMachineId?: string;
+  idt2MachineId?: string;
   waferId?: number;
   waferAngle?: number;
   waferThickness?: number;
-  hsTrimingTarget? : number | null;
-  freqRange? : string;
+  hsTrimingTarget?: number | null;
+  freqRange?: string;
   idtId?: number;
-  idt2Id? : number;
-  hsId? : number;
+  idt2Id?: number;
+  hsId?: number;
   pstId?: number;
   tcId?: number;
   seedId?: number;
-  code? : string;
-  idtMachineName? : string
-  idt2MachineName? : string
-  idtProcess? : string;
-  passivationId? : number
-  bom? : Bom
-  bom2? : Bom
-  samplePurpose? : string
-  samplePurposeDetail? : string
-  wafer? : FabWafer;
-  isAllowBridge? : boolean;
-  isIdtXoi? : boolean;
-  isNeedExtraShot? : boolean;
-  isSeedSio2? : boolean;
-  isToneInverted? : boolean;
-  isDualIdt? : boolean;
-  photoNote? : string
-  metalNote? : string
-  dielectricLayerNote? : string
-  bpThicknessNote? : string
-  bpProbeNote? : string
-  paNote? : string
-  etchingNote? : string
-  chip? : {
-    hori : number
-    verti : number
+  code?: string;
+  idtMachineName?: string;
+  idt2MachineName?: string;
+  idtProcess?: string;
+  passivationId?: number;
+  bom?: Bom;
+  bom2?: Bom;
+  samplePurpose?: string;
+  samplePurposeDetail?: string;
+  wafer?: FabWafer;
+  isAllowBridge?: boolean;
+  isIdtXoi?: boolean;
+  isNeedExtraShot?: boolean;
+  isSeedSio2?: boolean;
+  isToneInverted?: boolean;
+  isDualIdt?: boolean;
+  photoNote?: string;
+  metalNote?: string;
+  dielectricLayerNote?: string;
+  bpThicknessNote?: string;
+  bpProbeNote?: string;
+  paNote?: string;
+  etchingNote?: string;
+  chip?: {
+    hori: number;
+    verti: number;
   };
-  chipX? : number
-  chipY? : number
+  chipX?: number;
+  chipY?: number;
 
-  shotX? : number
-  shotY? : number
-  shot? : {
-    hori : number
-    verti : number
+  shotX?: number;
+  shotY?: number;
+  shot?: {
+    hori: number;
+    verti: number;
   };
 
   requester?: User;
@@ -142,44 +142,44 @@ export interface FabRequestForm {
   // wafer?: FabWafer[];
   idtType?: IdtType;
   depositionCondi?: string;
-  seedLayers? : Layer[]
-  passivationLayers? : Layer[]
+  seedLayers?: Layer[];
+  passivationLayers?: Layer[];
   idtLayers?: Layer[];
   idt2Layers?: Layer[];
   pstLayers?: Layer[];
   tcLayers?: Layer[];
-  hsType? : HsType;
-  passivationType? : passivationType[];
+  hsType?: HsType;
+  passivationType?: passivationType[];
 }
 
 export interface band {
-  bandCombinationId : string;
-  label : string;
-  bandGroupId : string;
-  fabCardName : string;  
+  bandCombinationId: string;
+  label: string;
+  bandGroupId: string;
+  fabCardName: string;
 }
 
 export interface passivationType {
-  passivationId : number;
-  name : string;
-  layers? : Layer[];  
+  passivationId: number;
+  name: string;
+  layers?: Layer[];
 }
 
 export interface seedType {
-  seedId : number;
-  name : string;
-  layers? : Layer[];
+  seedId: number;
+  name: string;
+  layers?: Layer[];
 }
 
 export interface SawType {
   sawTypeId?: string;
-  isAllowBridge? : boolean;
+  isAllowBridge?: boolean;
   wafers?: FabWafer[];
   pstTypes?: PstType[];
   tcTypes?: TcType[];
   idtTypes?: IdtType[];
-  seedTypes? : seedType[]
-  passivationTypes? : passivationType[]
+  seedTypes?: seedType[];
+  passivationTypes?: passivationType[];
 }
 
 export interface HsType {
@@ -187,7 +187,7 @@ export interface HsType {
   name?: string;
   siliconRotation?: string;
   layers?: Layer[];
-  peAngle? : number
+  peAngle?: number;
 }
 
 export interface PstType {
@@ -195,7 +195,7 @@ export interface PstType {
   sawTypeId?: string;
   name?: string;
   layers?: PstLayer[];
-  description? : string;
+  description?: string;
 }
 
 export interface PstLayer {
@@ -208,9 +208,8 @@ export interface TcType {
   tcId?: number;
   name?: string;
   layers?: PstLayer[];
-  tcMachines? : IdtMachine[];
+  tcMachines?: IdtMachine[];
 }
-
 
 export interface idtProcess {
   idtProcessId?: string;
@@ -220,7 +219,7 @@ export interface IdtType {
   idtId?: number;
   name?: string;
   idtProcesses?: idtProcess[];
-  
+
   sawTypeId?: string;
   layers?: Layer[];
   idtMachines?: IdtMachine[];
@@ -234,11 +233,12 @@ export interface FabWafer {
   waferId?: number;
   sawTypeId?: string;
   waferType?: string;
+  waferCode?: string
   waferCompany?: string;
   size?: number;
   recommendedThicknesses?: FabRecommendationWaferThickness[];
-  recommendedAngles? : FabRecommendationWaferAngle[];
-  hsTypes? : HsType[]
+  recommendedAngles?: FabRecommendationWaferAngle[];
+  hsTypes?: HsType[];
 }
 
 export interface FabRecommendationWaferThickness {
@@ -258,5 +258,5 @@ export interface FabWaferRecommendation {
 export interface Layer {
   idx?: number;
   thickness?: number;
-  material?: string;  
+  material?: string;
 }

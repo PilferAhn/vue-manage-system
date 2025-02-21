@@ -75,65 +75,30 @@
           />
         </el-descriptions-item>
 
-        <el-descriptions-item span="1">
+        <el-descriptions-item span="4">
           <template #label>
             <div class="cell-item">
               <el-icon :style="iconStyle">
                 <office-building />
               </el-icon>
-              PE
+              
             </div>
           </template>
-          <el-input
+          PE　:　<el-input
+            style="width: 150px;"
+            :disabled="!meas.isMeasured"
+          ></el-input>　
+          IDEAL　:　<el-input
+            style="width: 150px;"
+            :disabled="!meas.isMeasured"
+          ></el-input>　
+          REAL　:　<el-input
             style="width: 150px;"
             :disabled="!meas.isMeasured"
           ></el-input>
         </el-descriptions-item>
 
-        <el-descriptions-item span="1">
-          <template #label>
-            <div class="cell-item">
-              <el-icon :style="iconStyle">
-                <office-building />
-              </el-icon>
-              IDEAL 
-            </div>
-          </template>
-          PE<el-input
-            style="width: 50px;"
-            :disabled="!meas.isMeasured"
-          ></el-input>
-        </el-descriptions-item>
 
-        <el-descriptions-item span="1">
-          <template #label>
-            <div class="cell-item">
-              <el-icon :style="iconStyle">
-                <office-building />
-              </el-icon>
-              REAL
-            </div>
-          </template>
-          <el-input
-            style="width: 50px;"
-            :disabled="!meas.isMeasured"
-          ></el-input>
-        </el-descriptions-item>
-
-        <el-descriptions-item span="1">
-          <!-- <template #label>
-            <div class="cell-item">
-              <el-icon :style="iconStyle">
-                <office-building />
-              </el-icon>
-              PE
-            </div>
-          </template>
-          <el-input
-            v-model="meas.detail"
-            :disabled="!meas.isMeasured"
-          ></el-input> -->
-        </el-descriptions-item>
 
         <el-descriptions-item span="3">
           <template #label>

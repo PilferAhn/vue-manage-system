@@ -1,7 +1,7 @@
 <template>
   <section class="section">
     <!-- <h3 class="section-title">Set Wafer Details</h3> -->
-     
+
     <el-row :gutter="20">
       <el-col :span="7">
         <el-form-item class="custom-form-item" prop="waferAngle">
@@ -66,7 +66,26 @@
             :value="angleOption.value"
           ></el-option> </el-select
       ></el-col>
-    </el-row>
+      <!-- <el-col :span="7">
+        <input-text-by-recommad
+          v-model="props.fabApplication.waferCode"
+          :options="waferCodeOptions"
+          :use-template="true"
+          :template-label="'Code'"
+        ></input-text-by-recommad>
+      </el-col>
+      <el-col :span="3">
+        
+      </el-col>
+      <el-col :span="7">
+        <input-text-by-recommad
+          v-model="props.fabApplication.waferCode"
+          :options="waferCodeOptions"
+          :use-template="true"
+          :template-label="'Code'"
+        ></input-text-by-recommad>
+      </el-col>-->
+    </el-row> 
     <div
       class="flex-container"
       v-if="props.fabApplication.waferType !== 'HS'"
@@ -76,11 +95,14 @@
 
 <script lang="ts" setup>
 import { defineProps, defineEmits, ref, watch, onMounted } from "vue";
+import InputTextByRecommad from "../../../Common/InputTextByRecommad2.vue";
 import {
   getFabWaferFromWaferId,
   createHsWaferCondition,
   createAngleOptions,
   createThicknessOptions,
+  getWaferCodeObjectList,
+  createWaferCodeOptions,
 } from "../../../../utils/Fab/fab_application-wafer-utils";
 import type { OptionInterface } from "../../../../interface/option";
 import type {
@@ -102,10 +124,11 @@ const props = defineProps<{
 }>();
 
 const cutLabel = ref<String>("LT CUT");
-
+getWaferCodeObjectList();
 const wafer = ref<FabWafer>({});
 const angleOptions = ref<OptionInterface[]>([]);
 const thickOptions = ref<OptionInterface[]>([]);
+const waferCodeOptions = ref<OptionInterface[]>([]);
 // 로컬 상태 정의
 
 const waferThickness = ref(0);
@@ -117,7 +140,7 @@ const emit = defineEmits([
   "update:wafer",
 ]);
 
-onMounted(() => {
+onMounted(async () => {
   if (props.applicationType === "load") {
     wafer.value = getFabWaferFromWaferId(
       props.fabApplication.waferId.toString(),
@@ -130,6 +153,11 @@ onMounted(() => {
       emit("update:hsLayers", createHsWaferCondition(wafer.value));
     }
   }
+
+  waferCodeOptions.value = createWaferCodeOptions(
+    await getWaferCodeObjectList()
+  );
+  console.log(waferCodeOptions.value);
 });
 
 watch(
@@ -150,9 +178,7 @@ watch(
 watch(
   () => props.fabApplication.waferId,
   (newVal) => {
-
     if (props.applicationType !== "load") {
-
       if (props.fabApplication.waferType === "TC") {
         props.fabApplication.waferAngle = 126;
       } else {
@@ -185,10 +211,11 @@ watch(
             parseInt(newVal.toString())
           );
 
-          if(thickOptions.value.length == 1){
-            props.fabApplication.waferThickness = parseInt(thickOptions.value[0].value)
+          if (thickOptions.value.length == 1) {
+            props.fabApplication.waferThickness = parseInt(
+              thickOptions.value[0].value
+            );
           }
-
         }
       }
     }

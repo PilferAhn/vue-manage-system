@@ -8,6 +8,7 @@ import type {
 import { isVNode, ref } from "vue";
 import { promises } from "dns";
 import { match } from "assert";
+import { sendGetRequest, sendPostRequestWithBody } from "../httpProtocol";
 // OptionInterface를 배열로 반환하는 함수
 export function getWaferList(): OptionInterface[] {
   // OptionInterface[] 타입의 데이터를 반환
@@ -110,6 +111,27 @@ export function createWaferOptions(sawType: SawType) {
 
 //   return tempOptions.value;
 // }
+
+export async function getWaferCodeObjectList(){
+  
+  const data = await sendGetRequest("/api/sapinfo", "3")
+  return data
+
+} 
+
+export function createWaferCodeOptions(codeObjectList : object[]){
+  const waferCodeList = ref<OptionInterface[]>([]);
+
+  for(let i = 0 ; i < codeObjectList.length; i++){
+    const temp = {
+      key : i,
+      value : codeObjectList[i]["MATNR"],
+      label : codeObjectList[i]["MATNR"] + " " + codeObjectList[i]["MAKTX"]
+    }
+    waferCodeList.value.push(temp)
+  }
+  return waferCodeList.value
+}
 
 export function createThicknessOptions(sawType: SawType, waferId: number){
   const options = ref<OptionInterface[]>([]);

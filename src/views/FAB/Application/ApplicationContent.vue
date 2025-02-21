@@ -321,8 +321,6 @@ import Bom from "./bom/Bom.vue";
 import { rules } from "../../Solder/Stock/Common/ApplicationRules";
 import { composeEventHandlers } from "element-plus/es/utils";
 
-console.log(samplePurposeOptions)
-console.log(samplePurposeContentOptions)
 
 const props = defineProps<{
   fabApplication: FabRequestForm;

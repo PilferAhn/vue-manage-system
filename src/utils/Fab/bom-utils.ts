@@ -10,7 +10,7 @@ export function getPrice(bom : Bom , prices : object[] , size : string, company 
   for(let i = 0 ; i < prices.length; i++){
     if(prices[i]["size"] === size && prices[i]["maker"].trim() === company){
       bom.usdAverage = prices[i]["saleamount"]
-      bom.kwdAverage = prices[i]["planamount1000"]
+      bom.krwAverage = prices[i]["planamount1000"]
       break
     }
   }
@@ -19,22 +19,22 @@ export function getPrice(bom : Bom , prices : object[] , size : string, company 
 
 export function initBom() {
   const bom = ref<Bom>({
-    finishedProductSize: undefined,
-    size: null,
+    finishedProductSize: null,    
     bump: {
       size: "",
       quantity: 0,
     },
     epoxy: {
       modelName: null,
-      size: undefined,
-      code: undefined,
-      purpose: undefined,
+      size: null,
+      code: null,
+      purpose: null,
     },
-    package: undefined,
+    assyName : null,
+    package: null,
     pkgSize: null,
     usdAverage : null,
-    kwdAverage : null,    
+    krwAverage : null,    
   });
 
   return bom.value;

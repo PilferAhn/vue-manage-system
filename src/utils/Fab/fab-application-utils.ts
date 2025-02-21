@@ -86,6 +86,7 @@ export function initFabApplication3(bom: Bom) {
     status: "",
     createdDate: undefined,
     isActive: true,
+    hasBridge:false,
     note: "",
     code: "C",
     assyChipQuantity : 0,
@@ -231,7 +232,7 @@ export function initFabApplication2() {
     },
     bom: {
       finishedProductSize: null,
-      size: undefined,
+
       bump: {
         size: "",
         quantity: 0,
@@ -534,7 +535,7 @@ export async function sendingForm(application: FabRequestForm, type: string) {
       url = serverUrl + "/fab_monitoring_rev2/update_fab_request";
     }
 
-    dvrChecker(application, type);
+    // dvrChecker(application, type);
     packageChecker(application, type);
     try {
       if (application.wantedFabFinishDate !== undefined) {
@@ -549,8 +550,8 @@ export async function sendingForm(application: FabRequestForm, type: string) {
       }
       const app = convertKeysToPEP8(application);
       const response = await axios.post(url, app);
-      console.log(response.data);
-      console.log(convertPep8ToCamelCase2(response.data));
+      // console.log(response.data);
+      // console.log(convertPep8ToCamelCase2(response.data));
       Object.assign(application, convertPep8ToCamelCase2(response.data));
 
       // 성공 알림

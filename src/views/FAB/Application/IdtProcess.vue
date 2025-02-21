@@ -8,8 +8,8 @@
       <h3>Extra Process Information [HS / NS]</h3>
       <!-- <div v-if="props.fabApplication.packageId === 'CSP'" class="checkbox-group"> -->
       <div class="checkbox-group">
-        <el-checkbox
-          v-model="props.sawType.isAllowBridge"
+        <el-checkbox v-if="props.sawType.isAllowBridge"
+          v-model="props.fabApplication.hasBridge"
           label="브릿지"
         ></el-checkbox>
         <el-checkbox
