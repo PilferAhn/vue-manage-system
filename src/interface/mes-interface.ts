@@ -46,6 +46,8 @@ interface ActiveLot {
 export interface FabApplicationForm {
   modelName: string;
   requesterId: string;
+  tegFinishedDate? : string | Date;
+  measType? : string
   requester: string;
   designerId: string;
   designer: string;

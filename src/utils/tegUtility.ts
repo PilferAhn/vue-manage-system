@@ -2,10 +2,14 @@ import axios from "axios";
 // tegUtility.ts
 import { ref, nextTick } from "vue";
 import { ElMessage, FormInstance } from "element-plus";
-import { TegApplication, waferInformation, MeasInfo } from "../interface/teg/teg-interface";
+import { TegApplication, waferInformation, MeasInfo } from "./tegTypes";
 import { TegApplication as oldTegApplication } from "./waferMeasurementHelper";
+import { TegApplication as newTegApp } from "../interface/Teg/teg"
 import { measTypes } from "./waferApplicationHelper";
 import cloneDeep from "lodash/cloneDeep";
+import { convertPep8ToCamelCase2 } from "./key-converter";
+import { sendPostRequest } from "./httpProtocol";
+// import TegApplication from "../views/TegPage/Application/TegApplication.vue";
 
 function checkMeasTypes(measInfo: MeasInfo[]): boolean {
   const measTypes = measInfo.map((info) => info.measType);
@@ -34,6 +38,21 @@ function checkMeasTypes(measInfo: MeasInfo[]): boolean {
   }
 
   return tempBool;
+}
+
+export async function getTegApplicationsByFinishDateStatus(dateTime : string, status : string) {
+  
+  const form = new FormData()
+  const tegApp = ref<newTegApp[]>([])
+  const url = "http://10.29.11.57:40000/teg_application/get_applications_by_finish_date_status"
+  form.append("status" , status)
+  form.append("date", "2025-02-14 00:00:00")
+  const data = await sendPostRequest(url , form)
+  
+  tegApp.value = convertPep8ToCamelCase2(data)
+  
+  return tegApp.value
+
 }
 
 async function create_teg_application_excel(application_uuid: string) {
@@ -168,6 +187,54 @@ export async function updateForm(
   });
 }
 
+/**
+ * 서버로 복사된 formData 리스트를 개별적으로 전송하는 함수
+ * @param {TegApplication[]} formDataCopies - 서버로 보낼 formData 복사본 배열
+ * @param {File} file - 업로드할 파일
+ * @param {Ref} applicationUuid - 생성된 application UUID를 저장할 변수
+ * @param {Ref} activateDownload - 다운로드 버튼 활성화 상태 관리 변수
+ */
+async function sendRequestForCopies(
+  formDataCopies: TegApplication[],
+  file: File,
+  applicationUuid,
+  activateDownload
+) {
+  try {
+    for (const copy of formDataCopies) {
+      // ✅ 개별 데이터 전송 (의뢰서 생성)
+      const response = await axios.post(
+        "/teg_application/create-teg-application",
+        copy
+      );
+
+      // ✅ 파일 업로드
+      if (file && response.status === 200) {
+        await uploadImage(file, response.data.applicationUUID);
+      }
+
+      // ✅ 서버 응답이 성공일 경우
+      if (response.status === 200) {
+        applicationUuid.value = response.data.applicationUUID;
+
+        // ✅ 성공 메시지 표시
+        ElMessage.success({
+          message:
+            "의뢰서 작성이 완료되었습니다.<br>버튼이 활성화되면 의뢰서를 다운로드 받을 수 있습니다.",
+          dangerouslyUseHTMLString: true,
+        });
+
+        // ✅ 다운로드 버튼 활성화 (3초 후)
+        setTimeout(() => {
+          activateDownload.value = true;
+        }, 3000);
+      }
+    }
+  } catch (error) {
+    console.error("Error during request for copies:", error);
+    ElMessage.error("복사본 요청 중 오류가 발생했습니다.");
+  }
+}
 
 export async function createTegApplicationsForDvr(
   tegApp: TegApplication,
@@ -189,24 +256,6 @@ export async function createTegApplicationsForDvr(
   ) {
     console.log(1)
     dvrApplicationList = [
-      {
-        applicationType: "TEG-0",
-        app: [
-          {
-            modelName: tegApp.modelName,
-            lotId: tegApp.lotID,
-          },
-        ],
-      },
-      {
-        applicationType: "TEG-P",
-        app: [
-          {
-            modelName: tegApp.modelName,
-            lotId: tegApp.lotID,
-          },
-        ],
-      },
       {
         applicationType: "TEG-1",
         app: [
@@ -246,24 +295,6 @@ export async function createTegApplicationsForDvr(
   } else if (tegApp.waferType === "HS" && tegApp.packageType === "WLP") {
     console.log(2)
     dvrApplicationList = [
-      {
-        applicationType: "TEG-0",
-        app: [
-          {
-            modelName: tegApp.modelName,
-            lotId: tegApp.lotID,
-          },
-        ],
-      },
-      {
-        applicationType: "TEG-P",
-        app: [
-          {
-            modelName: tegApp.modelName,
-            lotId: tegApp.lotID,
-          },
-        ],
-      },
       {
         applicationType: "TEG-1",
         app: [
@@ -417,51 +448,52 @@ export async function createTegApplicationsForDvr(
 }
 
 /**
- * 서버로 복사된 formData 리스트를 개별적으로 전송하는 함수
- * @param {TegApplication[]} formDataCopies - 서버로 보낼 formData 복사본 배열
- * @param {File} file - 업로드할 파일
+ * 서버로 단일 formData를 전송하는 함수
+ * @param {TegApplication} formData - 서버로 전송할 단일 의뢰 데이터
+ * @param {File} file - 업로드할 파일 (선택 사항)
  * @param {Ref} applicationUuid - 생성된 application UUID를 저장할 변수
  * @param {Ref} activateDownload - 다운로드 버튼 활성화 상태 관리 변수
  */
-async function sendRequestForCopies(
-  formDataCopies: TegApplication[],
+async function sendSingleRequest(
+  formData: TegApplication,
   file: File,
   applicationUuid,
   activateDownload
 ) {
   try {
-    for (const copy of formDataCopies) {
-      // ✅ 개별 데이터 전송 (의뢰서 생성)
-      const response = await axios.post(
-        "/teg_application/create-teg-application",
-        copy
-      );
+    // ✅ 서버로 개별 데이터 전송 (의뢰서 생성)
+    const response = await axios.post(
+      "/teg_application/create-teg-application",
+      formData
+    );
 
-      // ✅ 파일 업로드
-      if (file && response.status === 200) {
-        await uploadImage(file, response.data.applicationUUID);
-      }
-
-      // ✅ 서버 응답이 성공일 경우
-      if (response.status === 200) {
-        applicationUuid.value = response.data.applicationUUID;
-
-        // ✅ 성공 메시지 표시
-        ElMessage.success({
-          message:
-            "의뢰서 작성이 완료되었습니다.<br>버튼이 활성화되면 의뢰서를 다운로드 받을 수 있습니다.",
-          dangerouslyUseHTMLString: true,
-        });
-
-        // ✅ 다운로드 버튼 활성화 (3초 후)
-        setTimeout(() => {
-          activateDownload.value = true;
-        }, 3000);
-      }
+    // ✅ 파일 업로드 (서버 응답이 성공했을 경우만)
+    if (file && response.status === 200) {
+      await uploadImage(file, response.data.applicationUUID);
     }
-  } catch (error) {
-    console.error("Error during request for copies:", error);
-    ElMessage.error("복사본 요청 중 오류가 발생했습니다.");
+
+    // ✅ 서버 응답이 성공일 경우
+    if (response.status === 200) {
+      applicationUuid.value = response.data.applicationUUID;
+
+      // ✅ 엑셀 파일 생성
+      await create_teg_application_excel(response.data.applicationUUID);
+
+      // ✅ 성공 메시지 표시
+      ElMessage.success({
+        message:
+          "의뢰서 작성이 완료되었습니다.<br>버튼이 활성화되면 의뢰서를 다운로드 받을 수 있습니다.",
+        dangerouslyUseHTMLString: true,
+      });
+
+      // ✅ 다운로드 버튼 활성화 (3초 후)
+      setTimeout(() => {
+        activateDownload.value = true;
+      }, 3000);
+    }
+  } catch (copyError) {
+    console.error("Error during single request:", copyError);
+    ElMessage.error("데이터 전송 중 오류가 발생했습니다.");
   }
 }
 
@@ -664,57 +696,6 @@ export async function submitForm(
     }
   });
 }
-
-/**
- * 서버로 단일 formData를 전송하는 함수
- * @param {TegApplication} formData - 서버로 전송할 단일 의뢰 데이터
- * @param {File} file - 업로드할 파일 (선택 사항)
- * @param {Ref} applicationUuid - 생성된 application UUID를 저장할 변수
- * @param {Ref} activateDownload - 다운로드 버튼 활성화 상태 관리 변수
- */
-async function sendSingleRequest(
-  formData: TegApplication,
-  file: File,
-  applicationUuid,
-  activateDownload
-) {
-  try {
-    // ✅ 서버로 개별 데이터 전송 (의뢰서 생성)
-    const response = await axios.post(
-      "/teg_application/create-teg-application",
-      formData
-    );
-
-    // ✅ 파일 업로드 (서버 응답이 성공했을 경우만)
-    if (file && response.status === 200) {
-      await uploadImage(file, response.data.applicationUUID);
-    }
-
-    // ✅ 서버 응답이 성공일 경우
-    if (response.status === 200) {
-      applicationUuid.value = response.data.applicationUUID;
-
-      // ✅ 엑셀 파일 생성
-      await create_teg_application_excel(response.data.applicationUUID);
-
-      // ✅ 성공 메시지 표시
-      ElMessage.success({
-        message:
-          "의뢰서 작성이 완료되었습니다.<br>버튼이 활성화되면 의뢰서를 다운로드 받을 수 있습니다.",
-        dangerouslyUseHTMLString: true,
-      });
-
-      // ✅ 다운로드 버튼 활성화 (3초 후)
-      setTimeout(() => {
-        activateDownload.value = true;
-      }, 3000);
-    }
-  } catch (copyError) {
-    console.error("Error during single request:", copyError);
-    ElMessage.error("데이터 전송 중 오류가 발생했습니다.");
-  }
-}
-
 
 export const downloadExcel = async (application_uuid) => {
   try {
