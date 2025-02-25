@@ -2,19 +2,29 @@
   <div class="container">
     <div v-if="runningMeas.length >= 1">
       <div class="meas-types-container">
-        <TegRunningMeasurement :running-mea="runningMeas"/>
+        <TegRunningMeasurement :running-mea="runningMeas" />
       </div>
     </div>
     <div class="meas-types-container">
       <el-tabs v-model="activeTabMain" type="border-card" class="demo-tabs">
         <el-tab-pane label="Upcomming List (Priority)" name="main1">
           <template v-if="activeTabMain === 'main1'">
-            <TegMeasurementTab :category="'next'" key="next" :page-size="5" />
+            <TegMeasurementTab
+              :category="'next'"
+              key="next"
+              :page-size="5"
+              :fab-app="fabApp"
+            />
           </template>
         </el-tab-pane>
         <el-tab-pane label="Delay List (Date)" name="main2">
           <template v-if="activeTabMain === 'main2'">
-            <TegMeasurementTab :category="'delay'" key="delay" :page-size="5" />
+            <TegMeasurementTab
+              :category="'delay'"
+              key="delay"
+              :page-size="5"
+              :fab-app="fabApp"
+            />
           </template>
         </el-tab-pane>
       </el-tabs>
@@ -27,6 +37,7 @@
               :category="'product'"
               key="product"
               :page-size="10"
+              :fab-app="fabApp"
             />
           </template>
         </el-tab-pane>
@@ -36,12 +47,18 @@
               :category="'model'"
               key="model"
               :page-size="10"
+              :fab-app="fabApp"
             />
           </template>
         </el-tab-pane>
         <el-tab-pane label="TCF" name="sub3">
           <template v-if="activeTabSub === 'sub3'">
-            <TegMeasurementTab :category="'tcf'" key="tcf" :page-size="10" />
+            <TegMeasurementTab
+              :category="'tcf'"
+              key="tcf"
+              :page-size="10"
+              :fab-app="fabApp"
+            />
           </template>
         </el-tab-pane>
       </el-tabs>
@@ -53,19 +70,24 @@
 import { ref, onMounted } from "vue";
 import TegMeasurementTab from "./TegMeasurementTab.vue";
 import TegRunningMeasurement from "./TegRunningMeasurement.vue";
+import { formatDateTime } from "../../../utils/date-utils";
 import {
   getRunningMeasurement,
   TegRunningMeas,
 } from "./../../../utils/waferMeasurementHelper";
+import type { FabApplicationForm } from "../../../interface/mes-interface";
+import { fetchProcessData } from "../../FAB/ApplicationList/ApplicationList";
 
 const activeTabMain = ref("main1");
 const activeTabSub = ref("sub1");
+const fabApp = ref<FabApplicationForm[]>([]);
 
 const runningMeas = ref<TegRunningMeas[]>([]);
 
 onMounted(async () => {
   try {
     runningMeas.value = await getRunningMeasurement();
+    fabApp.value = await fetchProcessData(fabApp.value);
   } catch (error) {
     console.error("Error fetching applications:", error);
   }

@@ -18,20 +18,40 @@
     header-cell-class-name="table-header"
     :row-class-name="getRowClass"
   >
-    <el-table-column label="Model Name" prop="productName"></el-table-column>
-    <el-table-column label="LOT ID" prop="lotId"></el-table-column>
-    <el-table-column label="Test Type" prop="measType"></el-table-column>
-    <el-table-column label="Designer / Requester">
+    <el-table-column
+      label="Model Name"
+      prop="productName"
+      :align="'center'"
+      width="180"
+    ></el-table-column>
+    <el-table-column
+      label="LOT ID"
+      prop="lotId"
+      :align="'center'"
+      width="150"
+    ></el-table-column>
+    <el-table-column
+      label="Test Type"
+      prop="measType"
+      :align="'center'"
+      width="100"
+    ></el-table-column>
+    <el-table-column label="Designer / Requester" :align="'center'">
       <template #default="scope">
-        <span>{{ scope.row.designer }} / {{ scope.row.requester }}</span>
+        {{ scope.row.designer }} / {{ scope.row.requester }}
       </template>
     </el-table-column>
-    <el-table-column label="Reserved Date">
+    <el-table-column label="Reserved Date" :align="'center'" width="150">
       <template #default="scope">
-        <span>{{ formatTime(scope.row.dateOfReserve) }}</span>
+        <span>{{ formatDateTime(scope.row.dateOfReserve) }}</span>
       </template>
     </el-table-column>
-    <el-table-column label="Progress">
+    <el-table-column label="Location" :align="'center'" width="150">
+      <template #default="scope">
+        {{ scope.row.currentStage }} <br> {{ scope.row.currentStageTime }}
+      </template>
+    </el-table-column>
+    <el-table-column label="Progress" :align="'center'" width="100">
       <template #default="scope">
         <span>{{ scope.row.progress }}</span>
       </template>
@@ -39,15 +59,21 @@
     <el-table-column
       label="Priority"
       prop="priority"
-      width="100px"
+      width="100"
+      :align="'center'"
     ></el-table-column>
-    <el-table-column v-if="userType === 'admin'" label="Action">
-            
+    <el-table-column
+      v-if="userType === 'admin'"
+      label="Action"
+      :align="'center'"
+    >
       <template #default="scope">
-        <el-button type="primary" @click="viewDetail(scope.row.applicationID)" :disabled="scope.row.applicationVersion !== '2'"
+        <el-button
+          type="primary"
+          @click="viewDetail(scope.row.applicationID)"
+          :disabled="scope.row.applicationVersion !== '2'"
           >Detail</el-button
         >
-
       </template>
     </el-table-column>
   </el-table>
@@ -61,17 +87,20 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted } from "vue";
-import { useRouter } from 'vue-router';
+import { ref, computed, onMounted, watch } from "vue";
+import { useRouter } from "vue-router";
 import {
   TegApplication,
   getTegApplication,
   formatTime,
 } from "../../../utils/waferMeasurementHelper";
+import { formatDateTime } from "../../../utils/date-utils";
+import type { FabApplicationForm } from "../../../interface/mes-interface";
 
 const props = defineProps<{
   category: string;
   pageSize: number;
+  fabApp: FabApplicationForm[];
 }>();
 
 const userType = localStorage.getItem("ms_username");
@@ -84,7 +113,6 @@ const applications = ref<TegApplication[]>([]);
 onMounted(async () => {
   try {
     applications.value = await getTegApplication(props.category);
-    
   } catch (error) {
     console.error("Error fetching applications:", error);
   }
@@ -98,6 +126,33 @@ const filteredData = computed(() => {
   );
 });
 
+watch(
+  () => props.fabApp,
+  (newVal) => {
+    if (newVal.length >= 1) {
+      for (let i = 0; i < applications.value.length; i++) {
+        let isFound = false
+        for (let j = 0; j < props.fabApp.length; j++) {
+          if (applications.value[i].productName === props.fabApp[j].modelName) {
+            
+            if (props.fabApp[j].lotStatus !== undefined && props.fabApp[j].lotStatus.length >= 1) {
+              applications.value[i].currentStage =
+                props.fabApp[j].lotStatus[0].operation.name;
+              applications.value[i].currentStageTime = formatDateTime(
+                props.fabApp[j].lotStatus[0].moveinDate
+              );
+              isFound = true
+            }
+          }
+          if(isFound){
+            break
+          }
+        }
+      }
+    }
+  }
+);
+
 // useRouter 훅을 사용하여 라우터 인스턴스를 가져옵니다.
 const router = useRouter();
 
@@ -110,9 +165,8 @@ const viewDetail = async (uuid: string) => {
 };
 
 function getRowClass({ row }: { row: TegApplication }) {
-    
-  const priority = Number(row.priority)
-  return priority === 5 ? 'high-priority' : '';
+  const priority = Number(row.priority);
+  return priority === 5 ? "high-priority" : "";
 }
 
 function filterTable() {

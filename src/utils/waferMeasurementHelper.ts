@@ -26,6 +26,8 @@ export interface TegApplication {
   // wafers: any[]; // Specify more detailed type if possible
   waferInfo: waferInfo[]; // Specify more detailed type if possible
   application_type? : number
+  currentStage? : string;
+  currentStageTime? : string;
 }
 
 export interface TegRunningMeas {
@@ -35,7 +37,6 @@ export interface TegRunningMeas {
   waferID: string;
   measType: string;
   dateOfUpdate : string
-
 }
 
 // Types for the return object of the function
@@ -122,7 +123,7 @@ export const getTegApplication = async (
     const url = "application/get_application_by_category";
     const response = await axios.post(url, { category: category });
     let wafers = [];
-    console.log(response.data)
+    
     const applications: TegApplication[] = response.data.map((app: any) => ({
       applicationID: app.application_id,
       productName: app.product_name,
