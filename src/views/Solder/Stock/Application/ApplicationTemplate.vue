@@ -55,10 +55,14 @@
       </el-form-item>
 
       <el-form-item prop="designer" label="Designer">
-        <el-input
+        <el-autocomplete
           v-model="localStockInfo.designer"
-          placeholder="Enter the Desginer Name"
-        />
+          :fetch-suggestions="querySearch"
+          placeholder="Enter or select a designer"
+          @select="handleSelect"
+          clearable
+          filterable
+        ></el-autocomplete>
       </el-form-item>
 
       <div v-if="props.formType === 'create'">
@@ -79,13 +83,21 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, watch, ref } from "vue";
+import { defineProps, watch, ref, onMounted } from "vue";
 import type { StockInfo } from "../../../../interface/stock";
 import { rules } from "../Common/ApplicationRules";
 import { submitForm } from "./Application";
 import type { FormInstance } from "element-plus";
 import { useRouter } from "vue-router";
+import { getUserList } from "../../../../utils/user-utils";
+import { User } from "../../../../interface/user";
+import { useUserOptions } from "../../../Common/utility";
 
+const {userOptions}  = useUserOptions();
+console.log(userOptions)
+// console.log(userOptions)
+// console.log(getUserList())
+const userList = ref<User[]>([]);
 const props = defineProps<{ stockInfo: StockInfo; formType: string }>();
 const formRef = ref<FormInstance>();
 const localStockInfo = ref({ ...props.stockInfo });
@@ -96,6 +108,11 @@ const handleSubmit = async (action_type: string) => {
 };
 
 // Watch for changes in props to keep localStockInfo in sync
+
+onMounted(async()=>{
+  userList.value = await getUserList()  
+})
+
 watch(
   () => props.stockInfo,
   (newVal) => {
@@ -103,4 +120,19 @@ watch(
   },
   { deep: true, immediate: true }
 );
+
+// 검색어에 따라 필터링된 사용자 목록 반환
+const querySearch = (queryString: string, cb: (results: { value: string }[]) => void) => {
+  const results = userOptions.value
+    .filter((user) => user.label.toLowerCase().includes(queryString.toLowerCase()))
+    .map((user) => ({ value: user.label }));
+
+  cb(results);
+};
+
+// 선택한 사용자 반영
+const handleSelect = (item: { value: string }) => {
+  localStockInfo.value.designer = item.value;
+};
+
 </script>

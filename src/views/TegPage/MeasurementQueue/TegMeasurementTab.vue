@@ -21,23 +21,23 @@
     <el-table-column label="Model Name" prop="productName"></el-table-column>
     <el-table-column label="LOT ID" prop="lotId"></el-table-column>
     <el-table-column label="Test Type" prop="measType"></el-table-column>
-    <el-table-column label="개발자 / 의뢰자">
+    <el-table-column label="Designer / Requester">
       <template #default="scope">
         <span>{{ scope.row.designer }} / {{ scope.row.requester }}</span>
       </template>
     </el-table-column>
-    <el-table-column label="예약일">
+    <el-table-column label="Reserved Date">
       <template #default="scope">
         <span>{{ formatTime(scope.row.dateOfReserve) }}</span>
       </template>
     </el-table-column>
-    <el-table-column label="진행도">
+    <el-table-column label="Progress">
       <template #default="scope">
         <span>{{ scope.row.progress }}</span>
       </template>
     </el-table-column>
     <el-table-column
-      label="우선순위"
+      label="Priority"
       prop="priority"
       width="100px"
     ></el-table-column>
@@ -45,7 +45,7 @@
             
       <template #default="scope">
         <el-button type="primary" @click="viewDetail(scope.row.applicationID)" :disabled="scope.row.applicationVersion !== '2'"
-          >자세히</el-button
+          >Detail</el-button
         >
 
       </template>

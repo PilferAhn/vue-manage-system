@@ -1,38 +1,3 @@
-import { reactive } from "vue";
-
-// Exporting the wafer size list for use in other files
-export const waferSizeList: string[] = [
-  "4 Inch (0.5CM) ",
-  "4 Inch (1CM)",
-  "6 Inch",
-];
-
-export const newMeasTypes: string[] = ["TEG", "TCF", "Delay Line", "CPW"];
-
-export interface TestTypeOptions {
-  needCPW: boolean;
-  needDelay: boolean;
-  needMeas: boolean;
-  needSkip: boolean;
-}
-
-export interface TegType {
-  tegtype: TestTypeOptions;
-}
-
-export const measTypes: string[] = [
-  "TCF",
-  "TEP-P",
-  "CPW",
-  "TEG-1",
-  "TEG-1.5",  
-  "TEG-2",
-  "TEG-3",
-  "PDT",
-  "Delay Line",
-  "Harmonic",
-];
-
 interface shotInformation {
   shots: string[];
   disableShots: string[];
@@ -41,10 +6,12 @@ interface shotInformation {
 }
 
 export interface waferInformation {
+  
   waferName: string;
   waferStatus: string;
   dateOfStart: Date | null;
   dateOfEnd: Date | null;
+
 }
 
 export interface w {
@@ -63,27 +30,23 @@ export interface MeasInfo {
   freqSectionInfo: FreqSectionInfo[];
 }
 
-export interface TegApplication {
-  uuid: string;
-  status: string;
+export interface TegApplication{
 
-  designer: string;
-  requester: string;
-  designerId?: string;
-  requesterId?: string;
+  uuid : string;
+  status : string;
+
+  designer?: string;
+  requester?: string;
   purpose: string;
   lotID: string;
-
+  measType? :string;
   shotSize: string;
   chipSize: string;
   chipQuantity: string;
   maskName: string;
   isMaskChange: string;
-  isAOI: string;
-  isDvr: string;
+  isAOI : string;
   port: string;
-  waferType?:string;
-  packageType? : string
 
   detail: string;
 
@@ -91,7 +54,7 @@ export interface TegApplication {
   thruPatternNo: string;
   openPatternNo: string;
   rawPatternNo: string;
-  preTegPatternMeasShot: string;
+  preTegPatternMeasShot : string;
 
   waferQuantity: number;
   waferIDList: string[];
@@ -104,7 +67,7 @@ export interface TegApplication {
   dateOfReserve: string | Date;
   dateOfFinish: string | Date;
   dateOfMeasStart: string | Date | null;
-
+  dateOfTegFinished? : string | Date
   temperatures: string[];
 
   note: string;
@@ -118,3 +81,4 @@ export interface TegApplication {
   priority: string;
   applicationType: string;
 }
+

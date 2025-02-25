@@ -46,10 +46,14 @@
 
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form-item label="개발자" style="width: 525px" prop="designer">
+                <el-form-item
+                  label="개발자"
+                  style="width: 525px"
+                  prop="designer"
+                >
                   <el-autocomplete
                     v-model="applicationData.designer"
-                    placeholder="개발자를 입력하세요"                    
+                    placeholder="개발자를 입력하세요"
                     :fetch-suggestions="
                       (queryString, cb) =>
                         querySearch(queryString, cb, 'designer')
@@ -61,7 +65,11 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="의뢰자" style="width: 525px" prop="requester">
+                <el-form-item
+                  label="의뢰자"
+                  style="width: 525px"
+                  prop="requester"
+                >
                   <el-autocomplete
                     v-model="applicationData.requester"
                     placeholder="의뢰자를 입력하세요"
@@ -180,10 +188,23 @@
             </el-row>
             <el-row :gutter="20">
               <!-- Same column for checkbox and the evbType select/input -->
-              <el-col :span="8">
+              <el-col :span="9">
                 <div style="display: flex; align-items: center">
-                  <!-- Form item that displays either inputText or el-select depending on isManualInput -->
                   <el-form-item
+                    
+                    label="EVB Type"
+                    prop="evbType"
+                    style="flex-grow: 1"
+                  >
+                    <inputText
+                      v-model="applicationData.evbType"
+                      label=""
+                      placeholder="Enter custom EVB Type"
+                      style="width: 100%"
+                    />
+                  </el-form-item>
+                  <!-- Form item that displays either inputText or el-select depending on isManualInput -->
+                  <!-- <el-form-item
                     v-if="applicationData.evbType !== '직접 입력'"
                     label="EVB Type"
                     prop="evbType"
@@ -194,7 +215,7 @@
                       placeholder="Select EVB Type"
                     >
                       <el-option
-                        v-for="item in evbTypeList"
+                        v-for="item in evbSolderList"
                         :key="item.key"
                         :label="item.label"
                         :value="item.value"
@@ -213,12 +234,30 @@
                       placeholder="Enter custom EVB Type"
                       style="width: 100%"
                     />
-                  </el-form-item>
+                  </el-form-item> -->
                 </div>
               </el-col>
-
-              <el-col :span="4"> </el-col>
-
+              <el-col :span="3">
+                <el-form-item                    
+                    label="　"                    
+                    style="flex-grow: 1"
+                  >
+                  
+                <el-select
+                  v-model="applicationData.evbType"
+                  placeholder="Select EVB Type"
+                >
+                  <el-option
+                    v-for="item in evbSolderList"
+                    :key="item.key"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
               <!-- EVB info input text field -->
               <el-col :span="12">
                 <inputText
@@ -241,7 +280,7 @@
           :application-type="props.applicationType"
         ></SolderMeasurement>
       </el-card>
-      
+
       <el-row
         v-if="props.applicationType === 'create'"
         :gutter="20"
@@ -507,9 +546,13 @@ import { updateMeasurementDataByClient } from "../../../utils/Solder/application
 import type { UploadInstance, UploadProps, UploadRawFile } from "element-plus";
 import { genFileId, ElMessage } from "element-plus";
 import { formatDate } from "../../FAB/Common/Application";
-import { removeApplicationHandler } from "../../../utils/Solder/application-utils";
+import {
+  removeApplicationHandler,
+  getEvbSolderList,
+} from "../../../utils/Solder/application-utils";
 import { optionList } from "../../Calculator/SParameter/sparameter";
 import SolderMeasurement from "./SolderMeasurement.vue";
+import { OptionInterface } from "../../../interface/option";
 const router = useRouter();
 
 // Define props to receive processData
@@ -584,11 +627,14 @@ const applicationForm = ref();
 const segmentData = ref<any>(null);
 const keys = ref<string[]>([]); // keys를 빈 배열로 초기화
 
-onMounted(() => {
+const evbSolderList = ref<OptionInterface[]>([]);
+
+onMounted(async () => {
   application.value = props.applicationData;
   sortApplicationDataByNumber(application.value);
-  
   loading.value = false;
+
+  evbSolderList.value = await getEvbSolderList();
 });
 
 const { userOptions } = useUserOptions();

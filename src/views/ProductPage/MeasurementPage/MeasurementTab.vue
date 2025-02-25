@@ -21,12 +21,17 @@
         <el-table-column
           prop="model_name"
           label="Product Name"
-          align="center"
+          :align="'center'"
           width="150"
         >
         </el-table-column>
 
-        <el-table-column prop="band" label="Band" align="center" width="100px">
+        <el-table-column
+          prop="band"
+          label="Band"
+          :align="'center'"
+          width="100px"
+        >
           <template #default="scope">
             <span v-if="scope.row.band.length > 5">{{
               scope.row.band.substring(0, 4)
@@ -35,51 +40,59 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="condition" label="Status" align="center">
+        <el-table-column prop="condition" label="Status" :align="'center'">
         </el-table-column>
 
-        <el-table-column prop="temperature" label="Temp°C" align="center">
+        <el-table-column prop="temperature" label="Temp°C" :align="'center'">
         </el-table-column>
 
-        <el-table-column prop="signal_type" label="Signal" align="center">
+        <el-table-column prop="signal_type" label="Signal" :align="'center'">
         </el-table-column>
 
-        <el-table-column prop="target_position" label="Target" align="center">
+        <el-table-column
+          prop="target_position"
+          label="Target"
+          :align="'center'"
+        >
         </el-table-column>
 
-        <el-table-column prop="test_type" label="TEST" align="center">
+        <el-table-column prop="test_type" label="TEST" :align="'center'">
         </el-table-column>
 
-        <el-table-column prop="designer" label="개발자" align="center">
+        <el-table-column prop="designer" label="Designer" :align="'center'">
         </el-table-column>
 
-        <el-table-column prop="requester" label="담당자" align="center">
+        <el-table-column prop="requester" label="Requester" :align="'center'">
         </el-table-column>
 
-        <el-table-column label="상태" align="center">
+        <el-table-column label="Status" :align="'center'">
           <template #default="scope">
             <span
               v-if="scope.row.status === 'in progress'"
               :style="{ color: 'green' }"
-              >측정 진행 중</span
+              >In progress</span
             >
             <span
               v-else-if="scope.row.status === 'reserved'"
               :style="{ color: 'orange' }"
-              >측정 대기</span
+              >Waiting</span
             >
-            <span v-else :style="{ color: 'blue' }">측정 종료</span>
+            <span v-else :style="{ color: 'blue' }">Finished</span>
           </template>
         </el-table-column>
 
-        <el-table-column prop="request_number" label="의뢰 번호" align="center">
+        <el-table-column
+          prop="request_number"
+          label="Request Number"
+          :align="'center'"
+        >
         </el-table-column>
-        <!-- <el-table-column label="시작" align="center">
+        <!-- <el-table-column label="시작" :align="'center'">
           <template #default="scope">
             <span>{{ moment(scope.row.date_of_created).format('YY/MM/DD') }}</span>            
           </template>
         </el-table-column> -->
-        <el-table-column label="측정 완료" align="center">
+        <el-table-column label="Finished Date" :align="'center'">
           <template #default="scope">
             <span v-if="scope.row.status === 'finished'">{{
               moment(scope.row.date_of_finished).format("YY/MM/DD")
@@ -88,7 +101,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="Action" width="150" align="center">
+        <el-table-column label="Action" width="150" :align="'center'">
           <template #default="scope">
             <el-button
               type="primary"

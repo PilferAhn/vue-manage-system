@@ -146,6 +146,11 @@
           </span>
         </template>
       </el-table-column>
+      <el-table-column label="TEG 완료시간" width="200" prop="tegFinishedDate" :align="'center'">
+        <template #default="scope">
+          {{ scope.row.measType }} <br> {{ scope.row.tegFinishedDate }}
+        </template>
+      </el-table-column>
 
       <el-table-column label="HQ 출하 예정일" :align="'center'" width="100">
         <template #default="scope">
@@ -213,8 +218,8 @@
         </template>
       </el-table-column>
 
-      <!-- <el-table-column label="Assy In 예정일" :align="'center'" width="105">
-      </el-table-column> -->
+      <el-table-column label="Assy In 예정일" :align="'center'" width="105">
+      </el-table-column>
 
       <el-table-column label="Assy In" :align="'center'" width="110">
         <template #default="scope">
@@ -397,9 +402,13 @@ import DialogTemplate from "./ApplicationLinksDialog.vue";
 import { cn69ModelNames } from "../SampleStatus/Cn69List";
 import type { ModifiedFabDataInterface } from "../../../interface/fab";
 import { getRunningFabReqeust } from "../../../utils/Fab/fab-application-utils";
+import { TegApplication } from "../../../interface/Teg/teg";
+// import { getTegApplicationsByFinishDateStatus } from "../../utils/tegUtility";
+
 
 const props = defineProps<{
   processData: FabApplicationForm[];
+  tegApp : TegApplication[]
 }>();
 
 // 라우터 및 현재 경로 가져오기

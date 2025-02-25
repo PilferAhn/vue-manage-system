@@ -1,4 +1,5 @@
 import axios from "axios";
+import { convertPep8ToCamelCase2 } from "./key-converter";
 
 export const sendGetRequest = async (baseUrl: string, uuid: string) => {
   const url = `${baseUrl}/${uuid}`;
@@ -11,6 +12,30 @@ export const sendGetRequest = async (baseUrl: string, uuid: string) => {
     throw error; // 에러를 다시 throw하여 호출자에게 에러를 알림
   }
 };
+
+export const sendPostRequestByInterface = async (url : string, data : Record<string, any>) => {
+
+  
+  try {
+    const res = await axios.post(url , data)
+    data = convertPep8ToCamelCase2(res.data)
+    return data
+  }
+  catch(error){
+    if (error.response) {
+      console.error("❌ Server Error:", error.response.status, error.response.data);
+      return { success: false, error: error.response.data }; // 서버 응답 반환
+    } else if (error.request) {
+      console.error("❌ No response received:", error.request);
+      return { success: false, error: "No response from server" }; // 요청 실패
+    } else {
+      console.error("❌ Unexpected error:", error.message);
+      return { success: false, error: error.message }; // 기타 예외 처리
+    }
+    
+  }
+  
+}
 
 export const sendPostRequest = async (url: string, formData: FormData) => {
   try {

@@ -54,10 +54,24 @@
             </el-form-item>
 
             <SelectOptionsNew2
+            v-model:="tegApplicationForm.waferType"
+            label="Wafer Type"
+            placeholder="HS / NS / TC"
+            :rules="rules.waferType"
+            :options="waferTypeList"></SelectOptionsNew2>
+
+            <SelectOptionsNew2
+            v-model:="tegApplicationForm.packageType"
+            label="Package Type"
+            placeholder="CSP / WLP / BDMP"
+            :rules="rules.packageType"
+            :options="packageList"></SelectOptionsNew2>
+
+            <SelectOptionsNew2
               v-model="tegApplicationForm.applicationType"
               label="의뢰 구분"
               prop="applicationType"
-              :rules="rules"
+              :rules="rules.applicationType"
               placeholder="의뢰 구분"
               :options="applicationGroupOptions"
             ></SelectOptionsNew2>
@@ -161,24 +175,28 @@
           <el-row :gutter="20">
             <el-col :span="12">
               <select-option
-                v-model="tegApplicationForm.isAoi"
-                label="AOI 여부"
+                v-model="tegApplicationForm.isAOI"
+                label="AOI 유무"
                 prop="isAOI"
                 :rules="null"
-                placeholder="AOI 여부"
+                placeholder="AOI 유무"
                 :options="maskChanges"
               ></select-option>
             </el-col>
-            <!-- <el-col :span="12">
-              <select-option
-                v-model="tegApplicationForm.isDvr"
+            <el-col :span="12">
+              <el-form-item label="DVR 유무"
+                ><el-switch v-model="tegApplicationForm.isDvr"></el-switch
+              ></el-form-item>
+
+              <!-- <select-option
+                v-model="tegApplicationForm.isAOI"
                 label="DVR 여부"
-                prop="isAOI"
+                prop="isDvr"
                 :rules="null"
-                placeholder="AOI 여부"
+                placeholder="DVR 여부"
                 :options="maskChanges"
-              ></select-option>
-            </el-col> -->
+              ></select-option> -->
+            </el-col>
           </el-row>
           <el-row :gutter="20">
             <el-col :span="12">
@@ -265,13 +283,13 @@
         <div class="form-box">
           <div class="meas-types-container">
             <MeasType @updateMeasInfo="updateMeasInfo" />
-            
+
             <MeasTemperature
               :measInfo="tegApplicationForm.measInfo"
               :tegTypes="tegTypes"
               @updateTemperature="handleTemperatures"
             ></MeasTemperature>
-            
+
             <Segmentation
               :measInfo="tegApplicationForm.measInfo"
               @forwardUpdate="handleFinalUpdate"
@@ -308,6 +326,8 @@ import {
   maskChanges,
   portOptions,
   waferSizeList,
+  waferTypeList,
+  packageList
 } from "./../../../utils/tegTypes";
 
 import { getWaferInfoBySize } from "./../../../utils/waferApplicationHelper";
@@ -315,7 +335,6 @@ import type {
   TegApplication as TegApplicationInterface,
   TestTypeOptions as TestTypeOptionsInterface,
 } from "../Common/ApplicationTypes";
-import type { TegApplication } from "../../../interface/teg/teg-interface";
 import { tegApplicationRules } from "./../../../utils/tegApplicationRules";
 import { submitForm, download } from "./../../../utils/tegUtility";
 
@@ -339,7 +358,7 @@ import SelectOptionsNew2 from "../../Common/SelectOptionsNew2.vue";
 
 // Define props to receive processData
 const props = defineProps<{
-  applicationData: TegApplication;
+  applicationData: TegApplicationInterface;
   applicationType: string;
 }>();
 

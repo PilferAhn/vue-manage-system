@@ -2,10 +2,14 @@ import axios from "axios";
 // tegUtility.ts
 import { ref, nextTick } from "vue";
 import { ElMessage, FormInstance } from "element-plus";
-import { TegApplication, waferInformation, MeasInfo } from "../interface/teg/teg-interface";
+import { TegApplication, waferInformation, MeasInfo } from "./tegTypes";
 import { TegApplication as oldTegApplication } from "./waferMeasurementHelper";
+import { TegApplication as newTegApp } from "../interface/Teg/teg"
 import { measTypes } from "./waferApplicationHelper";
 import cloneDeep from "lodash/cloneDeep";
+import { convertPep8ToCamelCase2 } from "./key-converter";
+import { sendPostRequest } from "./httpProtocol";
+// import TegApplication from "../views/TegPage/Application/TegApplication.vue";
 
 function checkMeasTypes(measInfo: MeasInfo[]): boolean {
   const measTypes = measInfo.map((info) => info.measType);
@@ -34,6 +38,21 @@ function checkMeasTypes(measInfo: MeasInfo[]): boolean {
   }
 
   return tempBool;
+}
+
+export async function getTegApplicationsByFinishDateStatus(dateTime : string, status : string) {
+  
+  const form = new FormData()
+  const tegApp = ref<newTegApp[]>([])
+  const url = "http://10.29.11.57:40000/teg_application/get_applications_by_finish_date_status"
+  form.append("status" , status)
+  form.append("date", "2025-02-14 00:00:00")
+  const data = await sendPostRequest(url , form)
+  
+  tegApp.value = convertPep8ToCamelCase2(data)
+  
+  return tegApp.value
+
 }
 
 async function create_teg_application_excel(application_uuid: string) {
@@ -168,6 +187,316 @@ export async function updateForm(
   });
 }
 
+/**
+ * 서버로 복사된 formData 리스트를 개별적으로 전송하는 함수
+ * @param {TegApplication[]} formDataCopies - 서버로 보낼 formData 복사본 배열
+ * @param {File} file - 업로드할 파일
+ * @param {Ref} applicationUuid - 생성된 application UUID를 저장할 변수
+ * @param {Ref} activateDownload - 다운로드 버튼 활성화 상태 관리 변수
+ */
+async function sendRequestForCopies(
+  formDataCopies: TegApplication[],
+  file: File,
+  applicationUuid,
+  activateDownload
+) {
+  try {
+    for (const copy of formDataCopies) {
+      // ✅ 개별 데이터 전송 (의뢰서 생성)
+      const response = await axios.post(
+        "/teg_application/create-teg-application",
+        copy
+      );
+
+      // ✅ 파일 업로드
+      if (file && response.status === 200) {
+        await uploadImage(file, response.data.applicationUUID);
+      }
+
+      // ✅ 서버 응답이 성공일 경우
+      if (response.status === 200) {
+        applicationUuid.value = response.data.applicationUUID;
+
+        // ✅ 성공 메시지 표시
+        ElMessage.success({
+          message:
+            "의뢰서 작성이 완료되었습니다.<br>버튼이 활성화되면 의뢰서를 다운로드 받을 수 있습니다.",
+          dangerouslyUseHTMLString: true,
+        });
+
+        // ✅ 다운로드 버튼 활성화 (3초 후)
+        setTimeout(() => {
+          activateDownload.value = true;
+        }, 3000);
+      }
+    }
+  } catch (error) {
+    console.error("Error during request for copies:", error);
+    ElMessage.error("복사본 요청 중 오류가 발생했습니다.");
+  }
+}
+
+export async function createTegApplicationsForDvr(
+  tegApp: TegApplication,
+  file: File,
+  applicationUuid,
+  activateDownload
+) {
+
+  console.log(tegApp)
+  if(tegApp.waferType === null || tegApp.packageType === null){
+    ElMessage.error('공정조건 혹은 Package 값이 누락되었습니다.')
+    return 
+  }
+  console.log(10)
+  let dvrApplicationList = [];
+  if (
+    tegApp.waferType === "HS" &&
+    ["CSP", "BDMP"].includes(tegApp.packageType)
+  ) {
+    console.log(1)
+    dvrApplicationList = [
+      {
+        applicationType: "TEG-1",
+        app: [
+          {
+            modelName: tegApp.modelName,
+            lotId: tegApp.lotID,
+          },
+        ],
+      },
+      {
+        applicationType: "TEG-1.5",
+        app: [
+          {
+            modelName: tegApp.modelName,
+            lotId: tegApp.lotID,
+          },
+          {
+            modelName: tegApp.modelName + "@",
+            lotId: tegApp.lotID + "-1",
+          },
+        ],
+      },
+      {
+        applicationType: "TEG-2",
+        app: [
+          {
+            modelName: tegApp.modelName,
+            lotId: tegApp.lotID,
+          },
+          {
+            modelName: tegApp.modelName + "@",
+            lotId: tegApp.lotID + "-1",
+          },
+        ],
+      },
+    ];
+  } else if (tegApp.waferType === "HS" && tegApp.packageType === "WLP") {
+    console.log(2)
+    dvrApplicationList = [
+      {
+        applicationType: "TEG-1",
+        app: [
+          {
+            modelName: tegApp.modelName,
+            lotId: tegApp.lotID,
+          },
+        ],
+      },
+      {
+        applicationType: "TEG-1.5",
+        app: [
+          {
+            modelName: tegApp.modelName,
+            lotId: tegApp.lotID,
+          },
+          {
+            modelName: tegApp.modelName + "@",
+            lotId: tegApp.lotID + "-1",
+          },
+        ],
+      },
+      {
+        applicationType: "TEG-N",
+        app: [
+          {
+            modelName: tegApp.modelName,
+            lotId: tegApp.lotID,
+          },
+          {
+            modelName: tegApp.modelName + "@",
+            lotId: tegApp.lotID + "-1",
+          },
+        ],
+      },
+      {
+        applicationType: "TEG-2",
+        app: [
+          {
+            modelName: tegApp.modelName,
+            lotId: tegApp.lotID,
+          },
+          {
+            modelName: tegApp.modelName + "@",
+            lotId: tegApp.lotID + "-1",
+          },
+        ],
+      },
+    ];
+  } else if (
+    ["NS", "TC"].includes(tegApp.waferType) &&
+    ["CSP", "BDMP"].includes(tegApp.packageType)
+  ) {
+    console.log(3)
+    dvrApplicationList = [
+      {
+        applicationType: "TEG-1",
+        app: [
+          {
+            modelName: tegApp.modelName,
+            lotId: tegApp.lotID,
+          },
+        ],
+      },
+      {
+        applicationType: "TEG-2",
+        app: [
+          {
+            modelName: tegApp.modelName,
+            lotId: tegApp.lotID,
+          },
+          {
+            modelName: tegApp.modelName + "@",
+            lotId: tegApp.lotID + "-1",
+          },
+        ],
+      },
+    ];
+  } else if (
+    ["NS", "TC"].includes(tegApp.waferType) &&
+    tegApp.packageType === "WLP"
+  ) {
+    console.log(4)
+    dvrApplicationList = [
+      {
+        applicationType: "TEG-1",
+        app: [
+          {
+            modelName: tegApp.modelName,
+            lotId: tegApp.lotID,
+          },
+        ],
+      },
+      {
+        applicationType: "TEG-N",
+        app: [
+          {
+            modelName: tegApp.modelName,
+            lotId: tegApp.lotID,
+          },
+          {
+            modelName: tegApp.modelName + "@",
+            lotId: tegApp.lotID + "-1",
+          },
+          {
+            modelName: tegApp.modelName + "@",
+            lotId: tegApp.lotID + "-1-1",
+          },
+          {
+            modelName: tegApp.modelName + "@",
+            lotId: tegApp.lotID + "-1-2",
+          },
+        ],
+      },
+      {
+        applicationType: "TEG-2",
+        app: [
+          {
+            modelName: tegApp.modelName,
+            lotId: tegApp.lotID,
+          },
+          {
+            modelName: tegApp.modelName + "@",
+            lotId: tegApp.lotID + "-1",
+          },
+          {
+            modelName: tegApp.modelName + "@",
+            lotId: tegApp.lotID + "-1-1",
+          },
+          {
+            modelName: tegApp.modelName + "@",
+            lotId: tegApp.lotID + "-1-2",
+          },
+        ],
+      },
+    ];
+  }
+
+  for (let i = 0; i < dvrApplicationList.length; i++) {
+    console.log(5)
+    for (let j = 0; j < dvrApplicationList[i].app.length; j++) {
+      console.log(6)
+      const tempApp = tegApp;
+      tempApp.measInfo[0].measType = dvrApplicationList[i].applicationType;
+      tempApp.modelName = dvrApplicationList[i].app[j].modelName;
+      tempApp.lotID = dvrApplicationList[i].app[j].lotId;
+      await sendSingleRequest(tempApp, file, applicationUuid, activateDownload);
+    }
+  }
+
+}
+
+/**
+ * 서버로 단일 formData를 전송하는 함수
+ * @param {TegApplication} formData - 서버로 전송할 단일 의뢰 데이터
+ * @param {File} file - 업로드할 파일 (선택 사항)
+ * @param {Ref} applicationUuid - 생성된 application UUID를 저장할 변수
+ * @param {Ref} activateDownload - 다운로드 버튼 활성화 상태 관리 변수
+ */
+async function sendSingleRequest(
+  formData: TegApplication,
+  file: File,
+  applicationUuid,
+  activateDownload
+) {
+  try {
+    // ✅ 서버로 개별 데이터 전송 (의뢰서 생성)
+    const response = await axios.post(
+      "/teg_application/create-teg-application",
+      formData
+    );
+
+    // ✅ 파일 업로드 (서버 응답이 성공했을 경우만)
+    if (file && response.status === 200) {
+      await uploadImage(file, response.data.applicationUUID);
+    }
+
+    // ✅ 서버 응답이 성공일 경우
+    if (response.status === 200) {
+      applicationUuid.value = response.data.applicationUUID;
+
+      // ✅ 엑셀 파일 생성
+      await create_teg_application_excel(response.data.applicationUUID);
+
+      // ✅ 성공 메시지 표시
+      ElMessage.success({
+        message:
+          "의뢰서 작성이 완료되었습니다.<br>버튼이 활성화되면 의뢰서를 다운로드 받을 수 있습니다.",
+        dangerouslyUseHTMLString: true,
+      });
+
+      // ✅ 다운로드 버튼 활성화 (3초 후)
+      setTimeout(() => {
+        activateDownload.value = true;
+      }, 3000);
+    }
+  } catch (copyError) {
+    console.error("Error during single request:", copyError);
+    ElMessage.error("데이터 전송 중 오류가 발생했습니다.");
+  }
+}
+
 export async function submitForm(
   form: FormInstance | null,
   formData: TegApplication,
@@ -178,9 +507,6 @@ export async function submitForm(
 ) {
   form?.validate(async (valid: boolean) => {
     activateDownload.value = false;
-
-    console.log(formData);
-
     if (valid) {
       // Wafer 이름 중복 확인
       if (hasDuplicateWaferName(formData.waferInformation)) {
@@ -209,9 +535,7 @@ export async function submitForm(
         }
       });
 
-      console.log(isTCF);
       if (!isTCF) {
-        console.log("here");
         if (!Array.isArray(tegTypes?.value)) {
           console.error("tegTypes is not a valid array:", tegTypes);
           return false;
@@ -255,92 +579,114 @@ export async function submitForm(
         });
 
         await nextTick();
-        console.log(formDataCopies);
-        // 복사된 formData를 돌면서 요청을 보내는 함수
-        async function sendRequestForCopies() {
-          try {
-            for (const copy of formDataCopies) {
-              // 서버로 개별 데이터 전송
-              const response = await axios.post(
-                "/teg_application/create-teg-application",
-                copy
-              );
 
-              // 파일 업로드
-              if (file && response.status === 200) {
-                await uploadImage(file, response.data.applicationUUID);
-              }
-
-              // 성공 처리
-              if (response.status === 200) {
-                applicationUuid.value = response.data.applicationUUID;
-                // console.log(applicationUuid.value);
-
-                // 엑셀 파일 생성
-                // const excel_response = await create_teg_application_excel(
-                //   response.data.applicationUUID
-                // );
-
-                // 성공 메시지 표시
-                ElMessage.success({
-                  message:
-                    "의뢰서 작성이 완료되었습니다.<br>버튼이 활성화되면 의뢰서를 다운로드 받을 수 있습니다.",
-                  dangerouslyUseHTMLString: true,
-                });
-
-                // 다운로드 버튼 활성화
-                setTimeout(() => {
-                  activateDownload.value = true;
-                }, 3000);
-              }
-            }
-          } catch (error) {
-            console.error("Error during request for copies:", error);
-            ElMessage.error("복사본 요청 중 오류가 발생했습니다.");
-          }
+        if (formData.isDvr) {
+          createTegApplicationsForDvr(
+            formData,
+            file,
+            applicationUuid,
+            activateDownload
+          );
+        } else {
+          await sendRequestForCopies(
+            formDataCopies,
+            file,
+            applicationUuid,
+            activateDownload
+          );
         }
+
+        // // 복사된 formData를 돌면서 요청을 보내는 함수
+        // async function sendRequestForCopies() {
+        //   try {
+        //     for (const copy of formDataCopies) {
+        //       // 서버로 개별 데이터 전송
+        //       const response = await axios.post(
+        //         "/teg_application/create-teg-application",
+        //         copy
+        //       );
+
+        //       // 파일 업로드
+        //       if (file && response.status === 200) {
+        //         await uploadImage(file, response.data.applicationUUID);
+        //       }
+
+        //       // 성공 처리
+        //       if (response.status === 200) {
+        //         applicationUuid.value = response.data.applicationUUID;
+        //         // console.log(applicationUuid.value);
+
+        //         // 엑셀 파일 생성
+        //         // const excel_response = await create_teg_application_excel(
+        //         //   response.data.applicationUUID
+        //         // );
+
+        //         // 성공 메시지 표시
+        //         ElMessage.success({
+        //           message:
+        //             "의뢰서 작성이 완료되었습니다.<br>버튼이 활성화되면 의뢰서를 다운로드 받을 수 있습니다.",
+        //           dangerouslyUseHTMLString: true,
+        //         });
+
+        //         // 다운로드 버튼 활성화
+        //         setTimeout(() => {
+        //           activateDownload.value = true;
+        //         }, 3000);
+        //       }
+        //     }
+        //   } catch (error) {
+        //     console.error("Error during request for copies:", error);
+        //     ElMessage.error("복사본 요청 중 오류가 발생했습니다.");
+        //   }
+        // }
 
         // 요청 실행
-        await sendRequestForCopies();
       } else {
-        try {
-          // 서버로 개별 데이터 전송
-          const response = await axios.post(
-            "/teg_application/create-teg-application",
-            formData
-          );
+        await sendSingleRequest(
+          formData,
+          file,
+          applicationUuid,
+          activateDownload
+        );
 
-          // 파일 업로드
-          if (file && response.status === 200) {
-            await uploadImage(file, response.data.applicationUUID);
-          }
+        // try {
+        //   // 서버로 개별 데이터 전송
+        //   const response = await axios.post(
+        //     "/teg_application/create-teg-application",
+        //     formData
+        //   );
 
-          // 성공 처리
-          if (response.status === 200) {
-            applicationUuid.value = response.data.applicationUUID;
-            // console.log(applicationUuid.value);
+        //   // 파일 업로드
+        //   if (file && response.status === 200) {
+        //     await uploadImage(file, response.data.applicationUUID);
+        //   }
 
-            // 엑셀 파일 생성
-            const excel_response = await create_teg_application_excel(
-              response.data.applicationUUID
-            );
+        //   // 성공 처리
+        //   if (response.status === 200) {
+        //     applicationUuid.value = response.data.applicationUUID;
+        //     // console.log(applicationUuid.value);
 
-            // 성공 메시지 표시
-            ElMessage.success({
-              message:
-                "의뢰서 작성이 완료되었습니다.<br>버튼이 활성화되면 의뢰서를 다운로드 받을 수 있습니다.",
-              dangerouslyUseHTMLString: true,
-            });
+        //     // 엑셀 파일 생성
+        //     const excel_response = await create_teg_application_excel(
+        //       response.data.applicationUUID
+        //     );
 
-            // 다운로드 버튼 활성화
-            setTimeout(() => {
-              activateDownload.value = true;
-            }, 3000);
-          }
-        } catch (copyError) {
-          console.error("Error during copy request:", copyError);
-          ElMessage.error("데이터 전송 중 오류가 발생했습니다.");
-        }
+        //     // 성공 메시지 표시
+        //     ElMessage.success({
+        //       message:
+        //         "의뢰서 작성이 완료되었습니다.<br>버튼이 활성화되면 의뢰서를 다운로드 받을 수 있습니다.",
+        //       dangerouslyUseHTMLString: true,
+        //     });
+
+        //     // 다운로드 버튼 활성화
+        //     setTimeout(() => {
+        //       activateDownload.value = true;
+        //     }, 3000);
+        //   }
+        // } catch (copyError) {
+        //   console.error("Error during copy request:", copyError);
+        //   ElMessage.error("데이터 전송 중 오류가 발생했습니다.");
+        // }
       }
 
       // 1. tegTypes가 배열인지 확인

@@ -7,12 +7,12 @@
     </div>
     <div class="meas-types-container">
       <el-tabs v-model="activeTabMain" type="border-card" class="demo-tabs">
-        <el-tab-pane label="다음 투입 리스트(등급 순)" name="main1">
+        <el-tab-pane label="Upcomming List (Priority)" name="main1">
           <template v-if="activeTabMain === 'main1'">
             <TegMeasurementTab :category="'next'" key="next" :page-size="5" />
           </template>
         </el-tab-pane>
-        <el-tab-pane label="지연 리스트(접수 오래된 순)" name="main2">
+        <el-tab-pane label="Delay List (Date)" name="main2">
           <template v-if="activeTabMain === 'main2'">
             <TegMeasurementTab :category="'delay'" key="delay" :page-size="5" />
           </template>
@@ -21,7 +21,7 @@
     </div>
     <div class="meas-types-container">
       <el-tabs v-model="activeTabSub" type="border-card" class="demo-tabs">
-        <el-tab-pane label="TEG(제품)" name="sub1">
+        <el-tab-pane label="TEG - Product" name="sub1">
           <template v-if="activeTabSub === 'sub1'">
             <TegMeasurementTab
               :category="'product'"
@@ -30,7 +30,7 @@
             />
           </template>
         </el-tab-pane>
-        <el-tab-pane label="TEG(일반)" name="sub2">
+        <el-tab-pane label="TEG - Normal" name="sub2">
           <template v-if="activeTabSub === 'sub2'">
             <TegMeasurementTab
               :category="'model'"
