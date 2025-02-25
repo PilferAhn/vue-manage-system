@@ -5,7 +5,7 @@ export interface Dv2 {
   salesTerritory?: string;
   main?: string;
   sub?: string;
-  client?: string[];
+  client?: string;
   category?: string;
   band?: string;
   partName?: string;
@@ -28,7 +28,7 @@ export interface Dv2 {
   dateOfEstimatedDCOut?: string;
   dateOfEstimatedMeasIn?: string;
   dateOfEstimatedCer?: string
-
+  isFirstRow? : boolean;
   dateOfEstimatedMdr?: string;
   dateOfFabIn?: string;
   dateOfFabOut?: string;
