@@ -93,8 +93,8 @@ export default {};
 .actions-container {
   display: flex;
   justify-content: flex-start; /* 버튼을 오른쪽에 배치 */
-  padding-top: 10px;
-  padding-right: 30px;
+  padding-top: 0px;
+  padding-left: 20px;
 }
 
 .dialog-footer {

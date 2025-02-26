@@ -1,9 +1,10 @@
 <template>
+
   <el-table
-    :data="localDv2Table"
+    :data="paginatedData"
     :span-method="tableSpanMethod"
     class="custom-table"
-    height="750"
+    height="690"
   >
     <el-table-column
       label="P/N"
@@ -53,7 +54,7 @@
         label="MDR"
         prop="dateOfMdr"
         :align="'center'"
-        width="110"
+        width="120"
       >
         <template #default="scope">
           <!-- <el-input v-model="scope.row.dateOfMdr" class="table-input1" /> -->
@@ -169,7 +170,7 @@
               type="date"
               placeholder="Pick a day"
               :size="'small'"
-              style="width: 110px"
+              style="width: 100px"
               format="YYYY/MM/DD"
               value-format="YYYY-MM-DD HH:mm:ss"
             />
@@ -192,7 +193,7 @@
               type="date"
               placeholder="Pick a day"
               :size="'small'"
-              style="width: 110px"
+              style="width: 100px"
               format="YYYY/MM/DD"
               value-format="YYYY-MM-DD HH:mm:ss"
             />
@@ -215,7 +216,7 @@
               type="date"
               placeholder="Pick a day"
               :size="'small'"
-              style="width: 110px"
+              style="width: 100px"
               format="YYYY/MM/DD"
               value-format="YYYY-MM-DD HH:mm:ss"
             />
@@ -238,7 +239,7 @@
               type="date"
               placeholder="Pick a day"
               :size="'small'"
-              style="width: 110px"
+              style="width: 100px"
               format="YYYY/MM/DD"
               value-format="YYYY-MM-DD HH:mm:ss"
             />
@@ -349,7 +350,7 @@
       prop="action"
       :align="'center'"
       fixed="right"
-      
+      width="160"
     >
       <template #default="scope">
         <el-button
@@ -359,12 +360,23 @@
         >
           Update
         </el-button>
-        <!-- <el-button type="danger" size="small" @click="handleRemove(scope.row)">
+        <el-button type="danger" size="small" @click="handleRemove(scope.row)">
           Delete
-        </el-button> -->
+        </el-button>
       </template>
     </el-table-column>
   </el-table>
+  <!-- 페이지네이션 -->
+  <el-pagination
+    v-model:current-page="currentPage"
+    v-model:page-size="pageSize"
+    :total="dv2TableData.length"
+    :page-sizes="[7, 14, 21, 28]"
+    layout="total, sizes, prev, pager, next, jumper"
+    @size-change="handleSizeChange"
+    @current-change="handlePageChange"
+    style="margin-top: 10px;"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -378,7 +390,7 @@ import {
 } from "../../../utils/Dv2/dv2-list-utils";
 
 import { getPackageList } from "../../../utils/utility";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { OptionInterface } from "../../../interface/option";
 import { sendPostRequest } from "../../../utils/httpProtocol";
 import { convertPep8ToCamelCase2 } from "../../../utils/key-converter";
@@ -398,6 +410,26 @@ const packageOptions = ref<OptionInterface[]>([]);
 // const localDv2Table: Ref<Dv2[]> = ref({ ...props.dv2TableData });
 const localDv2Table = ref<Dv2[]>([]);
 const localFabApp = ref<FabApplicationForm[]>([]);
+
+const pageSize = ref(14); // 페이지당 표시할 개수 (기본값: 7)
+const currentPage = ref(1); // 현재 페이지
+// 페이지네이션 적용된 데이터 (현재 페이지의 데이터만 가져옴)
+const paginatedData = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  return localDv2Table.value.slice(start, start + pageSize.value);
+});
+
+// 페이지 크기 변경 이벤트
+const handleSizeChange = (newSize) => {
+  pageSize.value = newSize;
+  currentPage.value = 1; // 페이지 변경 시 첫 페이지로 이동
+};
+
+// 현재 페이지 변경 이벤트
+const handlePageChange = (newPage) => {
+  currentPage.value = newPage;
+};
+
 function getNextRow(index) {
   if (index < localDv2Table.value.length - 1) {
     return localDv2Table.value[index + 1]; // 다음 행 반환
@@ -453,7 +485,7 @@ watch(
 );
 
 const handleRemove = async (row: Dv2) => {
-  if (removeDv2(row)) {
+  if (await removeDv2(row)) {
     const formData = new FormData();
     formData.append("order_by", "date_of_estimated_cer");
     formData.append("order_dir", "asc");

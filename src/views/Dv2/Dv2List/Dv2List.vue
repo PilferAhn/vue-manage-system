@@ -1,7 +1,9 @@
 <template>
-  <div>
-    <Dv2ListTable :dv2TableData="dv2TableData"></Dv2ListTable>
-    <Dv2Actions :dv2TableData="dv2TableData" :oldDvList="dv2Data"></Dv2Actions>
+  <div>    
+    <Dv2Search :dv2TableData="filteredData" :fab-app="fabApp" :dv2-data="dv2Data" @updateSearchQuery="handleSearchQuery" />
+    <Dv2ListTable :dv2TableData="filteredData" :fab-app="fabApp"></Dv2ListTable>    
+    
+    
   </div>
 </template>
 
@@ -13,8 +15,8 @@ import {
 } from "../../FAB/ApplicationList/ApplicationList";
 import type { FabApplicationForm } from "../../FAB/Interface/mes-interface";
 // import { dv2Data } from "../../../utils/Dv2/demo-data";
-import { formatDate, formatDateTime } from "../../../utils/date-utils";
-import Dv2Actions from "./Dv2Actions.vue";
+import Dv2Search from "./Dv2Search.vue";
+
 import Dv2ListTable from "./Dv2ListTable.vue";
 import {
   sendDv2,
@@ -25,11 +27,14 @@ import { Dv2 } from "../../../interface/Dv2/dv2-list-interface";
 import { sendGetRequest, sendPostRequest } from "../../../utils/httpProtocol";
 import { RefSymbol } from "@vue/reactivity";
 import { convertPep8ToCamelCase2 } from "../../../utils/key-converter";
+import { getUserId, getUserName } from "../../../utils/account-utils";
 
 // 📌 기존 데이터 저장 (ref 사용)
 const fabApp = ref<FabApplicationForm[]>([]);
 const dv2TableData = ref<Dv2[]>([]); // 원본 데이터를 저장할 ref
 const dv2Data = ref<Dv2[]>([]);
+const adminList = ["w2220604", "w2171210", "w2171209", "admin"];
+const adminNameList = [""]
 // 📌 onMounted에서 데이터 로드 및 업데이트
 onMounted(async () => {
   const formData = new FormData();
@@ -45,9 +50,8 @@ onMounted(async () => {
   // }
 
   nextTick(async () => {
-    dv2TableData.value = dv2Data.value.flatMap((row) => [
-      // dv2TableData.value = dv2Data.flatMap((row) => [
-      {
+    dv2TableData.value = dv2Data.value.flatMap((row) => {
+      const firstRow = {
         ...row,
         client: row.client, // 배열을 문자열로 변환
         isFirstRow: true,
@@ -62,20 +66,12 @@ onMounted(async () => {
         dateOfMeasIn: row.dateOfEstimatedMeasIn,
         dateOfCer: row.dateOfEstimatedCer,
         supporter: row.supporter,
-      },
-      {
+      };
+
+      const secondRow = {
         ...row,
         client: row.client, // 배열을 문자열로 변환
         isFirstRow: false,
-        // dateOfFabIn: formatDate(row.dateOfFabIn), // 첫 번째 줄: 실제 FAB IN 값
-        // dateOfFabOut: formatDate(row.dateOfFabOut), // 첫 번째 줄: 실제 FAB OUT 값
-        // dateOfMdr: row.dateOfMdr,
-        // isEditable: false,
-        // dateOfHqOut: formatDate(row.dateOfHqOut),
-        // dateOfWhcIn: formatDate(row.dateOfWhcIn),
-        // dateOfAssyIn: formatDate(row.dateOfAssyIn),
-        // dateOfDCOut: formatDate(row.dateOfDCOut),
-        // dateOfMeasIn: formatDate(row.dateOfMeasIn),
         dateOfFabIn: null,
         dateOfFabOut: null,
         dateOfMdr: row.dateOfMdr,
@@ -87,9 +83,19 @@ onMounted(async () => {
         dateOfMeasIn: null,
         dateOfCer: row.dateOfCer,
         supporter: row.designer,
-      },
-    ]);
-
+      };
+      
+      // 특정 조건이 만족하면 secondRow 추가
+      if (adminList.includes(getUserId().toLocaleLowerCase())) {
+        return [firstRow, secondRow];
+      } 
+      else if(getUserName() === row.supporter){
+        return [firstRow, secondRow];
+      }
+      else {
+        return []; // 조건을 만족하지 않으면 첫 번째 행만 추가
+      }
+    });
     // fabApp.value = await fetchProcessData(fabApp.value);
     fabApp.value = await getFabRequestFormByModelNames(
       getModelNameList(dv2TableData.value),
@@ -98,4 +104,29 @@ onMounted(async () => {
     updateDv2TableData(dv2TableData.value, fabApp.value);
   });
 });
+
+
+const searchQuery = ref({
+  searchType: "productName",
+  searchQuery: "",
+});
+
+// 검색어를 업데이트하는 함수
+const handleSearchQuery = (query) => {
+  searchQuery.value = query;
+};
+
+const filteredData = computed(() => {
+  return dv2TableData.value.filter((item) => {
+    const key = searchQuery.value.searchType; // 검색 기준 (productName 또는 supporter)
+    const searchValue = searchQuery.value.searchQuery.toLowerCase();
+
+    // null 또는 undefined 방지 (빈 문자열로 변환)
+    const itemValue = item[key] ? item[key].toString().toLowerCase() : "";
+
+    return !searchQuery.value.searchQuery || itemValue.includes(searchValue);
+  });
+});
+
+
 </script>

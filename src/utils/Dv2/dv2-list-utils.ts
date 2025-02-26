@@ -24,30 +24,47 @@ export function updateDv2TableData(
     }
     for (let j = 0; j < fabApp.length; j++) {
       if (dv2TableData[i].productName === fabApp[j].modelName) {
-        if (fabApp[j].lotStatus.length >= 1) {
-          dv2TableData[i + 1].dateOfFabIn = formatDate(
-            fabApp[j].lotStatus[0].creationDate
-          );
-          dv2TableData[i].supporter = fabApp[j].requester;
-          dv2TableData[i].supporterId = fabApp[j].requesterId;
-          dv2TableData[i + 1].supporter = fabApp[j].designer;
-          dv2TableData[i + 1].supporterId = fabApp[j].designerId;
+        let maxIndex = -1;
+        let maxSequance = -1;
 
-          if (fabApp[j].lotStatus[0]["operation"]["name"] === "Transit 공정") {
+        for (let k = 0; k < fabApp[j].lotStatus.length; k++) {
+          if (fabApp[j].lotStatus[k].historySeq >= maxSequance) {
+            maxSequance = fabApp[j].lotStatus[k].historySeq;
+            maxIndex = k;
+          }
+        }
+
+        if (fabApp[j].lotStatus.length >= 1 && maxIndex != -1) {
+          dv2TableData[i + 1].dateOfFabIn = formatDate(
+            fabApp[j].lotStatus[maxIndex].creationDate
+          );
+
+  
+          // dv2TableData[i].supporter = fabApp[j].requester;
+          // dv2TableData[i].supporterId = fabApp[j].requesterId;
+          // dv2TableData[i + 1].supporter = fabApp[j].designer;
+          // dv2TableData[i + 1].supporterId = fabApp[j].designerId;
+
+          if (
+            fabApp[j].lotStatus[maxIndex]["operation"]["name"] ===
+            "Transit 공정"
+          ) {
             dv2TableData[i + 1].dateOfHqOut = formatDate(
-              fabApp[j].lotStatus[0].moveinDate
+              fabApp[j].lotStatus[maxIndex].moveinDate
             );
           }
           dv2TableData[i].currentStage =
-            fabApp[j].lotStatus[0].operation.name +
-            formatDateTime(fabApp[j].lotStatus[0].moveinDate);
+            fabApp[j].lotStatus[maxIndex].operation.name;
+          dv2TableData[i].currentStageTime = formatDateTime(
+            fabApp[j].lotStatus[maxIndex].moveinDate
+          );
 
-          if (fabApp[j].lotStatus[0].hanoiCsp !== null) {
+          if (fabApp[j].lotStatus[maxIndex].hanoiCsp !== null) {
             dv2TableData[i + 1].dateOfWhcIn = formatDate(
-              fabApp[j].lotStatus[0].hanoiCsp.creationDate
+              fabApp[j].lotStatus[maxIndex].hanoiCsp.creationDate
             );
             dv2TableData[i + 1].dateOfAssyIn = formatDate(
-              fabApp[j].lotStatus[0].hanoiCsp.moveinDate
+              fabApp[j].lotStatus[maxIndex].hanoiCsp.moveinDate
             );
           }
 
@@ -113,30 +130,60 @@ export function initDv2() {
   return dv2.value;
 }
 
-export async function removeDv2(dv2 : Dv2){
+import { ElMessageBox, ElMessage } from "element-plus";
 
-  const productName = dv2.productName
-  const formData = new FormData
-  formData.append("product_name" , productName)
-  const res = await sendPostRequest("/dv2/delete_dv2_by_product_name", formData)
-  console.log(res)
-  if(res.status == 200){
-    return true
+export async function removeDv2(dv2: Dv2) {
+  try {
+    // 삭제 확인 다이얼로그
+    await ElMessageBox.confirm(
+      `정말로 "${dv2.productName}" 데이터를 삭제하시겠습니까?\n\n삭제 후에는 되돌릴 수 없습니다.`,
+      "경고",
+      {
+        confirmButtonText: "삭제",
+        cancelButtonText: "취소",
+        type: "warning",
+      }
+    );
+
+    // ✅ 사용자가 "삭제"를 누른 경우 실행됨
+    const productName = dv2.productName;
+    const formData = new FormData();
+    formData.append("product_name", productName);
+
+    const res = await sendPostRequest("/dv2/delete_dv2_by_product_name", formData);
+
+    if (res.status) {
+      ElMessage({
+        type: "success",
+        message: `"${productName}" 데이터가 삭제되었습니다.`,
+      });
+      return true;
+    } else {
+      ElMessage({
+        type: "error",
+        message: `"${productName}" 삭제에 실패했습니다.`,
+      });
+      return false;
+    }
+  } catch (error) {
+    // 🚫 사용자가 "취소"를 누른 경우 실행됨
+    ElMessage({
+      type: "info",
+      message: "삭제가 취소되었습니다.",
+    });
+    return false; // ❌ 취소 시 false 반환
   }
-  
-  return false
-
 }
 
-export function getModelNameList(dv2List : Dv2[]){
 
-  let tempStr = ""
-  for(let i = 0 ; i < dv2List.length; i++){
-    tempStr += dv2List[i].productName + ","
+
+export function getModelNameList(dv2List: Dv2[]) {
+  let tempStr = "";
+  for (let i = 0; i < dv2List.length; i++) {
+    tempStr += dv2List[i].productName + ",";
   }
 
-  return tempStr
-
+  return tempStr;
 }
 
 export async function sendDv2(dv2: Dv2, sendingType: string) {
