@@ -341,6 +341,37 @@ export const getApplicationByUserName = async (
   }
 };
 
+export const getFabRequestFormByModelNames = async (modelNames : string,   fabList: FabApplicationForm[]) => {
+
+  try {
+    let startTime = performance.now();
+    const formData = new FormData();
+
+    formData.append("lot_status", "true");
+    formData.append("order_by", "week_number");
+    formData.append("order_dir", "asc");
+    formData.append("designer_confirm", "false");
+    formData.append("name", modelNames);
+    const url = "/fab_monitoring/get_fab_request_list_by_model_name_list";
+
+    // 시작 시간 기록
+    const startFilterTime = performance.now();
+    const response = await axios.post(url, formData);
+
+    // 필터링 소요 시간 계산
+
+    fabList = response.data.map((fab) => convertPep8ToCamelCase2(fab));
+
+    const endFilterTime = performance.now();
+    const filterTime = ((endFilterTime - startFilterTime) / 1000).toFixed(3);
+
+    return fabList;
+  } catch (error) {
+    console.error("Failed to fetch process data:", error);
+    return [];
+  }
+}
+
 export const fetchProcessData = async (fabList: FabApplicationForm[]) => {
   try {
     let startTime = performance.now();

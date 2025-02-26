@@ -8,10 +8,10 @@ export interface Dv2 {
   client?: string;
   category?: string;
   band?: string;
-  partName?: string;
+  productName? : string
   fabPartNumber? : string;
   chip?: string;
-  pkg?: string;
+  package?: string;
   group?: string;
   pl?: User;
   operator?: User;
@@ -20,6 +20,7 @@ export interface Dv2 {
   turn?: string;
   isEditable? : boolean
   dateOfMdr?: string;
+  dateOfEstimatedMdr?: string;
   dateOfEstimatedFabIn?: string;
   dateOfEstimatedFabOut?: string;
   dateOfEstimatedHqOut?: string;
@@ -27,9 +28,8 @@ export interface Dv2 {
   dateOfEstimatedAssyIn?: string;
   dateOfEstimatedDCOut?: string;
   dateOfEstimatedMeasIn?: string;
-  dateOfEstimatedCer?: string
-  isFirstRow? : boolean;
-  dateOfEstimatedMdr?: string;
+  dateOfEstimatedCer?: string  
+  isFirstRow? : boolean;  
   dateOfFabIn?: string;
   dateOfFabOut?: string;
   dateOfHqOut?: string;
@@ -41,13 +41,13 @@ export interface Dv2 {
 
   dateOfScheduleConfirm?: string;
   dateOfDvrRequest?: string;
-  dvrPriority?: string;
+  priority?: string;
   dateOfCreated?: string;
   dateOfFinished?: string;
 
-  userOfDesigner?: string;
-  userOfSupporter?: string;
+  designer?: string;
+  supporter?: string;
 
-  userOfDesignerID?: string;
-  userOfSupporterID?: string;
+  designerId?: string;
+  supporterId?: string;
 }

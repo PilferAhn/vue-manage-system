@@ -1,3 +1,8 @@
+import type { OptionInterface } from "../interface/option";
+import { ref } from "vue";
+import { sendGetRequest } from "./httpProtocol";
+
+
 export const checkFileExtension = (fileName) => {
   // 파일 확장자 가져오기
   const extension = fileName.split(".").pop().toLowerCase();
@@ -23,6 +28,8 @@ export const colorList = [
   "rgba(0, 184, 148, 1)", // 에메랄드색
   "rgba(253, 121, 168, 1)", // 분홍색
 ];
+
+
 
 export const formatDate = (dateStr: string): string => {
   const date = new Date(dateStr);
@@ -92,3 +99,21 @@ export const readFileContent = (file) => {
   reader.readAsText(file);
   return false;
 };
+
+export async function getPackageList(){
+
+  const options = ref<OptionInterface[]>([]);
+  const data = await sendGetRequest("http://10.29.11.124:40000/fab_monitoring_rev2", "get_fab_packages_list")
+
+  for(let i = 0 ; i < data.length; i++){
+    const temp = {
+      key : i,
+      label : data[i]["description"],
+      value : data[i]["package_id"]
+    }
+    options.value.push(temp)
+  }
+
+  return options.value
+
+}
