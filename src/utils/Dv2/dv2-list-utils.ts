@@ -39,7 +39,6 @@ export function updateDv2TableData(
             fabApp[j].lotStatus[maxIndex].creationDate
           );
 
-  
           // dv2TableData[i].supporter = fabApp[j].requester;
           // dv2TableData[i].supporterId = fabApp[j].requesterId;
           // dv2TableData[i + 1].supporter = fabApp[j].designer;
@@ -54,12 +53,16 @@ export function updateDv2TableData(
             );
           }
           
-          
-          dv2TableData[i].location =
-            fabApp[j].lotStatus[maxIndex].operation.name;
-          dv2TableData[i].locationTime = formatDateTime(
-            fabApp[j].lotStatus[maxIndex].moveinDate
-          );
+
+          if (dv2TableData[i].currentStage !== null) {            
+            dv2TableData[i].locationTime = null
+          }
+          else{
+            dv2TableData[i].currentStage = fabApp[j].lotStatus[maxIndex].operation.name;
+            dv2TableData[i].locationTime = formatDateTime(
+              fabApp[j].lotStatus[maxIndex].moveinDate
+            );
+          }
 
           if (fabApp[j].lotStatus[maxIndex].hanoiCsp !== null) {
             dv2TableData[i + 1].dateOfWhcIn = formatDate(
@@ -152,7 +155,10 @@ export async function removeDv2(dv2: Dv2) {
     const formData = new FormData();
     formData.append("product_name", productName);
 
-    const res = await sendPostRequest("/dv2/delete_dv2_by_product_name", formData);
+    const res = await sendPostRequest(
+      "/dv2/delete_dv2_by_product_name",
+      formData
+    );
 
     if (res.status) {
       ElMessage({
@@ -176,8 +182,6 @@ export async function removeDv2(dv2: Dv2) {
     return false; // ❌ 취소 시 false 반환
   }
 }
-
-
 
 export function getModelNameList(dv2List: Dv2[]) {
   let tempStr = "";

@@ -99,7 +99,7 @@
         width="150"
       >
         <template #default="scope">
-          <el-input v-model="scope.row.location" class="table-input"></el-input> <br />
+          <el-input v-model="scope.row.currentStage" class="table-input"></el-input> <br />
           {{ scope.row.locationTime }}
         </template>
       </el-table-column>
