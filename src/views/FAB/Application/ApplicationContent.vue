@@ -99,7 +99,7 @@
     <el-row :gutter="20" class="form-row">
       <el-col :span="12">
         <InputText
-          :model-value="props.fabApplication.band"
+          v-model="props.fabApplication.band"
           label="Band"
           prop="band"
           :rules="[]"

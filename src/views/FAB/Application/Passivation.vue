@@ -1,5 +1,5 @@
 <template>
-  
+  {{ props.fabApplication.passivationLayers }}
   <div class="deposition-container" v-if="passOptions.length > 0">
     <h3 class="section-title">Passivation 정보</h3>
     

@@ -157,7 +157,6 @@ onMounted(async () => {
   waferCodeOptions.value = createWaferCodeOptions(
     await getWaferCodeObjectList()
   );
-  console.log(waferCodeOptions.value);
 });
 
 watch(

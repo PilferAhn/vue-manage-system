@@ -534,7 +534,7 @@ export async function sendingForm(application: FabRequestForm, type: string) {
     } else {
       url = serverUrl + "/fab_monitoring_rev2/update_fab_request";
     }
-
+    console.log(application)
     // dvrChecker(application, type);
     packageChecker(application, type);
     try {

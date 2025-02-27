@@ -76,9 +76,6 @@ const fetchApplication = async (productName: any) => {
       defineSawTypeByWaferType(app.wafer.sawTypeId, sawTypes)
     );        
 
-
-
-    console.log(app)
     isLoad.value = true;
   } catch (error) {
     console.error("Error fetching application:", error);
