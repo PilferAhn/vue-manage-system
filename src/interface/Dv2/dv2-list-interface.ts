@@ -16,8 +16,8 @@ export interface Dv2 {
   pl?: User;
   operator?: User;
   status?: string;
-  currentStage? : string;
-  currentStageTime? : string
+  location? : string;
+  locationTime? : string
   turn?: string;
   isEditable? : boolean
   dateOfMdr?: string;

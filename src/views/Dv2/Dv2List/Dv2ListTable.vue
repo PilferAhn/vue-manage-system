@@ -1,5 +1,4 @@
 <template>
-
   <el-table
     :data="paginatedData"
     :span-method="tableSpanMethod"
@@ -99,9 +98,10 @@
         :align="'center'"
         width="150"
       >
-        <!-- <template #default="scope">
-            <el-input v-model="scope.row.turn" class="table-input" />
-          </template> -->
+        <template #default="scope">
+          <el-input v-model="scope.row.location" class="table-input"></el-input> <br />
+          {{ scope.row.locationTime }}
+        </template>
       </el-table-column>
 
       <el-table-column
@@ -371,11 +371,11 @@
     v-model:current-page="currentPage"
     v-model:page-size="pageSize"
     :total="dv2TableData.length"
-    :page-sizes="[7, 14, 21, 28]"
+    :page-sizes="[1, 3, 5, 7]"
     layout="total, sizes, prev, pager, next, jumper"
     @size-change="handleSizeChange"
     @current-change="handlePageChange"
-    style="margin-top: 10px;"
+    style="margin-top: 10px"
   />
 </template>
 
@@ -411,7 +411,7 @@ const packageOptions = ref<OptionInterface[]>([]);
 const localDv2Table = ref<Dv2[]>([]);
 const localFabApp = ref<FabApplicationForm[]>([]);
 
-const pageSize = ref(14); // 페이지당 표시할 개수 (기본값: 7)
+const pageSize = ref(28); // 페이지당 표시할 개수 (기본값: 7)
 const currentPage = ref(1); // 현재 페이지
 // 페이지네이션 적용된 데이터 (현재 페이지의 데이터만 가져옴)
 const paginatedData = computed(() => {

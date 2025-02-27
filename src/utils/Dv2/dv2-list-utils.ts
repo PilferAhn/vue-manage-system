@@ -53,9 +53,11 @@ export function updateDv2TableData(
               fabApp[j].lotStatus[maxIndex].moveinDate
             );
           }
-          dv2TableData[i].currentStage =
+          
+          
+          dv2TableData[i].location =
             fabApp[j].lotStatus[maxIndex].operation.name;
-          dv2TableData[i].currentStageTime = formatDateTime(
+          dv2TableData[i].locationTime = formatDateTime(
             fabApp[j].lotStatus[maxIndex].moveinDate
           );
 
