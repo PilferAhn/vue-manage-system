@@ -52,4 +52,5 @@ export interface Dv2 {
 
   designerId?: string;
   supporterId?: string;
+  backgroundColor? : string
 }

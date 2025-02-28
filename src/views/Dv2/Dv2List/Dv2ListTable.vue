@@ -2,6 +2,7 @@
   <el-table
     :data="paginatedData"
     :span-method="tableSpanMethod"
+    :row-class-name="tableRowClass"
     class="custom-table"
     height="690"
   >
@@ -123,16 +124,16 @@
             v-model="scope.row.currentStage"
             class="table-input2"
           ></el-input>
-          <br/>
+          <br />
           <el-date-picker
-              v-model="scope.row.locationTime"
-              type="date"
-              placeholder="Pick a day"
-              format="YYYY/MM/DD HH:mm:ss"
-              value-format="YYYY-MM-DD HH:mm:ss"
-              :size="'small'"
-              style="width: 150px"
-            />
+            v-model="scope.row.locationTime"
+            type="date"
+            placeholder="Pick a day"
+            format="YYYY/MM/DD HH:mm:ss"
+            value-format="YYYY-MM-DD HH:mm:ss"
+            :size="'small'"
+            style="width: 150px"
+          />
 
           <!-- <span v-if="scope.row.locationTime === null">
             <el-input
@@ -459,6 +460,22 @@ function getNextRow(index) {
   return null; // 마지막 행이면 null 반환
 }
 
+// const tableRowClass = ({ row }) => {
+//   return row.backgroundColor === "warning" ? "warning-row" : "";
+// };
+
+const tableRowClass = ({
+  row,  
+}: {
+  row: Dv2;  
+}) => {
+  if (row.backgroundColor === "warning" ) {
+    console.log(row.productName)
+    return "warning-row"; // Ensure this matches your CSS class
+  }
+  return "";
+};
+
 const tableSpanMethod = ({ row, column, rowIndex }: any) => {
   if (
     [
@@ -605,7 +622,7 @@ export default {};
 /* 셀 스타일 */
 .custom-table ::v-deep(.el-table__cell) {
   border: 1px solid #e5e7eb;
-  background-color: #ffffff;
+  // background-color: #ffffff;
   font-size: 13px;
   color: #4b5563;
   height: 40px;
@@ -618,14 +635,14 @@ export default {};
 
 .custom-table ::v-deep(.even-row) {
   box-shadow: inset 0px 1px 2px 3px rgba(218, 24, 24, 0.3);
-  background-color: rgb(243, 235, 235);
+  // background-color: rgb(243, 235, 235);
   border-radius: 1px;
 
   // padding: 4px;
 }
 
 .custom-table ::v-deep(.el-table__row.el-warning .el-table__cell) {
-  background-color: hsl(0, 61%, 90%) !important;
+  // background-color: hsl(0, 61%, 90%) !important;
   color: hsl(0 75% 7%) !important;
 }
 
@@ -670,4 +687,13 @@ export default {};
   border: 1px solid #409eff;
   background: #ffffff;
 } */
+
+//MXM30ATP001A
+
+/* warning-row 클래스에 빨간색 배경 적용 */
+::v-deep(.warning-row) {
+  background-color: hsl(0, 61%, 90%) !important;
+  color: white; /* 글씨 색상도 변경 가능 */
+}
+
 </style>

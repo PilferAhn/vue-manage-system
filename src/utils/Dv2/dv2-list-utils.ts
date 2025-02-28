@@ -1,6 +1,6 @@
 import type { Dv2 } from "../../interface/Dv2/dv2-list-interface";
 import type { FabApplicationForm } from "../../interface/mes-interface";
-import { formatDate, formatDateTime } from "../date-utils";
+import { formatDate, formatDateTime, getTodayDatetime } from "../date-utils";
 import { ref } from "vue";
 import axios from "axios";
 import { convertKeysToPEP8 } from "../key-converter";
@@ -52,13 +52,30 @@ export function updateDv2TableData(
               fabApp[j].lotStatus[maxIndex].moveinDate
             );
           }
-          
-          if(dv2TableData[i].currentStage !== null && dv2TableData[i].locationTime === null){            
-            dv2TableData[i].locationTime = fabApp[j].lotStatus[maxIndex].moveinDate
+
+          if (
+            new Date(getTodayDatetime()).getTime() >=
+            new Date(dv2TableData[i].dateOfHqOut).getTime()
+          ) {
+            // 280 061988 18 335
+
+            if (dv2TableData[i + 1].dateOfHqOut === null) {
+              dv2TableData[i].backgroundColor = "warning"
+              dv2TableData[i + 1].backgroundColor = "warning"
+            }
           }
-          else if(dv2TableData[i].currentStage === null){
-            dv2TableData[i].currentStage = fabApp[j].lotStatus[maxIndex].operation.name;
-            dv2TableData[i].locationTime = fabApp[j].lotStatus[maxIndex].moveinDate
+
+          if (
+            dv2TableData[i].currentStage !== null &&
+            dv2TableData[i].locationTime === null
+          ) {
+            dv2TableData[i].locationTime =
+              fabApp[j].lotStatus[maxIndex].moveinDate;
+          } else if (dv2TableData[i].currentStage === null) {
+            dv2TableData[i].currentStage =
+              fabApp[j].lotStatus[maxIndex].operation.name;
+            dv2TableData[i].locationTime =
+              fabApp[j].lotStatus[maxIndex].moveinDate;
           }
 
           if (fabApp[j].lotStatus[maxIndex].hanoiCsp !== null) {
