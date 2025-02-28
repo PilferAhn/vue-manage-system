@@ -33,7 +33,7 @@ import { getUserId, getUserName } from "../../../utils/account-utils";
 const fabApp = ref<FabApplicationForm[]>([]);
 const dv2TableData = ref<Dv2[]>([]); // 원본 데이터를 저장할 ref
 const dv2Data = ref<Dv2[]>([]);
-const adminList = ["w2220604", "w2171210", "w2171209", "admin"];
+const adminList = ["w2220604", "w2171210", "w2171209", "admin", "w2170211"];
 const adminNameList = [""]
 // 📌 onMounted에서 데이터 로드 및 업데이트
 onMounted(async () => {
