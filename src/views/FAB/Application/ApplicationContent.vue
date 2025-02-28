@@ -375,6 +375,18 @@ watch(
   }
 );
 
+watch(()=>props.fabApplication.packageId, (newVal)=>{
+  if(newVal === "CSP"){
+    props.fabApplication.bom = initBom()
+    props.fabApplication.isNewBom = true;    
+  }
+  else{
+    props.fabApplication.isNewBom = false;
+    props.fabApplication.bom = null
+  }
+}
+)
+
 watch(
   () => props.fabApplication.isNewBom,
   (newVal) => {
@@ -405,9 +417,7 @@ watch(
 
 watch(
   () => props.fabApplication.packageId,
-  (newVal) => {
-    console.log(props.fabApplication);
-
+  (newVal) => {    
     if (
       newVal === "CSP" &&
       props.fabApplication.bom === null &&

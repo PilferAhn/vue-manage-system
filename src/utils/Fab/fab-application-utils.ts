@@ -80,6 +80,8 @@ export function initFabApplication3(bom: Bom) {
     destinationId: "",
     packageId: undefined,
     priorityId: "",
+    isFreeWafer : false,
+    isNeededLtEtching : false,
     group: "",
     purpose: "",
     isNeedSio2Seed: false,

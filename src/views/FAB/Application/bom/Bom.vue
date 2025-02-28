@@ -359,8 +359,7 @@ watch(
   () => props.bom.pkgCompany,
   (newVal) => {
     console.log(newVal);
-    if (newVal !== null) {
-      console.log(props.bom.pkgCompany === "Daisho Denshi");
+    if (newVal !== null) {      
       if (props.bom.pkgCompany === "Daisho Denshi") {
         isCompanyDisabled.value = true;
         console.log(isCompanyDisabled.value);
@@ -417,7 +416,7 @@ const extractValues = (data: object, bom: Bom) => {
 watch(
   () => props.fabApplication.bom?.epoxy?.modelName,
   (newVal) => {
-    if (epoList.value.length > 0) {
+    if (props.bom !== null && epoList.value.length > 0) {
       const temp = epoList.value.find((e) => e["model"] === newVal);
       epoCode.value = temp["code"];
       props.fabApplication.bom.epoxy.code = temp["code"];
@@ -434,10 +433,6 @@ watch(
   }
 );
 
-watch(
-  () => bom.package,
-  (newVal) => {}
-);
 
 const size = ref<ComponentSize>("default");
 onMounted(async () => {

@@ -75,6 +75,8 @@ export interface FabRequestForm {
   priorityId?: string;
   group?: string;
   bandGroupId?: string;
+  isFreeWafer?: boolean;
+  isNeededLtEtching?: boolean;
   band?: string;
   status?: string;
   createdDate?: string;
