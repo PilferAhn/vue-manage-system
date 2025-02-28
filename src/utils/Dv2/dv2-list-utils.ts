@@ -53,15 +53,8 @@ export function updateDv2TableData(
             );
           }
           
-
-          if (dv2TableData[i].currentStage !== null) {            
-            dv2TableData[i].locationTime = null
-          }
-          else{
+          if(dv2TableData[i].currentStage === null){
             dv2TableData[i].currentStage = fabApp[j].lotStatus[maxIndex].operation.name;
-            dv2TableData[i].locationTime = formatDateTime(
-              fabApp[j].lotStatus[maxIndex].moveinDate
-            );
           }
 
           if (fabApp[j].lotStatus[maxIndex].hanoiCsp !== null) {

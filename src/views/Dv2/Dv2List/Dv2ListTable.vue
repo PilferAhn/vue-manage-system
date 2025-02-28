@@ -29,6 +29,26 @@
       </template>
     </el-table-column>
 
+    <el-table-column
+      label="CER(DV2목표)"
+      prop="dateOfCer"
+      :align="'center'"
+      width="130"
+    >
+      <template #default="scope">
+        <!-- <el-input v-model="scope.row.dateOfCer" class="table-input1" /> -->
+        <el-date-picker
+          v-model="scope.row.dateOfCer"
+          type="date"
+          placeholder="Pick a day"
+          :size="'small'"
+          style="width: 100px"
+          format="YYYY/MM/DD"
+          value-format="YYYY-MM-DD HH:mm:ss"
+        />
+      </template>
+    </el-table-column>
+
     <!--el-table-column
         label="Status"
         prop="status"
@@ -43,7 +63,7 @@
 
     <el-table-column label="現段階 現 단계" :align="'center'">
       <!-- FAB IN / FAB ESTIMATED IN 같은 Column 내에서 2줄 배치 -->
-      <el-table-column label="차수" prop="turn" :align="'center'" width="85">
+      <el-table-column label="차수" prop="turn" :align="'center'" width="75">
         <template #default="scope">
           <el-input v-model="scope.row.turn" class="table-input" />
         </template>
@@ -96,11 +116,33 @@
         label="현재공정"
         prop="currentStage"
         :align="'center'"
-        width="150"
+        width="180"
       >
         <template #default="scope">
-          <el-input v-model="scope.row.currentStage" class="table-input"></el-input> <br />
-          {{ scope.row.locationTime }}
+          <el-input
+            v-model="scope.row.currentStage"
+            class="table-input2"
+          ></el-input>
+          <br/>
+          <el-date-picker
+              v-model="scope.row.locationTime"
+              type="date"
+              placeholder="Pick a day"
+              format="YYYY/MM/DD HH:mm:ss"
+              value-format="YYYY-MM-DD HH:mm:ss"
+              :size="'small'"
+              style="width: 150px"
+            />
+
+          <!-- <span v-if="scope.row.locationTime === null">
+            <el-input
+              v-model="scope.row.currentStage"
+              class="table-input"
+            ></el-input>
+            <br />
+            {{ scope.row.locationTime }}
+          </span>
+          <span v-else> {{ scope.row.currentStage }}</span> -->
         </template>
       </el-table-column>
 
@@ -247,26 +289,6 @@
           <span v-else>{{ scope.row.dateOfMeasIn }}</span>
         </template>
       </el-table-column>
-
-      <el-table-column
-        label="CER"
-        prop="dateOfCer"
-        :align="'center'"
-        width="120"
-      >
-        <template #default="scope">
-          <!-- <el-input v-model="scope.row.dateOfCer" class="table-input1" /> -->
-          <el-date-picker
-            v-model="scope.row.dateOfCer"
-            type="date"
-            placeholder="Pick a day"
-            :size="'small'"
-            style="width: 100px"
-            format="YYYY/MM/DD"
-            value-format="YYYY-MM-DD HH:mm:ss"
-          />
-        </template>
-      </el-table-column>
     </el-table-column>
     <el-table-column
       label="영업"
@@ -330,10 +352,10 @@
       </template>
     </el-table-column>
     <el-table-column
-      label="FAB P/N"
+      label="특이사항"
       prop="fabPartNumber"
       :align="'center'"
-      width="140"
+      width="300"
     >
       <template #default="scope">
         <el-input v-model="scope.row.fabPartNumber" class="table-input" />
@@ -627,6 +649,18 @@ export default {};
   text-align: center;
   font-size: 12px;
   font-weight: bold;
+  height: 20px;
+}
+
+/* Vue 3 (Scoped 스타일 사용 시) */
+::v-deep(.table-input2 .el-input__inner) {
+  width: 100%;
+  /* padding: 2px 4px; */
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-size: 12px;
+  // font-weight: bold;
   height: 20px;
 }
 
