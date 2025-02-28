@@ -41,6 +41,11 @@
         {{ scope.row.designer }} / {{ scope.row.requester }}
       </template>
     </el-table-column>
+    <el-table-column label="Created Date" :align="'center'" width="150">
+      <template #default="scope">
+        <span>{{ formatDateTime(scope.row.dateOfCreated) }}</span>
+      </template>
+    </el-table-column>
     <el-table-column label="Reserved Date" :align="'center'" width="150">
       <template #default="scope">
         <span>{{ formatDateTime(scope.row.dateOfReserve) }}</span>
@@ -56,7 +61,7 @@
         <span>{{ scope.row.progress }}</span>
       </template>
     </el-table-column>
-    <el-table-column
+    <el-table-column v-if="props.category !== 'product'"
       label="Priority"
       prop="priority"
       width="100"
