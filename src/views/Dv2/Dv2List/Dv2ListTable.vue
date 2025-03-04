@@ -579,14 +579,18 @@ const handleRemove = async (row: Dv2) => {
 const handleUpdate = async (cuurentRow: Dv2, nextRow: Dv2) => {
   const tempEstMdr = cuurentRow.dateOfMdr;
   const tempEstCer = cuurentRow.dateOfCer;
+  
   // 다음 줄의 MDR 시간.
   cuurentRow.dateOfEstimatedMdr = cuurentRow.dateOfMdr;
   cuurentRow.dateOfEstimatedCer = cuurentRow.dateOfCer;
   cuurentRow.dateOfMdr = nextRow.dateOfMdr;
   cuurentRow.dateOfCer = nextRow.dateOfCer;
+  cuurentRow.designer = nextRow.designer;
+  
   const res = sendDv2(cuurentRow, "update");
   cuurentRow.dateOfMdr = tempEstMdr;
   cuurentRow.dateOfCer = tempEstCer;
+  
 
   // if (res) {
 
