@@ -225,24 +225,22 @@ export function getModelNameList(dv2List: Dv2[]) {
 
 
 export async function sendDv2(dv2: Dv2, sendingType: string) {
-  let url = "";
-  if (sendingType === "update") {
-    url = "/dv2/update";
-  } else {
-    url = "dv2/create";
-  }
+  let url = sendingType === "update" ? "/dv2/update" : "/dv2/create";
 
   try {
     const response = await axios.post(url, convertKeysToPEP8(dv2));
-    console.log(response.status);
 
-    if (response.status == 200) {
+    if (response.status === 200) {
+      ElMessage.success("DV2 데이터가 성공적으로 업데이트되었습니다!");      
+      Object.assign(dv2 , convertKeysToPEP8(response.data))
       return true;
     }
 
-    return false; // schema 반환
+    return false; // 업데이트 실패
   } catch (error) {
+    ElMessage.error("DV2 데이터 전송 중 오류가 발생했습니다.");
     console.error("Error sending DV2 data:", error);
-    throw error; // 에러를 다시 던져서 호출하는 곳에서 처리할 수 있도록 함
+    throw error;
   }
 }
+
