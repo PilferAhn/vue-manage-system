@@ -22,6 +22,7 @@ export function updateDv2TableData(
       isFound = false;
       continue;
     }
+
     for (let j = 0; j < fabApp.length; j++) {
       if (dv2TableData[i].productName === fabApp[j].modelName) {
         let maxIndex = -1;
@@ -57,26 +58,29 @@ export function updateDv2TableData(
             new Date(getTodayDatetime()).getTime() >=
             new Date(dv2TableData[i].dateOfHqOut).getTime()
           ) {
-            // 280 061988 18 335
-
             if (dv2TableData[i + 1].dateOfHqOut === null) {
-              dv2TableData[i].backgroundColor = "warning"
-              dv2TableData[i + 1].backgroundColor = "warning"
+              dv2TableData[i].backgroundColor = "warning";
+              dv2TableData[i + 1].backgroundColor = "warning";
             }
           }
 
-          if (
-            dv2TableData[i].currentStage !== null &&
-            dv2TableData[i].locationTime === null
-          ) {
-            dv2TableData[i].locationTime =
-              fabApp[j].lotStatus[maxIndex].moveinDate;
-          } else if (dv2TableData[i].currentStage === null) {
-            dv2TableData[i].currentStage =
-              fabApp[j].lotStatus[maxIndex].operation.name;
-            dv2TableData[i].locationTime =
-              fabApp[j].lotStatus[maxIndex].moveinDate;
-          }
+          // if (
+          //   dv2TableData[i].currentStage !== null &&
+          //   dv2TableData[i].locationTime === null
+          // ) {
+          //   dv2TableData[i].locationTime =
+          //     fabApp[j].lotStatus[maxIndex].moveinDate;
+          // } else if (dv2TableData[i].currentStage === null) {
+          //   dv2TableData[i].currentStage =
+          //     fabApp[j].lotStatus[maxIndex].operation.name;
+          //   dv2TableData[i].locationTime =
+          //     fabApp[j].lotStatus[maxIndex].moveinDate;
+          // }
+
+          dv2TableData[i].currentStage =
+            fabApp[j].lotStatus[maxIndex].operation.name;
+          dv2TableData[i].locationTime =
+            fabApp[j].lotStatus[maxIndex].moveinDate;
 
           if (fabApp[j].lotStatus[maxIndex].hanoiCsp !== null) {
             dv2TableData[i + 1].dateOfWhcIn = formatDate(
