@@ -67,18 +67,17 @@
         </template>
       </el-table-column-->
 
+    <el-table-column
+      label="특이사항"
+      prop="fabPartNumber"
+      :align="'center'"
+      width="300"
+    >
+      <template #default="scope">
+        <el-input v-model="scope.row.fabPartNumber" class="table-input" />
+      </template>
+    </el-table-column>
     <el-table-column label="現段階 現 단계" :align="'center'">
-      <el-table-column
-        label="특이사항"
-        prop="fabPartNumber"
-        :align="'center'"
-        width="300"
-      >
-        <template #default="scope">
-          <el-input v-model="scope.row.fabPartNumber" class="table-input" />
-        </template>
-      </el-table-column>
-
       <!-- FAB IN / FAB ESTIMATED IN 같은 Column 내에서 2줄 배치 -->
       <el-table-column label="차수" prop="turn" :align="'center'" width="75">
         <template #default="scope">
