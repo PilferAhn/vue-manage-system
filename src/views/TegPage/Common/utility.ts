@@ -13,12 +13,12 @@ const defaultTestTypeOptions: TestTypeOptionsInterface = {
 
 // 각 tegType의 이름을 키값으로 명시
 export const tegTypes = ref([
-  { index: 1, name: "TEG-0", options: defaultTestTypeOptions },
-  {
-    index: 2,
-    name: "TEG-P",
-    options: { ...defaultTestTypeOptions },
-  },
+  // { index: 1, name: "TEG-0", options: defaultTestTypeOptions },
+  // {
+  //   index: 2,
+  //   name: "TEG-P",
+  //   options: { ...defaultTestTypeOptions },
+  // },
   {
     index: 3,
     name: "TEG-1",

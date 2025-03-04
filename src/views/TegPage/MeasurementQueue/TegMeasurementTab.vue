@@ -53,7 +53,8 @@
     </el-table-column>
     <el-table-column label="Location" :align="'center'" width="150">
       <template #default="scope">
-        {{ scope.row.currentStage }} <br> {{ scope.row.currentStageTime }}
+        {{ scope.row.currentStage }} <br />
+        {{ scope.row.currentStageTime }}
       </template>
     </el-table-column>
     <el-table-column label="Progress" :align="'center'" width="100">
@@ -61,7 +62,8 @@
         <span>{{ scope.row.progress }}</span>
       </template>
     </el-table-column>
-    <el-table-column v-if="props.category !== 'product'"
+    <el-table-column
+      v-if="props.category !== 'product'"
       label="Priority"
       prop="priority"
       width="100"
@@ -136,21 +138,52 @@ watch(
   (newVal) => {
     if (newVal.length >= 1) {
       for (let i = 0; i < applications.value.length; i++) {
-        let isFound = false
+        let isFound = false;
         for (let j = 0; j < props.fabApp.length; j++) {
           if (applications.value[i].productName === props.fabApp[j].modelName) {
-            
-            if (props.fabApp[j].lotStatus !== undefined && props.fabApp[j].lotStatus.length >= 1) {
+            let isFound2 = false;
+            let foundedIndex = -1;
+
+            for (let k = 0; k <= props.fabApp[j].lotStatus.length; k++) {
+              if (
+                ![
+                  "Transit 공정",
+                  "출하",
+                  "포장",
+                  "전수검사",
+                  "AOI",
+                  "IDT 프로브",
+                  "LTE 외검",
+                  "LTE 깊이",
+                  "LTE S L/O",
+                  "LTE 에칭",
+                  "LTE 현상외검",
+                  "LTE 현상",
+                  "LTE 노광",
+                  "LTE 코팅",
+                ].includes(props.fabApp[j].lotStatus[k].operation.name)
+              ) {
+                isFound2 = true;
+                foundedIndex = k;
+                break;
+              }
+            }
+
+            if (
+              props.fabApp[j].lotStatus !== undefined &&
+              props.fabApp[j].lotStatus.length >= 1 &&
+              isFound2
+            ) {
               applications.value[i].currentStage =
-                props.fabApp[j].lotStatus[0].operation.name;
+                props.fabApp[j].lotStatus[foundedIndex].operation.name;
               applications.value[i].currentStageTime = formatDateTime(
-                props.fabApp[j].lotStatus[0].moveinDate
+                props.fabApp[j].lotStatus[foundedIndex].moveinDate
               );
-              isFound = true
+              isFound = true;
             }
           }
-          if(isFound){
-            break
+          if (isFound) {
+            break;
           }
         }
       }

@@ -14,7 +14,8 @@
       fixed="left"
     >
       <template #default="scope">
-        <el-input v-model="scope.row.productName" class="table-input" />
+        <!-- <el-input v-model="scope.row.productName" class="table-input" /> -->
+         {{ scope.row.productName }}
       </template>
     </el-table-column>
 
@@ -135,7 +136,7 @@
         width="180"
       >
         <template #default="scope">
-          <el-input
+          <!-- <el-input
             v-model="scope.row.currentStage"
             class="table-input2"
           ></el-input>
@@ -148,8 +149,9 @@
             value-format="YYYY-MM-DD HH:mm:ss"
             :size="'small'"
             style="width: 150px"
-          />
-
+          /> -->
+          {{ scope.row.currentStage }} <br>
+          {{ scope.row.locationTime }}
           <!-- <span v-if="scope.row.locationTime === null">
             <el-input
               v-model="scope.row.currentStage"
@@ -579,6 +581,7 @@ const handleRemove = async (row: Dv2) => {
 const handleUpdate = async (cuurentRow: Dv2, nextRow: Dv2) => {
   const tempEstMdr = cuurentRow.dateOfMdr;
   const tempEstCer = cuurentRow.dateOfCer;
+  const tempDesigner = nextRow.designer
   
   // 다음 줄의 MDR 시간.
   cuurentRow.dateOfEstimatedMdr = cuurentRow.dateOfMdr;
@@ -586,10 +589,11 @@ const handleUpdate = async (cuurentRow: Dv2, nextRow: Dv2) => {
   cuurentRow.dateOfMdr = nextRow.dateOfMdr;
   cuurentRow.dateOfCer = nextRow.dateOfCer;
   cuurentRow.designer = nextRow.designer;
-  
+
   const res = sendDv2(cuurentRow, "update");
   cuurentRow.dateOfMdr = tempEstMdr;
   cuurentRow.dateOfCer = tempEstCer;
+  
   
 
   // if (res) {

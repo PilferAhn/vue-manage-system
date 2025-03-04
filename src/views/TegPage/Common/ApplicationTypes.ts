@@ -80,6 +80,7 @@ export interface TegApplication {
   maskName: string;
   isMaskChange: string;
   isAOI: string;
+  isAoi: boolean;
   isDvr: string;
   port: string;
   waferType?:string;

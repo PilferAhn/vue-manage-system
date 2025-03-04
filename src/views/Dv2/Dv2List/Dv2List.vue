@@ -115,6 +115,8 @@ const handleSearchQuery = (query) => {
   searchQuery.value = query;
 };
 
+
+
 const filteredData = computed(() => {
   return dv2TableData.value.filter((item) => {
     const key = searchQuery.value.searchType; // 검색 기준 (productName 또는 supporter)

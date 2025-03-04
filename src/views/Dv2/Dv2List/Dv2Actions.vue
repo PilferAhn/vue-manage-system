@@ -3,7 +3,12 @@
     <el-button type="success" size="large" @click="isDialogVisible = true"
       >등록</el-button
     >
-    <Dv2DialogToCreate v-model="isDialogVisible" :dv2="newDv2" @submit="handleSubmit" />
+    <el-button type="success" size="large" @click="handleExcelDownload">Excel 다운로드</el-button>
+    <Dv2DialogToCreate
+      v-model="isDialogVisible"
+      :dv2="newDv2"
+      @submit="handleSubmit"
+    />
   </div>
 </template>
 
@@ -15,7 +20,8 @@ import {
   initDv2,
 } from "../../../utils/Dv2/dv2-list-utils";
 import Dv2DialogToCreate from "./Dv2DialogToCreate.vue";
-
+import { convertKeysToPEP8 } from "../../../utils/key-converter";
+import { sendObjPostRequest, sendPostAndDownloadExcel } from "../../../utils/httpProtocol";
 
 const props = defineProps<{
   oldDvList: Dv2[];
@@ -34,41 +40,19 @@ watch(
   }
 );
 
-const handleCreateRow = () => {
-  const a: Dv2 = {
-    client: "",
-    isFirstRow: true,
-    dateOfFabIn: "",
-    dateOfFabOut: "",
-    dateOfMdr: "",
-    isEditable: true,
-    dateOfHqOut: "",
-    dateOfWhcIn: "",
-    dateOfAssyIn: "",
-    dateOfDCOut: "",
-    dateOfMeasIn: "",
-    dateOfCer: "",
-    supporter: "",
-  };
+const handleExcelDownload = async  () => {
+  // console.log(props.dv2TableData)
+  const temp = []
 
-  const b: Dv2 = {
-    client: "",
-    isFirstRow: false,
-    dateOfFabIn: "",
-    dateOfFabOut: "",
-    dateOfMdr: "",
-    isEditable: false,
-    dateOfHqOut: "",
-    dateOfWhcIn: "",
-    dateOfAssyIn: "",
-    dateOfDCOut: "",
-    dateOfMeasIn: "",
-    dateOfCer: "",
-    supporter: "",
-  };
-
-  props.dv2TableData.unshift(a, b);
-};
+  props.dv2TableData.forEach((dv2) => {
+    temp.push(convertKeysToPEP8(dv2))
+  })
+  try {
+    await sendPostAndDownloadExcel("/dv2/create_dv2_plan_list_to_excel", temp);
+  } catch (error) {
+    console.error("엑셀 다운로드 실패:", error);
+  }
+}
 
 // 📌 등록 버튼 클릭 시 (기능 미구현)
 const handleSubmit = () => {

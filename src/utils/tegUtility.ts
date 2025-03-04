@@ -254,7 +254,7 @@ export async function createTegApplicationsForDvr(
     tegApp.waferType === "HS" &&
     ["CSP", "BDMP"].includes(tegApp.packageType)
   ) {
-    console.log(1)
+    
     dvrApplicationList = [
       {
         applicationType: "TEG-1",
@@ -401,11 +401,11 @@ export async function createTegApplicationsForDvr(
           },
           {
             modelName: tegApp.modelName + "@",
-            lotId: tegApp.lotID + "-1-1",
+            lotId: tegApp.lotID + "-2",
           },
           {
             modelName: tegApp.modelName + "@",
-            lotId: tegApp.lotID + "-1-2",
+            lotId: tegApp.lotID + "-3",
           },
         ],
       },
@@ -422,11 +422,11 @@ export async function createTegApplicationsForDvr(
           },
           {
             modelName: tegApp.modelName + "@",
-            lotId: tegApp.lotID + "-1-1",
+            lotId: tegApp.lotID + "-2",
           },
           {
             modelName: tegApp.modelName + "@",
-            lotId: tegApp.lotID + "-1-2",
+            lotId: tegApp.lotID + "-3",
           },
         ],
       },

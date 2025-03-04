@@ -47,6 +47,45 @@ export const sendPostRequest = async (url: string, formData: FormData) => {
   }
 };
 
+export const sendObjPostRequest = async (url: string, objs : any[]) => {
+  try {
+    const response = await axios.post(url, objs);
+    return response.data
+  } catch (error) {
+    console.error("HTTP GET request failed:", error);
+    throw error; // 에러를 다시 throw하여 호출자에게 에러를 알림
+  }
+};
+
+
+
+export const sendPostAndDownloadExcel = async (url, objs) => {
+  try {
+    // 백엔드로 POST 요청 (JSON 데이터 전송)
+    const response = await axios.post(url, objs, {
+      headers: { "Content-Type": "application/json" },
+      responseType: "blob", // 파일 다운로드를 위한 설정
+    });
+
+    // 파일 다운로드 처리
+    if (response.status === 200) {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "dv2_plan.xlsx"); // 다운로드될 파일명
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } else {
+      console.error("파일 다운로드 실패: 응답 상태", response.status);
+    }
+
+    return response.data; // 파일 응답 데이터 반환 (필요시)
+  } catch (error) {
+    console.error("HTTP POST request failed:", error);
+    throw error; // 호출자에게 에러 전달
+  }
+};
 
 
 export const sendGetRequestWithHeader = async (url : string , headers : object) => {
