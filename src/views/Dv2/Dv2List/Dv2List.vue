@@ -1,9 +1,7 @@
 <template>
   <div>    
     <Dv2Search :dv2TableData="filteredData" :fab-app="fabApp" :dv2-data="dv2Data" @updateSearchQuery="handleSearchQuery" />
-    <Dv2ListTable :dv2TableData="filteredData" :fab-app="fabApp"></Dv2ListTable>    
-    
-    
+    <Dv2ListTable :dv2TableData="filteredData" :fab-app="fabApp"></Dv2ListTable>            
   </div>
 </template>
 
@@ -65,7 +63,8 @@ onMounted(async () => {
         dateOfDCOut: row.dateOfEstimatedDCOut,
         dateOfMeasIn: row.dateOfEstimatedMeasIn,
         dateOfCer: row.dateOfEstimatedCer,
-        supporter: row.supporter,
+        // supporter: row.supporter,
+
       };
 
       const secondRow = {
@@ -82,7 +81,7 @@ onMounted(async () => {
         dateOfDCOut: null,
         dateOfMeasIn: null,
         dateOfCer: row.dateOfCer,
-        supporter: row.designer,
+        // supporter: row.designer,
       };
       
       // 특정 조건이 만족하면 secondRow 추가

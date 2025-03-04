@@ -26,7 +26,8 @@
       fixed="left"
     >
       <template #default="scope">
-        <el-input v-model="scope.row.supporter" class="table-input1" />
+        <el-input v-if="scope.row.isFirstRow" v-model="scope.row.supporter" class="table-input1" />
+        <el-input v-else v-model="scope.row.designer" class="table-input1" />
       </template>
     </el-table-column>
 

@@ -3,7 +3,7 @@
     <!-- 검색 기준 선택 Dropdown -->
     <el-select v-model="searchType" class="search-select" size="large">
       <el-option label="Product Name" value="productName" />
-      <!-- <el-option label="Supporter" value="supporter" /> -->
+      <el-option label="Supporter" value="supporter" />
     </el-select>
 
     <!-- 검색 입력 필드 -->
