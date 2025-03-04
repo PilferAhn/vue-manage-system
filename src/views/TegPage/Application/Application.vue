@@ -407,6 +407,7 @@ const rules = tegApplicationRules;
 function handleFormSubmission() {
   if (applicationForm.value) {
     activateDownload.value = false;
+    
     submitForm(
       applicationForm.value,
       tegApplicationForm,

@@ -471,7 +471,7 @@ function getNextRow(index) {
 
 const tableRowClass = ({ row }: { row: Dv2 }) => {
   if (row.backgroundColor === "warning") {
-    console.log(row.productName);
+    
     return "warning-row"; // Ensure this matches your CSS class
   }
   return "";

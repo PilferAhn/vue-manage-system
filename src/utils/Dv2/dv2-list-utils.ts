@@ -24,9 +24,16 @@ export function updateDv2TableData(
     }
 
     for (let j = 0; j < fabApp.length; j++) {
+      // console.log(fabApp[j].modelName)    
       if (dv2TableData[i].productName === fabApp[j].modelName) {
         let maxIndex = -1;
         let maxSequance = -1;
+
+        // if(fabApp[j].modelName === "MHM01BA4001A"){
+        // if(fabApp[j].modelName  === "MHM01BA4001A"){
+        //   console.log(dv2TableData[i])
+        //   console.log("FOUND")
+        // }
 
         for (let k = 0; k < fabApp[j].lotStatus.length; k++) {
           if (fabApp[j].lotStatus[k].historySeq >= maxSequance) {
@@ -202,13 +209,20 @@ export async function removeDv2(dv2: Dv2) {
 }
 
 export function getModelNameList(dv2List: Dv2[]) {
-  let tempStr = "";
-  for (let i = 0; i < dv2List.length; i++) {
-    tempStr += dv2List[i].productName + ",";
-  }
+  // 유니크한 productName만 저장하는 Set 사용
+  const uniqueProductNames = new Set<string>();
 
+  // productName을 Set에 추가하여 중복 제거
+  for (const dv2 of dv2List) {
+    if (dv2.productName) {
+      uniqueProductNames.add(dv2.productName);
+    }
+  }
+  // Set을 배열로 변환 후, ","로 연결하여 문자열 반환
+  const tempStr = Array.from(uniqueProductNames).join(",");  
   return tempStr;
 }
+
 
 export async function sendDv2(dv2: Dv2, sendingType: string) {
   let url = "";

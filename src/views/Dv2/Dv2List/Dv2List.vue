@@ -40,7 +40,7 @@ onMounted(async () => {
   formData.append("order_dir", "asc");
   const data = await sendPostRequest("/dv2/get_dv2_list", formData);
   dv2Data.value = convertPep8ToCamelCase2(data);
-  console.log(data)
+  
   // for(let i = 0 ; i < dv2Data.length; i++){
 
   //   await sendDv2(dv2Data[i], "create")

@@ -18,21 +18,24 @@
   
   <script lang="ts" setup>
   import { defineProps, defineEmits, ref, watch, PropType } from "vue";
-  import { ElSelect, ElOption } from "element-plus";
+  import { ElSelect, ElOption, FormItemRule } from "element-plus";
   import type { OptionInterface } from "../../interface/option";
   // Define the OptionItem interface with all properties as strings
 
   
   const props = defineProps({
-    modelValue: String, // modelValue is now a string
-    label: String,
-    prop: String,
-    rules: Array,
-    placeholder: String,
-    options: Array as PropType<OptionInterface[]>, // Array of OptionItem objects with string properties
-    disable: Boolean,
-    needBold : Boolean
-  });
+  modelValue: String,
+  label: String,
+  prop: String,
+  rules: {
+    type: [Object, Array] as PropType<FormItemRule | FormItemRule[] | null>,
+    default: null,
+  },
+  placeholder: String,
+  options: Array as PropType<OptionInterface[]>,
+  disable: Boolean,
+  needBold: Boolean,
+});
   
   const emit = defineEmits(["update:modelValue"]);
   const internalValue = ref(props.modelValue);

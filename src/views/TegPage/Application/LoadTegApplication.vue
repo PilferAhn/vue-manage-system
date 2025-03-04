@@ -1,322 +1,330 @@
 <template>
-  <el-form
-    :model="tegApplicationForm"
-    :rules="tegApplicationRules"
-    ref="applicationForm"
-    label-position="top"
-    label-width="100px"
-  >
-    <!-- <div v-if="role === 'admin'" class="container">
-      <QR :application-uuid="route.params.uuid"></QR>
-    </div> -->
-
-    <div class="container">
-      <div class="split-layout">
-        <div class="form-box">
-          <div class="meas-types-container">
-            <div v-if="role === 'admin'">
-              <el-form-item label="고유 식별 번호">
+  <div>    
+    <el-form
+      :model="tegApplicationForm"
+      :rules="tegApplicationRules"
+      ref="applicationForm"
+      label-position="top"
+      label-width="100px"
+    >
+      <div class="container">
+        <div class="split-layout">
+          <div class="form-box">
+            <div class="meas-types-container">
+              <div v-if="role === 'admin'">
+                <el-form-item label="고유 식별 번호">
+                  <el-col :span="11">
+                    <InputText
+                      v-model="route.params.uuid"
+                      label=""
+                      prop="amin"
+                      :rules=null
+                      placeholder="운영자"
+                    />
+                  </el-col>
+                </el-form-item>
+              </div>
+              <el-form-item label="상태">
                 <el-col :span="11">
-                  <InputText
-                    v-model="route.params.uuid"
+                  <ApplicationStatus
+                    v-model="tegApplicationForm.status"
                     label=""
-                    prop="amin"
-                    rules=""
-                    placeholder="운영자"
+                    prop="designer"
+                    placeholder="상태"
+                    :wafer-information="tegApplicationForm.waferInformation"
                   />
                 </el-col>
-              </el-form-item>
-            </div>
-            <el-form-item label="상태">
-              <el-col :span="11">
-                <ApplicationStatus
-                  v-model="tegApplicationForm.status"
-                  label=""
-                  prop="designer"                  
-                  placeholder="상태"
-                  :wafer-information="tegApplicationForm.waferInformation"
-                />
-              </el-col>
-              <!-- <el-col class="line" :span="2">/</el-col> -->
-              <el-col :span="11">
-                <!-- <InputText
+                <!-- <el-col class="line" :span="2">/</el-col> -->
+                <el-col :span="11">
+                  <!-- <InputText
                   v-model="tegApplicationForm.requester"
                   label=""
                   prop="requester"
                   :rules="rules.requester"
                   placeholder="의뢰자"
                 /> -->
-              </el-col>
-            </el-form-item>
-            <el-form-item label="작성자">
-              <el-col :span="11">
-                <InputText
-                  v-model="tegApplicationForm.designer"
-                  label=""
-                  prop="designer"
-                  :rules="rules.designer"
-                  placeholder="개발자"
-                />
-              </el-col>
-              <el-col class="line" :span="2">/</el-col>
-              <el-col :span="11">
-                <InputText
-                  v-model="tegApplicationForm.requester"
-                  label=""
-                  prop="requester"
-                  :rules="rules.requester"
-                  placeholder="의뢰자"
-                />
-              </el-col>
-            </el-form-item>
+                </el-col>
+              </el-form-item>
+              <el-form-item label="작성자">
+                <el-col :span="11">
+                  <InputText
+                    v-model="tegApplicationForm.designer"
+                    label=""
+                    prop="designer"
+                    :rules="rules.designer"
+                    placeholder="개발자"
+                  />
+                </el-col>
+                <el-col class="line" :span="2">/</el-col>
+                <el-col :span="11">
+                  <InputText
+                    v-model="tegApplicationForm.requester"
+                    label=""
+                    prop="requester"
+                    :rules="rules.requester"
+                    placeholder="의뢰자"
+                  />
+                </el-col>
+              </el-form-item>
 
-            <SelectOptionsNew2
-              v-model="tegApplicationForm.applicationType"
-              label="의뢰 구분"
-              prop="applicationType"
-              :rules="rules"
-              placeholder="의뢰 구분"
-              :options="applicationGroupOptions"
-            ></SelectOptionsNew2>
-            
-            <select-option
-              v-model="tegApplicationForm.applicationType"
-              label="의뢰 구분"
-              prop="applicationType"
-              :rules="rules.applicationType"
-              placeholder="의뢰 구분"
-              :options="applicationPriority"
-            ></select-option>
+              <SelectOptionsNew2
+                v-model="tegApplicationForm.waferType"
+                label="Wafer Type"
+                prop="Wafer Type"
+                :rules="rules.waferType"
+                placeholder="Wafer Type"
+                :options="applicationGroupOptions"
+              ></SelectOptionsNew2>
 
-            <InputText
-              v-model="tegApplicationForm.modelName"
-              label="모델명"
-              prop="modelName"
-              :rules="rules.modelName"
-              placeholder="ex) WGS24"
-            />
+              <SelectOptionsNew2
+                v-model="tegApplicationForm.packageType"
+                label="Package Type"
+                prop="applicationType"
+                :rules="[]"
+                placeholder="HS / NS / TC"
+                :options="applicationGroupOptions"
+              ></SelectOptionsNew2>
 
-            <InputText
-              v-model="tegApplicationForm.lotID"
-              label="LOT ID"
-              prop="lotID"
-              :rules="rules.lotID"
-              placeholder="ex) ex) NCHDE04703"
-            />
-
-            <InputText
-              v-model="tegApplicationForm.purpose"
-              label="의뢰 목적"
-              prop="purpose"
-              :rules="rules.purpose"
-              placeholder="ex) 신뢰성 테스트"
-            />
-
-            <LongInputText
-              v-model="tegApplicationForm.note"
-              label="특이 사항"
-              prop="note"
-              :rules="rules.note"
-              placeholder="ex) 특 이 사 항"
-            />
-          </div>
-        </div>
-        <div class="form-box">
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <InputText
-                v-model="tegApplicationForm.shotSize"
-                label="SHOT SIZE (Flat zone 하단)"
-                prop="shotSize"
-                :rules="rules.shotSize"
-                placeholder="ex) 10.23*10.17"
-              />
-            </el-col>
-            <el-col :span="12">
-              <InputText
-                v-model="tegApplicationForm.chipSize"
-                label="CHIP SIZE (Flat zone 하단)"
-                prop="chipSize"
-                :rules="rules.chipSize"
-                placeholder="ex) 0.93*1.13"
-              />
-            </el-col>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <InputText
-                v-model="tegApplicationForm.chipQuantity"
-                label="Wafer 1매당 CHIP 수"
-                prop="chipQuantity"
-                :rules="rules.chipQuantity"
-                placeholder="ex) 200"
-              />
-            </el-col>
-            <el-col :span="12">
-              <InputText
-                v-model="tegApplicationForm.maskName"
-                label="1차 Mask 명"
-                prop="maskName"
-                :rules="rules.maskName"
-                placeholder="ex) KF128-210616-TEST"
-              />
-            </el-col>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <select-option
-                v-model="tegApplicationForm.isMaskChange"
-                label="Mask 변경 여부"
-                prop="isMaskChange"
-                :rules="rules.isMaskChange"
+              <SelectOptionsNew2
+                v-model="tegApplicationForm.applicationType"
+                label="의뢰 구분"
+                prop="applicationType"
+                :rules="[]"
                 placeholder="의뢰 구분"
-                :options="maskChanges"
-              ></select-option>
-            </el-col>
-            <el-col :span="12">
-              <select-option
-                v-model="tegApplicationForm.port"
-                label="PORT"
-                prop="port"
-                :rules="rules.port"
-                placeholder="PORT 종류"
-                :options="portOptions"
-              ></select-option>
-            </el-col>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="12">
+                :options="applicationGroupOptions"
+              ></SelectOptionsNew2>
+              
+
               <InputText
-                v-model="tegApplicationForm.shortPatternNo"
-                label="SHORT Pattern No."
-                prop="shortPatternNo"
-                :rules="rules.shortPatternNo"
-                placeholder="1"
+                v-model="tegApplicationForm.modelName"
+                label="모델명"
+                prop="modelName"
+                :rules="rules.modelName"
+                placeholder="ex) WGS24"
               />
-            </el-col>
-            <el-col :span="12">
+
               <InputText
-                v-model="tegApplicationForm.thruPatternNo"
-                label="THRU Pattern No."
-                prop="thruPatternNo"
-                :rules="rules.thruPatternNo"
-                placeholder="2"
+                v-model="tegApplicationForm.lotID"
+                label="LOT ID"
+                prop="lotID"
+                :rules="rules.lotID"
+                placeholder="ex) ex) NCHDE04703"
               />
-            </el-col>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="12">
+
               <InputText
-                v-model="tegApplicationForm.openPatternNo"
-                label="OPEN Pattern No."
-                prop="openPatternNo"
-                :rules="rules.openPatternNo"
-                placeholder="3"
+                v-model="tegApplicationForm.purpose"
+                label="의뢰 목적"
+                prop="purpose"
+                :rules="rules.purpose"
+                placeholder="ex) 신뢰성 테스트"
               />
-            </el-col>
-            <el-col :span="12">
-              <InputText
-                v-model="tegApplicationForm.rawPatternNo"
-                label="RAW Pattern No."
-                prop="rawPatternNo"
-                :rules="rules.rawPatternNo"
-                placeholder="4"
+
+              <LongInputText
+                v-model="tegApplicationForm.note"
+                label="특이 사항"
+                prop="note"
+                :rules="rules.note"
+                placeholder="ex) 특 이 사 항"
               />
-            </el-col>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <InputText
-                v-model="tegApplicationForm.preTegPatternMeasShot"
-                label="Pre-Teg Pattern Meas Shot"
-                prop="preTegPatternMeasShot"
-                :rules="rules.preTegPatternMeasShot"
-                placeholder="Pre TEG 측정 샷 EX) 3_4, 4_3"
-              />
-            </el-col>
-            <el-col :span="12">
-              <select-option
-                v-model="tegApplicationForm.priority"
-                label="측정 등급"
-                prop="priority"
-                :rules="rules.priority"
-                placeholder="측정 등급"
-                :options="priorityList"
-              ></select-option>
-            </el-col>
-          </el-row>
-          <LoadImage
-            :application-uuid="tegApplicationForm.uuid"
-            :image-type="'layout'"
-          ></LoadImage>
+            </div>
+          </div>
+          <div class="form-box">
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <InputText
+                  v-model="tegApplicationForm.shotSize"
+                  label="SHOT SIZE (Flat zone 하단)"
+                  prop="shotSize"
+                  :rules="rules.shotSize"
+                  placeholder="ex) 10.23*10.17"
+                />
+              </el-col>
+              <el-col :span="12">
+                <InputText
+                  v-model="tegApplicationForm.chipSize"
+                  label="CHIP SIZE (Flat zone 하단)"
+                  prop="chipSize"
+                  :rules="rules.chipSize"
+                  placeholder="ex) 0.93*1.13"
+                />
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <InputText
+                  v-model="tegApplicationForm.chipQuantity"
+                  label="Wafer 1매당 CHIP 수"
+                  prop="chipQuantity"
+                  :rules="rules.chipQuantity"
+                  placeholder="ex) 200"
+                />
+              </el-col>
+              <el-col :span="12">
+                <InputText
+                  v-model="tegApplicationForm.maskName"
+                  label="1차 Mask 명"
+                  prop="maskName"
+                  :rules="rules.maskName"
+                  placeholder="ex) KF128-210616-TEST"
+                />
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <select-option
+                  v-model="tegApplicationForm.isMaskChange"
+                  label="Mask 변경 여부"
+                  prop="isMaskChange"
+                  :rules="rules.isMaskChange"
+                  placeholder="의뢰 구분"
+                  :options="maskChanges"
+                ></select-option>
+              </el-col>
+              <el-col :span="12">
+                <select-option
+                  v-model="tegApplicationForm.port"
+                  label="PORT"
+                  prop="port"
+                  :rules="rules.port"
+                  placeholder="PORT 종류"
+                  :options="portOptions"
+                ></select-option>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <InputText
+                  v-model="tegApplicationForm.shortPatternNo"
+                  label="SHORT Pattern No."
+                  prop="shortPatternNo"
+                  :rules="rules.shortPatternNo"
+                  placeholder="1"
+                />
+              </el-col>
+              <el-col :span="12">
+                <InputText
+                  v-model="tegApplicationForm.thruPatternNo"
+                  label="THRU Pattern No."
+                  prop="thruPatternNo"
+                  :rules="rules.thruPatternNo"
+                  placeholder="2"
+                />
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <InputText
+                  v-model="tegApplicationForm.openPatternNo"
+                  label="OPEN Pattern No."
+                  prop="openPatternNo"
+                  :rules="rules.openPatternNo"
+                  placeholder="3"
+                />
+              </el-col>
+              <el-col :span="12">
+                <InputText
+                  v-model="tegApplicationForm.rawPatternNo"
+                  label="RAW Pattern No."
+                  prop="rawPatternNo"
+                  :rules="rules.rawPatternNo"
+                  placeholder="4"
+                />
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <InputText
+                  v-model="tegApplicationForm.preTegPatternMeasShot"
+                  label="Pre-Teg Pattern Meas Shot"
+                  prop="preTegPatternMeasShot"
+                  :rules="null"
+                  placeholder="Pre TEG 측정 샷 EX) 3_4, 4_3"
+                />
+              </el-col>
+              <el-col :span="12">
+                <select-option
+                  v-model="tegApplicationForm.priority"
+                  label="측정 등급"
+                  prop="priority"
+                  :rules="null"
+                  placeholder="측정 등급"
+                  :options="priorityList"
+                ></select-option>
+              </el-col>
+            </el-row>
+            <LoadImage
+              :application-uuid="tegApplicationForm.uuid"
+              :image-type="'layout'"
+            ></LoadImage>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="container">
-      <div class="split-layout">
-        <div class="form-box">
-          <div class="meas-types-container">
-            <WaferInformationUpdate
-              label="Wafer 매수"
-              prop="waferQuantity"
-              :rules="rules.waferQuantity"
-              :wafer-quantity="tegApplicationForm.waferQuantity"
-              :wafer-information="tegApplicationForm.waferInformation"
-              @update-wafer="handleWaferUpdate"
-            />
+      <div class="container">
+        <div class="split-layout">
+          <div class="form-box">
+            <div class="meas-types-container">
+              <WaferInformationUpdate
+                label="Wafer 매수"
+                prop="waferQuantity"
+                :rules="null"
+                :wafer-quantity="tegApplicationForm.waferQuantity"
+                :wafer-information="tegApplicationForm.waferInformation"
+                @update-wafer="handleWaferUpdate"
+              />
 
-            <SelectOption
-              v-model="tegApplicationForm.waferSize"
-              label="Wafer Size"
-              prop="waferSize"
-              :rules="rules.waferSize"
-              :options="waferSizeList"
-              placeholder=""
-            ></SelectOption>
-            <Wafer
-              :waferInfo="tegApplicationForm.shotInformation"
-              @updateActiveShots="handleActiveShots"
-            />
+              <SelectOption
+                v-model="tegApplicationForm.waferSize"
+                label="Wafer Size"
+                prop="waferSize"
+                :rules="null"
+                :options="waferSizeList"
+                placeholder=""
+              ></SelectOption>
+              <Wafer
+                :waferInfo="tegApplicationForm.shotInformation"
+                @updateActiveShots="handleActiveShots"
+              />
+            </div>
           </div>
-        </div>
-        <div class="form-box">
-          <div class="meas-types-container">
-            <MeasType @updateMeasInfo="updateMeasInfo" />
+          <div class="form-box">
+            <div class="meas-types-container">
+              <MeasType @updateMeasInfo="updateMeasInfo" />
 
-            <MeasTemperature
-              :measInfo="tegApplicationForm.measInfo"
-              @updateTemperature="handleTemperatures"
-              :temperature="tegApplicationForm.temperatures"
-            ></MeasTemperature>
+              <MeasTemperature
+                :measInfo="tegApplicationForm.measInfo"
+                @updateTemperature="handleTemperatures"
+                :temperature="tegApplicationForm.temperatures"
+              ></MeasTemperature>
 
-            <Segmentation
-              :measInfo="tegApplicationForm.measInfo"
-              @forwardUpdate="handleFinalUpdate"
-            />
-          </div>
-          <!-- {{ tegApplicationForm.status }} -->
-          <span v-if="tegApplicationForm.status === 'created'">
-            <el-button
-              type="primary"
-              @click="handleFormSubmission"
-              :disabled="role !== 'admin'"
-              >업데이트</el-button
+              <Segmentation
+                :measInfo="tegApplicationForm.measInfo"
+                @forwardUpdate="handleFinalUpdate"
+              />
+            </div>
+            <!-- {{ tegApplicationForm.status }} -->
+            <span v-if="tegApplicationForm.status === 'created'">
+              <el-button
+                type="primary"
+                @click="handleFormSubmission"
+                :disabled="role !== 'admin'"
+                >업데이트</el-button
+              >
+              <span> / </span>
+            </span>
+            <el-button type="success" @click="changeRouter"
+              >비슷한 의뢰서 만들기</el-button
             >
             <span> / </span>
-          </span>
-          <el-button type="success" @click="changeRouter"
-            >비슷한 의뢰서 만들기</el-button
-          >
-          <span> / </span>
-          <el-button type="primary" @click="handleDownload"
-            >의뢰서 다운로드</el-button
-          >
-          <span> / </span>
-          <el-button type="danger" @click="handleAppRemove">삭제</el-button>
+            <el-button type="primary" @click="handleDownload"
+              >의뢰서 다운로드</el-button
+            >
+            <span> / </span>
+            <el-button type="danger" @click="handleAppRemove">삭제</el-button>
+          </div>
         </div>
       </div>
-    </div>
-  </el-form>
+    </el-form>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -356,7 +364,6 @@ import MeasTemperature from "./LoadMeasTemperature.vue";
 import Wafer from "../Wafer.vue";
 import WaferInformationUpdate from "./WaferInfomationLoad.vue";
 
-
 const route = useRoute();
 const router = useRouter();
 // const { tegApplication } = useApplicationUUID(
@@ -377,8 +384,12 @@ watch(
       getApplicationDetail(newUuid, tegApplicationForm);
     }
   },
-  { immediate: true }
+  // { immediate: true }
 ); // immediate: true 옵션으로 컴포넌트 마운트 시 즉시 실행
+
+onMounted(()=>{
+  getApplicationDetail(route.params.uuid, tegApplicationForm);
+})
 
 function handleFormSubmission() {
   if (applicationForm.value) {

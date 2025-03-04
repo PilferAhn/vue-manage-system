@@ -4,6 +4,8 @@ import { ElMessageBox } from "element-plus";
 import type { TegApplication as TegApplicationInterface } from "../Common/ApplicationTypes";
 import type { TegApplication } from "../../../interface/teg/teg-interface";
 import axios from "axios";
+import { convertKeysToCamelCase } from "../../Solder/ApplicationList/SolderApplicationList";
+import { convertPep8ToCamelCase2 } from "../../../utils/key-converter";
 
 export const priorityList = [1, 2, 3, 4, 5];
 
@@ -14,11 +16,18 @@ export async function getApplicationDetail(uuid, tegApplication) {
         "teg_application/get_teg_application_by_uuid/" + uuid
       );
 
-      // 모든 필드를 한 번에 업데이트
-      Object.keys(tegApplication).forEach((key) => {
-        tegApplication[key] = response.data[key];
-      });
       
+      // console.log(convertPep8ToCamelCase2(response.data))
+
+      // 모든 필드를 한 번에 업데이트
+      // Object.keys(tegApplication).forEach((key) => {
+      //   tegApplication[key] = response.data[key];
+      // });
+
+      Object.assign(tegApplication, convertPep8ToCamelCase2(response.data))
+      
+      console.log(tegApplication)
+
     } catch (error) {
       console.error("Error fetching application details:", error);
     }

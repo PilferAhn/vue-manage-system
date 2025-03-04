@@ -14,6 +14,12 @@ export const tegApplicationRules: FormRules = {
       trigger: "blur",
     },
   ],
+  packageType: [
+    { required: true, message: "Please input the Package Type", trigger: "blur" },
+  ],
+  waferType: [
+    { required: true, message: "Please input the Wafer Type", trigger: "blur" },
+  ],
   lotID: [
     { required: true, message: "Please input the Lot ID", trigger: "blur" },
   ],
@@ -40,7 +46,7 @@ export const tegApplicationRules: FormRules = {
   ],
   port: [
     { required: true, message: "Port를 선택해주세요", trigger: "blur" },
-  ],
+  ],  
   thruPatternNo: [
     { required: true, message: "THRU Pattern 을 입력하세요", trigger: "blur" },
   ],
@@ -53,10 +59,10 @@ export const tegApplicationRules: FormRules = {
   rawPatternNo: [
     { required: true, message: "RAW Pattern 을 입력하세요", trigger: "blur" },
   ],
-  waferType: [
-    { required: true, message: "Wafer Type 을 입력하세요", trigger: "blur" },
+  purpose : [
+    { required: true, message: "의뢰 목적을 입력하세요", trigger: "blur" },
   ],
-  packageType: [
-    { required: true, message: "Package Type 을 입력하세요", trigger: "blur" },
-  ],
+  note : [
+    { required: true, message: "특이 사항 입력하세요", trigger: "blur" },
+  ]
 };

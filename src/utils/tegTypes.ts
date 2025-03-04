@@ -101,6 +101,7 @@ export interface TegApplication{
   isMaskChange: string;
   isAOI : string;
   isDvr? : boolean;
+  
   packageType? : string;
   port: string;
 

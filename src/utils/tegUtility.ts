@@ -243,7 +243,7 @@ export async function createTegApplicationsForDvr(
   activateDownload
 ) {
 
-  console.log(tegApp)
+  
   if(tegApp.waferType === null || tegApp.packageType === null){
     ElMessage.error('공정조건 혹은 Package 값이 누락되었습니다.')
     return 
@@ -534,7 +534,7 @@ export async function submitForm(
           isTCF = true;
         }
       });
-
+      
       if (!isTCF) {
         if (!Array.isArray(tegTypes?.value)) {
           console.error("tegTypes is not a valid array:", tegTypes);
