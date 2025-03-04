@@ -26,7 +26,11 @@
       fixed="left"
     >
       <template #default="scope">
-        <el-input v-if="scope.row.isFirstRow" v-model="scope.row.supporter" class="table-input1" />
+        <el-input
+          v-if="scope.row.isFirstRow"
+          v-model="scope.row.supporter"
+          class="table-input1"
+        />
         <el-input v-else v-model="scope.row.designer" class="table-input1" />
       </template>
     </el-table-column>
@@ -70,7 +74,16 @@
           <el-input v-model="scope.row.turn" class="table-input" />
         </template>
       </el-table-column>
-
+      <el-table-column
+        label="특이사항"
+        prop="fabPartNumber"
+        :align="'center'"
+        width="300"
+      >
+        <template #default="scope">
+          <el-input v-model="scope.row.fabPartNumber" class="table-input" />
+        </template>
+      </el-table-column>
       <el-table-column
         label="MDR"
         prop="dateOfMdr"
@@ -353,16 +366,6 @@
         <el-input v-model="scope.row.band" class="table-input" />
       </template>
     </el-table-column>
-    <el-table-column
-      label="특이사항"
-      prop="fabPartNumber"
-      :align="'center'"
-      width="300"
-    >
-      <template #default="scope">
-        <el-input v-model="scope.row.fabPartNumber" class="table-input" />
-      </template>
-    </el-table-column>
 
     <el-table-column label="Priority" prop="dvrPriority" :align="'center'">
       <template #default="scope">
@@ -465,13 +468,9 @@ function getNextRow(index) {
 //   return row.backgroundColor === "warning" ? "warning-row" : "";
 // };
 
-const tableRowClass = ({
-  row,  
-}: {
-  row: Dv2;  
-}) => {
-  if (row.backgroundColor === "warning" ) {
-    console.log(row.productName)
+const tableRowClass = ({ row }: { row: Dv2 }) => {
+  if (row.backgroundColor === "warning") {
+    console.log(row.productName);
     return "warning-row"; // Ensure this matches your CSS class
   }
   return "";
@@ -696,5 +695,4 @@ export default {};
   background-color: hsl(0, 61%, 90%) !important;
   color: white; /* 글씨 색상도 변경 가능 */
 }
-
 </style>
