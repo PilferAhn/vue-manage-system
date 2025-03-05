@@ -1,5 +1,9 @@
 import { ref } from "vue";
-import { NaApplication, NfApplication, type Application } from "../../interface/Modules/Application/application";
+import {
+  NaApplication,
+  NfApplication,
+  type Application,
+} from "../../interface/Modules/Application/application";
 import { OptionInterface } from "../../interface/option";
 import { Option } from "element-plus/es/components/select-v2/src/select.types";
 
@@ -20,8 +24,8 @@ export function initApplication() {
     nfApp: null,
     measurer: "",
     estFinishedDate: "",
-    isNa : false,
-    isNf : false,
+    isNa: false,
+    isNf: false,
   });
 
   return {
@@ -29,25 +33,27 @@ export function initApplication() {
   };
 }
 
-export function initNf(){
+export function initNf() {
   const na = ref<NaApplication>({
-    na : "",
-    deMethod : "",
-    loss : false,
-    measMthod : "",
-    sParaType : "",
-    note : ""
-  })
-  return na.value
+    na: "",
+    deMethod: "",
+    loss: false,
+    measMthod: "",
+    sParaType: "",
+    note: "",
+  });
+  return na.value;
 }
 
-export function initNa(){
-  const nf = ref<NfApplication>({deMethod : "",
-    capture : false,
-    isRealMatching : false,
-    matchingInfo : "",
-    note : ""})
-  return nf.value
+export function initNa() {
+  const nf = ref<NfApplication>({
+    deMethod: "",
+    capture: false,
+    isRealMatching: false,
+    matchingInfo: "",
+    note: "",
+  });
+  return nf.value;
 }
 
 export function createQuantityOptions(num: number) {
@@ -58,8 +64,18 @@ export function createQuantityOptions(num: number) {
       label: i.toString(),
       value: i.toString(),
     };
-    options.value.push(temp)
+    options.value.push(temp);
   }
 
   return options.value;
+}
+
+export function createMoldOptions() {
+  const moldOptions = ref<OptionInterface[]>([
+    { key: 0, label: "Mold", value: "Mold" },
+    { key: 1, label: "No-mold", value: "No-mold" },
+    { key: 2, label: "EMI", value: "EMI" },
+  ]);
+
+  return moldOptions.value;
 }
