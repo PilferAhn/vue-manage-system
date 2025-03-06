@@ -10,7 +10,6 @@ export function getCurrentWeekNumber(): number {
   return Math.ceil((pastDaysOfYear + dayOfWeekAdjustment) / 7);
 }
 
-
 /**
  * 문자열에서 첫 번째 연도(4자리 숫자)를 추출하는 함수
  * @param dateTimeString 연도가 포함된 날짜 및 시간 문자열 (예: "2024-12-16T14:48:09")
@@ -23,7 +22,6 @@ export function extractYearFromDateTime(dateTimeString: string): string | null {
   // 매칭된 결과가 있으면 첫 번째 결과(yearMatch[0]) 반환, 없으면 null 반환
   return yearMatch ? yearMatch[0] : null;
 }
-
 
 export function getTodayDatetime() {
   const now = new Date();
@@ -41,7 +39,9 @@ export function getTodayDatetime() {
 
 export function getTodayDate() {
   const now = new Date();
-  const currentDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  const currentDate = `${now.getFullYear()}-${String(
+    now.getMonth() + 1
+  ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
   return currentDate;
 }
 
@@ -200,7 +200,6 @@ export function getMondayFromInsertedDate(dateStr: string): string {
  * @returns 주 번호 (ISO-8601 기준)
  */
 export function getWeekNumberByDate(dateStr: string): number {
-    
   const date = new Date(dateStr);
 
   if (isNaN(date.getTime())) {
@@ -226,7 +225,52 @@ export function getWeekNumberByDate(dateStr: string): number {
 
 export function getEarliestTimeOfCurrentMonth(): Date {
   const today = new Date(); // 오늘 날짜
-  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1, 0, 0, 0, 0); // 이번 달의 첫 번째 날 00:00:00
+  const firstDayOfMonth = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    1,
+    0,
+    0,
+    0,
+    0
+  ); // 이번 달의 첫 번째 날 00:00:00
 
   return firstDayOfMonth;
+}
+
+/**
+ * 요일을 입력하면 이번 주에 해당하는 날짜를 반환하는 함수
+ * @param dayOfWeek "월" | "화" | "수" | "목" | "금" | "토" | "일"
+ * @returns 이번 주 해당 요일의 날짜 (시간: 00:00:00)
+ */
+export function getDateOfThisWeek(dayOfWeek: string): Date {
+  
+  const daysMap: { [key: string]: number } = {
+    Sunday: 0,
+    Monday: 1,
+    Tuesday: 2,
+    Wednesday: 3,
+    Thursday: 4,
+    Friday: 5,
+    Saturday: 6,
+  };
+
+  // 입력된 요일이 올바른지 확인
+  if (!(dayOfWeek in daysMap)) {
+    throw new Error(
+      `잘못된 요일 입력: ${dayOfWeek}. "월", "화", ..., "일" 중 하나를 입력하세요.`
+    );
+  }
+
+  // 현재 날짜 및 현재 주의 시작(일요일) 계산
+  const now = new Date();
+  const currentDay = now.getDay(); // 현재 요일 (0: 일요일 ~ 6: 토요일)
+  const diff = daysMap[dayOfWeek] - currentDay; // 입력 요일과 현재 요일 차이
+
+  // 이번 주 해당 요일의 날짜 계산
+  const targetDate = new Date();
+  targetDate.setDate(now.getDate() + diff); // 날짜 이동
+  targetDate.setHours(0, 0, 0, 0); // 시간: 00:00:00 설정
+
+  return targetDate;
 }

@@ -76,8 +76,57 @@ export interface FabApplicationForm {
   status: string;
   note: string;
   isActive: boolean;
-  lotStatus? : LotStatus[] | null;
+  lotStatus?: LotStatus[] | null;
   lots: any[]; // Assuming lots is an array of unknown objects
   activeLots: ActiveLot[];
   result: any | null; // Assuming result can be of any type or null
+}
+
+export class FabApplication implements FabApplicationForm {
+  modelName: string;
+  requesterId: string;
+  requester: string;
+  designerId: string;
+  designer: string;
+  designerConfirm: boolean;
+  weekNumber: number;
+  group: string;
+  process: string;
+  priority: string;
+  packageType: string;
+  purpose: string;
+  isAoi: boolean;
+  idtThickness: number | null;
+  destination: string;
+  quantity: number;
+  code: string;
+  wantedFabStartDate: string;
+  wantedFabFinishDate: string;
+  waferCompany: string;
+  waferAngle: string;
+  waferThickness: string;
+  waferType: string;
+  machineName: string;
+  hsWaferInfo: string;
+  createdDate: string;
+  packageName: string | null;
+  moldingName: string | null;
+  moldingCode: string | null;
+  status: string;
+  note: string;
+  isActive: boolean;
+  lotStatus?: LotStatus[] | null;
+  lots: any[];
+  activeLots: ActiveLot[];
+  result: any | null;
+
+  constructor(data: FabApplicationForm) {
+    Object.assign(this, data);
+  }
+
+  printInfo(): void {
+    console.log(
+      `FabApplication Model: ${this.modelName}, Status: ${this.status}`
+    );
+  }
 }

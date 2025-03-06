@@ -86,6 +86,18 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
       ),
   },
   {
+    path: "/fab/review-application",
+    name: "ApplicationReviewList",
+    meta: {
+      title: "투입 계획서 검토",
+      permiss: "11",
+    },
+    component: () =>
+      import(
+        /* webpackChunkName: "table" */ "../views/FAB/ApplicationList/rev2/ApplicationReviewList.vue"
+      ),
+  },
+  {
     path: "/fab/load_application2/:productName",
     name: "LoadApplication2",
     meta: {
@@ -143,6 +155,18 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
     component: () =>
       import(
         /* webpackChunkName: "table" */ "../views/FAB/SampleStatus/China69List.vue"
+      ),
+  },
+  {
+    path: "/fab/weekly-applications",
+    name: "WeeklyApplicationList",
+    meta: {
+      title: "투입 현황",
+      permiss: "11",
+    },
+    component: () =>
+      import(
+        /* webpackChunkName: "table" */ "../views/FAB/ApplicationList/rev2/WeeklyApplicationList.vue"
       ),
   },
 ];

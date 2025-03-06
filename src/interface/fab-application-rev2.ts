@@ -143,6 +143,7 @@ export interface FabRequestForm {
   idtProcessId?: string;
   // wafer?: FabWafer[];
   idtType?: IdtType;
+  idt2Type? : IdtType
   depositionCondi?: string;
   seedLayers?: Layer[];
   passivationLayers?: Layer[];
@@ -261,4 +262,172 @@ export interface Layer {
   idx?: number;
   thickness?: number;
   material?: string;
+}
+
+export class FabRequest implements FabRequestForm {
+  photo?: Photo;
+  waferCode?: string;
+  cusomterId?: string;
+  productName?: string;
+  bomMainCode?: string;
+  isNewBom?: boolean;
+  assyChipQuantity?: number;
+  isNewBom2?: boolean;
+  requesterId?: string;
+  designerId?: string;
+  designerConfirm?: boolean;
+  weekNumber?: number;
+  isAoi?: boolean;
+  isDvr?: boolean;
+  quantity?: number;
+  waferType?: string;
+  wantedFabStartDate?: string;
+  wantedFabFinishDate?: string;
+  purpose?: string;
+  destinationId?: string;
+  packageId?: string;
+  priorityId?: string;
+  group?: string;
+  bandGroupId?: string;
+  isFreeWafer?: boolean;
+  isNeededLtEtching?: boolean;
+  band?: string;
+  status?: string;
+  createdDate?: string;
+  trimming?: string;
+  hsWaferInfo?: string;
+  isNeedSio2Seed?: boolean;
+  hasBridge?: boolean;
+  isActive?: boolean;
+  filterType?: string;
+  tcMachineName?: string;
+  note?: string;
+  idtMachineId?: string;
+  idt2MachineId?: string;
+  waferId?: number;
+  waferAngle?: number;
+  waferThickness?: number;
+  hsTrimingTarget?: number | null;
+  freqRange?: string;
+  idtId?: number;
+  idt2Id?: number;
+  hsId?: number;
+  pstId?: number;
+  tcId?: number;
+  seedId?: number;
+  code?: string;
+  idtMachineName?: string;
+  idt2MachineName?: string;
+  idtProcess?: string;
+  passivationId?: number;
+  bom?: Bom;
+  bom2?: Bom;
+  samplePurpose?: string;
+  samplePurposeDetail?: string;
+  wafer?: FabWafer;
+  isAllowBridge?: boolean;
+  isIdtXoi?: boolean;
+  isNeedExtraShot?: boolean;
+  isSeedSio2?: boolean;
+  isToneInverted?: boolean;
+  isDualIdt?: boolean;
+  photoNote?: string;
+  metalNote?: string;
+  dielectricLayerNote?: string;
+  bpThicknessNote?: string;
+  bpProbeNote?: string;
+  paNote?: string;
+  etchingNote?: string;
+  chip?: {
+    hori: number;
+    verti: number;
+  };
+  chipX?: number;
+  chipY?: number;
+  shotX?: number;
+  shotY?: number;
+  shot?: {
+    hori: number;
+    verti: number;
+  };
+  idtType?: IdtType;
+  idt2Type? : IdtType
+  requester?: User;
+  designer?: User;
+  idtProcessId?: string;
+  depositionCondi?: string;
+  seedLayers?: Layer[];
+  passivationLayers?: Layer[];
+  idtLayers?: Layer[];
+  idt2Layers?: Layer[];
+  pstLayers?: Layer[];
+  tcLayers?: Layer[];
+  hsType?: HsType;
+  passivationType?: passivationType[];
+
+  constructor(data: FabRequestForm) {    
+    Object.assign(this, data);
+  }
+
+  createHsWaferCondition = () => {
+
+    let hsWaferCondition = ""
+
+    if(this.wafer.sawTypeId === "HS"){      
+      hsWaferCondition = this.wafer.waferCompany + ' ' + this.wafer.size.toString() + '" ' + 
+      this.hsType.peAngle.toString() + this.hsType.name + this.hsType.siliconRotation 
+      + "   " + this.quantity.toString() + "ea"
+    }
+
+    return hsWaferCondition
+
+  }
+
+  createWaferInfo = () => {
+
+    let waferInfoStr = ""
+
+    if(this.idtLayers !== null && this.idtType !== null){
+      waferInfoStr += this.idtType.name + "=" + this.idtLayers.map(layer => String(layer.thickness)).join("/")
+    }
+
+    if(this.idt2Layers !== null && this.idt2Type !== null){
+      waferInfoStr += "," + this.idt2Type.name + "=" + this.idt2Layers.map(layer => String(layer.thickness)).join("/")
+    }
+
+    return waferInfoStr
+  }
+
+  createTrimmingInfo = () => {
+
+    let ltTrrimmingVal = ""    
+    if(this.wafer.sawTypeId === "HS"){      
+
+      let waferInfo = this.hsType.name.split("/")
+      if(waferInfo.length >= 1 && this.hsTrimingTarget !== null){
+
+        let temp = waferInfo[0]
+        let isStart = false
+        let oriThickness = ""
+        for(let i = 0; i < temp.length; i++){
+          if(temp[i] === "("){
+            isStart = true
+            continue
+          }
+          else if(temp[i] === ")"){
+            break
+          }
+          if(isStart){
+            oriThickness += temp[i]
+          }
+        }
+
+        ltTrrimmingVal = "LT Trimming " + oriThickness + " -> " + this.hsTrimingTarget.toString() 
+      }
+      
+    }
+    return ltTrrimmingVal
+  }
+  
+
 }

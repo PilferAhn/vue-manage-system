@@ -32,34 +32,30 @@ import { TegApplication } from "../../interface/Teg/teg";
 import type { TegApplication as TegApplicationInterface } from "../../Common/ApplicationTypes";
 import type { Bom } from "../../interface/fab-application-rev2";
 
-
-export async function getBomCodeList(){
-  const url = "/api/sapinfo"
+export async function getBomCodeList() {
+  const url = "/api/sapinfo";
   const bomCodeList = ref<BomCode[]>([]);
-  bomCodeList.value = await sendGetRequest(url, "1") as BomCode[]
-  return bomCodeList.value
+  bomCodeList.value = (await sendGetRequest(url, "1")) as BomCode[];
+  return bomCodeList.value;
 }
 
 export async function getCostomerList() {
-
-  const clientOptions = ref<OptionInterface[]>([])
+  const clientOptions = ref<OptionInterface[]>([]);
   const url = "http://10.29.11.124:40000/customer";
   const res = await sendGetRequest(url, "get_customer_list");
-  
-  const clients = convertPep8ToCamelCase2(res)
 
-  for(let i = 0 ; i < clients.length; i ++){
+  const clients = convertPep8ToCamelCase2(res);
 
+  for (let i = 0; i < clients.length; i++) {
     const temp = {
-      key : i,
-      value : clients[i].customerId,
-      label : clients[i].label
-    }
-    clientOptions.value.push(temp)
-
+      key: i,
+      value: clients[i].customerId,
+      label: clients[i].label,
+    };
+    clientOptions.value.push(temp);
   }
 
-  return  clientOptions.value
+  return clientOptions.value;
 }
 
 export function initFabApplication3(bom: Bom) {
@@ -80,18 +76,18 @@ export function initFabApplication3(bom: Bom) {
     destinationId: "",
     packageId: undefined,
     priorityId: "",
-    isFreeWafer : false,
-    isNeededLtEtching : false,
+    isFreeWafer: false,
+    isNeededLtEtching: false,
     group: "",
     purpose: "",
     isNeedSio2Seed: false,
     status: "",
     createdDate: undefined,
     isActive: true,
-    hasBridge:false,
+    hasBridge: false,
     note: "",
     code: "C",
-    assyChipQuantity : 0,
+    assyChipQuantity: 0,
     tcMachineName: null,
     waferId: undefined,
     waferAngle: undefined,
@@ -109,13 +105,12 @@ export function initFabApplication3(bom: Bom) {
     isToneInverted: false,
     isSeedSio2: false,
     isDualIdt: false,
-    isNewBom : false,
-    isNewBom2 : false,
+    isNewBom: false,
+    isNewBom2: false,
 
-
-    bomMainCode : "",
+    bomMainCode: "",
     bom: null,
-    bom2 : null,
+    bom2: null,
     photo: {
       photoProcesses: [
         // {
@@ -393,7 +388,6 @@ export async function getAppRev2ByProductName(
   }
 }
 
-
 export async function sendAppRemoveRequest(app: FabRequestForm) {
   const form = new FormData();
   form.append("product_name", app.productName);
@@ -409,12 +403,15 @@ export async function sendAppRemoveRequest(app: FabRequestForm) {
   }
 }
 
-
 export async function getApplicationList(
   UserOption: boolean,
   waferOption: boolean,
   idtType: boolean,
-  userId: string
+  userId: string,
+  CreatedDateStart: string,
+  CreateDateEnd: string,
+  hsType : boolean,
+  idtLayers : boolean,
 ): Promise<FabRequestForm[]> {
   // const applications = reactive<FabRequestForm[]>([]);
   const applications = ref<FabRequestForm[]>([]);
@@ -423,6 +420,17 @@ export async function getApplicationList(
   formData.append("users", String(UserOption));
   formData.append("wafer", String(waferOption));
   formData.append("idt_type", String(idtType));
+  formData.append("hs_type", String(hsType))
+  formData.append("idt_layers", String(idtLayers))
+
+  if (CreatedDateStart !== null) {
+    formData.append("created_date_start", CreatedDateStart);
+  }
+
+  if (CreateDateEnd !== null) {
+    formData.append("created_date_end", CreateDateEnd);
+  }
+
   // formData.append("observer_id", userId);
 
   const data = (await sendPostRequest(
@@ -536,7 +544,7 @@ export async function sendingForm(application: FabRequestForm, type: string) {
     } else {
       url = serverUrl + "/fab_monitoring_rev2/update_fab_request";
     }
-    console.log(application)
+    console.log(application);
     // dvrChecker(application, type);
     packageChecker(application, type);
     try {

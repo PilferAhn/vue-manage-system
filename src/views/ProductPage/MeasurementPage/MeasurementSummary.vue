@@ -80,7 +80,7 @@
                     scope.row.sampleNumber
                   )
                 "
-                >업데이트</el-button
+                >업f데이트</el-button
               >
               <el-button type="info" disabled>후기치</el-button>
               <el-button type="info" disabled>Decap</el-button>

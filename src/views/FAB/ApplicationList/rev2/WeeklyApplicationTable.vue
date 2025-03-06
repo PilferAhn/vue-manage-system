@@ -1,11 +1,6 @@
 <template>
   <div>
-    <el-table
-      v-if="isLoad"
-      :data="applications"
-      border
-      class="table-class"
-    >
+    <el-table :data="props.applications" border class="table-class">
       <el-table-column prop="group" label="그룹" :align="'center'" width="70" />
 
       <el-table-column
@@ -108,11 +103,15 @@ import { onMounted, reactive, ref } from "vue";
 import { ElNotification, ElMessageBox } from "element-plus";
 import DialogTemplate from "../ApplicationLinksDialog.vue";
 import type { FabRequestForm } from "../../../../interface/fab-application-rev2";
-import { getApplicationList, sendAppRemoveRequest } from "../../../../utils/Fab/fab-application-utils";
+import {
+  getApplicationList,
+  sendAppRemoveRequest,
+} from "../../../../utils/Fab/fab-application-utils";
 import router from "../../../../router";
 
-const applications = reactive<FabRequestForm[]>([]);
-const isLoad = ref<boolean>(false);
+const props = defineProps<{
+  applications: FabRequestForm[];
+}>();
 
 const dialogTableVisible = ref(false);
 const selectApplication = ref<FabRequestForm>({});
@@ -121,26 +120,6 @@ function handleVisible(status: boolean, fabRequestForm: FabRequestForm) {
   dialogTableVisible.value = status;
   selectApplication.value = fabRequestForm;
 }
-
-onMounted(async () => {
-  try {
-    // getApplicationList를 호출하고 결과를 기다림
-    const data = await getApplicationList(
-      true,
-      true,
-      true,
-      "admin",
-      null,
-      null,
-      true,
-      true
-    );
-    applications.push(...data); // 가져온 데이터를 reactive 배열에 추가
-    isLoad.value = true;
-  } catch (error) {
-    console.error("Error fetching application list:", error);
-  }
-});
 
 function handleButton(action: string, application: FabRequestForm) {
   if (action === "view") {
@@ -177,18 +156,18 @@ async function handleDelete(application: FabRequestForm) {
       });
 
       // 목록 갱신
-      applications.length = 0;
+      props.applications.length = 0;
       const data = await getApplicationList(
-      true,
-      true,
-      true,
-      "admin",
-      null,
-      null,
-      true,
-      true
-    );
-      applications.push(...data);
+        true,
+        true,
+        true,
+        "admin",
+        null,
+        null,
+        true,
+        true
+      );
+      props.applications.push(...data);
     } else {
       throw new Error("삭제 요청이 실패했습니다.");
     }
@@ -203,14 +182,8 @@ async function handleDelete(application: FabRequestForm) {
     });
   }
 }
-
-
 </script>
 <script lang="ts">
 export default {};
 </script>
-<style>
-.table-class {
-  font-size: small;
-}
-</style>
+<style></style>
