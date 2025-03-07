@@ -10,7 +10,7 @@ import { ref, onMounted } from "vue";
 import type { StockInfo } from "../../../../interface/stock";
 import ApplicationListTemplate from "./ApplicationListTemplate.vue";
 import { fetchStockInfo } from "./ApplicationList"; // Import the fetch function
-import { getDepartment, getUserName } from "../../../../utils/account-utils";
+import { getDepartment, getUserId, getUserName } from "../../../../utils/account-utils";
 
 
 const stockInfoList = ref<StockInfo[]>([]);
@@ -19,7 +19,7 @@ onMounted(async () => {
   stockInfoList.value = await fetchStockInfo("reel");
   console.log(getUserName())
 
-  if(getUserName() === "admin" || getDepartment() === "whc"){
+  if(["admin"].includes(getUserName()) || getDepartment() === "whc" || ["w2240310"].includes(getUserId()) ){
 
   }
   else{
