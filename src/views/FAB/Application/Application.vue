@@ -251,6 +251,7 @@
             type="date"
             placeholder="FAB 종료일"
             v-model="props.processData.wantedFabFinishDate"
+            :disabled="true"
           ></el-date-picker>
         </el-form-item>
       </div>
@@ -335,7 +336,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, ref } from "vue";
+import { defineProps, ref,watch } from "vue";
 
 import InputText from "../../Common/InputText.vue";
 import SelectOptions from "../../Common/SelectOptions.vue";
@@ -455,6 +456,37 @@ const handleDeleteFormData = () => {
       });
     });
 };
+
+
+import { addWorkdays } from "../../../utils/Fab/fab-application-utils";
+watch(()=>props.processData.wantedFabStartDate,(newVal)=>{
+  if (newVal) {
+  props.processData.wantedFabFinishDate=addWorkdays(new Date(newVal),7).toString()}
+  else  {
+    props.processData.wantedFabFinishDate=null;
+  }
+})
+// export default defineComponent({
+//   setup() {
+//     // FAB 투입일과 종료일을 관리하는 ref
+//     const fabInsertDate = ref<Date | null>(null); // FAB 투입일
+//     const fabFinishDate = ref<Date | null>(null); // FAB 종료일 (자동 계산)
+
+//     // watch를 사용하여 FAB 투입일이 변경될 때마다 FAB 종료일을 계산
+//     watch(fabInsertDate, (newStartDate) => {
+//       if (newStartDate) {
+//         fabFinishDate.value = addWorkdays(new Date(newStartDate), 7); // 7일 뒤 계산 (주말 제외)
+//       } else {
+//         fabFinishDate.value = null; // 투입일이 없으면 종료일도 초기화
+//       }
+//     });
+
+//     return {
+//       fabInsertDate,
+//       fabFinishDate
+//     };
+//   }
+// });
 </script>
 
 <style scoped>

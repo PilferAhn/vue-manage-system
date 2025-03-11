@@ -171,3 +171,18 @@ export function getRunningFabReqeust(applicationList: FabApplicationForm[]) {
   return filteredApp.value;
 }
 
+export function addWorkdays(startDate: Date, numDays: number): Date {
+  const date = new Date(startDate);
+  let daysAdded = 0;
+
+  while (daysAdded < numDays) {
+    date.setDate(date.getDate() + 1); // 하루를 더함
+    // 주말이 아니면 daysAdded를 증가시킴
+    if (date.getDay() !== 0 && date.getDay() !== 6) {
+      daysAdded++;
+    }
+  }
+
+  return date;
+}
+

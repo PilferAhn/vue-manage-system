@@ -49,13 +49,14 @@
       :cell-style="cellStyle"
     >
       <el-table-column prop="customer" label="Customer" align="center" />
-      <el-table-column label="내용" align="center" width="200px">
+      <el-table-column label="내용" align="center" >
         <template #default="scope">
           <div v-html="formatCategory(scope.row)" />
         </template>
       </el-table-column>
-      <el-table-column prop="testType" label="Signal" align="center" />
-      <el-table-column prop="signal_type" label="Signal Info" align="center" />
+      <el-table-column prop="testType" label="Test Type" width="180" align="center" />
+      <el-table-column prop="signal_type" label="Signal" align="center" />
+      <el-table-column prop="pcl" label="PCL" align="center" />
       <el-table-column prop="temperature" label="Temp" align="center" />
       <el-table-column prop="time" label="Time" align="center" />
       <el-table-column prop="vswr" label="VSWR" align="center" />
@@ -64,8 +65,7 @@
           <div v-html="formatInputPower(scope.row)" />
         </template>
       </el-table-column>
-
-      <el-table-column prop="pcl" label="PCL" align="center" />
+      
     </el-table>
   </div>
 </template>

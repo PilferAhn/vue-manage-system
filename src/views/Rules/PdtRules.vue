@@ -25,7 +25,7 @@
         <el-table-column
           prop="lteNrWifi"
           label="Signal Type"
-          min-width="150"
+          min-width="180"
           sortable
           align="center"
         ></el-table-column>
