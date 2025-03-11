@@ -56,8 +56,7 @@ export default defineConfig({
 			"/tcf" : "http://10.29.11.57:8002",
 			"/s-parameter" : "http://10.29.11.57:8002",
 			"/machine" : "http://10.29.11.59:40000",
-			"/deembed" : "http://10.29.11.59:40001",
-			"/api" : "http://10.29.11.59:8005",
+			"/deembed" : "http://10.29.11.59:40001",			
 			"/rf-limit" : "http://10.29.11.59:8002",
 			"/solder" : "http://10.29.11.57:40000",
 			"/fab_monitoring" : "http://10.29.11.57:40000",
@@ -66,7 +65,11 @@ export default defineConfig({
 			"/OpeationMns" : "http://10.70.21.216:9086",
 			"/reel" : "http://10.29.11.57:40000",
 			"/dv2" : "http://10.29.11.57:40000",
-			"/test" : "http://10.29.11.59:8002"
+			"/test" : "http://10.29.11.59:8002",
+			"/fab_monitoring_rev2": "http://10.29.11.124:40000",
+			"/band": "http://10.29.11.124:40000",			
+			"/api": "http://10.20.10.128",
+			"/excel" : "http://10.29.11.57:39999"
 		}
 	  },
 });

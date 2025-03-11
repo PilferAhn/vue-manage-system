@@ -37,4 +37,16 @@ export const whcRouteIndexList: RouteRecordRaw[] = [
         /* webpackChunkName: "table" */ "../views/Solder/Stock/Evb/EvbStocks.vue"
       ),
   },
+  {
+    path: "/whc/by-fab-form/:productName",
+    name: "CreateWhcAppByFabRequestForm",
+    meta: {
+      title: "WHC Application",
+      permiss: "11",
+    },
+    component: () =>
+      import(
+        /* webpackChunkName: "table" */ "../views/Solder/Application/CreateWhcAppByFabRequestForm.vue"
+      ),
+  },
 ];

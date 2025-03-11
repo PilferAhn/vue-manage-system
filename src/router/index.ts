@@ -813,8 +813,8 @@ const routes: RouteRecordRaw[] = [
       ...whcRouteIndexList,
       ...dv2RouteIndexList,
       // ...modulesRouteIndexList,
-      // ...tegRouteIndexList,
-      // ...pdtRouteIndexList,
+      ...tegRouteIndexList,
+      ...pdtRouteIndexList,
     ],
   },
   {

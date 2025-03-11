@@ -5,6 +5,47 @@ import type { OptionInterface } from "../../interface/option";
 import type { EvbSolder } from "../../interface/evb";
 import { ref } from "vue";
 import { sendGetRequestWithHeader } from "../httpProtocol";
+import type { FabApplicationInterface } from "../../interface/fab";
+import { FabRequestForm } from "../../interface/fab-application-rev2";
+
+export function allocFabFormToWhcForm(
+  fabApp: FabRequestForm,
+  solderApp: solderApplication
+) {
+  for (const key in fabApp) {
+    if (
+      fabApp.hasOwnProperty(key) && // fabApp에 해당 키가 존재하는지 확인
+      solderApp.hasOwnProperty(key) && // tegApp에 해당 키가 존재하는지 확인
+      typeof (fabApp as any)[key] === typeof (solderApp as any)[key] // 타입 비교
+    ) {      
+      solderApp[key] = fabApp[key];
+      // (pdtApp as any)[key] = (fabApp as any)[key]; // 값을 복사
+    }
+  }
+
+  solderApp.modelName = fabApp.productName;
+  solderApp.requester = fabApp.requester.userName;
+  solderApp.designer = fabApp.designer.userName;
+  
+  solderApp.pkgType =  fabApp.wafer.sawTypeId + " - " + fabApp.packageId
+
+}
+
+export async function insertDataFromFabRequestForm(
+  solderApp: solderApplication,
+  fabApp: FabApplicationInterface
+) {
+  // 임시 코드 더러워도 참자
+  let process = fabApp.process;
+
+  if (process === "TC") {
+    process = "TS";
+  }
+
+  let packageType = fabApp.packageType;
+
+  solderApp.pkgType = process + " - " + packageType;
+}
 
 export async function downloadExcel(date: string) {
   try {
