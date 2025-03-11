@@ -86,3 +86,43 @@ export async function sendPostRequestWithHeader(
     return null;
   }
 }
+
+export const sendPostAndDownloadExcel = async (url: string, objs: any) => {
+  try {
+    // 백엔드로 POST 요청 (JSON 데이터 전송)
+    const response = await axios.post(url, objs, {
+      headers: { "Content-Type": "application/json" },
+      responseType: "blob", // 파일 다운로드를 위한 설정
+    });
+
+    // 파일 다운로드 처리
+    if (response.status === 200) {
+      // 🔹 Content-Disposition 헤더에서 파일명 추출
+      const disposition = response.headers["content-disposition"];
+      let filename = "download.xlsx"; // 기본 파일명
+
+      if (disposition) {
+        const match = disposition.match(/filename="(.+?)"/);
+        if (match && match[1]) {
+          filename = match[1];
+        }
+      }
+
+      // Blob을 URL로 변환하여 다운로드 처리
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", filename); // 동적으로 설정된 파일명 사용
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } else {
+      console.error("파일 다운로드 실패: 응답 상태", response.status);
+    }
+
+    return response.data; // 필요 시 응답 데이터 반환
+  } catch (error) {
+    console.error("HTTP POST request failed:", error);
+    throw error; // 호출자에게 에러 전달
+  }
+};

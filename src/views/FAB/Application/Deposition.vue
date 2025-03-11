@@ -240,13 +240,14 @@ watch(
 watch(
   () => props.fabApplication.idtProcessId,
   (newVal) => {
-    console.log(4);
+    
     depositionOptions.value = generateIdtOptions2(
       props.sawType.idtTypes,
       newVal
     );
 
     if (["HS", "NS"].includes(props.fabApplication.waferType)) {
+      
     } else {
       // TC CASE
       props.fabApplication.idtId = parseInt(depositionOptions.value[0].value);
@@ -271,7 +272,7 @@ watch(
 watch(
   () => props.fabApplication.waferType,
   (newVal) => {
-    console.log(3);
+    
     // depositionOptions.value = generateIdtOptions(props.sawType.idtTypes);
     layerNames.value = "";
     props.fabApplication.depositionCondi = undefined;
@@ -290,8 +291,9 @@ watch(
     } else if (["NS", "HS"].includes(newVal)) {
       newidtProcessList.value = [
         { key: 1, label: "Etching", value: "Etching" },
-        { key: 2, label: "Lift-off", value: "Lift-off" },
+        { key: 2, label: "Lift-off", value: "Lift-off" },      
       ];
+      props.fabApplication.idtProcessId = "Lift-off"
     }
   }
 );

@@ -1,6 +1,6 @@
 <template>
   <div class>
-    {{ selectedPackageKey }}
+    
     <!-- <el-form-item label="Bom 정보"> -->
     <el-descriptions
       v-if="props.bom !== null"
@@ -41,8 +41,7 @@
           <el-input v-model="props.bom.assyName"></el-input>
         </div>
       </el-descriptions-item>
-      <el-descriptions-item span="2">
-      </el-descriptions-item>
+      <el-descriptions-item span="2"> </el-descriptions-item>
       <el-descriptions-item span="2">
         <template #label>
           <div class="cell-item">Bump Size</div>
@@ -337,7 +336,6 @@ watch(
   () => props.bom.pkgCompany,
   (newVal) => {
     if (props.bom.pkgSize !== null) {
-      console.log(props.bom.pkgSize, newVal);
       getPrice(props.bom, costList.value, props.bom.pkgSize, newVal);
     }
   }
@@ -359,7 +357,7 @@ watch(
   () => props.bom.pkgCompany,
   (newVal) => {
     console.log(newVal);
-    if (newVal !== null) {      
+    if (newVal !== null) {
       if (props.bom.pkgCompany === "Daisho Denshi") {
         isCompanyDisabled.value = true;
         console.log(isCompanyDisabled.value);
@@ -432,7 +430,6 @@ watch(
     }
   }
 );
-
 
 const size = ref<ComponentSize>("default");
 onMounted(async () => {

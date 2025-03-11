@@ -51,6 +51,8 @@ const fetchApplication = async (productName: any) => {
     // Assign the converted data to processData
     Object.assign(app, convertedData);
 
+    
+    
     if(app.photo === null){
       app.photo = initPhoto()
     }
@@ -63,8 +65,12 @@ const fetchApplication = async (productName: any) => {
       app.isNewBom = true
     }
     
+    if(app.bom2 !== null){
+      app.isNewBom2 = true
+    }
+
     app.waferType = app.wafer.sawTypeId;
-    
+  
     const response1 = await axios.get(
       "http://10.29.11.124:40000/fab_monitoring_rev2/get_saw_types_list"
     );

@@ -32,6 +32,12 @@ watch(()=>props.fabApplication.isToneInverted, (newVal) => {
   }
 })
 
+watch(()=>props.fabApplication.isDv2, (newVal) => {
+  if(newVal){
+    props.fabApplication.bpProbeNote = `DV2 기종입니다.`
+  }  
+})
+
 
 // 탭 배열 (label과 v-model에 들어갈 키값을 저장)
 const tabs = [

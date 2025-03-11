@@ -33,12 +33,15 @@
         :align="'center'"
       ></el-table-column>
 
+
+
       <el-table-column
         prop="group"
         label="Group"
         width="80"
         :align="'center'"
       />
+
       <el-table-column
         prop="process"
         label="Process"

@@ -31,6 +31,7 @@ import { objectEach } from "highcharts";
 import { TegApplication } from "../../interface/Teg/teg";
 import type { TegApplication as TegApplicationInterface } from "../../Common/ApplicationTypes";
 import type { Bom } from "../../interface/fab-application-rev2";
+import { fa } from "element-plus/es/locale";
 
 export async function getBomCodeList() {
   const url = "/api/sapinfo";
@@ -67,16 +68,17 @@ export function initFabApplication3(bom: Bom) {
     designerConfirm: false,
     weekNumber: undefined,
     isAoi: true,
-    isDvr: false,
+    isDv2: false,
     quantity: 0,
     waferType: "",
-    wantedFabStartDate: undefined,
-    wantedFabFinishDate: undefined,
+    wantedFabStartDate: null,
+    wantedFabFinishDate: null,
     hsTrimingTarget: null,
     destinationId: "",
     packageId: undefined,
     priorityId: "",
-    isFreeWafer: false,
+    isFreeWafer: true,
+    samplePurpose : "DVR",
     isNeededLtEtching: false,
     group: "",
     purpose: "",
@@ -100,14 +102,15 @@ export function initFabApplication3(bom: Bom) {
     requester: { userName: "" },
     designer: { userName: "" },
     idtType: undefined,
-    isIdtXoi: false,
+    isIdtOxi: false,
     isNeedExtraShot: false,
     isToneInverted: false,
     isSeedSio2: false,
     isDualIdt: false,
     isNewBom: false,
     isNewBom2: false,
-
+    isMst : null,
+    mstThickness : null,
     bomMainCode: "",
     bom: null,
     bom2: null,
@@ -169,7 +172,7 @@ export function initFabApplication2() {
     weekNumber: undefined,
     seedId: null,
     isAoi: true,
-    isDvr: false,
+    isDv2: false,
     quantity: 10,
     waferType: "",
     code: "H",
@@ -196,7 +199,7 @@ export function initFabApplication2() {
     idtMachineName: undefined,
     idtId: null,
     pstId: null,
-    isIdtXoi: false,
+    isIdtOxi: false,
     isNeedExtraShot: false,
     isToneInverted: false,
     isSeedSio2: false,
@@ -499,7 +502,7 @@ export function validatingForm(applciation: FabRequestForm) {
  * @param type - A string parameter (not currently used in logic but may be relevant in future updates).
  */
 export async function dvrChecker(application: FabRequestForm, type: string) {
-  if (application.isDvr) {
+  if (application.isDv2) {
     if (application.note === "") {
       application.note = "DVR 해당 기종입니다.";
     } else {
@@ -767,4 +770,74 @@ export function getRunningFabReqeust(applicationList: FabApplicationForm[]) {
   }
 
   return filteredApp.value;
+}
+
+export function calFabOutLeadTime(fabApp : FabRequestForm, sawType : SawType){
+
+  let expectedDate = 7
+
+  if(sawType.sawTypeId === "NS"){
+    expectedDate = 7
+    if(fabApp.packageId === "CSP"){
+
+      if(fabApp.isDualIdt){
+        expectedDate = 9
+      }
+      else{
+        expectedDate = 7
+      }
+    }
+    else if(fabApp.packageId === "WLP"){
+      expectedDate = 7
+    }
+    else if(fabApp.packageId === "BDMP"){
+      expectedDate = 9
+    }
+  }
+  else if(sawType.sawTypeId === "TC"){
+    expectedDate = 10
+    if(fabApp.packageId === "CSP"){
+      if(fabApp.isMst){
+        expectedDate = 13
+      }
+      else{
+        expectedDate = 10
+      }
+    }
+    else if(fabApp.packageId === "WLP"){
+      expectedDate = 10
+    }
+    else if(fabApp.packageId === "BDMP"){
+      expectedDate = 12
+    }
+  }
+  else{
+
+    expectedDate = 12
+    if(fabApp.packageId === "CSP"){
+      expectedDate = 12
+    }
+    else if(fabApp.packageId === "WLP"){
+      expectedDate = 12
+    }
+    else if(fabApp.packageId === "BDMP"){
+      expectedDate = 14
+    }
+  }
+  return expectedDate
+}
+
+export function addWorkdays(startDate: Date, numDays: number): Date {
+  const date = new Date(startDate);
+  let daysAdded = 0;
+
+  while (daysAdded < numDays) {
+    date.setDate(date.getDate() + 1); // 하루를 더함
+    // 주말이 아니면 daysAdded를 증가시킴
+    if (date.getDay() !== 0 && date.getDay() !== 6) {
+      daysAdded++;
+    }
+  }
+
+  return date;
 }

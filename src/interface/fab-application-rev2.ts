@@ -52,8 +52,8 @@ export interface PhotoProcess {
 
 export interface FabRequestForm {
   photo?: Photo;
-  waferCode? : string
-  cusomterId?: string;
+  waferCode?: string;
+  customerId?: string;
   productName?: string;
   bomMainCode?: string;
   isNewBom?: boolean;
@@ -64,7 +64,22 @@ export interface FabRequestForm {
   designerConfirm?: boolean;
   weekNumber?: number;
   isAoi?: boolean;
-  isDvr?: boolean;
+  isDv2?: boolean;
+  isGfl?: boolean;
+  isCap?: boolean;
+  isPadDl?: boolean;
+  isMoreEnergy?: boolean;
+  isRrPs2?: boolean;
+  isMst?: boolean;
+  isPending?: boolean;
+  isFabCardCreated?: boolean;
+  dateOfFabCardCreated?: string;
+  maskTurn?: string | number;
+  maskCd?: string | number;
+  aspectRatio?: string | number;
+  isAlPad?: boolean;
+  gflThickness?: string | number;
+  mstThickness? : string | number;
   quantity?: number;
   waferType?: string;
   wantedFabStartDate?: string;
@@ -83,7 +98,7 @@ export interface FabRequestForm {
   trimming?: string;
   hsWaferInfo?: string;
   isNeedSio2Seed?: boolean;
-  hasBridge? : boolean;
+  hasBridge?: boolean;
   isActive?: boolean;
   filterType?: string;
   tcMachineName?: string;
@@ -112,7 +127,7 @@ export interface FabRequestForm {
   samplePurposeDetail?: string;
   wafer?: FabWafer;
   isAllowBridge?: boolean;
-  isIdtXoi?: boolean;
+  isIdtOxi?: boolean;
   isNeedExtraShot?: boolean;
   isSeedSio2?: boolean;
   isToneInverted?: boolean;
@@ -143,7 +158,7 @@ export interface FabRequestForm {
   idtProcessId?: string;
   // wafer?: FabWafer[];
   idtType?: IdtType;
-  idt2Type? : IdtType
+  idt2Type?: IdtType;
   depositionCondi?: string;
   seedLayers?: Layer[];
   passivationLayers?: Layer[];
@@ -236,7 +251,7 @@ export interface FabWafer {
   waferId?: number;
   sawTypeId?: string;
   waferType?: string;
-  waferCode?: string
+  waferCode?: string;
   waferCompany?: string;
   size?: number;
   recommendedThicknesses?: FabRecommendationWaferThickness[];
@@ -267,7 +282,7 @@ export interface Layer {
 export class FabRequest implements FabRequestForm {
   photo?: Photo;
   waferCode?: string;
-  cusomterId?: string;
+  customerId?: string;
   productName?: string;
   bomMainCode?: string;
   isNewBom?: boolean;
@@ -278,7 +293,22 @@ export class FabRequest implements FabRequestForm {
   designerConfirm?: boolean;
   weekNumber?: number;
   isAoi?: boolean;
-  isDvr?: boolean;
+  isDv2?: boolean;
+  isGfl?: boolean;
+  isCap?: boolean;
+  isPadDl?: boolean;
+  isMoreEnergy?: boolean;
+  isRrPs2?: boolean;
+  isMst?: boolean;
+  isPending?: boolean;
+  isFabCardCreated?: boolean;
+  dateOfFabCardCreated?: string;
+  maskTurn?: string | number;
+  maskCd?: string | number;
+  aspectRatio?: string | number;
+  isAlPad?: boolean;
+  gflThickness?: string | number;
+  mstThickness? : string | number;
   quantity?: number;
   waferType?: string;
   wantedFabStartDate?: string;
@@ -326,7 +356,7 @@ export class FabRequest implements FabRequestForm {
   samplePurposeDetail?: string;
   wafer?: FabWafer;
   isAllowBridge?: boolean;
-  isIdtXoi?: boolean;
+  isIdtOxi?: boolean;
   isNeedExtraShot?: boolean;
   isSeedSio2?: boolean;
   isToneInverted?: boolean;
@@ -344,17 +374,20 @@ export class FabRequest implements FabRequestForm {
   };
   chipX?: number;
   chipY?: number;
+
   shotX?: number;
   shotY?: number;
   shot?: {
     hori: number;
     verti: number;
   };
-  idtType?: IdtType;
-  idt2Type? : IdtType
+
   requester?: User;
   designer?: User;
   idtProcessId?: string;
+  // wafer?: FabWafer[];
+  idtType?: IdtType;
+  idt2Type?: IdtType;
   depositionCondi?: string;
   seedLayers?: Layer[];
   passivationLayers?: Layer[];
@@ -365,69 +398,79 @@ export class FabRequest implements FabRequestForm {
   hsType?: HsType;
   passivationType?: passivationType[];
 
-  constructor(data: FabRequestForm) {    
+  constructor(data: FabRequestForm) {
     Object.assign(this, data);
+    this.isGfl = this.gflThickness !== null
   }
 
   createHsWaferCondition = () => {
+    let hsWaferCondition = "";
 
-    let hsWaferCondition = ""
-
-    if(this.wafer.sawTypeId === "HS"){      
-      hsWaferCondition = this.wafer.waferCompany + ' ' + this.wafer.size.toString() + '" ' + 
-      this.hsType.peAngle.toString() + this.hsType.name + this.hsType.siliconRotation 
-      + "   " + this.quantity.toString() + "ea"
+    if (this.wafer.sawTypeId === "HS") {
+      hsWaferCondition =
+        this.wafer.waferCompany +
+        " " +
+        this.wafer.size.toString() +
+        '" ' +
+        this.hsType.peAngle.toString() +
+        this.hsType.name +
+        this.hsType.siliconRotation +
+        "   " +
+        this.quantity.toString() +
+        "ea";
     }
 
-    return hsWaferCondition
-
-  }
+    return hsWaferCondition;
+  };
 
   createWaferInfo = () => {
+    let waferInfoStr = "";
 
-    let waferInfoStr = ""
-
-    if(this.idtLayers !== null && this.idtType !== null){
-      waferInfoStr += this.idtType.name + "=" + this.idtLayers.map(layer => String(layer.thickness)).join("/")
+    if (this.idtLayers !== null && this.idtType !== null) {
+      waferInfoStr +=
+        this.idtType.name +
+        "=" +
+        this.idtLayers.map((layer) => String(layer.thickness)).join("/");
     }
 
-    if(this.idt2Layers !== null && this.idt2Type !== null){
-      waferInfoStr += "," + this.idt2Type.name + "=" + this.idt2Layers.map(layer => String(layer.thickness)).join("/")
+    if (this.idt2Layers !== null && this.idt2Type !== null) {
+      waferInfoStr +=
+        "," +
+        this.idt2Type.name +
+        "=" +
+        this.idt2Layers.map((layer) => String(layer.thickness)).join("/");
     }
 
-    return waferInfoStr
-  }
+    return waferInfoStr;
+  };
 
   createTrimmingInfo = () => {
-
-    let ltTrrimmingVal = ""    
-    if(this.wafer.sawTypeId === "HS"){      
-
-      let waferInfo = this.hsType.name.split("/")
-      if(waferInfo.length >= 1 && this.hsTrimingTarget !== null){
-
-        let temp = waferInfo[0]
-        let isStart = false
-        let oriThickness = ""
-        for(let i = 0; i < temp.length; i++){
-          if(temp[i] === "("){
-            isStart = true
-            continue
+    let ltTrrimmingVal = "";
+    if (this.wafer.sawTypeId === "HS") {
+      let waferInfo = this.hsType.name.split("/");
+      if (waferInfo.length >= 1 && this.hsTrimingTarget !== null) {
+        let temp = waferInfo[0];
+        let isStart = false;
+        let oriThickness = "";
+        for (let i = 0; i < temp.length; i++) {
+          if (temp[i] === "(") {
+            isStart = true;
+            continue;
+          } else if (temp[i] === ")") {
+            break;
           }
-          else if(temp[i] === ")"){
-            break
-          }
-          if(isStart){
-            oriThickness += temp[i]
+          if (isStart) {
+            oriThickness += temp[i];
           }
         }
 
-        ltTrrimmingVal = "LT Trimming " + oriThickness + " -> " + this.hsTrimingTarget.toString() 
+        ltTrrimmingVal =
+          "LT Trimming " +
+          oriThickness +
+          " -> " +
+          this.hsTrimingTarget.toString();
       }
-      
     }
-    return ltTrrimmingVal
-  }
-  
-
+    return ltTrrimmingVal;
+  };
 }

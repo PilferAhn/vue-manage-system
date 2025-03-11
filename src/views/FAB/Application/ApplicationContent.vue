@@ -1,16 +1,7 @@
 <template>
   <div class="fab-application-form">
     <el-row :gutter="20" class="form-row">
-      <el-col :span="12">
-        <SelectOptionsNew2
-          v-model="props.fabApplication.waferType"
-          label="Filter Tech"
-          :needBold="false"
-          :disable="false"
-          :options="getWaferList()"
-        />
-      </el-col>
-      <el-col :span="12">
+      <el-col :span="6">
         <SelectOptionsNew2
           v-model="props.fabApplication.bandGroupId"
           label="Freq Range"
@@ -19,16 +10,47 @@
           :options="freqRangeList"
         />
       </el-col>
+      <el-col :span="6">
+        <SelectOptionsNew2
+          v-model="props.fabApplication.waferType"
+          label="Filter Tech"
+          :needBold="false"
+          :disable="false"
+          :options="getWaferList()"
+        />
+      </el-col>
+      <el-col :span="6">
+        <SelectOptionsNew2
+          v-model="props.fabApplication.destinationId"
+          label="Assay Site"
+          prop="process"
+          placeholder="EX) WHC or WTC"
+          :options="destinationList"
+          :disable="false"
+          class="wide-select"
+        />
+      </el-col>
+      <el-col :span="6">
+        <SelectOptions
+          v-model="props.fabApplication.packageId"
+          label="Package"
+          prop="process"
+          placeholder="CSP or WLP"
+          :options="packageList"
+          :disable="false"
+          class="wide-select"
+        />
+      </el-col>
     </el-row>
     <el-row :gutter="20" class="form-row">
-      <el-col :span="9">
+      <el-col :span="7">
         <input-text
           v-model="props.fabApplication.productName"
           props="ProductName"
           label="Product Name"
         />
       </el-col>
-      <el-col :span="9">
+      <el-col :span="7">
         <input-text
           v-model="props.fabApplication.bomMainCode"
           props="ProductName"
@@ -36,7 +58,7 @@
           :disable="true"
         />
       </el-col>
-      <el-col :span="3">
+      <el-col :span="2">
         <SelectCheckBox
           v-model="props.fabApplication.isAoi"
           label="AOI"
@@ -46,12 +68,31 @@
           class="wide-select"
         />
       </el-col>
-      <el-col :span="3"> </el-col>
+      <el-col :span="2"
+        ><SelectCheckBox
+          v-model="props.fabApplication.isDv2"
+          label="DV2"
+          prop="isDv2"
+          :disable="false"
+          :rules="[]"
+          class="wide-select"
+        />
+      </el-col>
+      <el-col :span="5"
+        ><SelectCheckBox
+          v-model="props.fabApplication.isAlPad"
+          label="AL PAD 적용"
+          prop="isAlPad"
+          :disable="false"
+          :rules="[]"
+          class="wide-select"
+        />
+      </el-col>
     </el-row>
     <el-row :gutter="20" class="form-row">
       <el-col :span="12">
         <SelectOptionsNew2
-          v-model="props.fabApplication.cusomterId"
+          v-model="props.fabApplication.customerId"
           label="Customer (고객사)"
           prop="cusomterId"
           placeholder="EX) K1 or 전장"
@@ -97,7 +138,7 @@
 
     <!-- 두 번째 행 -->
     <el-row :gutter="20" class="form-row">
-      <el-col :span="12">
+      <el-col :span="6">
         <InputText
           v-model="props.fabApplication.band"
           label="Band"
@@ -105,35 +146,8 @@
           :rules="[]"
           placeholder="Enter Band Info"
         ></InputText>
-
-        <!-- <BandSection :fab-application="props.fabApplication"
-        :band-list="props.bandList"></BandSection> -->
-        <!-- <el-form-item label="Band">
-          <el-select v-model="props.fabApplication.bandCombinationId">
-            <el-option
-              v-for="band in props.bandList"
-              :key="band.bandCombinationId"
-              :label="band.label"
-              :value="band.bandCombinationId"
-            ></el-option>
-          </el-select>
-        </el-form-item> -->
       </el-col>
-      <el-col :span="12">
-        <SelectOptionsNew2
-          v-model="props.fabApplication.destinationId"
-          label="Assay Site"
-          prop="process"
-          placeholder="EX) WHC or WTC"
-          :options="destinationList"
-          :disable="false"
-          class="wide-select"
-        />
-      </el-col>
-    </el-row>
-
-    <el-row :gutter="20" class="form-row">
-      <el-col :span="12">
+      <el-col :span="6">
         <SelectOptionsNew2
           v-if="props.fabApplication.destinationId !== '개발전달'"
           label="Filter Type"
@@ -142,17 +156,15 @@
           :options="filterTypeList"
         ></SelectOptionsNew2>
       </el-col>
-      <el-col :span="12">
+      <el-col :span="6">
         <select-number-option
           label="Assay Chip 수"
           prop="AssyChipQuantity"
-          v-model="props.fabApplication.assyChipQuantity"     
-          :options="getOptionNumbers(1, 6)"     
+          v-model="props.fabApplication.assyChipQuantity"
+          :options="getOptionNumbers(1, 6)"
         />
       </el-col>
-    </el-row>
-    <el-row :gutter="20" class="form-row">
-      <el-col :span="12">
+      <el-col :span="6">
         <SelectOptionsNew2
           v-model="props.fabApplication.priorityId"
           label="Priority"
@@ -163,13 +175,34 @@
           class="wide-select"
         />
       </el-col>
-      <el-col :span="12">
-        <SelectOptions
-          v-model="props.fabApplication.packageId"
-          label="Package"
-          prop="process"
-          placeholder="CSP or WLP"
-          :options="packageList"
+    </el-row>
+
+    <el-row :gutter="20" class="form-row">
+      <el-col :span="6">
+        <InputNumber
+          v-model="props.fabApplication.maskTurn"
+          label="Mask 차수"
+          prop="maskTurn"
+          placeholder=""
+          :disable="false"
+          class="wide-select"
+        />
+      </el-col>
+      <el-col :span="6">
+        <InputNumber
+          v-model="props.fabApplication.maskCd"
+          label="Mask CD"
+          placeholder=""
+          :disable="false"
+          class="wide-select"
+        />
+      </el-col>
+      <el-col :span="6">
+        <InputNumber
+          v-if="props.sawType.sawTypeId === 'TC'"
+          v-model="props.fabApplication.aspectRatio"
+          label="Aspect Ratio"
+          placeholder=""
           :disable="false"
           class="wide-select"
         />
@@ -257,6 +290,10 @@
         class="custom-input"
         :row-cnt="'3'"
       /> -->
+      <extraProcess
+        v-model:fabApplication="props.fabApplication"
+        :sawType="sawType"
+      ></extraProcess>
       <note-section
         :fab-application="props.fabApplication"
         :saw-type="props.sawType"
@@ -294,7 +331,10 @@ import {
   receivefilterTypeList,
   getCostomerList,
   getBomCodeList,
+  addWorkdays,
+  calFabOutLeadTime,
 } from "../../../utils/Fab/fab-application-utils";
+import extraProcess from "./extra_process/ExtraProcess.vue";
 import IdtProcess from "./IdtProcess.vue";
 import Dvb from "./dvr/Dvr.vue";
 import BandSection from "./band/band.vue";
@@ -320,7 +360,6 @@ import { initBom } from "../../../utils/Fab/bom-utils";
 import Bom from "./bom/Bom.vue";
 import { rules } from "../../Solder/Stock/Common/ApplicationRules";
 import { composeEventHandlers } from "element-plus/es/utils";
-
 
 const props = defineProps<{
   fabApplication: FabRequestForm;
@@ -375,17 +414,23 @@ watch(
   }
 );
 
-watch(()=>props.fabApplication.packageId, (newVal)=>{
-  if(newVal === "CSP"){
-    props.fabApplication.bom = initBom()
-    props.fabApplication.isNewBom = true;    
+watch(
+  () => props.fabApplication.packageId,
+  (newVal) => {
+    if (newVal === "CSP") {
+      if (props.fabApplication.bomMainCode === "") {
+        props.fabApplication.bom = initBom();
+        props.fabApplication.isNewBom = true;
+      } else {
+        props.fabApplication.isNewBom = false;
+        props.fabApplication.bom = null;
+      }
+    } else {
+      props.fabApplication.isNewBom = false;
+      props.fabApplication.bom = null;
+    }
   }
-  else{
-    props.fabApplication.isNewBom = false;
-    props.fabApplication.bom = null
-  }
-}
-)
+);
 
 watch(
   () => props.fabApplication.isNewBom,
@@ -401,15 +446,13 @@ watch(
 );
 
 watch(
-  () => props.fabApplication.samplePurpose,
+  () => props.fabApplication.isDv2,
   (newVal) => {
-    if (newVal !== null && newVal !== undefined) {
-      if (newVal === "DVR") {
-        if (props.fabApplication.note === "") {
-          props.fabApplication.note = "DV2 LOT";
-        } else {
-          props.fabApplication.note += " (DV2 LOT)";
-        }
+    if (newVal) {
+      if (props.fabApplication.note === "") {
+        props.fabApplication.note = "DV2 LOT";
+      } else {
+        props.fabApplication.note += " DV2 LOT";
       }
     }
   }
@@ -417,7 +460,7 @@ watch(
 
 watch(
   () => props.fabApplication.packageId,
-  (newVal) => {    
+  (newVal) => {
     if (
       newVal === "CSP" &&
       props.fabApplication.bom === null &&
@@ -432,7 +475,9 @@ watch(
   () => props.fabApplication.isNewBom2,
   (newVal) => {
     if (newVal) {
-      props.fabApplication.bom2 = initBom();
+      if (props.fabApplication.bom2 === null) {
+        props.fabApplication.bom2 = initBom();
+      }
     } else {
       props.fabApplication.bom2 = null;
     }
@@ -444,6 +489,25 @@ const emit = defineEmits(["update:fabApplication"]);
 const localFabApplication = computed({
   get: () => props.fabApplication,
   set: (newValue) => emit("update:fabApplication", newValue), // 부모로 전달
+});
+
+const trackedValues = computed(() => ({
+  sawTypeId: props.sawType.sawTypeId,
+  wantedFabStartDate: props.fabApplication.wantedFabStartDate,
+  packageId: props.fabApplication.packageId,
+  isDualIdt: props.fabApplication.isDualIdt,
+  isMst: props.fabApplication.isMst,
+}));
+
+const expectedDate = ref<number>(0);
+watch(trackedValues, (newValues) => {
+  if (newValues.sawTypeId !== null && newValues.wantedFabStartDate !== null) {
+    expectedDate.value = calFabOutLeadTime(props.fabApplication, props.sawType);
+    props.fabApplication.wantedFabFinishDate = addWorkdays(
+      new Date(newValues.wantedFabStartDate),
+      expectedDate.value
+    ).toString();
+  }
 });
 </script>
 <script lang="ts">

@@ -43,7 +43,8 @@ const props = defineProps<{
 const submitForm = (type : string) => {
   props.fabFormRef?.validate((valid) => {
     if (valid) {
-      sendingForm(props.fabApplication, type);      
+      sendingForm(props.fabApplication, type);   
+      console.log(props.fabApplication)   
     } else {
       console.error("폼 유효성 검사 실패: 필수 항목을 확인해주세요.");
     }

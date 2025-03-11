@@ -98,16 +98,22 @@ export function getLayerNameFromIdtTypes(
   idtId: number,
   layers: Layer[]
 ): string | undefined {
-  // idtId가 같은 첫 번째 항목의 name 반환
-
   const name = ref<string | undefined>(undefined);
 
-  idtTypes.forEach((idtType, index) => {
-    if (idtType.idtId == idtId) {
-      layers.splice(0, layers.length, ...(idtType.layers || [])); //
+  idtTypes.forEach((idtType) => {
+    if (idtType.idtId === idtId) {
+      layers.splice(
+        0,
+        layers.length,
+        ...(idtType.layers?.map(layer => ({
+          ...layer  // 개별 객체도 새로운 주소값을 가지도록 복사
+        })) || [])
+      );
+
       name.value = idtType.name;
     }
   });
 
-  return name.value; // 조건 만족 시 name 반환, 없으면 undefined 반환
+  return name.value;
 }
+

@@ -1,13 +1,12 @@
 <template>
-  <div class="deposition-container">
-
-
-    <div v-if="props.fabApplication.isSeedSio2">
+  
+  <div class="deposition-container" v-if="props.fabApplication.isSeedSio2">
+    <div>
       <div class="align-center">
         <h3 class="section-title">SiO2Seed</h3>
         <!-- Seed 버튼 -->
       </div>
-
+      
       <!-- <el-checkbox-button size="large" v-model="isSeedActive"
       >Activate Seed Information</el-checkbox-button
     > -->
@@ -56,33 +55,38 @@ const isSeedActive = ref(false); // Seed 활성화 상태
 const seedOptions = ref<OptionInterface[]>([]);
 const sType = ref<seedType>();
 
-onMounted(() => {
-  initializeSeedOptions();
-  props.fabApplication.seedId = null;
-  props.fabApplication.seedLayers = [];
-});
+// onMounted(() => {
+//   initializeSeedOptions();
+//   props.fabApplication.seedId = null;
+//   props.fabApplication.seedLayers = [];
+// });
 
-watch(
-  () => props.fabApplication.isSeedSio2,
-  (newVal) => {
-    isSeedActive.value = newVal;
-    props.fabApplication.seedId = null;
-    props.fabApplication.seedLayers = [];
-    
-    if(!newVal){      
-    }
-    else{
-      initializeSeedOptions()
-      // props.fabApplication.seedLayers = sType.value.layers;
-    }
 
-  }
-);
+// watch(
+//   () => props.fabApplication.isSeedSio2,
+//   (newVal) => {
+
+//     isSeedActive.value = newVal;
+//     props.fabApplication.seedId = null;
+//     props.fabApplication.seedLayers = [];
+
+//     if (!newVal) {
+//       props.fabApplication.seedId = null;
+//       props.fabApplication.seedLayers = null
+//     } else {
+//       initializeSeedOptions();
+//       // props.fabApplication.seedLayers = sType.value.layers;
+//     }
+//   }
+// );
 
 watch(
   () => props.fabApplication.seedId,
   (newVal) => {
-    if (props.fabApplication.seedId !== undefined && props.fabApplication.seedId !== null) {
+    if (
+      props.fabApplication.seedId !== undefined &&
+      props.fabApplication.seedId !== null
+    ) {
       sType.value = props.sawType.seedTypes.find(
         (seed) => seed.seedId == newVal
       );
@@ -91,16 +95,28 @@ watch(
   }
 );
 
-watch(
-  () => props.sawType,
-  () => {
-    props.fabApplication.seedId = undefined;
-    props.fabApplication.seedLayers = [];
+// watch(
+//   () => props.sawType,
+//   () => {
+//     props.fabApplication.seedId = undefined;
+//     props.fabApplication.seedLayers = [];
 
-    initializeSeedOptions();
-    isSeedActive.value = false;
+//     initializeSeedOptions();
+//     isSeedActive.value = false;
+//   }
+// );
+
+watch(() => props.fabApplication.isSeedSio2, (newVal) => {
+  
+  if(newVal){
+    initializeSeedOptions()
   }
-);
+  else{
+    props.fabApplication.seedId = null;
+    props.fabApplication.seedLayers = [];
+  }
+
+})
 
 function initializeSeedOptions() {
   seedOptions.value.length = 0;

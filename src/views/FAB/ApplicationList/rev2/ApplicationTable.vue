@@ -33,6 +33,10 @@
         :align="'center'"
       ></el-table-column>
 
+      <el-table-column label="FabCard 작성유무" width="80" :align="'center'">
+        <el-tag type="danger">No</el-tag>
+      </el-table-column>
+
       <el-table-column
         prop="group"
         label="Group"
@@ -80,12 +84,12 @@
         width="60"
         :align="'center'"
       />
-      <el-table-column
+      <!-- <el-table-column
         prop="destinationId"
         label="목적지"
         width="80"
         :align="'center'"
-      />
+      /> -->
       <el-table-column prop="code" label="Code" width="60" :align="'center'" />
       <!-- FAB Insert Date를 날짜 선택기로 수정 -->
       <el-table-column label="담당자" width="150" :align="'center'">
@@ -156,7 +160,7 @@
         width="300"
         :align="'center'"
       >
-      <template #default="scope">
+        <template #default="scope">
           {{ scope.row.createWaferInfo() }}
         </template>
       </el-table-column>
@@ -172,9 +176,9 @@
         width="400"
         :align="'center'"
       >
-      <template #default="scope">
-        {{ scope.row.createHsWaferCondition() }}
-      </template>
+        <template #default="scope">
+          {{ scope.row.createHsWaferCondition() }}
+        </template>
       </el-table-column>
       <!-- <el-table-column
         fixed="right"
@@ -209,7 +213,7 @@
   </div>
   <div class="buttun-section">
     <el-button type="primary">SAVE</el-button>
-    <el-button type="success">To Excel</el-button>
+    <el-button type="success" @click="downloadExcel">To Excel</el-button>
     <!-- <el-button type=""></el-button>
       <el-button type="warning"></el-button> -->
   </div>
@@ -224,6 +228,7 @@ import {
 } from "../ApplicationsByWeek";
 import InputText from "../../Common/InputText.vue";
 import { formatDate } from "../../Common/Application";
+import { convertKeysToPEP8 } from "../../../../utils/key-converter";
 
 const props = defineProps<{
   processData: FabRequest[];
@@ -256,6 +261,18 @@ const handleCheckboxChange = (id: number, checked: boolean) => {
   }
 };
 
+const downloadExcel = async () => {
+  const form = new FormData();
+
+  const sendingData = ref<Object[]>([]);
+
+  props.processData.forEach((fab) => {
+    sendingData.value.push(convertKeysToPEP8(fab));
+  });
+
+  console.log(sendingData.value);
+};
+
 const tableRowClassName = ({ row }: { row: FabRequest }) => {
   if (row.status === "cancel") {
     return "danger-row";
@@ -271,7 +288,7 @@ const tableRowClassName = ({ row }: { row: FabRequest }) => {
 //   return row.status === 'created' ? 'row-strikethrough' : '';
 // };
 
-const groupCounts = computed(() => {  
+const groupCounts = computed(() => {
   return props.processData.reduce((acc, item) => {
     acc[item.group] = (acc[item.group] || 0) + 1;
     return acc;

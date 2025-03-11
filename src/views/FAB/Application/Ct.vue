@@ -1,4 +1,5 @@
 <template>
+  <!-- {{props.fabApplication.tcLayers}} -->
   <div
     class="tc-selection-container"
     v-if="props.sawType.tcTypes && props.sawType.tcTypes.length > 0"
@@ -20,8 +21,7 @@
               class="custom-input"
             ></el-input>
           </template>
-        </el-table-column>
-        {{ machineList }}
+        </el-table-column>        
         <el-table-column label="Machine" :align="'center'">
           <template #default="">
             <el-select v-model="props.fabApplication.tcMachineName">

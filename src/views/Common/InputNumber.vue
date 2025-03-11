@@ -1,7 +1,7 @@
 <template>
   <el-form-item :label="label" :prop="prop" :rules="rules">
     <el-input
-      v-model.number="internalValue"
+      v-model="internalValue"
       @input="updateValue"
       :placeholder="placeholder"
       :disabled="props.disable"

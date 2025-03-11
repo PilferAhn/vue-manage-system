@@ -38,8 +38,8 @@
             v-model:fabApplication="props.fabApplication"
             :sawType="sawType"
           />
+
           <PhotoSection
-            
             v-model:fabApplication="props.fabApplication"
             :sawType="sawType"
           />
@@ -80,6 +80,7 @@ import type { FabRequestForm } from "./../../../interface/fab-application-rev2";
 import PhotoSection from "./photo/photo.vue";
 import { fabRequestFormRules } from "../../../utils/rules/fab-application";
 import type { FormInstance } from "element-plus";
+
 import IdtProcess from "./IdtProcess.vue";
 import Bom from "./bom/Bom.vue";
 const fabFormRef = ref<FormInstance | null>(null);
@@ -93,16 +94,14 @@ const props = defineProps<{
 
 const sawType = reactive<SawType>({ ...props.sawType });
 
+
+
 watch(
   () => props.fabApplication.waferType,
   (newVal, oldVal) => {
     Object.assign(sawType, defineSawTypeByWaferType(newVal, props.options));
-    console.log(sawType.passivationTypes);
   }
 );
-
-
-
 </script>
 
 <script lang="ts">

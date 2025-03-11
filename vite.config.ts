@@ -75,6 +75,7 @@ export default defineConfig({
       "/fab_monitoring_rev2": "http://10.29.11.124:40000",
       "/band": "http://10.29.11.124:40000",
       "/api": "http://10.20.10.128",
+      "/excel" : "http://10.29.11.57:39999"
     },
   },
 });
