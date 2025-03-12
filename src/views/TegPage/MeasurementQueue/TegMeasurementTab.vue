@@ -120,6 +120,57 @@ const applications = ref<TegApplication[]>([]);
 onMounted(async () => {
   try {
     applications.value = await getTegApplication(props.category);
+
+    for (let i = 0; i < applications.value.length; i++) {
+      let isFound = false;
+      for (let j = 0; j < props.fabApp.length; j++) {
+        if (applications.value[i].productName === props.fabApp[j].modelName) {
+          let isFound2 = false;
+          let foundedIndex = -1;
+
+          for (let k = 0; k <= props.fabApp[j].lotStatus.length; k++) {
+            if (
+              ![
+                "Transit 공정",
+                "출하",
+                "포장",
+                "전수검사",
+                "AOI",
+                "IDT 프로브",
+                "LTE 외검",
+                "LTE 깊이",
+                "LTE S L/O",
+                "LTE 에칭",
+                "LTE 현상외검",
+                "LTE 현상",
+                "LTE 노광",
+                "LTE 코팅",
+              ].includes(props.fabApp[j].lotStatus[k].operation.name)
+            ) {
+              isFound2 = true;
+              foundedIndex = k;
+              break;
+            }
+          }
+
+          if (
+            props.fabApp[j].lotStatus !== undefined &&
+            props.fabApp[j].lotStatus.length >= 1 &&
+            isFound2
+          ) {
+            applications.value[i].currentStage =
+              props.fabApp[j].lotStatus[foundedIndex].operation.name;
+            applications.value[i].currentStageTime = formatDateTime(
+              props.fabApp[j].lotStatus[foundedIndex].moveinDate
+            );
+            isFound = true;
+          }
+        }
+        if (isFound) {
+          break;
+        }
+      }
+    }
   } catch (error) {
     console.error("Error fetching applications:", error);
   }
@@ -188,6 +239,9 @@ watch(
         }
       }
     }
+  },
+  {
+    immediate: true,
   }
 );
 
