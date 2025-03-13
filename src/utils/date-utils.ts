@@ -230,3 +230,103 @@ export function getEarliestTimeOfCurrentMonth(): Date {
 
   return firstDayOfMonth;
 }
+
+/**
+ * 요일을 입력하면 이번 주에 해당하는 날짜를 반환하는 함수
+ * @param dayOfWeek "월" | "화" | "수" | "목" | "금" | "토" | "일"
+ * @returns 이번 주 해당 요일의 날짜 (시간: 00:00:00)
+ */
+export function getDateOfThisWeek(dayOfWeek: string): Date {
+  
+  const daysMap: { [key: string]: number } = {
+    Sunday: 0,
+    Monday: 1,
+    Tuesday: 2,
+    Wednesday: 3,
+    Thursday: 4,
+    Friday: 5,
+    Saturday: 6,
+  };
+
+  // 입력된 요일이 올바른지 확인
+  if (!(dayOfWeek in daysMap)) {
+    throw new Error(
+      `잘못된 요일 입력: ${dayOfWeek}. "월", "화", ..., "일" 중 하나를 입력하세요.`
+    );
+  }
+
+  // 현재 날짜 및 현재 주의 시작(일요일) 계산
+  const now = new Date();
+  const currentDay = now.getDay(); // 현재 요일 (0: 일요일 ~ 6: 토요일)
+  const diff = daysMap[dayOfWeek] - currentDay; // 입력 요일과 현재 요일 차이
+
+  // 이번 주 해당 요일의 날짜 계산
+  const targetDate = new Date();
+  targetDate.setDate(now.getDate() + diff); // 날짜 이동
+  targetDate.setHours(0, 0, 0, 0); // 시간: 00:00:00 설정
+
+  return targetDate;
+}
+
+function isWeekend(date: Date): boolean {
+  const day = date.getDay();
+  return day === 0 || day === 6; // 일요일(0) 또는 토요일(6) 체크
+}
+
+function isHoliday(date: Date, holidays: Set<string>): boolean {
+  return holidays.has(date.toISOString().split("T")[0]); // YYYY-MM-DD 형식으로 변환하여 체크
+}
+
+function getPreviousWorkday(startDate: Date, holidays: Set<string>): Date {
+  let currentDate = new Date(startDate);
+
+  while (isWeekend(currentDate) || isHoliday(currentDate, holidays)) {
+    currentDate.setDate(currentDate.getDate() - 1);
+  }
+
+  return currentDate;
+}
+
+function workday(startDate: string, days: number, holidaysList: string[]): string {
+  const holidays = new Set(holidaysList); // 공휴일을 Set으로 변환하여 빠른 검색 가능
+  let date = new Date(startDate);
+
+  let daysMoved = 0;
+  while (daysMoved < Math.abs(days)) {
+    date.setDate(date.getDate() + (days > 0 ? 1 : -1)); // days가 양수면 +1, 음수면 -1 이동
+
+    if (!isWeekend(date) && !isHoliday(date, holidays)) {
+      daysMoved++;
+    }
+  }
+
+  return date.toISOString().split("T")[0]; // YYYY-MM-DD 형식 반환
+}
+
+// 📌 테스트 실행
+export const holidaysList = [
+  "2023-03-01", "2023-05-05", "2023-05-27", "2023-05-29", "2023-06-06",
+  "2023-08-15", "2023-09-01", "2023-09-28", "2023-09-29", "2023-10-02",
+  "2023-10-03", "2023-10-09", "2023-12-25", "2024-01-01", "2024-02-09",
+  "2024-02-12", "2024-03-01", "2024-04-10", "2024-05-05", "2024-05-06",
+  "2024-05-15", "2024-06-06", "2024-08-15", "2024-09-02", "2024-09-16",
+  "2024-09-17", "2024-09-18", "2024-10-01", "2024-10-03", "2024-10-09",
+  "2024-12-25", "2025-01-01", "2025-01-28", "2025-01-29", "2025-01-30",
+  "2025-03-03", "2025-05-01", "2025-05-05", "2025-05-06", "2025-06-06",
+  "2025-08-15", "2025-09-01", "2025-10-03", "2025-10-06", "2025-10-07",
+  "2025-10-08", "2025-10-09", "2025-12-25"
+];
+
+export function calculateWorkday(L9: string, holidaysList: string[]): string {
+  const holidays = new Set(holidaysList);
+  const startDate = new Date(L9);
+
+  // Excel 수식 변환:
+  // =WORKDAY(L9, IF(NETWORKDAYS(L9, L9, holidays) = 1, -1, -2), holidays)
+  // 1) NETWORKDAYS(L9, L9, holidays) = 1 → L9이 근무일이면 -1일 이동
+  // 2) L9이 공휴일이나 주말이면 -2일 이동
+  const isWorkday = !isWeekend(startDate) && !isHoliday(startDate, holidays);
+  const daysToMove = isWorkday ? -1 : -2;
+
+  return workday(L9, daysToMove, holidaysList);
+}

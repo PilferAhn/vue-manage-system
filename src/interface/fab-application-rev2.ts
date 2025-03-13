@@ -1,4 +1,10 @@
+import { ca } from "element-plus/es/locale";
 import type { User } from "./user";
+import {
+  calculateWorkday,
+  formatDate,
+  holidaysList,
+} from "../utils/date-utils";
 
 export interface Bump {
   size: string;
@@ -79,7 +85,7 @@ export interface FabRequestForm {
   aspectRatio?: string | number;
   isAlPad?: boolean;
   gflThickness?: string | number;
-  mstThickness? : string | number;
+  mstThickness?: string | number;
   quantity?: number;
   waferType?: string;
   wantedFabStartDate?: string;
@@ -95,6 +101,7 @@ export interface FabRequestForm {
   band?: string;
   status?: string;
   createdDate?: string;
+  dateOfFabCardConvey?: string;
   trimming?: string;
   hsWaferInfo?: string;
   isNeedSio2Seed?: boolean;
@@ -308,7 +315,7 @@ export class FabRequest implements FabRequestForm {
   aspectRatio?: string | number;
   isAlPad?: boolean;
   gflThickness?: string | number;
-  mstThickness? : string | number;
+  mstThickness?: string | number;
   quantity?: number;
   waferType?: string;
   wantedFabStartDate?: string;
@@ -397,27 +404,37 @@ export class FabRequest implements FabRequestForm {
   tcLayers?: Layer[];
   hsType?: HsType;
   passivationType?: passivationType[];
+  dateOfFabCardConvey?: string;
 
   constructor(data: FabRequestForm) {
     Object.assign(this, data);
-    this.isGfl = this.gflThickness !== null
+    this.isGfl = this.gflThickness !== null;
   }
+
+  calFabCardConveyDate = () => {
+    console.log(this.wantedFabStartDate);
+    return calculateWorkday(this.wantedFabStartDate, holidaysList);
+  };
 
   createHsWaferCondition = () => {
     let hsWaferCondition = "";
-
-    if (this.wafer.sawTypeId === "HS") {
-      hsWaferCondition =
-        this.wafer.waferCompany +
-        " " +
-        this.wafer.size.toString() +
-        '" ' +
-        this.hsType.peAngle.toString() +
-        this.hsType.name +
-        this.hsType.siliconRotation +
-        "   " +
-        this.quantity.toString() +
-        "ea";
+    try {
+      if (this.wafer.sawTypeId === "HS") {
+        hsWaferCondition =
+          this.wafer.waferCompany +
+          " " +
+          this.wafer.size.toString() +
+          '" ' +
+          this.hsType.peAngle.toString() +
+          this.hsType.name +
+          this.hsType.siliconRotation +
+          "   " +
+          this.quantity.toString() +
+          "ea";
+      }
+    } catch (error) {
+      // console.error("Error in createTrimmingInfo:", error);
+      return ""; // 🚀 오류 발생 시 빈 문자열 반환
     }
 
     return hsWaferCondition;
@@ -426,19 +443,21 @@ export class FabRequest implements FabRequestForm {
   createWaferInfo = () => {
     let waferInfoStr = "";
 
-    if (this.idtLayers !== null && this.idtType !== null) {
-      waferInfoStr +=
-        this.idtType.name +
-        "=" +
-        this.idtLayers.map((layer) => String(layer.thickness)).join("/");
-    }
+    if (this.wafer.sawTypeId === "HS") {
+      if (this.idtLayers !== null && this.idtType !== null) {
+        waferInfoStr +=
+          this.idtType.name +
+          "=" +
+          this.idtLayers.map((layer) => String(layer.thickness)).join("/");
+      }
 
-    if (this.idt2Layers !== null && this.idt2Type !== null) {
-      waferInfoStr +=
-        "," +
-        this.idt2Type.name +
-        "=" +
-        this.idt2Layers.map((layer) => String(layer.thickness)).join("/");
+      if (this.idt2Layers !== null && this.idt2Type !== null) {
+        waferInfoStr +=
+          "," +
+          this.idt2Type.name +
+          "=" +
+          this.idt2Layers.map((layer) => String(layer.thickness)).join("/");
+      }
     }
 
     return waferInfoStr;
@@ -446,31 +465,39 @@ export class FabRequest implements FabRequestForm {
 
   createTrimmingInfo = () => {
     let ltTrrimmingVal = "";
-    if (this.wafer.sawTypeId === "HS") {
-      let waferInfo = this.hsType.name.split("/");
-      if (waferInfo.length >= 1 && this.hsTrimingTarget !== null) {
-        let temp = waferInfo[0];
-        let isStart = false;
-        let oriThickness = "";
-        for (let i = 0; i < temp.length; i++) {
-          if (temp[i] === "(") {
-            isStart = true;
-            continue;
-          } else if (temp[i] === ")") {
-            break;
-          }
-          if (isStart) {
-            oriThickness += temp[i];
-          }
-        }
 
-        ltTrrimmingVal =
-          "LT Trimming " +
-          oriThickness +
-          " -> " +
-          this.hsTrimingTarget.toString();
+    try {
+      if (this.wafer.sawTypeId === "HS") {
+        let waferInfo = this.hsType.name.split("/");
+        if (waferInfo.length >= 1 && this.hsTrimingTarget !== null) {
+          let temp = waferInfo[0];
+          let isStart = false;
+          let oriThickness = "";
+
+          for (let i = 0; i < temp.length; i++) {
+            if (temp[i] === "(") {
+              isStart = true;
+              continue;
+            } else if (temp[i] === ")") {
+              break;
+            }
+            if (isStart) {
+              oriThickness += temp[i];
+            }
+          }
+
+          ltTrrimmingVal =
+            "LT Trimming " +
+            oriThickness +
+            " -> " +
+            this.hsTrimingTarget.toString();
+        }
       }
+    } catch (error) {
+      // console.error("Error in createTrimmingInfo:", error);
+      return ""; // 🚀 오류 발생 시 빈 문자열 반환
     }
+
     return ltTrrimmingVal;
   };
 }
