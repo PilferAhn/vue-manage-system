@@ -19,6 +19,16 @@
       </template>
     </el-table-column>
 
+    <!-- <el-table-column
+      label="LOT ID"      
+      :align="'center'"
+      width="130"
+    >
+      <template #default="scope">
+        <el-input />
+      </template>
+    </el-table-column> -->
+
     <el-table-column
       label="관리자"
       prop="user"

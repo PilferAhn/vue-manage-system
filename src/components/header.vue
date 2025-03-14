@@ -9,7 +9,7 @@
 		<div class="header-right">
 			<div class="header-user-con">
 				<!-- 消息中心 -->
-				<div class="btn-bell" @click="router.push('/tabs')">
+				<!-- <div class="btn-bell" @click="router.push('/tabs')">
 					<el-tooltip
 						effect="dark"
 						:content="message ? `有${message}条未读消息` : `消息中心`"
@@ -18,7 +18,7 @@
 						<i class="el-icon-lx-notice"></i>
 					</el-tooltip>
 					<span class="btn-bell-badge" v-if="message"></span>
-				</div>
+				</div> -->
 				<!-- 用户头像 -->
 				<el-avatar class="user-avator" :size="30" :src="imgurl" />
 				<!-- 用户名下拉菜单 -->
@@ -35,7 +35,8 @@
 								<el-dropdown-item>项目仓库</el-dropdown-item>
 							</a> -->
 							<!-- <el-dropdown-item command="user">个人中心</el-dropdown-item> -->
-							<el-dropdown-item divided command="loginout">로그아웃</el-dropdown-item>
+							<el-dropdown-item divided command="loginout">Logout</el-dropdown-item>
+							<el-dropdown-item divided command="goMyInfo">My Info</el-dropdown-item>
 						</el-dropdown-menu>
 					</template>
 				</el-dropdown>
@@ -71,6 +72,9 @@ const handleCommand = (command: string) => {
 		localStorage.removeItem('ms_username');
 		router.push('/login');
 	} else if (command == 'user') {
+		router.push('/user');
+	}
+	else if (command == 'goMyInfo') {
 		router.push('/user');
 	}
 };

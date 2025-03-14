@@ -1,3 +1,6 @@
+<script lang="ts">
+export default {};
+</script>
 <template>
   <!-- Element Plus Table -->
   <div class="group-count">
@@ -37,12 +40,11 @@
         <el-tag type="danger">No</el-tag>
       </el-table-column>
 
-      <el-table-column
-        prop="group"
-        label="Group"
-        width="75"
-        :align="'center'"
-      />
+      <el-table-column prop="group" label="Group" width="140" :align="'center'">
+        <template #default="scope">
+          {{ scope.row.designer.department }}
+        </template>
+      </el-table-column>
       <el-table-column
         prop="process"
         label="Process"
@@ -113,9 +115,14 @@
       </el-table-column>
       <el-table-column label="완료일" width="120" :align="'center'">
         <template #default="scope">
-          <span>{{ formatDate(scope.row.wantedFabFinishDate) }}</span>
+          <span
+            :style="{ color: scope.row.checkFabOutDate() ? 'inherit' : 'red' }"
+          >
+            {{ formatDate(scope.row.wantedFabFinishDate) }}
+          </span>
         </template>
       </el-table-column>
+
       <el-table-column label="Fab Card 전달일" width="120" :align="'center'">
         <template #default="scope">
           <span>{{ scope.row.calFabCardConveyDate() }}</span>
@@ -185,39 +192,46 @@
           {{ scope.row.createHsWaferCondition() }}
         </template>
       </el-table-column>
-      <!-- <el-table-column
+      <el-table-column
         fixed="right"
         label="Action"
         min-width="200"
         :align="'center'"
       >
         <template #default="scope">
-          <el-button
+          <!-- <el-button
             type="primary"
             size="small"
             @click="updateStatus(scope.row, 'confirm')"
           >
             확정
-          </el-button>
+          </el-button> -->
           <el-button
             type="warning"
             size="small"
-            @click="updateStatus(scope.row, 'delay')"
-            >지연</el-button
+            @click="
+              confirmAction(
+                scope.row,
+                props.weekNumber + 1,
+                true,
+                'updateWeekNumber'
+              )
+            "
+            >Delay</el-button
           >
           <el-button
             type="danger"
             size="small"
-            @click="updateStatus(scope.row, 'cancel')"
+            @click="confirmAction(scope.row, 0, true, 'pending')"
           >
-            취소
+            Pending
           </el-button>
         </template>
-      </el-table-column> -->
+      </el-table-column>
     </el-table>
   </div>
   <div class="buttun-section">
-    <el-button type="primary">SAVE</el-button>
+    <!-- <el-button type="primary">SAVE</el-button> -->
     <el-button type="success" @click="downloadExcel">To Excel</el-button>
     <!-- <el-button type=""></el-button>
       <el-button type="warning"></el-button> -->
@@ -225,19 +239,27 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, computed, ref } from "vue";
+import { defineProps, computed, ref, onMounted, reactive } from "vue";
 import { FabRequest } from "../../../../interface/fab-application-rev2";
 import {
   handleDateChange as externalHandleDateChange,
+  updatePendingStatus,
   updateStatus,
+  updateWeekNumber,
 } from "../ApplicationsByWeek";
 import InputText from "../../Common/InputText.vue";
 import { formatDate } from "../../Common/Application";
 import { convertKeysToPEP8 } from "../../../../utils/key-converter";
+import { getUserId } from "../../../../utils/account-utils";
+import { getApplicationListByDict } from "../../../../utils/Fab/fab-application-utils";
+import type { FabRequestForm } from "../../../../interface/fab-application-rev2";
+import { ElMessageBox, ElMessage } from "element-plus";
 
 const props = defineProps<{
   processData: FabRequest[];
+  weekNumber: number;
 }>();
+const applications = reactive<FabRequest[]>([]);
 
 // emit 정의
 const emit = defineEmits<{
@@ -274,8 +296,6 @@ const downloadExcel = async () => {
   props.processData.forEach((fab) => {
     sendingData.value.push(convertKeysToPEP8(fab));
   });
-
-  console.log(sendingData.value);
 };
 
 const tableRowClassName = ({ row }: { row: FabRequest }) => {
@@ -287,11 +307,112 @@ const tableRowClassName = ({ row }: { row: FabRequest }) => {
   return "";
 };
 
-// const tableRowClassName = (row: ProcessData) => {
-//   console.log(row)
-//   // 예: 만약 row의 특정 조건에 따라 줄을 긋고 싶다면
-//   return row.status === 'created' ? 'row-strikethrough' : '';
-// };
+async function confirmAction(
+  row: FabRequest,
+  weekNumber: number,
+  isPending: boolean,
+  type: string
+) {
+  const actionText =
+    type === "updateWeekNumber" ? "다음 주로 연기" : "보류 처리";
+
+  try {
+    await ElMessageBox.confirm(
+      `해당 항목을 "${actionText}" 하시겠습니까?`,
+      "확인",
+      {
+        confirmButtonText: "확인",
+        cancelButtonText: "취소",
+        type: "warning",
+      }
+    );
+
+    // 사용자가 확인을 누르면 실행
+    await handleStatus(row, weekNumber, isPending, type);
+
+    ElMessage({
+      type: "success",
+      message: `"${actionText}" 처리되었습니다.`,
+    });
+  } catch (error) {
+    // 사용자가 취소를 누르면 아무 작업도 하지 않음
+    ElMessage({
+      type: "info",
+      message: `"${actionText}" 작업이 취소되었습니다.`,
+    });
+  }
+}
+
+async function handleStatus(
+  row: FabRequest,
+  weekNumber: number,
+  isPending: boolean,
+  type: string
+) {
+  if (type === "updateWeekNumber") {
+    updateWeekNumber(row, weekNumber);
+  } else {
+    updatePendingStatus(row, isPending);
+  }
+
+  props.processData.length = 0;
+
+  try {
+    // getApplicationList를 호출하고 결과를 기다림
+
+    let para = {
+      users: true,
+      wafer: true,
+      idt_type: true,
+      hs_type: true,
+      idt_layers: true,
+      is_pending: false,
+      week_numbers: props.weekNumber,
+    };
+
+    if (getUserId() !== "admin") {
+      para["observer_id"] = getUserId();
+    }
+
+    const data: FabRequestForm[] = await getApplicationListByDict(para);
+
+    // const transformedData = data.map((item: any) => new FabApplication(item));
+    props.processData.push(
+      ...data.map((item: FabRequestForm) => new FabRequest(item))
+    );
+  } catch (error) {
+    console.error("Error fetching application list:", error);
+  }
+}
+
+onMounted(async () => {
+  try {
+    // getApplicationList를 호출하고 결과를 기다림
+    props.processData.length = 0;
+    let para = {
+      users: true,
+      wafer: true,
+      idt_type: true,
+      hs_type: true,
+      idt_layers: true,
+      is_pending: false,
+      week_numbers: props.weekNumber,
+    };
+
+    if (getUserId() !== "admin") {
+      para["observer_id"] = getUserId();
+    }
+
+    const data: FabRequestForm[] = await getApplicationListByDict(para);
+
+    // const transformedData = data.map((item: any) => new FabApplication(item));
+    props.processData.push(
+      ...data.map((item: FabRequestForm) => new FabRequest(item))
+    );
+  } catch (error) {
+    console.error("Error fetching application list:", error);
+  }
+});
 
 const groupCounts = computed(() => {
   return props.processData.reduce((acc, item) => {

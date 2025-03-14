@@ -171,7 +171,7 @@
             prop="process"
             placeholder="긴급도를 선택하세요"
             :options="priorityList"
-            :disable="false"
+            :disable="true"
             class="wide-select"
           />
         </el-col>
@@ -502,7 +502,7 @@
   const expectedDate = ref<number>(0);
   watch(trackedValues, (newValues) => {
     if (newValues.sawTypeId !== null && newValues.wantedFabStartDate !== null) {
-      expectedDate.value = calFabOutLeadTime(props.fabApplication, props.sawType);
+      expectedDate.value = calFabOutLeadTime(props.fabApplication, props.sawType.sawTypeId);
       props.fabApplication.wantedFabFinishDate = addWorkdays(
         new Date(newValues.wantedFabStartDate),
         expectedDate.value

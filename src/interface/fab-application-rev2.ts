@@ -5,6 +5,8 @@ import {
   formatDate,
   holidaysList,
 } from "../utils/date-utils";
+import { addWorkdays, calFabOutLeadTime } from "../utils/Fab/fab-application-utils";
+import { off } from "process";
 
 export interface Bump {
   size: string;
@@ -412,7 +414,6 @@ export class FabRequest implements FabRequestForm {
   }
 
   calFabCardConveyDate = () => {
-    console.log(this.wantedFabStartDate);
     return calculateWorkday(this.wantedFabStartDate, holidaysList);
   };
 
@@ -499,5 +500,31 @@ export class FabRequest implements FabRequestForm {
     }
 
     return ltTrrimmingVal;
+  };
+
+  checkFabOutDate = () => {
+
+    
+    const offset = calFabOutLeadTime(this, this.wafer.sawTypeId);
+    // 입력된 날짜를 Date 객체로 변환 (ISO 8601 형식 지원)
+    const start = new Date(this.wantedFabStartDate);
+    
+    // 입력된 숫자(오프셋)를 추가
+    const expectedEnd = addWorkdays(start ,offset)
+    // expectedEnd.setDate(addWorkdays(this.wantedFabStartDate, offset));
+
+    // 비교할 날짜(Date 객체)로 변환
+    const targetEnd = new Date(this.wantedFabFinishDate);
+
+    console.log(this.productName)
+    console.log(`${expectedEnd}`)
+    console.log(`${targetEnd}`)
+
+    // 두 날짜를 비교하여 결과 반환 (연, 월, 일까지만 비교)
+    return (
+      expectedEnd.getFullYear() === targetEnd.getFullYear() &&
+      expectedEnd.getMonth() === targetEnd.getMonth() &&
+      expectedEnd.getDate() === targetEnd.getDate()
+    );
   };
 }

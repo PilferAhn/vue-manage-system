@@ -105,9 +105,11 @@ import DialogTemplate from "../ApplicationLinksDialog.vue";
 import type { FabRequestForm } from "../../../../interface/fab-application-rev2";
 import {
   getApplicationList,
+  getApplicationListByDict,
   sendAppRemoveRequest,
 } from "../../../../utils/Fab/fab-application-utils";
 import router from "../../../../router";
+import { getUserId } from "../../../../utils/account-utils";
 
 const props = defineProps<{
   applications: FabRequestForm[];
@@ -157,16 +159,20 @@ async function handleDelete(application: FabRequestForm) {
 
       // 목록 갱신
       props.applications.length = 0;
-      const data = await getApplicationList(
-        true,
-        true,
-        true,
-        "admin",
-        null,
-        null,
-        true,
-        true
-      );
+
+      let para = {
+        users : true,
+        wafer : true,
+        idt_type : true,
+        hs_type : true,
+        idt_layers : true
+      }
+      para["observer_id"] = getUserId()
+      // if(getUserId() !== "admin"){
+      //   para["observer_id"] = getUserId()
+      // }
+
+      const data = await getApplicationListByDict(para)
       props.applications.push(...data);
     } else {
       throw new Error("삭제 요청이 실패했습니다.");

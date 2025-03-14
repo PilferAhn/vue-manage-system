@@ -231,6 +231,7 @@ const fetchData = async () => {
   try {
     //props.status = 'finished'
     const response = await axios.post(
+      
       "pdt_application/get_application_list_by_test_type",
       {
         status: props.status,
@@ -241,7 +242,7 @@ const fetchData = async () => {
     );
 
     allData.value = response.data;
-    console.log(allData);
+    
     filterData();
   } catch (error) {
     ElMessage.error("데이터를 불러오는 데 실패했습니다.");

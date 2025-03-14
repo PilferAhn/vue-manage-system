@@ -9,3 +9,9 @@ export interface OptionNumberInterface {
   label: string;
   value: number;
 }
+
+export interface OptionBooleanInterface{
+  key : number;
+  label : string;
+  value : boolean;
+}

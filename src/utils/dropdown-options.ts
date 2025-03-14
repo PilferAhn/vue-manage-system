@@ -1,4 +1,4 @@
-import type { OptionInterface } from "../interface/option";
+import type { OptionBooleanInterface, OptionInterface } from "../interface/option";
 
 export const filterTypeOptions: OptionInterface[] = [
   { key: 1, label: "Single", value: "Single" },
@@ -30,3 +30,14 @@ export const applicationGroupOptions: OptionInterface[] = [
     value: "상품화개발 - CHIP",
   },
 ];
+
+
+export const TrueAndFalseOptions : OptionBooleanInterface[] = [
+  {
+    key : 1 , label : "O", value : true
+  }
+  ,
+  {
+    key : 2, label : "X", value : false
+  }
+]

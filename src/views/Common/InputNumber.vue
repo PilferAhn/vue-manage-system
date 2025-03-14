@@ -9,7 +9,7 @@ import { ref, watch, computed } from "vue";
 import { ElInput } from "element-plus";
 
 const props = defineProps({
-  modelValue: Number,
+  modelValue: String || Number,
   label: String,
   prop: String,
   rules: Array,

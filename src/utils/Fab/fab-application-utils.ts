@@ -76,7 +76,7 @@ export function initFabApplication3(bom: Bom) {
     hsTrimingTarget: null,
     destinationId: "",
     packageId: undefined,
-    priorityId: "",
+    priorityId: "C",
     isFreeWafer: true,
     samplePurpose : "DVR",
     isNeededLtEtching: false,
@@ -406,6 +406,48 @@ export async function sendAppRemoveRequest(app: FabRequestForm) {
   }
 }
 
+export async function getApplicationListByDict(
+  options : object
+): Promise<FabRequestForm[]> {
+  // const applications = reactive<FabRequestForm[]>([]);
+  const applications = ref<FabRequestForm[]>([]);
+
+  const formData = new FormData();
+  // 객체의 key-value를 FormData에 추가
+  Object.entries(options).forEach(([key, value]) => {
+    formData.append(key, String(value)); // 모든 값을 문자열로 변환하여 추가
+  });
+
+  
+
+  // if(observer_id !== undefined){
+  //   formData.append("observer_id", observer_id)
+  // }
+  
+  
+
+  // if (CreatedDateStart !== null) {
+  //   formData.append("created_date_start", CreatedDateStart);
+  // }
+
+  // if (CreateDateEnd !== null) {
+  //   formData.append("created_date_end", CreateDateEnd);
+  // }
+
+  // formData.append("observer_id", userId);
+
+  const data = (await sendPostRequest(
+    serverUrl + "/fab_monitoring_rev2/get_fab_requests_list",
+    formData
+  )) as object[];
+
+  for (let i = 0; i < data.length; i++) {
+    applications.value.push(convertKeysToCamelCase(data[i]));
+  }
+
+  return applications.value;
+}
+
 export async function getApplicationList(
   UserOption: boolean,
   waferOption: boolean,
@@ -415,6 +457,7 @@ export async function getApplicationList(
   CreateDateEnd: string,
   hsType : boolean,
   idtLayers : boolean,
+  observer_id : undefined | string,
 ): Promise<FabRequestForm[]> {
   // const applications = reactive<FabRequestForm[]>([]);
   const applications = ref<FabRequestForm[]>([]);
@@ -425,6 +468,12 @@ export async function getApplicationList(
   formData.append("idt_type", String(idtType));
   formData.append("hs_type", String(hsType))
   formData.append("idt_layers", String(idtLayers))
+
+  if(observer_id !== undefined){
+    formData.append("observer_id", observer_id)
+  }
+  
+  
 
   if (CreatedDateStart !== null) {
     formData.append("created_date_start", CreatedDateStart);
@@ -772,11 +821,11 @@ export function getRunningFabReqeust(applicationList: FabApplicationForm[]) {
   return filteredApp.value;
 }
 
-export function calFabOutLeadTime(fabApp : FabRequestForm, sawType : SawType){
+export function calFabOutLeadTime(fabApp : FabRequestForm, sawTypeId : string){
 
   let expectedDate = 7
 
-  if(sawType.sawTypeId === "NS"){
+  if(sawTypeId === "NS"){
     expectedDate = 7
     if(fabApp.packageId === "CSP"){
 
@@ -794,7 +843,7 @@ export function calFabOutLeadTime(fabApp : FabRequestForm, sawType : SawType){
       expectedDate = 9
     }
   }
-  else if(sawType.sawTypeId === "TC"){
+  else if(sawTypeId === "TC"){
     expectedDate = 10
     if(fabApp.packageId === "CSP"){
       if(fabApp.isMst){
