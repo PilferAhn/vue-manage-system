@@ -370,9 +370,9 @@ async function handleStatus(
       week_numbers: props.weekNumber,
     };
 
-    if (getUserId() !== "admin") {
-      para["observer_id"] = getUserId();
-    }
+    // if (getUserId() !== "admin") {
+    //   para["observer_id"] = getUserId();
+    // }
 
     const data: FabRequestForm[] = await getApplicationListByDict(para);
 
@@ -399,9 +399,9 @@ onMounted(async () => {
       week_numbers: props.weekNumber,
     };
 
-    if (getUserId() !== "admin") {
-      para["observer_id"] = getUserId();
-    }
+    // if (getUserId() !== "admin") {
+    //   para["observer_id"] = getUserId();
+    // }
 
     const data: FabRequestForm[] = await getApplicationListByDict(para);
 
