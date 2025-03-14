@@ -1,7 +1,11 @@
 <template>
   <div>
     <el-table v-if="isLoad" :data="applications" border class="table-class">
-      <el-table-column prop="group" label="그룹" :align="'center'" width="70" />
+      <el-table-column prop="group" label="그룹" :align="'center'" width="70">
+        <template #default="scope">
+          {{ scope.row.designer.department }}
+        </template>
+      </el-table-column>
 
       <el-table-column
         prop="waferType"
