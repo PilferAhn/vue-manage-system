@@ -14,6 +14,7 @@
             <ApplicationContent
               v-model:fabApplication="props.fabApplication"
               :sawType="sawType"
+              :application-type="props.applicationType"
             />
   
             <Buttons

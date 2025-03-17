@@ -4,7 +4,7 @@
         <!-- Submit Section -->
         <div class="button-container">
           <el-form-item v-if="props.applicationType==='create'">
-            <el-button type="primary" class="action-button" @click="submitForm('submit')">
+            <el-button disabled type="primary" class="action-button" @click="submitForm('submit')">
               제출
             </el-button>
           </el-form-item>

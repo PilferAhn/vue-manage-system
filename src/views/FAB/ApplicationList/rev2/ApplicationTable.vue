@@ -4,9 +4,16 @@ export default {};
 <template>
   <!-- Element Plus Table -->
   <div class="group-count">
-    <div v-for="(count, group) in groupCounts" :key="group" class="group-box">
-      <span>{{ group }}: {{ count }}개</span>
+    <div class="group-count">
+      <div class="group-box">Total - {{ totalQuantity }} 매</div>
+      <div v-for="(stats, group) in groupStats" :key="group" class="group-box">
+        <span
+          >{{ group }}: {{ stats.count }} 건 -
+          {{ stats.totalQuantity }} 매</span
+        >
+      </div>
     </div>
+
   </div>
 
   <div class="table-wrapper">
@@ -20,15 +27,6 @@ export default {};
       :row-class-name="tableRowClassName"
       :lazy="true"
     >
-      <!-- <el-table-column label="선택" :align="'center'" width="50">
-          <template #default="scope">
-            <el-checkbox
-              :model-value="idList.includes(scope.row.id)"
-              @change="handleCheckboxChange(scope.row.id, $event)"
-            />
-          </template>
-        </el-table-column> -->
-
       <el-table-column
         type="index"
         label="No"
@@ -56,11 +54,31 @@ export default {};
         </template>
       </el-table-column>
       <el-table-column
+        v-if="getUserId() === 'admin' || getRole() === 'group leader'"
         prop="priorityId"
         label="Priority"
-        width="70"
+        width="85"
+        :align="'center'"
+      >
+        <template #default="scope">
+          <el-select v-model="scope.row.priorityId">
+            <el-option
+              v-for="prioriyOption in priorityList"
+              :key="prioriyOption.key"
+              :value="prioriyOption.value"
+              :label="prioriyOption.label"
+            ></el-option>
+          </el-select>
+        </template>
+      </el-table-column>
+      <el-table-column
+        v-else
+        prop="priorityId"
+        label="Priority"
+        width="85"
         :align="'center'"
       />
+
       <el-table-column
         prop="packageId"
         label="Package"
@@ -86,12 +104,7 @@ export default {};
         width="60"
         :align="'center'"
       />
-      <!-- <el-table-column
-        prop="destinationId"
-        label="목적지"
-        width="80"
-        :align="'center'"
-      /> -->
+
       <el-table-column prop="code" label="Code" width="60" :align="'center'" />
       <!-- FAB Insert Date를 날짜 선택기로 수정 -->
       <el-table-column label="담당자" width="150" :align="'center'">
@@ -101,15 +114,6 @@ export default {};
       </el-table-column>
       <el-table-column label="투입일" width="110" :align="'center'">
         <template #default="scope">
-          <!-- <el-date-picker
-            v-model="scope.row.wantedFabStartDate"
-            type="date"
-            placeholder="Select date"
-            format="YYYY-MM-DD"
-            value-format="YYYY-MM-DD"
-            @change="handleDateChange(scope.row)"
-            style="width: 120px; height: 30px"
-          /> -->
           {{ formatDate(scope.row.wantedFabStartDate) }}
         </template>
       </el-table-column>
@@ -192,7 +196,9 @@ export default {};
           {{ scope.row.createHsWaferCondition() }}
         </template>
       </el-table-column>
+
       <el-table-column
+        v-if="getUserId() === 'admin' || getRole() === 'group leader'"
         fixed="right"
         label="Action"
         min-width="200"
@@ -248,17 +254,19 @@ import {
 import InputText from "../../Common/InputText.vue";
 import { formatDate } from "../../Common/Application";
 import { convertKeysToPEP8 } from "../../../../utils/key-converter";
-import { getUserId } from "../../../../utils/account-utils";
+import { getRole, getUserId } from "../../../../utils/account-utils";
 import { getApplicationListByDict } from "../../../../utils/Fab/fab-application-utils";
 import type { FabRequestForm } from "../../../../interface/fab-application-rev2";
 import { ElMessageBox, ElMessage } from "element-plus";
+import { receivePriorityList } from "../../../../utils/Fab/fab-application-utils";
+import { OptionInterface } from "../../../../interface/option";
 
 const props = defineProps<{
   processData: FabRequest[];
   weekNumber: number;
 }>();
 const applications = reactive<FabRequest[]>([]);
-
+const priorityList = ref<OptionInterface[]>([]);
 // emit 정의
 const emit = defineEmits<{
   (e: "update:processData", updatedData: FabRequest[]): void;
@@ -385,6 +393,8 @@ async function handleStatus(
 
 onMounted(async () => {
   try {
+    priorityList.value = await receivePriorityList();
+
     // getApplicationList를 호출하고 결과를 기다림
     props.processData.length = 0;
     let para = {
@@ -417,6 +427,35 @@ const groupCounts = computed(() => {
     acc[item.designer.department] = (acc[item.designer.department] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
+});
+
+const groupQuantities = computed(() => {
+  return props.processData.reduce((acc, item) => {
+    acc[item.designer.department] =
+      (acc[item.designer.department] || 0) + (item.quantity || 0);
+    return acc;
+  }, {} as Record<string, number>);
+});
+
+const totalQuantity = computed(() => {
+  return Object.values(groupStats.value).reduce(
+    (sum, stats) => sum + stats.totalQuantity,
+    0
+  );
+});
+
+const groupStats = computed(() => {
+  return props.processData.reduce((acc, item) => {
+    const department = item.designer.department;
+
+    // 부서별 건수(count) 증가
+    acc[department] = acc[department] || { count: 0, totalQuantity: 0 };
+    acc[department].count += 1;
+
+    // 부서별 매수(quantity) 합산
+    acc[department].totalQuantity += item.quantity || 0;
+    return acc;
+  }, {} as Record<string, { count: number; totalQuantity: number }>);
 });
 </script>
 

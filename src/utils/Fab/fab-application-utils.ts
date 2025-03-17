@@ -418,20 +418,6 @@ export async function getApplicationListByDict(
     formData.append(key, String(value)); // 모든 값을 문자열로 변환하여 추가
   });
 
-  // if(observer_id !== undefined){
-  //   formData.append("observer_id", observer_id)
-  // }
-
-  // if (CreatedDateStart !== null) {
-  //   formData.append("created_date_start", CreatedDateStart);
-  // }
-
-  // if (CreateDateEnd !== null) {
-  //   formData.append("created_date_end", CreateDateEnd);
-  // }
-
-  // formData.append("observer_id", userId);
-
   const data = (await sendPostRequest(
     serverUrl + "/fab_monitoring_rev2/get_fab_requests_list",
     formData

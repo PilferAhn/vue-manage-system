@@ -48,6 +48,7 @@
             v-model="props.fabApplication.productName"
             props="ProductName"
             label="Product Name"
+            :disable="props.applicationType === 'load'"
           />
         </el-col>
         <el-col :span="7">
@@ -364,6 +365,7 @@
   const props = defineProps<{
     fabApplication: FabRequestForm;
     sawType: SawType;
+    applicationType: string;
   }>();
   
   const bomCodeList = ref<BomCode[]>([]);

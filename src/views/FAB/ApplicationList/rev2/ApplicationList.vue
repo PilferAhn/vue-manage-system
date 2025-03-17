@@ -1,10 +1,15 @@
 <template>
   <div>
     <el-table v-if="isLoad" :data="applications" border class="table-class">
-      <el-table-column prop="user.designer.department" label="그룹" :align="'center'" width="150">
-        <!-- <template #default="scope">
+      <el-table-column
+        prop="user.designer.department"
+        label="그룹"
+        :align="'center'"
+        width="150"
+      >
+        <template #default="scope">
           {{ scope.row.designer.department }}
-        </template> -->
+        </template>
       </el-table-column>
 
       <el-table-column
@@ -37,7 +42,13 @@
         width="150"
       />
 
-      <el-table-column prop="note" label="용도" :align="'center'" width="150" />
+      <el-table-column
+        prop="note"
+        label="용도"
+        :align="'center'"
+        width="200"
+        show-overflow-tooltip
+      />
 
       <el-table-column
         prop="quantity"
@@ -51,14 +62,14 @@
         :align="'center'"
         width="60"
       />
-      <el-table-column
+      <!-- <el-table-column
         prop="dateOfFabInsert"
         label="투입일"
         :align="'center'"
         width="80"
-      />
+      /> -->
 
-      <el-table-column label="P/L" :align="'center'" width="150">
+      <el-table-column label="P/L" :align="'center'" width="150" show-overflow-tooltip>
         <template #default="scope"
           >{{ scope.row.designer.userName }} /
           {{ scope.row.requester.userName }}</template
@@ -67,7 +78,7 @@
       <el-table-column prop="waferType" label="Type" :align="'center'">
         <template #default="scope">{{ scope.row.wafer.sawTypeId }}</template>
       </el-table-column>
-      <el-table-column prop="band" label="Band" :align="'center'" width="100">
+      <el-table-column prop="band" label="Band" :align="'center'" width="100" show-overflow-tooltip>
       </el-table-column>
       <el-table-column label="출하" prop="destinationId" :align="'center'">
       </el-table-column>
@@ -114,6 +125,8 @@ import {
 } from "../../../../utils/Fab/fab-application-utils";
 import router from "../../../../router";
 import { getUserId } from "../../../../utils/account-utils";
+import { userInfo } from "os";
+import { get } from "http";
 
 const applications = reactive<FabRequestForm[]>([]);
 const isLoad = ref<boolean>(false);
@@ -129,21 +142,22 @@ function handleVisible(status: boolean, fabRequestForm: FabRequestForm) {
 onMounted(async () => {
   try {
     // getApplicationList를 호출하고 결과를 기다림
-    
 
-    let para = {
-      users: true,
-      wafer: true,
-      idt_type: true,
-      hs_type: true,
-      idt_layers: true,
+    const option = {
+      users: "True",
+      wafer: "True",
+      idt_type: "False",
+      hs_type: "True",
+      idt_layers: "True",
+      order_by: "created_date",
+      order_dir: "desc",
     };
-    
+
     if (getUserId() !== "admin") {
-      para["observer_id"] = getUserId();  
+      option["observer_id"] = getUserId();
     }
-    
-    const data: FabRequestForm[] = await getApplicationListByDict(para);
+    applications.length = 0;
+    const data = await getApplicationListByDict(option);
 
     applications.push(...data); // 가져온 데이터를 reactive 배열에 추가
     isLoad.value = true;
@@ -186,19 +200,22 @@ async function handleDelete(application: FabRequestForm) {
         duration: 3000,
       });
 
-      // 목록 갱신
+      const option = {
+        users: "True",
+        wafer: "True",
+        idt_type: "False",
+        hs_type: "True",
+        idt_layers: "True",
+        order_by: "created_date",
+        order_dir: "desc",
+      };
+
+      if (getUserId() !== "admin") {
+        option["observer_id"] = getUserId();
+      }
       applications.length = 0;
-      const data = await getApplicationList(
-        true,
-        true,
-        true,
-        "admin",
-        null,
-        null,
-        true,
-        true,
-        getUserId()
-      );
+      const data = await getApplicationListByDict(option);
+
       applications.push(...data);
     } else {
       throw new Error("삭제 요청이 실패했습니다.");
@@ -221,5 +238,16 @@ export default {};
 <style>
 .table-class {
   font-size: small;
+}
+</style>
+
+<style scoped>
+.ellipsis-text {
+  display: inline-block;
+  width: 180px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: pointer;
 }
 </style>

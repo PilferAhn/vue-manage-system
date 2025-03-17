@@ -78,34 +78,7 @@ const nextWeekDataArray = ref<FabRequest[]>([]); // For next week's data
 const isLoad = ref<boolean>(false);
 const applications = reactive<FabRequest[]>([]);
 
-// onMounted(async () => {
-//   try {
-//     // getApplicationList를 호출하고 결과를 기다림
-//     isLoad.value = true;
 
-//     let para = {
-//       users: true,
-//       wafer: true,
-//       idt_type: true,
-//       hs_type: true,
-//       idt_layers: true,
-//       week_numbers: currentWeekNumber,
-//     };
-
-//     if (getUserId() !== "admin") {
-//       para["observer_id"] = getUserId();
-//     }
-
-//     const data: FabRequestForm[] = await getApplicationListByDict(para);
-
-//     // const transformedData = data.map((item: any) => new FabApplication(item));
-//     applications.push(
-//       ...data.map((item: FabRequestForm) => new FabRequest(item))
-//     );
-//   } catch (error) {
-//     console.error("Error fetching application list:", error);
-//   }
-// });
 </script>
 
 <style scoped>

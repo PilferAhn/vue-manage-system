@@ -515,11 +515,7 @@ export class FabRequest implements FabRequestForm {
 
     // 비교할 날짜(Date 객체)로 변환
     const targetEnd = new Date(this.wantedFabFinishDate);
-
-    console.log(this.productName)
-    console.log(`${expectedEnd}`)
-    console.log(`${targetEnd}`)
-
+  
     // 두 날짜를 비교하여 결과 반환 (연, 월, 일까지만 비교)
     return (
       expectedEnd.getFullYear() === targetEnd.getFullYear() &&
