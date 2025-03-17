@@ -20,10 +20,10 @@
         <div class="checkbox-group">
           <el-checkbox v-model="props.fabApplication.isFreeWafer" label="유상" />        
         </div>
-        <!-- <el-checkbox v-if="props.fabApplication.waferType === 'HS'"
+        <el-checkbox v-if="props.fabApplication.waferType === 'HS'"
           v-model="props.fabApplication.isNeededLtEtching"
           label="LTE 진행"
-        /> -->
+        />
   
       </div>
     </section>
@@ -63,12 +63,12 @@
       availableWafer.value = [];
       availableWafer.value = createWaferOptions(props.sawType);
   
-      // if(newValue === "HS"){
-      //   props.fabApplication.isNeededLtEtching = true
-      // }
-      // else{
-      //   props.fabApplication.isNeededLtEtching = false
-      // }
+      if(newValue === "HS"){
+        props.fabApplication.isNeededLtEtching = true
+      }
+      else{
+        props.fabApplication.isNeededLtEtching = false
+      }
   
       if (availableWafer.value.length == 1) {
         props.fabApplication.waferId = availableWafer.value[0].key;

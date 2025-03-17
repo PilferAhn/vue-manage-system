@@ -230,12 +230,10 @@ export default {};
       </el-table-column>
     </el-table>
   </div>
-  <div class="buttun-section">
-    <!-- <el-button type="primary">SAVE</el-button> -->
-    <el-button type="success" @click="downloadExcel">To Excel</el-button>
-    <!-- <el-button type=""></el-button>
-      <el-button type="warning"></el-button> -->
-  </div>
+  <!-- <div class="buttun-section">
+    <el-button type="primary">SAVE</el-button>
+    <el-button type="success" @click="downloadExcel">To Excel</el-button>    
+  </div> -->
 </template>
 
 <script lang="ts" setup>
@@ -416,7 +414,7 @@ onMounted(async () => {
 
 const groupCounts = computed(() => {
   return props.processData.reduce((acc, item) => {
-    acc[item.group] = (acc[item.group] || 0) + 1;
+    acc[item.designer.department] = (acc[item.designer.department] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 });

@@ -131,7 +131,18 @@
         needPst.value = newValues.sawTypeId === "TC"
         needPPad.value = newValues.sawTypeId === "TC" && newValues.packageId === "BDMP"
         needMs.value = newValues.sawTypeId === "TC" && props.fabApplication.isMst
+        needLte.value = newValues.sawTypeId === "HS" && props.fabApplication.isNeededLtEtching
         
+        if(needLte.value){
+          props.fabApplication.photo.photoProcesses.push({
+            processName: "LTE",
+            machineName: "Nikon",
+            reticleName: "",
+            isMutable: false,
+            order: 7,
+          });
+        }
+
         if(needMs.value){
           props.fabApplication.photo.photoProcesses.push({
             processName: "MS",
