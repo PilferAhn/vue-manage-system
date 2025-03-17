@@ -21,8 +21,7 @@ import { ElSelect, ElOption } from 'element-plus';
 
 const props = defineProps({
   modelValue: {
-    type: Number,
-    required: true
+    type: Number,    
   },
   label: String,
   prop: String,

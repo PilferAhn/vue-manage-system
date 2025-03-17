@@ -42,7 +42,7 @@ export const updateWeekNumber = async (
   form.append("product_name", app.productName);
   form.append("new_value", weekNumber.toString());
   const url = await sendPostRequest(
-    "http://10.29.11.124:40000/fab_monitoring_rev2/set_week_number",
+    "http://10.29.11.57:40000/fab_monitoring_rev2/set_week_number",
     form
   );
 };
@@ -55,7 +55,7 @@ export const updatePendingStatus = async (
   form.append("product_name", app.productName);
   form.append("new_value", String(isPending));
   const url = await sendPostRequest(
-    "http://10.29.11.124:40000/fab_monitoring_rev2/set_is_pending",
+    "http://10.29.11.57:40000/fab_monitoring_rev2/set_is_pending",
     form
   );
 };

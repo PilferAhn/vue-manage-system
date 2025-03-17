@@ -1,10 +1,10 @@
 <template>
   <div>
     <el-table v-if="isLoad" :data="applications" border class="table-class">
-      <el-table-column prop="group" label="그룹" :align="'center'" width="70">
-        <template #default="scope">
+      <el-table-column prop="user.designer.department" label="그룹" :align="'center'" width="150">
+        <!-- <template #default="scope">
           {{ scope.row.designer.department }}
-        </template>
+        </template> -->
       </el-table-column>
 
       <el-table-column

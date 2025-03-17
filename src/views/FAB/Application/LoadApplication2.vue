@@ -41,7 +41,7 @@
   // Function to fetch the application data from the server
   const fetchApplication = async (productName: any) => {
     try {
-      const url = "http://10.29.11.124:40000/fab_monitoring_rev2/get_fab_request";
+      const url = "http://10.29.11.57:40000/fab_monitoring_rev2/get_fab_request";
       const formData = new FormData();
       formData.append("product_name", productName);
   
@@ -72,7 +72,7 @@
       app.waferType = app.wafer.sawTypeId;
     
       const response1 = await axios.get(
-        "http://10.29.11.124:40000/fab_monitoring_rev2/get_saw_types_list"
+        "http://10.29.11.57:40000/fab_monitoring_rev2/get_saw_types_list"
       );
       const rawData = response1.data;
       

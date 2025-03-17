@@ -221,7 +221,7 @@
             label="Quantity (Wafer)"
             prop="process"
             placeholder="EX) Filter Type"
-            :options="getOptionNumbers(1, 10)"
+            :options="getOptionNumbers(1, 24)"
             :disable="false"
             class="wide-select"
           />

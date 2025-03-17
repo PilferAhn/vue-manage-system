@@ -42,7 +42,7 @@ export async function getBomCodeList() {
 
 export async function getCostomerList() {
   const clientOptions = ref<OptionInterface[]>([]);
-  const url = "http://10.29.11.124:40000/customer";
+  const url = "http://10.29.11.57:40000/customer";
   const res = await sendGetRequest(url, "get_customer_list");
 
   const clients = convertPep8ToCamelCase2(res);
@@ -78,7 +78,7 @@ export function initFabApplication3(bom: Bom) {
     packageId: undefined,
     priorityId: "C",
     isFreeWafer: true,
-    samplePurpose : "DVR",
+    samplePurpose: "DVR",
     isNeededLtEtching: false,
     group: "",
     purpose: "",
@@ -109,8 +109,8 @@ export function initFabApplication3(bom: Bom) {
     isDualIdt: false,
     isNewBom: false,
     isNewBom2: false,
-    isMst : null,
-    mstThickness : null,
+    isMst: null,
+    mstThickness: null,
     bomMainCode: "",
     bom: null,
     bom2: null,
@@ -272,7 +272,7 @@ export function initFabApplication2() {
   return { fabApplication };
 }
 
-const serverUrl = "http://10.29.11.124:40000";
+const serverUrl = "http://10.29.11.57:40000";
 
 export async function receivefilterTypeList(): Promise<OptionInterface[]> {
   const fileterTypeList = ref<OptionInterface[]>([]);
@@ -309,7 +309,7 @@ export async function receivePriorityList(): Promise<OptionInterface[]> {
       });
     }
   } catch (error) {
-    console.error("ㄹ 목록 가져오기 실패:", error);
+    console.error("목록 가져오기 실패:", error);
   }
 
   return priorityList.value;
@@ -407,7 +407,7 @@ export async function sendAppRemoveRequest(app: FabRequestForm) {
 }
 
 export async function getApplicationListByDict(
-  options : object
+  options: object
 ): Promise<FabRequestForm[]> {
   // const applications = reactive<FabRequestForm[]>([]);
   const applications = ref<FabRequestForm[]>([]);
@@ -418,13 +418,9 @@ export async function getApplicationListByDict(
     formData.append(key, String(value)); // 모든 값을 문자열로 변환하여 추가
   });
 
-  
-
   // if(observer_id !== undefined){
   //   formData.append("observer_id", observer_id)
   // }
-  
-  
 
   // if (CreatedDateStart !== null) {
   //   formData.append("created_date_start", CreatedDateStart);
@@ -455,9 +451,9 @@ export async function getApplicationList(
   userId: string,
   CreatedDateStart: string,
   CreateDateEnd: string,
-  hsType : boolean,
-  idtLayers : boolean,
-  observer_id : undefined | string,
+  hsType: boolean,
+  idtLayers: boolean,
+  observer_id: undefined | string
 ): Promise<FabRequestForm[]> {
   // const applications = reactive<FabRequestForm[]>([]);
   const applications = ref<FabRequestForm[]>([]);
@@ -466,14 +462,12 @@ export async function getApplicationList(
   formData.append("users", String(UserOption));
   formData.append("wafer", String(waferOption));
   formData.append("idt_type", String(idtType));
-  formData.append("hs_type", String(hsType))
-  formData.append("idt_layers", String(idtLayers))
+  formData.append("hs_type", String(hsType));
+  formData.append("idt_layers", String(idtLayers));
 
-  if(observer_id !== undefined){
-    formData.append("observer_id", observer_id)
+  if (observer_id !== undefined) {
+    formData.append("observer_id", observer_id);
   }
-  
-  
 
   if (CreatedDateStart !== null) {
     formData.append("created_date_start", CreatedDateStart);
@@ -588,6 +582,19 @@ export async function packageChecker(
   }
 }
 
+export function checkPassivation(application: FabRequestForm) {
+
+  if (
+    application.passivationLayers.length > 0 &&
+    (application.passivationLayers[0].thickness === null ||
+      application.passivationLayers[0].thickness === undefined)
+  ) {
+    application.passivationLayers = [];
+    application.passivationId = null;
+    // Safe to access application.passivationLayers[0].thickness here
+  }
+}
+
 export async function sendingForm(application: FabRequestForm, type: string) {
   if (validatingForm(application)) {
     let url = ""; // 조건문 외부에서 선언
@@ -596,9 +603,12 @@ export async function sendingForm(application: FabRequestForm, type: string) {
     } else {
       url = serverUrl + "/fab_monitoring_rev2/update_fab_request";
     }
-    console.log(application);
+
     // dvrChecker(application, type);
     packageChecker(application, type);
+    checkPassivation(application)
+    // passivation Checker
+
     try {
       if (application.wantedFabFinishDate !== undefined) {
         application.wantedFabFinishDate = formatDateTime(
@@ -821,59 +831,46 @@ export function getRunningFabReqeust(applicationList: FabApplicationForm[]) {
   return filteredApp.value;
 }
 
-export function calFabOutLeadTime(fabApp : FabRequestForm, sawTypeId : string){
+export function calFabOutLeadTime(fabApp: FabRequestForm, sawTypeId: string) {
+  let expectedDate = 7;
 
-  let expectedDate = 7
-
-  if(sawTypeId === "NS"){
-    expectedDate = 7
-    if(fabApp.packageId === "CSP"){
-
-      if(fabApp.isDualIdt){
-        expectedDate = 9
+  if (sawTypeId === "NS") {
+    expectedDate = 7;
+    if (fabApp.packageId === "CSP") {
+      if (fabApp.isDualIdt) {
+        expectedDate = 9;
+      } else {
+        expectedDate = 7;
       }
-      else{
-        expectedDate = 7
+    } else if (fabApp.packageId === "WLP") {
+      expectedDate = 7;
+    } else if (fabApp.packageId === "BDMP") {
+      expectedDate = 9;
+    }
+  } else if (sawTypeId === "TC") {
+    expectedDate = 10;
+    if (fabApp.packageId === "CSP") {
+      if (fabApp.isMst) {
+        expectedDate = 13;
+      } else {
+        expectedDate = 10;
       }
+    } else if (fabApp.packageId === "WLP") {
+      expectedDate = 10;
+    } else if (fabApp.packageId === "BDMP") {
+      expectedDate = 12;
     }
-    else if(fabApp.packageId === "WLP"){
-      expectedDate = 7
-    }
-    else if(fabApp.packageId === "BDMP"){
-      expectedDate = 9
+  } else {
+    expectedDate = 12;
+    if (fabApp.packageId === "CSP") {
+      expectedDate = 12;
+    } else if (fabApp.packageId === "WLP") {
+      expectedDate = 12;
+    } else if (fabApp.packageId === "BDMP") {
+      expectedDate = 14;
     }
   }
-  else if(sawTypeId === "TC"){
-    expectedDate = 10
-    if(fabApp.packageId === "CSP"){
-      if(fabApp.isMst){
-        expectedDate = 13
-      }
-      else{
-        expectedDate = 10
-      }
-    }
-    else if(fabApp.packageId === "WLP"){
-      expectedDate = 10
-    }
-    else if(fabApp.packageId === "BDMP"){
-      expectedDate = 12
-    }
-  }
-  else{
-
-    expectedDate = 12
-    if(fabApp.packageId === "CSP"){
-      expectedDate = 12
-    }
-    else if(fabApp.packageId === "WLP"){
-      expectedDate = 12
-    }
-    else if(fabApp.packageId === "BDMP"){
-      expectedDate = 14
-    }
-  }
-  return expectedDate
+  return expectedDate;
 }
 
 export function addWorkdays(startDate: Date, numDays: number): Date {

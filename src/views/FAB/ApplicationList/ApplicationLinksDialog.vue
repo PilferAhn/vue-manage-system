@@ -53,7 +53,7 @@ function createApplication(fabApplication: FabRequestForm, type: string) {
   else if(type === "fabcard"){
 
     const productName = fabApplication.productName
-    const url = "fabcard://10.29.11.124:40000/fab_monitoring_rev2/get_fab_request_for_fab_card/" + productName;
+    const url = "fabcard://10.29.11.57:40000/fab_monitoring_rev2/get_fab_request_for_fab_card/" + productName;
   // const url = "fab.exe http://10.29.11.124:40000/fab_monitoring_rev2/get_fab_request_for_fab_card/HSTESTMODEL1"
 
     window.location.href = url;
