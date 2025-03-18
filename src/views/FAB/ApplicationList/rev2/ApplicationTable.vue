@@ -201,7 +201,7 @@ export default {};
         v-if="getUserId() === 'admin' || getRole() === 'group leader'"
         fixed="right"
         label="Action"
-        min-width="200"
+        min-width="250"
         :align="'center'"
       >
         <template #default="scope">
@@ -212,6 +212,13 @@ export default {};
           >
             확정
           </el-button> -->
+          <el-button
+            type="primary"
+            size="small"
+            @click="handleUpdate(scope.row)"
+          >
+            Update
+          </el-button>
           <el-button
             type="warning"
             size="small"
@@ -255,7 +262,7 @@ import InputText from "../../Common/InputText.vue";
 import { formatDate } from "../../Common/Application";
 import { convertKeysToPEP8 } from "../../../../utils/key-converter";
 import { getRole, getUserId } from "../../../../utils/account-utils";
-import { getApplicationListByDict } from "../../../../utils/Fab/fab-application-utils";
+import { getApplicationListByDict, sendingForm } from "../../../../utils/Fab/fab-application-utils";
 import type { FabRequestForm } from "../../../../interface/fab-application-rev2";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { receivePriorityList } from "../../../../utils/Fab/fab-application-utils";
@@ -312,6 +319,12 @@ const tableRowClassName = ({ row }: { row: FabRequest }) => {
   }
   return "";
 };
+
+async function handleUpdate(row : FabRequest) {
+    
+  await sendingForm(row , "partial update")
+
+}
 
 async function confirmAction(
   row: FabRequest,
@@ -398,18 +411,14 @@ onMounted(async () => {
     // getApplicationList를 호출하고 결과를 기다림
     props.processData.length = 0;
     let para = {
-      users: true,
-      wafer: true,
-      idt_type: true,
-      hs_type: true,
-      idt_layers: true,
-      is_pending: false,
-      week_numbers: props.weekNumber,
+      users: true, // content Loader option
+      wafer: true, // content Loader option
+      idt_type: true, // content Loader option
+      hs_type: true, // content Loader option
+      idt_layers: true, // content Loader option
+      is_pending: false, // Row filter
+      week_numbers: props.weekNumber, // Row filter
     };
-
-    // if (getUserId() !== "admin") {
-    //   para["observer_id"] = getUserId();
-    // }
 
     const data: FabRequestForm[] = await getApplicationListByDict(para);
 
@@ -420,21 +429,6 @@ onMounted(async () => {
   } catch (error) {
     console.error("Error fetching application list:", error);
   }
-});
-
-const groupCounts = computed(() => {
-  return props.processData.reduce((acc, item) => {
-    acc[item.designer.department] = (acc[item.designer.department] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-});
-
-const groupQuantities = computed(() => {
-  return props.processData.reduce((acc, item) => {
-    acc[item.designer.department] =
-      (acc[item.designer.department] || 0) + (item.quantity || 0);
-    return acc;
-  }, {} as Record<string, number>);
 });
 
 const totalQuantity = computed(() => {

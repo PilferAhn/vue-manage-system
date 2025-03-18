@@ -63,6 +63,7 @@ export interface FabRequestForm {
   waferCode?: string;
   customerId?: string;
   productName?: string;
+  currentProductName? : string;
   bomMainCode?: string;
   isNewBom?: boolean;
   assyChipQuantity?: number;
@@ -293,6 +294,7 @@ export class FabRequest implements FabRequestForm {
   waferCode?: string;
   customerId?: string;
   productName?: string;
+  currentProductName? : string;
   bomMainCode?: string;
   isNewBom?: boolean;
   assyChipQuantity?: number;

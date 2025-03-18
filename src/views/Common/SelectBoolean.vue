@@ -1,3 +1,6 @@
+<script lang="ts">
+export default {};
+</script>
 <template>
   <el-form-item :label="label" :prop="prop" :rules="rules">
     <el-switch
@@ -43,4 +46,3 @@ const updateValue = () => {
 <style scoped>
 /* Add your scoped styles here */
 </style>
-

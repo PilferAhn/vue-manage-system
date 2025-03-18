@@ -33,6 +33,8 @@ import type { TegApplication as TegApplicationInterface } from "../../Common/App
 import type { Bom } from "../../interface/fab-application-rev2";
 import { fa } from "element-plus/es/locale";
 
+export const serverUrl = "http://10.29.11.57:40000";
+
 export async function getBomCodeList() {
   const url = "/api/sapinfo";
   const bomCodeList = ref<BomCode[]>([]);
@@ -42,7 +44,7 @@ export async function getBomCodeList() {
 
 export async function getCostomerList() {
   const clientOptions = ref<OptionInterface[]>([]);
-  const url = "http://10.29.11.57:40000/customer";
+  const url = serverUrl + "/customer";
   const res = await sendGetRequest(url, "get_customer_list");
 
   const clients = convertPep8ToCamelCase2(res);
@@ -271,8 +273,6 @@ export function initFabApplication2() {
   // Return the reactive FabRequestForm object
   return { fabApplication };
 }
-
-const serverUrl = "http://10.29.11.57:40000";
 
 export async function receivefilterTypeList(): Promise<OptionInterface[]> {
   const fileterTypeList = ref<OptionInterface[]>([]);
@@ -569,7 +569,6 @@ export async function packageChecker(
 }
 
 export function checkPassivation(application: FabRequestForm) {
-
   if (
     application.passivationLayers.length > 0 &&
     (application.passivationLayers[0].thickness === null ||
@@ -584,15 +583,24 @@ export function checkPassivation(application: FabRequestForm) {
 export async function sendingForm(application: FabRequestForm, type: string) {
   if (validatingForm(application)) {
     let url = ""; // 조건문 외부에서 선언
+
     if (type === "submit") {
       url = serverUrl + "/fab_monitoring_rev2/create_fab_request";
-    } else {
-      url = serverUrl + "/fab_monitoring_rev2/update_fab_request";
+    } 
+    else if (type === "partial update")
+      url = serverUrl +
+        "/fab_monitoring_rev2/update_fab_request_partial/" +
+        application.productName;
+    else {
+      url =
+        serverUrl +
+        "/fab_monitoring_rev2/update_fab_request/" +
+        application.currentProductName;
     }
-
+    
     // dvrChecker(application, type);
     packageChecker(application, type);
-    checkPassivation(application)
+    checkPassivation(application);
     // passivation Checker
 
     try {

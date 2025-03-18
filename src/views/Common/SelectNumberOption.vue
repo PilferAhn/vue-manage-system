@@ -1,3 +1,6 @@
+<script lang="ts">
+export default {};
+</script>
 <template>
   <el-form-item :label="label" :prop="prop">
     <el-select
@@ -16,27 +19,27 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, defineEmits, ref, watch } from 'vue';
-import { ElSelect, ElOption } from 'element-plus';
+import { defineProps, defineEmits, ref, watch } from "vue";
+import { ElSelect, ElOption } from "element-plus";
 
 const props = defineProps({
   modelValue: {
-    type: Number,    
+    type: Number,
   },
   label: String,
   prop: String,
   placeholder: String,
   options: {
     type: Array as () => number[],
-    required: true
-  }
+    required: true,
+  },
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(["update:modelValue"]);
 const internalValue = ref(props.modelValue);
 
 const updateValue = () => {
-  emit('update:modelValue', internalValue.value);
+  emit("update:modelValue", internalValue.value);
 };
 
 watch(
@@ -46,7 +49,6 @@ watch(
   }
 );
 </script>
-
 
 <!-- <template>
   <el-form-item :label="label" :prop="prop" :rules="rules">

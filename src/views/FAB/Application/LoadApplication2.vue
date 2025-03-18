@@ -31,6 +31,7 @@
   import { getBandList } from "../../../utils/Fab/fab-application-utils";
   import { defineSawTypeByWaferType } from "../../../utils/Fab/fab_application-wafer-utils";
   import { initPhoto } from "../../../utils/Fab/photo-utils";
+  import { serverUrl } from "../../../utils/Fab/fab-application-utils";
   const route = useRoute(); // Access the route
   const app = reactive<FabRequestForm>({});
   const isLoad = ref<boolean>(false);
@@ -41,7 +42,7 @@
   // Function to fetch the application data from the server
   const fetchApplication = async (productName: any) => {
     try {
-      const url = "http://10.29.11.57:40000/fab_monitoring_rev2/get_fab_request";
+      const url = serverUrl + "/fab_monitoring_rev2/get_fab_request";
       const formData = new FormData();
       formData.append("product_name", productName);
   
@@ -50,9 +51,8 @@
       
       // Assign the converted data to processData
       Object.assign(app, convertedData);
-  
-      
-      
+              
+      app.currentProductName = app.productName
       if(app.photo === null){
         app.photo = initPhoto()
       }
@@ -72,7 +72,7 @@
       app.waferType = app.wafer.sawTypeId;
     
       const response1 = await axios.get(
-        "http://10.29.11.57:40000/fab_monitoring_rev2/get_saw_types_list"
+        serverUrl + "/fab_monitoring_rev2/get_saw_types_list"
       );
       const rawData = response1.data;
       
