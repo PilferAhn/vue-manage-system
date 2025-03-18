@@ -4,16 +4,11 @@ export default {};
 <template>
   <!-- Element Plus Table -->
   <div class="group-count">
-    <div class="group-count">
-      <div class="group-box">Total - {{ totalQuantity }} 매</div>
-      <div v-for="(stats, group) in groupStats" :key="group" class="group-box">
-        <span
-          >{{ group }}: {{ stats.count }} 건 -
-          {{ stats.totalQuantity }} 매</span
-        >
-      </div>
+    <div class="group-box">총 의뢰: {{ totalQuantity }} (DV2 : {{ groupDv2Count }})</div>
+    <div v-for="(stats, group) in groupStats" :key="group" class="group-box">
+      <span>{{ group }}: {{ stats.count }}</span>
     </div>
-
+    <!-- <div class="group-box">DV2: {{ groupDv2Count }}</div> -->
   </div>
 
   <div class="table-wrapper">
@@ -24,7 +19,6 @@ export default {};
       :border="true"
       height="640"
       :row-style="{ height: '30px' }"
-      :row-class-name="tableRowClassName"
       :lazy="true"
     >
       <el-table-column
@@ -262,7 +256,10 @@ import InputText from "../../Common/InputText.vue";
 import { formatDate } from "../../Common/Application";
 import { convertKeysToPEP8 } from "../../../../utils/key-converter";
 import { getRole, getUserId } from "../../../../utils/account-utils";
-import { getApplicationListByDict, sendingForm } from "../../../../utils/Fab/fab-application-utils";
+import {
+  getApplicationListByDict,
+  sendingForm,
+} from "../../../../utils/Fab/fab-application-utils";
 import type { FabRequestForm } from "../../../../interface/fab-application-rev2";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { receivePriorityList } from "../../../../utils/Fab/fab-application-utils";
@@ -287,43 +284,9 @@ const handleDateChange = (processData: FabRequest) => {
   emit("update:processData", [...props.processData]);
 };
 
-const idList = ref<number[]>([]);
 
-const handleClick = () => {};
-
-const handleCheckboxChange = (id: number, checked: boolean) => {
-  if (checked) {
-    if (!idList.value.includes(id)) {
-      idList.value.push(id);
-    }
-  } else {
-    idList.value = idList.value.filter((itemId) => itemId !== id);
-  }
-};
-
-const downloadExcel = async () => {
-  const form = new FormData();
-
-  const sendingData = ref<Object[]>([]);
-
-  props.processData.forEach((fab) => {
-    sendingData.value.push(convertKeysToPEP8(fab));
-  });
-};
-
-const tableRowClassName = ({ row }: { row: FabRequest }) => {
-  if (row.status === "cancel") {
-    return "danger-row";
-  } else if (row.status === "delay") {
-    return "warning-row";
-  }
-  return "";
-};
-
-async function handleUpdate(row : FabRequest) {
-    
-  await sendingForm(row , "partial update")
-
+async function handleUpdate(row: FabRequest) {
+  await sendingForm(row, "partial update");
 }
 
 async function confirmAction(
@@ -433,24 +396,41 @@ onMounted(async () => {
 
 const totalQuantity = computed(() => {
   return Object.values(groupStats.value).reduce(
-    (sum, stats) => sum + stats.totalQuantity,
+    (sum, stats) => sum + stats.count,
     0
   );
+});
+
+const groupDv2Count = computed(() => {
+  return props.processData.reduce((count, item) => {
+    return count + (item.isDv2 ? 1 : 0);
+  }, 0);
 });
 
 const groupStats = computed(() => {
   return props.processData.reduce((acc, item) => {
     const department = item.designer.department;
 
+    // 부서별 데이터 초기화
+    acc[department] = acc[department] || {
+      count: 0,
+      totalQuantity: 0,
+      dv2Count: 0,
+    };
+
     // 부서별 건수(count) 증가
-    acc[department] = acc[department] || { count: 0, totalQuantity: 0 };
     acc[department].count += 1;
 
     // 부서별 매수(quantity) 합산
     acc[department].totalQuantity += item.quantity || 0;
+
     return acc;
-  }, {} as Record<string, { count: number; totalQuantity: number }>);
+  }, {} as Record<string, { count: number; totalQuantity: number; dv2Count: number }>);
 });
+
+
+
+
 </script>
 
 <style scope>
