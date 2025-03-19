@@ -2,8 +2,34 @@
 export default {};
 </script>
 <template>
+  <div class="filter-section" v-if="['w2150108'].includes(getUserId())">
+    <div class="filter-header">
+      <span class="filter-label">📅 투입일 선택:</span>
+      <span v-if="selectedDate" class="selected-date">
+        {{ formatDate(selectedDate) }}
+        <el-button type="text" class="clear-btn" @click="clearFilter"
+          >✖</el-button
+        >
+      </span>
+    </div>
+
+    <el-select
+      v-model="selectedDate"
+      class="date-filter"
+      placeholder="📅 날짜 선택"
+      clearable
+      @change="handleDateChange2"
+    >
+      <el-option
+        v-for="date in uniqueDates"
+        :key="date"
+        :label="formatDate(date)"
+        :value="date"
+      />
+    </el-select>
+  </div>
   <!-- Element Plus Table -->
-  <div class="group-count">
+  <div class="group-count" v-if="['w2150108', 'admin'].includes(getUserId())">
     <div class="group-box">
       총 의뢰: {{ totalQuantity }} (DV2 : {{ groupDv2Count }})
     </div>
@@ -15,7 +41,7 @@ export default {};
 
   <div class="table-wrapper">
     <el-table
-      :data="processData"
+      :data="filteredData"
       class="custom-table"
       style="min-width: 1000px"
       :border="true"
@@ -276,19 +302,13 @@ export default {};
       </el-table-column>
 
       <!-- v-if="['w2150108', 'admin'].includes(getUserId())" -->
-      <el-table-column
-        
-        width="160"
-        :align="'center'"
-        label="MASK 입고일 IDT"
-      >
+      <el-table-column width="160" :align="'center'" label="MASK 입고일 IDT">
         <template #default="scope">
           <div
             style="display: flex; justify-content: center; align-items: center"
           >
             <el-date-picker
               v-model="scope.row.idtMaskArrivalDate"
-              
             ></el-date-picker>
           </div>
         </template>
@@ -300,12 +320,7 @@ export default {};
       </el-table-column> -->
 
       <!-- v-if="['w2150108', 'admin'].includes(getUserId())" -->
-      <el-table-column
-        
-        width="160"
-        :align="'center'"
-        label="MASK 입고일 PST"
-      >
+      <el-table-column width="160" :align="'center'" label="MASK 입고일 PST">
         <template #default="scope">
           <div
             style="display: flex; justify-content: center; align-items: center"
@@ -348,10 +363,14 @@ export default {};
         " -->
 
       <el-table-column
-
+        v-if="
+          getUserId() === 'admin' ||
+          getRole() === 'group leader' ||
+          getUserId() === 'w2150108'
+        "
         fixed="right"
         label="Action"
-        width = "235"
+        width="235"
         :align="'center'"
       >
         <template #default="scope">
@@ -370,10 +389,6 @@ export default {};
             Update
           </el-button>
           <el-button
-          v-if="
-          getUserId() === 'admin' ||
-          
-          getUserId() === 'w2150108'"
             type="warning"
             size="small"
             @click="
@@ -387,10 +402,6 @@ export default {};
             >Delay</el-button
           >
           <el-button
-          v-if="
-          getUserId() === 'admin' ||
-          
-          getUserId() === 'w2150108'"
             type="danger"
             size="small"
             @click="confirmAction(scope.row, 0, true, 'pending')"
@@ -403,7 +414,7 @@ export default {};
   </div>
   <div class="buttun-section">
     <!-- <el-button type="primary">SAVE</el-button> -->
-    <!-- <el-button type="success" @click="downloadExcel">To Excel</el-button>     -->
+    <el-button type="success" @click="handleDownloadExcel">To Excel</el-button>
   </div>
 </template>
 
@@ -429,12 +440,41 @@ import { ElMessageBox, ElMessage } from "element-plus";
 import { receivePriorityList } from "../../../../utils/Fab/fab-application-utils";
 import { OptionInterface } from "../../../../interface/option";
 import { createBooleanOptions } from "../../../../utils/utility";
+import { downloadExcelWithCountdown } from "../../../../utils/Fab/fab-aplication-review-utils";
 
 const props = defineProps<{
   processData: FabRequest[];
   weekNumber: number;
 }>();
-const applications = reactive<FabRequest[]>([]);
+
+// ✅ 사용자가 선택한 날짜
+const selectedDate = ref<string | null>(null);
+
+// ✅ 중복되지 않는 날짜 목록 생성 (Set 활용)
+const uniqueDates = computed(() => {
+  const dates = new Set(
+    props.processData.map((item) => item.wantedFabStartDate)
+  );
+  return Array.from(dates).sort();
+});
+
+// ✅ 선택한 날짜에 따른 필터링된 데이터
+const filteredData = computed(() => {
+  if (!selectedDate.value) return props.processData; // 선택이 없으면 전체 데이터 반환
+  return props.processData.filter(
+    (item) => item.wantedFabStartDate === selectedDate.value
+  );
+});
+
+// ✅ 필터 초기화 (날짜 선택 해제)
+const clearFilter = () => {
+  selectedDate.value = null;
+};
+
+const handleDateChange2 = (date: string) => {
+  selectedDate.value = date;
+};
+
 const priorityList = ref<OptionInterface[]>([]);
 // emit 정의
 const emit = defineEmits<{
@@ -450,7 +490,7 @@ const handleDateChange = (processData: FabRequest) => {
 };
 
 async function handleUpdate(row: FabRequest) {
-  console.log(row)
+  console.log(row);
   await sendingForm(row, "partial update");
 }
 
@@ -596,6 +636,29 @@ const groupStats = computed(() => {
     return acc;
   }, {} as Record<string, { count: number; totalQuantity: number; dv2Count: number }>);
 });
+
+const isDownloading = ref(false);
+const countdown = ref(20);
+
+const handleDownloadExcel = async () => {
+  if (!props.processData.length) {
+    console.warn("📌 데이터가 없습니다.");
+    return;
+  }
+
+  isDownloading.value = true;
+  countdown.value = 20;
+
+  await downloadExcelWithCountdown(
+    props.processData,
+    (remainingTime) => {
+      countdown.value = remainingTime;
+    },
+    () => {
+      isDownloading.value = false;
+    }
+  );
+};
 </script>
 
 <style scope>
@@ -640,5 +703,16 @@ const groupStats = computed(() => {
 
 .el-table__row.danger-row {
   background-color: rgb(250, 214, 214);
+}
+
+.filter-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 15px;
+  background: #f8f9fa;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
 }
 </style>

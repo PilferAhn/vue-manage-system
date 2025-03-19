@@ -97,7 +97,7 @@ export interface FabRequestForm {
   waferType?: string;
   wantedFabStartDate?: string;
   wantedFabFinishDate?: string;
-  idtMaskArrivalDate ? : Date;
+  idtMaskArrivalDate ? : string;
   pstMaskArrivalDate ? : string;
   purpose?: string;
   destinationId?: string;

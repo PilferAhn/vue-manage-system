@@ -28,8 +28,8 @@ import { formatDateTime } from "../date-utils";
 import { OptionInterface } from "../../interface/option";
 import { Option } from "element-plus/es/components/select-v2/src/select.types";
 import { objectEach } from "highcharts";
-import { TegApplication } from "../../interface/Teg/teg";
-import type { TegApplication as TegApplicationInterface } from "../../Common/ApplicationTypes";
+// import type { TegApplication as TegApplicationInterface } from "../../Common/ApplicationTypes";
+// import type { TegApplication as TegApplicationInterface} from "../../interface/Teg/teg";
 import type { Bom } from "../../interface/fab-application-rev2";
 import { fa } from "element-plus/es/locale";
 

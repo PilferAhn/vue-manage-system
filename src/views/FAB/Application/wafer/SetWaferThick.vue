@@ -1,3 +1,6 @@
+<script lang="ts">
+export default {};
+</script>
 <template>
     <section class="section">
       <el-row :gutter="20" class="align-center">
@@ -75,14 +78,14 @@
   
   const props = defineProps<{
     fabApplication: FabRequestForm;
-    hsLayerstackId: string | undefined;
+    
     hsWaferOptions: OptionInterface[];
     hsLayers: Layer[];
     wafer: FabWafer;
     applicationType: string;
   }>();
   
-  const haLayerStackId = ref(props.hsLayerstackId);
+  
   const hsLayers = ref<Layer[]>([]);
   const newTableData = ref<object[]>([]);
   const ltThick = ref<number | undefined>(undefined);
@@ -125,7 +128,8 @@
   watch(
     () => props.fabApplication.hsId,
     (newVal) => {
-      if (newVal !== undefined) {
+      
+      if (newVal !== undefined && newVal !== null) {
         hsLayers.value = createHsWaferLayerOption(newVal.toString(), props.wafer);
         ltThick.value = getLtThickness(hsLayers.value);
   
@@ -141,7 +145,7 @@
     { immediate: true }
   );
   
-  const emit = defineEmits(["update:hsLayerstackId"]);
+  // const emit = defineEmits(["update:hsLayerstackId"]);
   </script>
   
   <style scoped>
