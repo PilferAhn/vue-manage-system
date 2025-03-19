@@ -288,8 +288,7 @@ export default {};
           >
             <el-date-picker
               v-model="scope.row.idtMaskArrivalDate"
-              type="datetime"
-              value-format="yyyy-MM-dd'T'HH:mm:ss"
+              
             ></el-date-picker>
           </div>
         </template>
@@ -305,7 +304,7 @@ export default {};
         
         width="160"
         :align="'center'"
-        label="MASK 입고일 IDT"
+        label="MASK 입고일 PST"
       >
         <template #default="scope">
           <div
@@ -345,14 +344,14 @@ export default {};
       <!--         v-if="
           getUserId() === 'admin' ||
           getRole() === 'group leader' ||
-          getUserId() === 'w2150108'
+          getUserId() === 'w2150108'"
         " -->
 
       <el-table-column
 
         fixed="right"
         label="Action"
-        min-width="250"
+        width = "235"
         :align="'center'"
       >
         <template #default="scope">
@@ -371,6 +370,10 @@ export default {};
             Update
           </el-button>
           <el-button
+          v-if="
+          getUserId() === 'admin' ||
+          
+          getUserId() === 'w2150108'"
             type="warning"
             size="small"
             @click="
@@ -384,6 +387,10 @@ export default {};
             >Delay</el-button
           >
           <el-button
+          v-if="
+          getUserId() === 'admin' ||
+          
+          getUserId() === 'w2150108'"
             type="danger"
             size="small"
             @click="confirmAction(scope.row, 0, true, 'pending')"
@@ -510,9 +517,9 @@ async function handleStatus(
       week_numbers: props.weekNumber,
     };
 
-    // if (getUserId() !== "admin") {
-    //   para["observer_id"] = getUserId();
-    // }
+    if (!["2150108", "admin"].includes(getUserId())) {
+      para["observer_id"] = getUserId();
+    }
 
     const data: FabRequestForm[] = await getApplicationListByDict(para);
 
@@ -540,6 +547,10 @@ onMounted(async () => {
       is_pending: false, // Row filter
       week_numbers: props.weekNumber, // Row filter
     };
+
+    if (!["2150108", "admin"].includes(getUserId())) {
+      para["observer_id"] = getUserId();
+    }
 
     const data: FabRequestForm[] = await getApplicationListByDict(para);
 
