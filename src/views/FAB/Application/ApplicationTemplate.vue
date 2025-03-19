@@ -4,8 +4,8 @@
         ref="fabFormRef"
         :model="props.fabApplication"
         :rules="fabRequestFormRules"
-        label-position="top"
-        label-width="auto"
+        :label-position="'top'"
+        
       >
         <!-- Split Screen Layout -->
         <div class="form-container">

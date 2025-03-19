@@ -4,7 +4,7 @@ export default {};
 <template>
   <el-form-item :label="label" :prop="prop" :rules="rules">
     <el-input
-      v-model.number="internalValue"
+      v-model="internalValue"
       @input="updateValue"
       :placeholder="placeholder"
       :disabled="props.disable"
@@ -17,7 +17,7 @@ import { ref, watch, computed } from "vue";
 import { ElInput } from "element-plus";
 
 const props = defineProps({
-  modelValue: String || Number,
+  modelValue: Number || String,
   label: String,
   prop: String,
   rules: Array,

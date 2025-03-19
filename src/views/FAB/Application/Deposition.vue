@@ -24,7 +24,8 @@
       <section class="section">
         <!-- <h3 class="section-title2">IDT Thickness</h3> -->
         <div v-if="props.fabApplication.idtId === 7">
-          <long-input-text-2 label="Photo 비고" row-cnt="3"></long-input-text-2>
+          <!-- <long-input-text-2 label="Photo 비고" row-cnt="3"></long-input-text-2> -->
+           <!-- <input-text label="Special IDT Stack"></input-text> -->
         </div>
         <div v-else>
           <el-descriptions title="Thickness" :column="4" :border="true">
@@ -149,6 +150,7 @@
   import { OptionInterface } from "../../../interface/option";
   import { tr } from "element-plus/es/locale";
   import LongInputText2 from "../../Common/LongInputText2.vue";
+  import InputText from "../../Common/InputText.vue";
   
   // props 정의
   const props = defineProps<{

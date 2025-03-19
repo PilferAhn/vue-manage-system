@@ -5,7 +5,10 @@ import {
   formatDate,
   holidaysList,
 } from "../utils/date-utils";
-import { addWorkdays, calFabOutLeadTime } from "../utils/Fab/fab-application-utils";
+import {
+  addWorkdays,
+  calFabOutLeadTime,
+} from "../utils/Fab/fab-application-utils";
 import { off } from "process";
 
 export interface Bump {
@@ -63,7 +66,7 @@ export interface FabRequestForm {
   waferCode?: string;
   customerId?: string;
   productName?: string;
-  currentProductName? : string;
+  currentProductName?: string;
   bomMainCode?: string;
   isNewBom?: boolean;
   assyChipQuantity?: number;
@@ -73,6 +76,7 @@ export interface FabRequestForm {
   designerConfirm?: boolean;
   weekNumber?: number;
   isAoi?: boolean;
+  isNeedEngineerCall?: boolean;
   isDv2?: boolean;
   isGfl?: boolean;
   isCap?: boolean;
@@ -83,7 +87,7 @@ export interface FabRequestForm {
   isPending?: boolean;
   isFabCardCreated?: boolean;
   dateOfFabCardCreated?: string;
-  maskTurn?: string | number;
+  maskTurn?: string;
   maskCd?: string | number;
   aspectRatio?: string | number;
   isAlPad?: boolean;
@@ -294,7 +298,7 @@ export class FabRequest implements FabRequestForm {
   waferCode?: string;
   customerId?: string;
   productName?: string;
-  currentProductName? : string;
+  currentProductName?: string;
   bomMainCode?: string;
   isNewBom?: boolean;
   assyChipQuantity?: number;
@@ -304,6 +308,7 @@ export class FabRequest implements FabRequestForm {
   designerConfirm?: boolean;
   weekNumber?: number;
   isAoi?: boolean;
+  isNeedEngineerCall?: boolean;
   isDv2?: boolean;
   isGfl?: boolean;
   isCap?: boolean;
@@ -314,7 +319,7 @@ export class FabRequest implements FabRequestForm {
   isPending?: boolean;
   isFabCardCreated?: boolean;
   dateOfFabCardCreated?: string;
-  maskTurn?: string | number;
+  maskTurn?: string;
   maskCd?: string | number;
   aspectRatio?: string | number;
   isAlPad?: boolean;
@@ -444,9 +449,13 @@ export class FabRequest implements FabRequestForm {
   };
 
   createWaferInfo = () => {
+    /// 막 두께 정보 생성
+
     let waferInfoStr = "";
 
-    if (this.wafer.sawTypeId === "HS") {
+    if (this.idtType.name === "Special") {
+      waferInfoStr = this.metalNote.split("\n")[0]
+    } else {
       if (this.idtLayers !== null && this.idtType !== null) {
         waferInfoStr +=
           this.idtType.name +
@@ -505,19 +514,17 @@ export class FabRequest implements FabRequestForm {
   };
 
   checkFabOutDate = () => {
-
-    
     const offset = calFabOutLeadTime(this, this.wafer.sawTypeId);
     // 입력된 날짜를 Date 객체로 변환 (ISO 8601 형식 지원)
     const start = new Date(this.wantedFabStartDate);
-    
+
     // 입력된 숫자(오프셋)를 추가
-    const expectedEnd = addWorkdays(start ,offset)
+    const expectedEnd = addWorkdays(start, offset);
     // expectedEnd.setDate(addWorkdays(this.wantedFabStartDate, offset));
 
     // 비교할 날짜(Date 객체)로 변환
     const targetEnd = new Date(this.wantedFabFinishDate);
-  
+
     // 두 날짜를 비교하여 결과 반환 (연, 월, 일까지만 비교)
     return (
       expectedEnd.getFullYear() === targetEnd.getFullYear() &&

@@ -48,6 +48,7 @@ export interface FabApplicationInterface {
   modelName?: string; // Model name
   purpose?: string; // Purpose
   isAoi?: boolean; // is AOI(BOOL)
+  isNeedEngineerCall? : boolean
   destination?: string; // Destination
   quantity?: number; // Quantity
   code?: string; // code?

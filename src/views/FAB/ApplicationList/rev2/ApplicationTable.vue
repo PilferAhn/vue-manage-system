@@ -4,7 +4,9 @@ export default {};
 <template>
   <!-- Element Plus Table -->
   <div class="group-count">
-    <div class="group-box">총 의뢰: {{ totalQuantity }} (DV2 : {{ groupDv2Count }})</div>
+    <div class="group-box">
+      총 의뢰: {{ totalQuantity }} (DV2 : {{ groupDv2Count }})
+    </div>
     <div v-for="(stats, group) in groupStats" :key="group" class="group-box">
       <span>{{ group }}: {{ stats.count }}</span>
     </div>
@@ -48,7 +50,10 @@ export default {};
         </template>
       </el-table-column>
       <el-table-column
-        v-if="getUserId() === 'admin' || getRole() === 'group leader'"
+        v-if="
+          ['w2150108', 'admin'].includes(getUserId()) ||
+          getRole() === 'group leader'
+        "
         prop="priorityId"
         label="Priority"
         width="85"
@@ -99,18 +104,57 @@ export default {};
         :align="'center'"
       />
 
-      <el-table-column prop="code" label="Code" width="60" :align="'center'" />
+      <el-table-column
+        v-if="['w2150108', 'admin'].includes(getUserId())"
+        prop="code"
+        label="Code"
+        width="80"
+        :align="'center'"
+      >
+        <template #default="scope">
+          <el-select v-model="scope.row.code">
+            <el-option label="C" value="C"></el-option>
+            <el-option label="H" value="H"></el-option>
+          </el-select>
+        </template>
+      </el-table-column>
+      <el-table-column
+        v-else
+        prop="code"
+        label="Code"
+        width="80"
+        :align="'center'"
+      ></el-table-column>
+
       <!-- FAB Insert Date를 날짜 선택기로 수정 -->
       <el-table-column label="담당자" width="150" :align="'center'">
         <template #default="scope">
           {{ scope.row.designer.userName }}
         </template>
       </el-table-column>
-      <el-table-column label="투입일" width="110" :align="'center'">
+
+      <el-table-column
+        v-if="['w2150108', 'admin'].includes(getUserId())"
+        width="160"
+        :align="'center'"
+        label="투입일"
+      >
+        <template #default="scope">
+          <div
+            style="display: flex; justify-content: center; align-items: center"
+          >
+            <el-date-picker
+              v-model="scope.row.wantedFabStartDate"
+            ></el-date-picker>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column v-else label="투입일" width="110" :align="'center'">
         <template #default="scope">
           {{ formatDate(scope.row.wantedFabStartDate) }}
         </template>
       </el-table-column>
+
       <el-table-column label="완료일" width="120" :align="'center'">
         <template #default="scope">
           <span
@@ -175,6 +219,33 @@ export default {};
         </template>
       </el-table-column>
 
+      <!-- getUserId() -->
+      <el-table-column label="엔지니어 Call" :align="'center'">
+        <template #default="scope">
+          <el-tag v-if="scope.row.isNeedEngineerCall == false" type="danger"
+            >No</el-tag
+          >
+          <el-tag v-else type="success">Yes</el-tag>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="MST" :align="'center'" prop="isMst">
+        <template #default="scope">
+          <el-tag v-if="scope.row.mstThickness !== null" type="success"
+            >Yes</el-tag
+          >
+          <el-tag v-else type="danger">No</el-tag>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="Dual IDT" :align="'center'">
+        <template #default="scope">
+          <!-- {{ scope.row.idt2Id }} -->
+          <el-tag v-if="scope.row.idt2Id !== null" type="success">Yes</el-tag>
+          <el-tag v-else type="danger">No</el-tag>
+        </template>
+      </el-table-column>
+
       <el-table-column label="비고" prop="note" width="180" :align="'center'">
         <template #default="scope">
           {{ scope.row.createTrimmingInfo() }}
@@ -192,7 +263,11 @@ export default {};
       </el-table-column>
 
       <el-table-column
-        v-if="getUserId() === 'admin' || getRole() === 'group leader'"
+        v-if="
+          getUserId() === 'admin' ||
+          getRole() === 'group leader' ||
+          getUserId() === 'w2150108'
+        "
         fixed="right"
         label="Action"
         min-width="250"
@@ -244,7 +319,7 @@ export default {};
 </template>
 
 <script lang="ts" setup>
-import { defineProps, computed, ref, onMounted, reactive } from "vue";
+import { defineProps, computed, ref, onMounted, reactive, watch } from "vue";
 import { FabRequest } from "../../../../interface/fab-application-rev2";
 import {
   handleDateChange as externalHandleDateChange,
@@ -284,6 +359,13 @@ const handleDateChange = (processData: FabRequest) => {
   emit("update:processData", [...props.processData]);
 };
 
+watch(
+  () => props.processData.map(row => row.wantedFabStartDate), // 특정 필드만 감지
+  (newValues, oldValues) => {
+    console.log("📌 wantedFabStartDate 변경 감지:", oldValues, "→", newValues);
+  },
+  { deep: true } // 배열 내부 변경 감지
+);
 
 async function handleUpdate(row: FabRequest) {
   await sendingForm(row, "partial update");
@@ -367,6 +449,7 @@ async function handleStatus(
   }
 }
 
+
 onMounted(async () => {
   try {
     priorityList.value = await receivePriorityList();
@@ -427,10 +510,6 @@ const groupStats = computed(() => {
     return acc;
   }, {} as Record<string, { count: number; totalQuantity: number; dv2Count: number }>);
 });
-
-
-
-
 </script>
 
 <style scope>

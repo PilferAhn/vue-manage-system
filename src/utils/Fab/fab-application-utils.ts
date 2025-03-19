@@ -82,6 +82,7 @@ export function initFabApplication3(bom: Bom) {
     isFreeWafer: true,
     samplePurpose: "DVR",
     isNeededLtEtching: false,
+    isNeedEngineerCall: false,
     group: "",
     purpose: "",
     isNeedSio2Seed: false,

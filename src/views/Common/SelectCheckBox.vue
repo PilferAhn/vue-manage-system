@@ -1,17 +1,22 @@
 <template>
-  <el-form-item :label="label" :prop="prop" :rules="rules">
+  <el-form-item
+    :label="label"
+    :prop="prop"
+    :rules="rules"
+    :label-position="'right'" 
+  >
     　<el-checkbox
       v-model="internalValue"
       @change="updateValue"
       :disabled="computedDisable"
-      size="large"
+      size="large"      
     />
   </el-form-item>
 </template>
 
 <script lang="ts" setup>
 import { ref, watch, computed } from "vue";
-import { ElSwitch } from "element-plus";
+import { ElSwitch, FormProps } from "element-plus";
 
 const props = defineProps({
   modelValue: Boolean, // Expecting a boolean modelValue
@@ -24,6 +29,7 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue"]);
 const internalValue = ref(props.modelValue); // Initialize internalValue as a boolean
+
 
 watch(
   () => props.modelValue,

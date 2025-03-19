@@ -58,7 +58,9 @@
           :disable="true"
         />
       </el-col>
-      <el-col :span="2">
+    </el-row>
+    <el-row :gutter="20" class="form-row">
+      <el-col :span="4">
         <SelectCheckBox
           v-model="props.fabApplication.isAoi"
           label="AOI"
@@ -68,7 +70,7 @@
           class="wide-select"
         />
       </el-col>
-      <el-col :span="2"
+      <el-col :span="4"
         ><SelectCheckBox
           v-model="props.fabApplication.isDv2"
           label="DV2"
@@ -78,7 +80,17 @@
           class="wide-select"
         />
       </el-col>
-      <el-col :span="5"
+      <el-col :span="4"
+        ><SelectCheckBox
+          v-model="props.fabApplication.isNeedEngineerCall"
+          label="개발자 Call"
+          prop="isNeedEngineerCall"
+          :disable="false"
+          :rules="[]"
+          class="wide-select"
+        />
+      </el-col>
+      <el-col :span="4"
         ><SelectCheckBox
           v-model="props.fabApplication.isAlPad"
           label="AL PAD 적용"
@@ -87,7 +99,7 @@
           :rules="[]"
           class="wide-select"
         />
-      </el-col>
+      </el-col>      
     </el-row>
     <el-row :gutter="20" class="form-row">
       <el-col :span="12">
@@ -179,7 +191,7 @@
 
     <el-row :gutter="20" class="form-row">
       <el-col :span="6">
-        <InputNumber
+        <input-text
           v-model="props.fabApplication.maskTurn"
           label="Mask 차수"
           prop="maskTurn"
@@ -395,7 +407,6 @@ watch(
 
       for (let i = 0; i < bomCodeList.value.length; i++) {
         if (bomCodeList.value[i].MATNR.slice(1, 9) === tempname) {
-          
           const tempBomCode =
             bomCodeList.value[i].MAKTX.split(":")[1]?.replace(/\s+/g, "") || "";
 
