@@ -602,9 +602,11 @@ export async function sendingForm(application: FabRequestForm, type: string) {
     // dvrChecker(application, type);
     packageChecker(application, type);
     checkPassivation(application);
+    
     // passivation Checker
 
     try {
+
       if (application.wantedFabFinishDate !== undefined) {
         application.wantedFabFinishDate = formatDateTime(
           application.wantedFabFinishDate
@@ -615,6 +617,18 @@ export async function sendingForm(application: FabRequestForm, type: string) {
           application.wantedFabStartDate
         );
       }
+
+      if (application.idtMaskArrivalDate !== undefined) {
+        application.idtMaskArrivalDate = formatDateTime(
+          application.idtMaskArrivalDate
+        );
+      }
+      if (application.pstMaskArrivalDate !== undefined) {
+        application.pstMaskArrivalDate = formatDateTime(
+          application.pstMaskArrivalDate
+        );
+      }
+
       const app = convertKeysToPEP8(application);
       const response = await axios.post(url, app);
       // console.log(response.data);

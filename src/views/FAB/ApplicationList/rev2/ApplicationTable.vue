@@ -50,10 +50,7 @@ export default {};
         </template>
       </el-table-column>
       <el-table-column
-        v-if="
-          ['w2150108', 'admin'].includes(getUserId()) ||
-          getRole() === 'group leader'
-        "
+        v-if="['w2150108', 'admin'].includes(getUserId())"
         prop="priorityId"
         label="Priority"
         width="85"
@@ -155,7 +152,23 @@ export default {};
         </template>
       </el-table-column>
 
-      <el-table-column label="완료일" width="120" :align="'center'">
+      <el-table-column
+        v-if="['w2150108', 'admin'].includes(getUserId())"
+        width="160"
+        :align="'center'"
+        label="완료일"
+      >
+        <template #default="scope">
+          <div
+            style="display: flex; justify-content: center; align-items: center"
+          >
+            <el-date-picker
+              v-model="scope.row.wantedFabFinishDate"
+            ></el-date-picker>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column v-else label="완료일" width="120" :align="'center'">
         <template #default="scope">
           <span
             :style="{ color: scope.row.checkFabOutDate() ? 'inherit' : 'red' }"
@@ -220,12 +233,28 @@ export default {};
       </el-table-column>
 
       <!-- getUserId() -->
-      <el-table-column label="엔지니어 Call" :align="'center'">
+      <el-table-column
+        v-if="['w2150108', 'admin'].includes(getUserId())"
+        label="엔지니어 Call"
+        :align="'center'"
+      >
         <template #default="scope">
-          <el-tag v-if="scope.row.isNeedEngineerCall == false" type="danger"
-            >No</el-tag
+          <el-select v-model="scope.row.isNeedEngineerCall">
+            <el-option
+              v-for="option in createBooleanOptions()"
+              :key="option.key"
+              :label="option.label"
+              :value="option.value"
+            ></el-option>
+          </el-select>
+        </template>
+      </el-table-column>
+      <el-table-column v-else label="엔지니어 Call" :align="'center'">
+        <template #default="scope">
+          <el-tag v-if="scope.row.isNeedEngineerCall == true" type="success"
+            >Yes</el-tag
           >
-          <el-tag v-else type="success">Yes</el-tag>
+          <el-tag v-else type="danger">No</el-tag>
         </template>
       </el-table-column>
 
@@ -246,6 +275,57 @@ export default {};
         </template>
       </el-table-column>
 
+      <!-- v-if="['w2150108', 'admin'].includes(getUserId())" -->
+      <el-table-column
+        
+        width="160"
+        :align="'center'"
+        label="MASK 입고일 IDT"
+      >
+        <template #default="scope">
+          <div
+            style="display: flex; justify-content: center; align-items: center"
+          >
+            <el-date-picker
+              v-model="scope.row.idtMaskArrivalDate"
+              type="datetime"
+              value-format="yyyy-MM-dd'T'HH:mm:ss"
+            ></el-date-picker>
+          </div>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column v-else label="MASK 입고일 IDT" width="110" :align="'center'">
+        <template #default="scope">
+          {{ formatDate(scope.row.idtMaskArrivalDate) }}
+        </template>
+      </el-table-column> -->
+
+      <!-- v-if="['w2150108', 'admin'].includes(getUserId())" -->
+      <el-table-column
+        
+        width="160"
+        :align="'center'"
+        label="MASK 입고일 IDT"
+      >
+        <template #default="scope">
+          <div
+            style="display: flex; justify-content: center; align-items: center"
+          >
+            <el-date-picker
+              v-model="scope.row.pstMaskArrivalDate"
+            ></el-date-picker>
+          </div>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column v-else label="MASK 입고일 IDT" width="120" :align="'center'">
+        <template #default="scope">
+          <span
+            :style="{ color: scope.row.checkFabOutDate() ? 'inherit' : 'red' }"
+          >
+            {{ formatDate(scope.row.pstMaskArrivalDate) }}
+          </span>
+        </template>
+      </el-table-column> -->
       <el-table-column label="비고" prop="note" width="180" :align="'center'">
         <template #default="scope">
           {{ scope.row.createTrimmingInfo() }}
@@ -262,12 +342,14 @@ export default {};
         </template>
       </el-table-column>
 
-      <el-table-column
-        v-if="
+      <!--         v-if="
           getUserId() === 'admin' ||
           getRole() === 'group leader' ||
           getUserId() === 'w2150108'
-        "
+        " -->
+
+      <el-table-column
+
         fixed="right"
         label="Action"
         min-width="250"
@@ -312,10 +394,10 @@ export default {};
       </el-table-column>
     </el-table>
   </div>
-  <!-- <div class="buttun-section">
-    <el-button type="primary">SAVE</el-button>
-    <el-button type="success" @click="downloadExcel">To Excel</el-button>    
-  </div> -->
+  <div class="buttun-section">
+    <!-- <el-button type="primary">SAVE</el-button> -->
+    <!-- <el-button type="success" @click="downloadExcel">To Excel</el-button>     -->
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -339,6 +421,7 @@ import type { FabRequestForm } from "../../../../interface/fab-application-rev2"
 import { ElMessageBox, ElMessage } from "element-plus";
 import { receivePriorityList } from "../../../../utils/Fab/fab-application-utils";
 import { OptionInterface } from "../../../../interface/option";
+import { createBooleanOptions } from "../../../../utils/utility";
 
 const props = defineProps<{
   processData: FabRequest[];
@@ -359,15 +442,8 @@ const handleDateChange = (processData: FabRequest) => {
   emit("update:processData", [...props.processData]);
 };
 
-watch(
-  () => props.processData.map(row => row.wantedFabStartDate), // 특정 필드만 감지
-  (newValues, oldValues) => {
-    console.log("📌 wantedFabStartDate 변경 감지:", oldValues, "→", newValues);
-  },
-  { deep: true } // 배열 내부 변경 감지
-);
-
 async function handleUpdate(row: FabRequest) {
+  console.log(row)
   await sendingForm(row, "partial update");
 }
 
@@ -448,7 +524,6 @@ async function handleStatus(
     console.error("Error fetching application list:", error);
   }
 }
-
 
 onMounted(async () => {
   try {

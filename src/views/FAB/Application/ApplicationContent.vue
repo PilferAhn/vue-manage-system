@@ -99,7 +99,7 @@
           :rules="[]"
           class="wide-select"
         />
-      </el-col>      
+      </el-col>
     </el-row>
     <el-row :gutter="20" class="form-row">
       <el-col :span="12">
@@ -275,6 +275,33 @@
         </el-form-item>
       </el-col>
     </el-row>
+
+    <!-- 날짜 선택 -->
+    <el-row :gutter="20" class="form-row">
+      <el-col :span="12">
+        <el-form-item label="MASK 입고일 IDT">
+          <el-date-picker
+            type="date"
+            placeholder="FAB Est Start"
+            v-model="props.fabApplication.wantedFabStartDate"
+            class="custom-date-picker"
+            :label-position="'left'"
+          />
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <!-- <el-form-item label="FAB 완료 예정일" class="date-picker-container"> -->
+        <el-form-item label="MASK 입고일 PST">
+          <el-date-picker
+            type="date"
+            placeholder="FAB Est Complete"
+            v-model="props.fabApplication.wantedFabFinishDate"
+            class="custom-date-picker"
+          />
+        </el-form-item>
+      </el-col>
+    </el-row>
+
     <!-- 용도 / 목적 -->
     <Bom
       v-if="props.fabApplication.isNewBom"

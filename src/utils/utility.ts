@@ -1,4 +1,4 @@
-import type { OptionInterface } from "../interface/option";
+import type { OptionInterface, OptionBooleanInterface } from "../interface/option";
 import { ref } from "vue";
 import { sendGetRequest } from "./httpProtocol";
 
@@ -30,6 +30,16 @@ export const colorList = [
 ];
 
 
+export const createBooleanOptions = () => {
+
+  const options = ref<OptionBooleanInterface[]>([
+    {key : 1, value : true, label : "O"},
+    {key : 2, value : false, label : "X"}
+  ])
+
+  return options.value
+
+}
 
 export const formatDate = (dateStr: string): string => {
   const date = new Date(dateStr);
