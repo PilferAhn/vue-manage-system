@@ -100,6 +100,7 @@
     packageId: props.fabApplication.packageId,
     destinationId: props.fabApplication.destinationId,
     idtProcessId: props.fabApplication.idtProcessId,
+    hasBridge : props.fabApplication.hasBridge,
     isDualIdt : props.fabApplication.isDualIdt,
     pstId : props.fabApplication.pstId,
     isGfl : props.fabApplication.isGfl,
@@ -117,11 +118,12 @@
         newValues.destinationId !== null &&
         newValues.idtProcessId !== null
       ) {
-  
+        
+        console.log(1)
         needIdt.value = true;
         needBpd.value = newValues.packageId === "BDMP";
         needGfl.value = props.fabApplication.isGfl;
-        needBridge.value = props.sawType.isAllowBridge;
+        needBridge.value = props.fabApplication.hasBridge;
         needPad.value = true;
         needSio.value = true;
         needCap.value = ["NS", "TC"].includes(newValues.sawTypeId) && props.fabApplication.isCap
@@ -247,7 +249,8 @@
             order: 2,
           });
         }
-  
+        
+        console.log(needBridge.value)
         if (needBridge.value) {
           props.fabApplication.photo.photoProcesses.push({
             processName: "브릿지",

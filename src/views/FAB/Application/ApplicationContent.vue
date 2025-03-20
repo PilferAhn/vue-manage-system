@@ -430,14 +430,15 @@ watch(
 
     if (newVal.length >= 10) {
       let isFound = false;
-      const tempname = newVal.slice(1, 9);
+      const tempname = newVal.slice(0, 10);
 
       for (let i = 0; i < bomCodeList.value.length; i++) {
-        if (bomCodeList.value[i].MATNR.slice(1, 9) === tempname) {
+        if (bomCodeList.value[i].MATNR.slice(0, 10) === tempname) {
           const tempBomCode =
             bomCodeList.value[i].MAKTX.split(":")[1]?.replace(/\s+/g, "") || "";
 
           if (tempBomCode !== props.fabApplication.bomMainCode) {
+            props.fabApplication.bomMainCode = tempBomCode
             isFound = true;
             break; // ✅ `return` 대신 `break` 사용
           }
@@ -448,6 +449,7 @@ watch(
         props.fabApplication.bomMainCode = "";
         props.fabApplication.isNewBom = true;
       } else {
+        console.log("Comes to Here?")
         props.fabApplication.isNewBom = false;
         props.fabApplication.isNewBom2 = false;
         props.fabApplication.bom = null;

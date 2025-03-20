@@ -3,8 +3,8 @@
       <h3>{{ header }}</h3>
       <div class="checkbox-group">
         <el-checkbox
-          v-if="props.sawType.isAllowBridge"
-          v-model="props.sawType.isAllowBridge"
+          v-if="isAllowBridge"
+          v-model="props.fabApplication.hasBridge"
           label="브릿지"
         ></el-checkbox>
         <el-checkbox
@@ -78,6 +78,7 @@
     sawType: SawType;
   }>();
   
+  const isAllowBridge  = ref<boolean>(false);
   const isAllowGfl = ref<boolean>(false);
   const isAllowCap = ref<boolean>(false);
   const isAllowMoreEnergy = ref<boolean>(false);
@@ -106,6 +107,7 @@
         newValues.idtProcessId !== null
       ) {
         isAllowIdtOxi.value = ["NS", "HS"].includes(newValues.sawTypeId);
+        isAllowBridge.value = ["NS", "HS"].includes(newValues.sawTypeId);
         isAllowGfl.value = newValues.sawTypeId === "NS";
         isAllowCap.value = ["TC", "NS"].includes(newValues.sawTypeId);
         isAllowRrPs2.value = newValues.sawTypeId === "TC";
@@ -131,7 +133,14 @@
           isAllowMoreEnergy.value = true;
           // props.fabApplication.isMoreEnergy = false;
         }
-  
+        
+        console.log(isAllowBridge.value)
+        console.log(props.fabApplication.hasBridge)
+        if(!isAllowBridge.value){
+          props.fabApplication.hasBridge = false
+        }
+
+
         if (!isAllowIdtOxi.value) {
           props.fabApplication.isIdtOxi = null;
         }
@@ -146,10 +155,13 @@
         }
   
         if (!isAllowGfl.value) {
-          props.fabApplication.isGfl = null;
+          props.fabApplication.gflThickness = null;
         } else {
-          if (props.fabApplication.isGfl !== null) {
-            props.fabApplication.isGfl = true;
+          if (props.fabApplication.gflThickness === null) {
+            props.fabApplication.isGfl = false;
+          }
+          else{
+            props.fabApplication.isGfl = true
           }
         }
   

@@ -47,21 +47,18 @@ import {
 import { getUserId } from "../../../../utils/account-utils";
 
 const currentWeekNumber: number = getCurrentWeekNumber();
-const currentWeekLabel =
-  currentWeekNumber.toString() +
-  "주 - (" +
-  (currentWeekNumber + 1).toString() +
-  "투입)";
+const currentWeekLabel = currentWeekNumber.toString() + "주 - (이번 주)"
+  // currentWeekNumber.toString() +
+  // "주 - (" +
+  // (currentWeekNumber + 1).toString() +
+  // "투입)";
+  
 const priviousWeekLabel =
   (currentWeekNumber - 1).toString() +
-  "주 - (" +
-  currentWeekNumber.toString() +
-  "투입)";
+  "주 - (지난 주)"
 const nextWeekLabel =
   (currentWeekNumber + 1).toString() +
-  "주 - (" +
-  (currentWeekNumber + 1).toString() +
-  "투입)";
+  "주 - (다음 주 )" 
 
 // Define the active tab, default is 'thisWeek'
 const activeTab = ref("thisWeek");

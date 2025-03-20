@@ -97,8 +97,8 @@ export interface FabRequestForm {
   waferType?: string;
   wantedFabStartDate?: string;
   wantedFabFinishDate?: string;
-  idtMaskArrivalDate ? : string;
-  pstMaskArrivalDate ? : string;
+  idtMaskArrivalDate?: string;
+  pstMaskArrivalDate?: string;
   purpose?: string;
   destinationId?: string;
   packageId?: string;
@@ -331,8 +331,8 @@ export class FabRequest implements FabRequestForm {
   waferType?: string;
   wantedFabStartDate?: string;
   wantedFabFinishDate?: string;
-  idtMaskArrivalDate ? : Date;
-  pstMaskArrivalDate ? : string;
+  idtMaskArrivalDate?: string;
+  pstMaskArrivalDate?: string;
   purpose?: string;
   destinationId?: string;
   packageId?: string;
@@ -458,7 +458,7 @@ export class FabRequest implements FabRequestForm {
     let waferInfoStr = "";
 
     if (this.idtType.name === "Special") {
-      waferInfoStr = this.metalNote.split("\n")[0]
+      waferInfoStr = this.metalNote.split("\n")[0];
     } else {
       if (this.idtLayers !== null && this.idtType !== null) {
         waferInfoStr +=

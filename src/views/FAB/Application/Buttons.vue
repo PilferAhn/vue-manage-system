@@ -5,7 +5,7 @@
       <div class="button-container">
         <el-form-item v-if="props.applicationType === 'create'">
           <el-button
-            :disabled="!['admin', 'w2150108'].includes(getUserId())"
+            :disabled="!['admin', 'w2150108', 'w2190810', 'w2180619'].includes(getUserId())"
             type="primary"
             class="action-button"
             @click="submitForm('submit')"
@@ -15,7 +15,7 @@
         </el-form-item>
         <el-form-item v-else-if="props.applicationType === 'load'">
           <el-button
-            :disabled="!['admin', 'w2150108'].includes(getUserId())"
+            :disabled="!['admin', 'w2150108', 'w2190810', 'w2180619'].includes(getUserId())"
             type="primary"
             class="action-button"
             @click="submitForm('update')"

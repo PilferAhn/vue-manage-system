@@ -56,8 +56,11 @@ export default {};
         :align="'center'"
       ></el-table-column>
 
-      <el-table-column label="FabCard 작성유무" width="80" :align="'center'">
-        <el-tag type="danger">No</el-tag>
+      <el-table-column label="FabCard 작성유무" width="80" :align="'center'">        
+        <template #default="scope">
+          <el-tag v-if="!scope.row.isFabCardCreated" type="danger">No</el-tag>
+          <el-tag v-else type="success">Yes</el-tag>
+        </template>        
       </el-table-column>
 
       <el-table-column prop="group" label="Group" width="140" :align="'center'">
@@ -204,7 +207,7 @@ export default {};
         </template>
       </el-table-column>
 
-      <el-table-column label="Fab Card 전달일" width="120" :align="'center'">
+      <el-table-column label="Fab Card 전달일" width="130" :align="'center'" >
         <template #default="scope">
           <span>{{ scope.row.calFabCardConveyDate() }}</span>
         </template>
@@ -555,6 +558,7 @@ async function handleStatus(
       idt_layers: true,
       is_pending: false,
       week_numbers: props.weekNumber,
+      order_by : "wanted_fab_start_date"      
     };
 
     if (!["2150108", "admin"].includes(getUserId())) {
@@ -586,6 +590,7 @@ onMounted(async () => {
       idt_layers: true, // content Loader option
       is_pending: false, // Row filter
       week_numbers: props.weekNumber, // Row filter
+      order_by : "wanted_fab_start_date"
     };
 
     if (!["2150108", "admin"].includes(getUserId())) {

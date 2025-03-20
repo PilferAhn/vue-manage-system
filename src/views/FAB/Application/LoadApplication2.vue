@@ -40,6 +40,7 @@
   const sawType = reactive<SawType>({});
   
   // Function to fetch the application data from the server
+
   const fetchApplication = async (productName: any) => {
     try {
       const url = serverUrl + "/fab_monitoring_rev2/get_fab_request";
@@ -51,7 +52,7 @@
       
       // Assign the converted data to processData
       Object.assign(app, convertedData);
-              
+      
       app.currentProductName = app.productName
       if(app.photo === null){
         app.photo = initPhoto()
