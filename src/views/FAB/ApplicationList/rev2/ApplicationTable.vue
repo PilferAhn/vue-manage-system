@@ -29,14 +29,30 @@ export default {};
     </el-select>
   </div>
   <!-- Element Plus Table -->
-  <div class="group-count" v-if="['w2150108', 'admin'].includes(getUserId())">
-    <div class="group-box">
-      총 의뢰: {{ totalQuantity }} (DV2 : {{ groupDv2Count }})
+  <div
+    class="group-count-wrapper"
+    v-if="['w2150108', 'admin'].includes(getUserId())"
+  >
+    <!-- 왼쪽: 기존 group 통계 -->
+    <div class="group-count">
+      <div class="group-box">
+        총 의뢰: {{ totalQuantity }} (DV2 : {{ groupDv2Count }})
+      </div>
+      <div v-for="(stats, group) in groupStats" :key="group" class="group-box">
+        <span>{{ group }}: {{ stats.count }}</span>
+      </div>
     </div>
-    <div v-for="(stats, group) in groupStats" :key="group" class="group-box">
-      <span>{{ group }}: {{ stats.count }}</span>
+
+    <!-- 오른쪽: priority 통계 -->
+    <div class="group-count">
+      <div
+        v-for="(count, priority) in priorityCounts"
+        :key="priority"
+        class="group-box"
+      >
+        <span>{{ priority }}: {{ count }}</span>
+      </div>
     </div>
-    <!-- <div class="group-box">DV2: {{ groupDv2Count }}</div> -->
   </div>
 
   <div class="table-wrapper">
@@ -56,11 +72,11 @@ export default {};
         :align="'center'"
       ></el-table-column>
 
-      <el-table-column label="FabCard 작성유무" width="80" :align="'center'">        
+      <el-table-column label="FabCard 작성유무" width="80" :align="'center'">
         <template #default="scope">
           <el-tag v-if="!scope.row.isFabCardCreated" type="danger">No</el-tag>
           <el-tag v-else type="success">Yes</el-tag>
-        </template>        
+        </template>
       </el-table-column>
 
       <el-table-column prop="group" label="Group" width="140" :align="'center'">
@@ -207,7 +223,7 @@ export default {};
         </template>
       </el-table-column>
 
-      <el-table-column label="Fab Card 전달일" width="130" :align="'center'" >
+      <el-table-column label="Fab Card 전달일" width="130" :align="'center'">
         <template #default="scope">
           <span>{{ scope.row.calFabCardConveyDate() }}</span>
         </template>
@@ -549,16 +565,15 @@ async function handleStatus(
 
   try {
     // getApplicationList를 호출하고 결과를 기다림
-
     let para = {
       users: true,
       wafer: true,
       idt_type: true,
       hs_type: true,
-      idt_layers: true,
-      is_pending: false,
+      idt_layers: true,      
+      is_pending: false, // Row filter
       week_numbers: props.weekNumber,
-      order_by : "wanted_fab_start_date"      
+      order_by: "wanted_fab_start_date",
     };
 
     if (!["2150108", "admin"].includes(getUserId())) {
@@ -590,7 +605,7 @@ onMounted(async () => {
       idt_layers: true, // content Loader option
       is_pending: false, // Row filter
       week_numbers: props.weekNumber, // Row filter
-      order_by : "wanted_fab_start_date"
+      order_by: "wanted_fab_start_date",
     };
 
     if (!["2150108", "admin"].includes(getUserId())) {
@@ -601,7 +616,11 @@ onMounted(async () => {
 
     // const transformedData = data.map((item: any) => new FabApplication(item));
     props.processData.push(
-      ...data.map((item: FabRequestForm) => new FabRequest(item))
+      ...data
+        // .filter(
+        //   (item: FabRequestForm) => item.note !== "Old Purpose: 가상데이터"
+        // ) // 예시 조건
+        .map((item: FabRequestForm) => new FabRequest(item))
     );
   } catch (error) {
     console.error("Error fetching application list:", error);
@@ -664,6 +683,14 @@ const handleDownloadExcel = async () => {
     }
   );
 };
+
+const priorityCounts = computed(() => {
+  return props.processData.reduce<Record<string, number>>((acc, item) => {
+    const priority = item.priorityId || 'UNKNOWN';
+    acc[priority] = (acc[priority] || 0) + 1;
+    return acc;
+  }, {});
+});
 </script>
 
 <style scope>
@@ -678,9 +705,17 @@ const handleDownloadExcel = async () => {
   margin-right: 10px;
 }
 
+.group-count-wrapper {
+  display: flex;
+  justify-content: space-between; /* 양쪽 정렬 */
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
 .group-count {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;  
   margin-bottom: 10px;
 }
 

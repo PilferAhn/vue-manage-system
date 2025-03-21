@@ -95,7 +95,7 @@
   
   <script lang="ts" setup>
   import { defineProps, defineEmits, ref, watch, onMounted } from "vue";
-  import InputTextByRecommad from "../../../Common/InputTextByRecommad2.vue";
+  import InputTextByRecommad from "../../../Common/InputTextByRecommadAsLabel.vue";
   import {
     getFabWaferFromWaferId,
     createHsWaferCondition,

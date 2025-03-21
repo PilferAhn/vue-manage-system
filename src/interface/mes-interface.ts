@@ -36,7 +36,7 @@ export interface LotStatus {
   child: LotStatus | null;
 }
 
-interface ActiveLot {
+export interface ActiveLot {
   lotId: string;
   appendDate: string; // ISO date string
   mesCreationDate: string; // ISO date string

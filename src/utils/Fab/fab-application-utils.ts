@@ -30,7 +30,7 @@ import { Option } from "element-plus/es/components/select-v2/src/select.types";
 import { objectEach } from "highcharts";
 import type { TegApplication as TegApplicationInterface } from "../../Common/ApplicationTypes";
 // import type { TegApplication as TegApplicationInterface} from "../../interface/Teg/teg";
-import type { Bom } from "../../interface/fab-application-rev2";
+import type { Bom, FabRequest } from "../../interface/fab-application-rev2";
 import { fa } from "element-plus/es/locale";
 
 export const serverUrl = "http://10.29.11.57:40000";
@@ -425,7 +425,31 @@ export async function getApplicationListByDict(
   )) as object[];
 
   for (let i = 0; i < data.length; i++) {
-    applications.value.push(convertKeysToCamelCase(data[i]));
+    applications.value.push(convertPep8ToCamelCase2(data[i]));
+  }
+
+  return applications.value;
+}
+
+export async function getApplicationListByDictRev2(
+  options: object
+): Promise<FabRequest[]> {
+  // const applications = reactive<FabRequestForm[]>([]);
+  const applications = ref<FabRequest[]>([]);
+
+  const formData = new FormData();
+  // 객체의 key-value를 FormData에 추가
+  Object.entries(options).forEach(([key, value]) => {
+    formData.append(key, String(value)); // 모든 값을 문자열로 변환하여 추가
+  });
+
+  const data = (await sendPostRequest(
+    serverUrl + "/fab_monitoring_rev2/get_fab_requests_list",
+    formData
+  )) as object[];
+
+  for (let i = 0; i < data.length; i++) {
+    applications.value.push(convertPep8ToCamelCase2(data[i]));
   }
 
   return applications.value;
@@ -781,7 +805,7 @@ export async function getApplicationByModelName(
 }
 
 function findFinalLotStats(lot: LotStatus, depth: number) {
-  if (lot.child !== null) {
+  if (lot !== undefined && lot.child !== null) {
     return findFinalLotStats(lot.child, depth + 1);
   } else {
     if (depth >= 5) {
@@ -803,6 +827,45 @@ export function getAngleAndThick(waferInfo: string, sawType: SawType) {}
 
 export function getRunningFabReqeust(applicationList: FabApplicationForm[]) {
   const filteredApp = ref<FabApplicationForm[]>([]);
+  // 모든 lot 이 끝까지 가고,
+  // depth 가 5에서 완료된 공정일 경우만 true
+
+  // 모든 Fab Application 을 읽고
+  for (let i = 0; i < applicationList.length; i++) {
+    // console.log(`Application Number ${i}`)
+    // 그중에 Lot Status 가 1개 이상이고.
+    if (applicationList[i].lotStatus.length > 0) {
+      // lot status 에서 데이터를 찾아오는데 !
+      // hanoi csp 에서 공정이 모두 끝까지 갔다 안갔나를 확인할때 사용하는 함수
+      let isFinish = true;
+      for (let j = 0; j < applicationList[i].lotStatus.length; j++) {
+        if (applicationList[i].lotStatus[j].hanoiCsp === null) {
+          isFinish = false;
+          break;
+        } else {
+          const result = findFinalLotStats(
+            applicationList[i].lotStatus[j].hanoiCsp,
+            1
+          );
+          if (!result) {
+            isFinish = false;
+            break;
+          }
+        }
+      }
+      if (!isFinish) {
+        filteredApp.value.push(applicationList[i]);
+      }
+    } else {
+      filteredApp.value.push(applicationList[i]);
+    }
+  }
+
+  return filteredApp.value;
+}
+
+export function getRunningFabReqeustRev2(applicationList: FabRequest[]) {
+  const filteredApp = ref<FabRequest[]>([]);
   // 모든 lot 이 끝까지 가고,
   // depth 가 5에서 완료된 공정일 경우만 true
 

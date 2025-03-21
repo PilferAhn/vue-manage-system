@@ -134,10 +134,10 @@
           // props.fabApplication.isMoreEnergy = false;
         }
         
-        console.log(isAllowBridge.value)
-        console.log(props.fabApplication.hasBridge)
+
         if(!isAllowBridge.value){
           props.fabApplication.hasBridge = false
+          props.sawType.isAllowBridge
         }
 
 

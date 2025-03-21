@@ -97,7 +97,7 @@
       </el-descriptions-item>
       <el-descriptions-item span="2">
         <template #label>
-          <div>Size</div>
+          <div>Size (규격)</div>
         </template>
         <div class="cell-value">
           <el-input type="number" v-model="props.bom.epoxy.size"></el-input>
@@ -131,14 +131,23 @@
           <div class="cell-item">Package Name</div>
         </template>
         <div>
-          <el-select v-model="props.bom.package">
+          <!-- <el-select v-model="props.bom.package">
             <el-option
               v-for="p in packageOptioins"
               :key="p.key"
               :label="p.label"
               :value="p.value"
             ></el-option>
-          </el-select>
+          </el-select> -->
+          <input-text-by-recommad
+            v-model="props.bom.package"
+            label=""
+            prop="packageName"
+            placeholder=""
+            :options="packageOptioins"
+            :disable="false"
+            class="wide-select"
+          />
         </div>
       </el-descriptions-item>
       <el-descriptions-item span="2">
@@ -154,14 +163,6 @@
           <div class="cell-item">P/N</div>
         </template>
         <div>
-          <!-- <el-select v-model="props.bom.package">
-              <el-option
-                v-for="p in packageOptioins"
-                :key="p.key"
-                :label="p.label"
-                :value="p.value"
-              ></el-option>
-            </el-select> -->
           <el-input v-model="props.bom.partNumber" disabled></el-input>
         </div>
       </el-descriptions-item>
@@ -193,10 +194,6 @@
           <div class="cell-item">PKG Top Au두께 (um)</div>
         </template>
         <div>
-          <!-- <el-input
-              style="max-width: 300px"
-              v-model="props.fabApplication.bom.epoxy.code"
-            ></el-input> -->
           <el-select
             v-model="props.bom.pkgTopAuThickness"
             :disabled="isCompanyDisabled"
@@ -251,6 +248,8 @@ import {
 } from "../../../../utils/Fab/bom-utils";
 import type { ComponentSize } from "element-plus";
 import { OptionInterface } from "../../../../interface/option";
+import InputTextByRecommad from "../../../Common/InputTextByRecommadAsLabel.vue";
+
 const props = defineProps<{
   fabApplication: FabRequestForm;
   bom: Bom;
@@ -400,7 +399,9 @@ const extractValues = (data: Record<string, any>, bom: Bom) => {
 
   // 정규 표현식으로 shQuantity 찾기 (ex: 2,668)
   const shQuantityMatch = data["MAKTX"].match(/(\d{1,3}(,\d{3})*)pcs/);
-  bom.shQuantity = shQuantityMatch ? shQuantityMatch[1].replace(/,/g, "") : null;
+  bom.shQuantity = shQuantityMatch
+    ? shQuantityMatch[1].replace(/,/g, "")
+    : null;
 
   // return {
   //   size,
@@ -426,6 +427,7 @@ watch(
   (newVal) => {
     if (newVal.length >= 1) {
       packageOptioins.value = createPackageOptions(packageList.value);
+      console.log(packageOptioins.value);
     }
   }
 );

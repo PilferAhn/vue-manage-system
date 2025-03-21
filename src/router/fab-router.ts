@@ -51,6 +51,18 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
       ),
   },
   {
+    path: "/fab/feb-application-list3",
+    name: "FabApplicationList3",
+    meta: {
+      title: "개발 현황",
+      permiss: "11",
+    },
+    component: () =>
+      import(
+        /* webpackChunkName: "table" */ "../views/FAB/ApplicationList/rev2/ApplicationMonitor.vue"
+      ),
+  },
+  {
     path: "/fab/my-application-status",
     name: "MyApplicationStatus",
     meta: {

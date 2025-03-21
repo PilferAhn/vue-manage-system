@@ -1,8 +1,10 @@
 import { ca } from "element-plus/es/locale";
 import type { User } from "./user";
 import {
+  adjustDate,
   calculateWorkday,
   formatDate,
+  formatDateTime,
   holidaysList,
 } from "../utils/date-utils";
 import {
@@ -10,6 +12,7 @@ import {
   calFabOutLeadTime,
 } from "../utils/Fab/fab-application-utils";
 import { off } from "process";
+import { ActiveLot, LotStatus } from "./mes-interface";
 
 export interface Bump {
   size: string;
@@ -295,6 +298,22 @@ export interface Layer {
   material?: string;
 }
 
+export interface MesStatus {
+  fabInsertPlanDate?: string;
+  fabInsertDate?: string[];
+  fabOutDate?: string[];
+  FabLoc?: string[];
+  FabTime?: string[];
+  hqOutPlan?: string[];
+  hqOut?: string[];
+  whcArrived?: string[];
+  AssyIn?: string[];
+  flipBonding?: string[];
+  package?: string[];
+  assy?: string[];
+  finalOut?: string[];
+}
+
 export class FabRequest implements FabRequestForm {
   photo?: Photo;
   waferCode?: string;
@@ -418,11 +437,149 @@ export class FabRequest implements FabRequestForm {
   hsType?: HsType;
   passivationType?: passivationType[];
   dateOfFabCardConvey?: string;
+  lotStatus?: LotStatus[] | null;
+  lots: any[];
+  activeLots: ActiveLot[];
+  result: any | null;
+  measStatus?: MesStatus;
 
   constructor(data: FabRequestForm) {
     Object.assign(this, data);
     this.isGfl = this.gflThickness !== null;
   }
+
+  createMesInfo = () => {
+    
+    if (this.lotStatus.length != 0) {
+
+      this.measStatus = {
+        fabInsertDate: [],
+        fabOutDate: [],
+        FabLoc: [],
+        FabTime: [],
+        hqOutPlan: [],
+        hqOut: [],
+        whcArrived: [],
+        AssyIn: [],
+        flipBonding: [],
+        package: [],
+        assy: [],
+        finalOut: [],
+      };
+
+      for (let i = 0; i < this.lotStatus.length; i++) {
+        try {
+          const lot = this.lotStatus[i];
+
+          // HQ 출하 예정
+          if (lot.operation === undefined) {
+            this.measStatus.hqOutPlan.push("--");
+          } 
+          else if (lot.operation.operationId === "OP0E002040") {
+            const t = formatDate(adjustDate(lot.moveinDate, 3));
+            this.measStatus.hqOutPlan.push(t);
+          } else if (lot.secondProbeHistory !== null && lot.secondProbeHistory?.startDate !== null) {
+            this.measStatus.hqOutPlan.push(
+              formatDate(adjustDate(lot.secondProbeHistory.startDate, 3))
+            );
+          } else if (lot.secondProbeHistory !== null && lot.secondProbeHistory?.endDate !== null) {
+            this.measStatus.hqOutPlan.push(
+              formatDate(adjustDate(lot.secondProbeHistory.endDate, 3))
+            );
+          } else if (lot.secondProbeHistory !== null && lot.secondProbeHistory?.startDate === null) {
+            this.measStatus.hqOutPlan.push("SKIP");
+          } else {
+            this.measStatus.hqOutPlan.push("--");
+          }
+
+          // HQ 출하
+          if (lot.operation?.name === "Transit 공정") {
+            this.measStatus.hqOut.push(formatDate(lot.moveinDate));
+          } else {
+            this.measStatus.hqOut.push("--");
+          }
+
+          // WHC Arrival
+          if (lot.hanoiCsp !== null) {
+            this.measStatus.whcArrived.push(lot.hanoiCsp.moveinDate);
+          } else {
+            this.measStatus.whcArrived.push("--");
+          }
+
+          // flip bonding
+          if (lot.hanoiCsp !== null) {
+            const t =
+              lot.hanoiCsp.operation.name +
+              " " +
+              formatDateTime(lot.hanoiCsp.moveinDate) +
+              " " +
+              lot.hanoiCsp.lotId;
+            this.measStatus.flipBonding.push(t);
+          } else {
+            this.measStatus.flipBonding.push("--");
+          }
+
+          // Package
+          if (lot.hanoiCsp && lot.child) {
+            this.measStatus.package.push(
+              lot.hanoiCsp.child.operation.name +
+                " " +
+                formatDateTime(lot.hanoiCsp.child.moveinDate) +
+                " " +
+                lot.hanoiCsp.child.lotId
+            );
+          } else {
+            this.measStatus.package.push("--");
+          }
+
+          // Assy
+          if (lot.hanoiCsp && lot.child?.child) {
+            this.measStatus.package.push(
+              lot.hanoiCsp.child.child.operation.name +
+                " " +
+                formatDateTime(lot.hanoiCsp.child.child.moveinDate) +
+                " " +
+                lot.hanoiCsp.child.child.lotId
+            );
+          } else {
+            this.measStatus.package.push("--");
+          }
+
+          // Final Out
+          if (lot.hanoiCsp && lot.child?.child?.child?.child?.child) {
+            this.measStatus.package.push(
+              lot.hanoiCsp.child.child.child.child.child.operation.name +
+                " " +
+                formatDateTime(
+                  lot.hanoiCsp.child.child.child.child.child.moveinDate
+                ) +
+                " " +
+                lot.hanoiCsp.child.child.child.child.child.lotId
+            );
+          } else {
+            this.measStatus.package.push("--");
+          }
+        } catch (err) {
+          console.error(
+            "createMesInfo() error at lotStatus[",
+            i,
+            "]",
+            this,
+            err
+          );
+
+          // 모든 measStatus 배열에 '--'를 추가해 일관성 유지
+          this.measStatus.hqOutPlan.push("--");
+          this.measStatus.hqOut.push("--");
+          this.measStatus.whcArrived.push("--");
+          this.measStatus.flipBonding.push("--");
+          this.measStatus.package.push("--");
+          this.measStatus.package.push("--"); // Assy
+          this.measStatus.package.push("--"); // Final Out
+        }
+      }
+    }
+  };
 
   calFabCardConveyDate = () => {
     return calculateWorkday(this.wantedFabStartDate, holidaysList);

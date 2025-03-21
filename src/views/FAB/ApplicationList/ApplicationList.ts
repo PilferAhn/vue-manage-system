@@ -13,6 +13,7 @@ import type {
   ModifiedFabLotDataInterface,
 } from "../../../interface/fab";
 import { adjustDate } from "../../../utils/date-utils";
+import { FabRequest } from "../../../interface/fab-application-rev2";
 
 // Define the processData ref in case you want to use it directly
 export const processData = ref<FabApplicationForm[]>([]);
@@ -282,6 +283,34 @@ export const downloadExcel = async (processData: FabApplicationForm[]) => {
 
 export function getLateFab(fabList: FabApplicationForm[]) {
   const LateFabList = ref<FabApplicationForm[]>([]);
+
+  fabList.forEach((fab) => {
+    const tempLots = ref<LotStatus[]>([]);
+    let isLate = false;
+    for (let i = 0; i < fab.lotStatus.length; i++) {
+      if (
+        testFabOutAlarm(
+          fab.lotStatus[i].operation.operationId,
+          fab.lotStatus[i].moveinDate
+        )
+      ) {
+
+        isLate = true;
+        tempLots.value.push(fab.lotStatus[i])
+      }
+    }
+
+    if (isLate) {
+      fab.lotStatus = tempLots.value
+      LateFabList.value.push(fab);
+    }
+  });
+
+  return LateFabList.value;
+}
+
+export function getLateFabRev2(fabList: FabRequest[]) {
+  const LateFabList = ref<FabRequest[]>([]);
 
   fabList.forEach((fab) => {
     const tempLots = ref<LotStatus[]>([]);
