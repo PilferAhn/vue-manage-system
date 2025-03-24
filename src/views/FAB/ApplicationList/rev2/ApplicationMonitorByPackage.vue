@@ -27,7 +27,7 @@ export default {};
           style="width: 150px"
         >
           <el-option label="Designer" value="designer"></el-option>
-          <el-option label="Product Name" value="ProductName"></el-option>
+          <el-option label="Product Name" value="productName"></el-option>
           <el-option label="Week Number" value="weekNumber"></el-option>
         </el-select>
 
