@@ -17,7 +17,10 @@
 <script lang="ts" setup>
 import { FabRequest } from "../../../../interface/fab-application-rev2";
 import { reactive, onMounted, ref } from "vue";
-import { getApplicationListByDict, getApplicationListByDictRev2 } from "../../../../utils/Fab/fab-application-utils";
+import {
+  getApplicationListByDict,
+  getApplicationListByDictRev2,
+} from "../../../../utils/Fab/fab-application-utils";
 import { getRole, getUserId } from "../../../../utils/account-utils";
 import ApplicationMonitorByPackage from "./ApplicationMonitorByPackage.vue";
 import { getAppByPackageType } from "../../../../utils/Fab/fab-application-monitor";
@@ -50,8 +53,8 @@ onMounted(async () => {
       hs_type: true,
       idt_layers: false,
       lot_status: true,
-      is_pending : false,
-      order_by: "created_date",      
+      is_pending: false,
+      order_by: "created_date",
     };
 
     if (getUserId() !== "admin" && getRole() !== "group leader") {
@@ -59,15 +62,30 @@ onMounted(async () => {
     }
 
     // Object.assign(apps, await getApplicationListByDictRev2(para));
-    const rawApps = await getApplicationListByDictRev2(para)
+    const rawApps = await getApplicationListByDictRev2(para);
 
-    Object.assign(apps, rawApps.map(item => new FabRequest(item)));
+    Object.assign(
+      apps,
+      rawApps.map((item) => new FabRequest(item))
+    );
+
+    apps.forEach((app, index) => {
+      for (let i = 0; i < tegApp.value.length; i++) {
+        if (app.productName === tegApp.value[i].modelName) {
+          app.tegFinishedDate = tegApp.value[i].dateOfFinish;
+          app.measType = tegApp.value[i].measType;
+        }
+      }
+    });
 
     // apps.forEach((app) => app.createMesInfo())
 
     Object.assign(cspApps, getAppByPackageType(apps, ["CSP"], ["WHC"]));
-    Object.assign(wlpApps, getAppByPackageType(apps, ["WLP", "BDMP"], ["WHC"]))
-    Object.assign(etcApps, getAppByPackageType(apps, ["WLP", "BDMP", "CSP"], ["개발전달"]))
+    Object.assign(wlpApps, getAppByPackageType(apps, ["WLP", "BDMP"], ["WHC"]));
+    Object.assign(
+      etcApps,
+      getAppByPackageType(apps, ["WLP", "BDMP", "CSP"], ["개발전달"])
+    );
 
     console.log("Fetched app count:", apps.length);
   } catch (error) {

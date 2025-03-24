@@ -15,7 +15,7 @@ export async function getFabAppForReview(apps : FabRequest[],  weekNumber : numb
           idt_layers: true,      
           is_pending: false, // Row filter
           week_numbers: weekNumber,
-          order_by: "wanted_fab_start_date",
+          order_by: "created_date",
         };
     
         if (!["w2150108", "admin"].includes(userId)) {

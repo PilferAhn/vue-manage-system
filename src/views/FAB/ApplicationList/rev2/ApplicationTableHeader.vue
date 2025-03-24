@@ -28,7 +28,8 @@ export default {};
 
     <div class="legend">
       <div class="legend-item">
-        <!-- <el-button class="btn-re-measure" disabled>Fab Card 작성 必</el-button>         -->
+        <el-button class=btn-waiting-feedback disabled>Fab Card 작성 必</el-button>        
+        <el-button class="btn-re-measure" disabled>Drop</el-button>        
       </div>
       <!-- <div class="legend-item">
         <el-button class="btn-finished" disabled>완료</el-button>        
@@ -192,6 +193,11 @@ const cellClass = ({ row, rowIndex, column, columnIndex }) => {
   background-color: #d3d3d3; /* 밝은 회색 */
   color: #555 !important; /* 중간 회색 텍스트 */
   border: 1px solid #c0c0c0; /* 연한 회색 테두리 */
+}
+
+.btn-waiting-feedback {
+  background-color: #e68a13; /* 밝은 회색 */
+  color: #ffffff !important; /* 중간 회색 텍스트 */
 }
 
 .btn-waiting-feedback {

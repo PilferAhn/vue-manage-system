@@ -406,7 +406,7 @@ export class FabRequest implements FabRequestForm {
   bpThicknessNote?: string;
   bpProbeNote?: string;
   paNote?: string;
-  etchingNote?: string;
+  etchingNote?: string;  
   chip?: {
     hori: number;
     verti: number;
@@ -442,7 +442,8 @@ export class FabRequest implements FabRequestForm {
   activeLots: ActiveLot[];
   result: any | null;
   measStatus?: MesStatus;
-
+  tegFinishedDate? : string;
+  measType?: string
   constructor(data: FabRequestForm) {
     Object.assign(this, data);
     this.isGfl = this.gflThickness !== null;
@@ -622,6 +623,8 @@ export class FabRequest implements FabRequestForm {
       // "Special" 타입일 경우
       if (this.idtType.name === "Special") {
         waferInfoStr = this.metalNote.split("\n")[0];
+        console.log(this.metalNote.split("\n"))
+        console.log()
       } else {
         if (this.idtLayers !== null && this.idtType !== null) {
           waferInfoStr +=
