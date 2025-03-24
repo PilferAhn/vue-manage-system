@@ -45,7 +45,6 @@ let tempName = "";
 onMounted(async () => {
   // fetchProcessData 함수로 데이터 가져오기
 
-
   tegApp.value = await getTegApplicationsByFinishDateStatus(
     "2024-02-14 00:00:00",
     "finished"
@@ -66,11 +65,10 @@ onMounted(async () => {
 
   const startTime = performance.now(); // 시작 시간 측정
   processDataArray.value.forEach((processData, index) => {
-
-    for(let i = 0 ; i < tegApp.value.length; i++){
-      if(processData.modelName === tegApp.value[i].modelName){
-        processData.tegFinishedDate = tegApp.value[i].dateOfFinish    
-        processData.measType = tegApp.value[i].measType            
+    for (let i = 0; i < tegApp.value.length; i++) {
+      if (processData.modelName === tegApp.value[i].modelName) {
+        processData.tegFinishedDate = tegApp.value[i].dateOfFinish;
+        processData.measType = tegApp.value[i].measType;
       }
     }
 
@@ -102,9 +100,9 @@ onMounted(async () => {
     }
   });
   const endTime = performance.now(); // 종료 시간 측정
-  console.log(`processDataArray 실행 시간: ${((endTime - startTime) / 1000).toFixed(2)}s`);
-
-
+  console.log(
+    `processDataArray 실행 시간: ${((endTime - startTime) / 1000).toFixed(2)}s`
+  );
 });
 </script>
 

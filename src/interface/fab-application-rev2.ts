@@ -443,7 +443,8 @@ export class FabRequest implements FabRequestForm {
   result: any | null;
   measStatus?: MesStatus;
   tegFinishedDate? : string;
-  measType?: string
+  measType?: string;
+  
   constructor(data: FabRequestForm) {
     Object.assign(this, data);
     this.isGfl = this.gflThickness !== null;

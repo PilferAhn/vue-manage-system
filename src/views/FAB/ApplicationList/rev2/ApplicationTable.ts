@@ -1,4 +1,5 @@
 import { FabRequest, FabRequestForm } from "../../../../interface/fab-application-rev2";
+import { getRole } from "../../../../utils/account-utils";
 import { getApplicationListByDict } from "../../../../utils/Fab/fab-application-utils";
 
 export async function getFabAppForReview(apps : FabRequest[],  weekNumber : number, userId : string, ){
@@ -17,10 +18,11 @@ export async function getFabAppForReview(apps : FabRequest[],  weekNumber : numb
           week_numbers: weekNumber,
           order_by: "created_date",
         };
-    
-        if (!["w2150108", "admin"].includes(userId)) {
+        
+        if (!["w2150108", "admin"].includes(userId) && getRole() !== "group leader") {
           para["observer_id"] = userId;
         }
+        
     
         const data: FabRequestForm[] = await getApplicationListByDict(para);
     

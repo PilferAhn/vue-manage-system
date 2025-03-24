@@ -57,9 +57,10 @@ onMounted(async () => {
       order_by: "created_date",
     };
 
+
     if (getUserId() !== "admin" && getRole() !== "group leader") {
-      para["observer_id"] = getUserId();
-    }
+      para["observer_id"] = getUserId();      
+    }    
 
     // Object.assign(apps, await getApplicationListByDictRev2(para));
     const rawApps = await getApplicationListByDictRev2(para);
