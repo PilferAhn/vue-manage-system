@@ -449,9 +449,7 @@ export class FabRequest implements FabRequestForm {
   }
 
   createMesInfo = () => {
-    
     if (this.lotStatus.length != 0) {
-
       this.measStatus = {
         fabInsertDate: [],
         fabOutDate: [],
@@ -474,19 +472,27 @@ export class FabRequest implements FabRequestForm {
           // HQ 출하 예정
           if (lot.operation === undefined) {
             this.measStatus.hqOutPlan.push("--");
-          } 
-          else if (lot.operation.operationId === "OP0E002040") {
+          } else if (lot.operation.operationId === "OP0E002040") {
             const t = formatDate(adjustDate(lot.moveinDate, 3));
             this.measStatus.hqOutPlan.push(t);
-          } else if (lot.secondProbeHistory !== null && lot.secondProbeHistory?.startDate !== null) {
+          } else if (
+            lot.secondProbeHistory !== null &&
+            lot.secondProbeHistory?.startDate !== null
+          ) {
             this.measStatus.hqOutPlan.push(
               formatDate(adjustDate(lot.secondProbeHistory.startDate, 3))
             );
-          } else if (lot.secondProbeHistory !== null && lot.secondProbeHistory?.endDate !== null) {
+          } else if (
+            lot.secondProbeHistory !== null &&
+            lot.secondProbeHistory?.endDate !== null
+          ) {
             this.measStatus.hqOutPlan.push(
               formatDate(adjustDate(lot.secondProbeHistory.endDate, 3))
             );
-          } else if (lot.secondProbeHistory !== null && lot.secondProbeHistory?.startDate === null) {
+          } else if (
+            lot.secondProbeHistory !== null &&
+            lot.secondProbeHistory?.startDate === null
+          ) {
             this.measStatus.hqOutPlan.push("SKIP");
           } else {
             this.measStatus.hqOutPlan.push("--");
@@ -610,27 +616,31 @@ export class FabRequest implements FabRequestForm {
   };
 
   createWaferInfo = () => {
-    /// 막 두께 정보 생성
-
     let waferInfoStr = "";
 
-    if (this.idtType.name === "Special") {
-      waferInfoStr = this.metalNote.split("\n")[0];
-    } else {
-      if (this.idtLayers !== null && this.idtType !== null) {
-        waferInfoStr +=
-          this.idtType.name +
-          "=" +
-          this.idtLayers.map((layer) => String(layer.thickness)).join("/");
-      }
+    try {
+      // "Special" 타입일 경우
+      if (this.idtType.name === "Special") {
+        waferInfoStr = this.metalNote.split("\n")[0];
+      } else {
+        if (this.idtLayers !== null && this.idtType !== null) {
+          waferInfoStr +=
+            this.idtType.name +
+            "=" +
+            this.idtLayers.map((layer) => String(layer.thickness)).join("/");
+        }
 
-      if (this.idt2Layers !== null && this.idt2Type !== null) {
-        waferInfoStr +=
-          "," +
-          this.idt2Type.name +
-          "=" +
-          this.idt2Layers.map((layer) => String(layer.thickness)).join("/");
+        if (this.idt2Layers !== null && this.idt2Type !== null) {
+          waferInfoStr +=
+            "," +
+            this.idt2Type.name +
+            "=" +
+            this.idt2Layers.map((layer) => String(layer.thickness)).join("/");
+        }
       }
+    } catch (err) {
+      console.error("createWaferInfo() error:", err);
+      waferInfoStr = "";
     }
 
     return waferInfoStr;
