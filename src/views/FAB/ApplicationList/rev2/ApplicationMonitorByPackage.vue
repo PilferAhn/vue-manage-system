@@ -27,7 +27,7 @@ export default {};
           style="width: 150px"
         >
           <el-option label="Designer" value="designer"></el-option>
-          <el-option label="Product Name" value="modelName"></el-option>
+          <el-option label="Product Name" value="ProductName"></el-option>
           <el-option label="Week Number" value="weekNumber"></el-option>
         </el-select>
 
@@ -436,20 +436,22 @@ const filteredApplicationData = computed(() => {
   const term = searchTerm.value.toLowerCase();
 
   return filteredData.value.filter((item) => {
-    // 선택한 검색 기준을 기준으로 필터링
-    const field = item[searchCategory.value];
+    let field: any;
 
-    // field가 number 타입이면 toString()으로 변환 후 비교
+    if (searchCategory.value === "designer") {
+      field = item.designer?.userName; // 옵셔널 체이닝으로 안전하게 접근
+    } else {
+      field = item[searchCategory.value];
+    }
+
     if (typeof field === "number") {
       return field.toString().includes(term);
     }
 
-    // field가 string 타입이면 기존 로직 사용
     if (typeof field === "string") {
       return field.toLowerCase().includes(term);
     }
 
-    // 기타 타입은 필터링 제외
     return false;
   });
 });

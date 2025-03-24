@@ -29,32 +29,10 @@ export default {};
     </el-select>
   </div>
   <!-- Element Plus Table -->
-  <div
-    class="group-count-wrapper"
-    v-if="['w2150108', 'admin'].includes(getUserId())"
-  >
-    <!-- 왼쪽: 기존 group 통계 -->
-    <div class="group-count">
-      <div class="group-box">
-        총 의뢰: {{ totalQuantity }} (DV2 : {{ groupDv2Count }})
-      </div>
-      <div v-for="(stats, group) in groupStats" :key="group" class="group-box">
-        <span>{{ group }}: {{ stats.count }}</span>
-      </div>
-    </div>
-
-    <!-- 오른쪽: priority 통계 -->
-    <div class="group-count">
-      <div
-        v-for="(count, priority) in priorityCounts"
-        :key="priority"
-        class="group-box"
-      >
-        <span>{{ priority }}: {{ count }}</span>
-      </div>
-    </div>
-  </div>
-
+  <ApplicationTableHeader
+      :process-data="props.processData"
+      :week-number="props.weekNumber"
+    />
   <div class="table-wrapper">
     <el-table
       :data="filteredData"
@@ -425,7 +403,7 @@ export default {};
             size="small"
             @click="confirmAction(scope.row, 0, true, 'pending')"
           >
-            Pending
+            Drop
           </el-button>
         </template>
       </el-table-column>
@@ -460,6 +438,8 @@ import { receivePriorityList } from "../../../../utils/Fab/fab-application-utils
 import { OptionInterface } from "../../../../interface/option";
 import { createBooleanOptions } from "../../../../utils/utility";
 import { downloadExcelWithCountdown } from "../../../../utils/Fab/fab-aplication-review-utils";
+import { getFabAppForReview } from "./ApplicationTable";
+import ApplicationTableHeader from "./ApplicationTableHeader.vue";
 
 const props = defineProps<{
   processData: FabRequest[];
@@ -499,14 +479,6 @@ const priorityList = ref<OptionInterface[]>([]);
 const emit = defineEmits<{
   (e: "update:processData", updatedData: FabRequest[]): void;
 }>();
-
-// 날짜 변경 처리 함수
-const handleDateChange = (processData: FabRequest) => {
-  // 외부 파일에 있는 handleDateChange 함수를 호출하고, 데이터를 업데이트한 후 emit으로 전달
-  // externalHandleDateChange(processData);
-  // emit을 통해 부모 컴포넌트로 업데이트된 processData를 전달
-  emit("update:processData", [...props.processData]);
-};
 
 async function handleUpdate(row: FabRequest) {
   console.log(row);
@@ -560,105 +532,12 @@ async function handleStatus(
   } else {
     updatePendingStatus(row, isPending);
   }
-
-  props.processData.length = 0;
-
-  try {
-    // getApplicationList를 호출하고 결과를 기다림
-    let para = {
-      users: true,
-      wafer: true,
-      idt_type: true,
-      hs_type: true,
-      idt_layers: true,      
-      is_pending: false, // Row filter
-      week_numbers: props.weekNumber,
-      order_by: "wanted_fab_start_date",
-    };
-
-    if (!["2150108", "admin"].includes(getUserId())) {
-      para["observer_id"] = getUserId();
-    }
-
-    const data: FabRequestForm[] = await getApplicationListByDict(para);
-
-    // const transformedData = data.map((item: any) => new FabApplication(item));
-    props.processData.push(
-      ...data.map((item: FabRequestForm) => new FabRequest(item))
-    );
-  } catch (error) {
-    console.error("Error fetching application list:", error);
-  }
+  await getFabAppForReview(props.processData, props.weekNumber, getUserId());
 }
 
 onMounted(async () => {
-  try {
-    priorityList.value = await receivePriorityList();
-
-    // getApplicationList를 호출하고 결과를 기다림
-    props.processData.length = 0;
-    let para = {
-      users: true, // content Loader option
-      wafer: true, // content Loader option
-      idt_type: true, // content Loader option
-      hs_type: true, // content Loader option
-      idt_layers: true, // content Loader option
-      is_pending: false, // Row filter
-      week_numbers: props.weekNumber, // Row filter
-      order_by: "wanted_fab_start_date",
-    };
-
-    if (!["2150108", "admin"].includes(getUserId())) {
-      para["observer_id"] = getUserId();
-    }
-
-    const data: FabRequestForm[] = await getApplicationListByDict(para);
-
-    // const transformedData = data.map((item: any) => new FabApplication(item));
-    props.processData.push(
-      ...data
-        // .filter(
-        //   (item: FabRequestForm) => item.note !== "Old Purpose: 가상데이터"
-        // ) // 예시 조건
-        .map((item: FabRequestForm) => new FabRequest(item))
-    );
-  } catch (error) {
-    console.error("Error fetching application list:", error);
-  }
-});
-
-const totalQuantity = computed(() => {
-  return Object.values(groupStats.value).reduce(
-    (sum, stats) => sum + stats.count,
-    0
-  );
-});
-
-const groupDv2Count = computed(() => {
-  return props.processData.reduce((count, item) => {
-    return count + (item.isDv2 ? 1 : 0);
-  }, 0);
-});
-
-const groupStats = computed(() => {
-  return props.processData.reduce((acc, item) => {
-    const department = item.designer.department;
-
-    // 부서별 데이터 초기화
-    acc[department] = acc[department] || {
-      count: 0,
-      totalQuantity: 0,
-      dv2Count: 0,
-    };
-
-    // 부서별 건수(count) 증가
-    acc[department].count += 1;
-
-    // 부서별 매수(quantity) 합산
-    acc[department].totalQuantity += item.quantity || 0;
-
-    return acc;
-  }, {} as Record<string, { count: number; totalQuantity: number; dv2Count: number }>);
+  priorityList.value = await receivePriorityList();
+  await getFabAppForReview(props.processData, props.weekNumber, getUserId());
 });
 
 const isDownloading = ref(false);
@@ -683,14 +562,6 @@ const handleDownloadExcel = async () => {
     }
   );
 };
-
-const priorityCounts = computed(() => {
-  return props.processData.reduce<Record<string, number>>((acc, item) => {
-    const priority = item.priorityId || 'UNKNOWN';
-    acc[priority] = (acc[priority] || 0) + 1;
-    return acc;
-  }, {});
-});
 </script>
 
 <style scope>
@@ -703,30 +574,6 @@ const priorityCounts = computed(() => {
   font-size: 12px;
   padding-right: 10px;
   margin-right: 10px;
-}
-
-.group-count-wrapper {
-  display: flex;
-  justify-content: space-between; /* 양쪽 정렬 */
-  flex-wrap: wrap;
-  margin-bottom: 10px;
-}
-
-.group-count {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;  
-  margin-bottom: 10px;
-}
-
-.group-box {
-  background-color: #f0f9ff;
-  border: 1px solid #dbeafe;
-  padding: 5px;
-  border-radius: 5px;
-  font-weight: bold;
-  font-size: 12px;
-  color: #1e40af;
 }
 
 .buttun-section {

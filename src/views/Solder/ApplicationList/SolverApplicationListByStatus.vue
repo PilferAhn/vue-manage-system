@@ -1,3 +1,6 @@
+<script lang="ts">
+export default {};
+</script>
 <template>
   <div>
     <div class="search-box">
@@ -143,7 +146,8 @@
         :align="'center'"
       >
         <template #default="scope">
-          {{ scope.row.designer }} <br> {{ scope.row.requester }}</template
+          {{ scope.row.designer }} <br />
+          {{ scope.row.requester }}</template
         >
       </el-table-column>
 
@@ -153,7 +157,7 @@
             <el-input
               v-model="scope.row.measurer"
               placeholder=""
-              style="width: 90px;"
+              style="width: 90px"
             ></el-input>
           </div>
         </template>
@@ -370,10 +374,6 @@ const handleUpdate = async (uuid, assayLotId) => {
     // 에러 메시지 표시
   }
 };
-</script>
-
-<script lang="ts">
-export default {};
 </script>
 
 <style lang="scss" scoped>

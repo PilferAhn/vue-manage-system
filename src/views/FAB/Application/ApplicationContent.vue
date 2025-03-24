@@ -283,7 +283,7 @@
           <el-date-picker
             type="date"
             placeholder="FAB Est Start"
-            v-model="props.fabApplication.wantedFabStartDate"
+            v-model="props.fabApplication.idtMaskArrivalDate"
             class="custom-date-picker"
             :label-position="'left'"
           />
@@ -295,7 +295,7 @@
           <el-date-picker
             type="date"
             placeholder="FAB Est Complete"
-            v-model="props.fabApplication.wantedFabFinishDate"
+            v-model="props.fabApplication.pstMaskArrivalDate"
             class="custom-date-picker"
           />
         </el-form-item>
