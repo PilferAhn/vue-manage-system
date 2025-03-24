@@ -42,6 +42,7 @@ export default {};
       height="640"
       :row-style="{ height: '30px' }"
       :lazy="true"
+      :row-class-name="cellClass"
     >
       <el-table-column
         type="index"
@@ -562,9 +563,33 @@ const handleDownloadExcel = async () => {
     }
   );
 };
+
+const now = new Date();
+// 셀에 적용할 클래스 반환
+const cellClass = ({ row, rowIndex, column, columnIndex }) => {
+  // 예: 짝수 행에만 스타일을 적용
+  const targetDate = new Date(row.calFabCardConveyDate?.());
+  if (row.isPending) {
+    // if ([0].includes(columnIndex)) {
+    //   return "even-row";
+    // }
+    return "drop-row"        
+  }
+  else if (!isNaN(targetDate.getTime()) && !row.isFabCardCreated) {
+    const diffMs = targetDate.getTime() - now.getTime();
+    const diffHours = diffMs / (1000 * 60 * 60);
+
+    if (diffHours >= 0 && diffHours <= 24) {
+      return "warning-row";
+    }
+  }
+
+  return "";
+};
+
 </script>
 
-<style scope>
+<style lang="scss" scoped>
 .table-wrapper {
   max-width: 100%;
   /* overflow-x: auto; */
@@ -574,6 +599,22 @@ const handleDownloadExcel = async () => {
   font-size: 12px;
   padding-right: 10px;
   margin-right: 10px;
+}
+
+.custom-table ::v-deep(.drop-row) {
+  // box-shadow: inset 0px 1px 2px 3px rgba(218, 24, 24, 0.3);
+  background-color: rgb(250, 217, 217);
+  border: 1px solid rgb(250, 217, 217);
+  border-radius: 1px;
+  // padding: 4px;
+}
+
+.custom-table ::v-deep(.warning-row) {
+  // box-shadow: inset 0px 1px 2px 3px rgba(218, 24, 24, 0.3);
+  background-color: #f5d8b3; /* 밝은 회색 */
+  border: 1px solid #f5d8b3;
+  border-radius: 1px;
+  // padding: 4px;
 }
 
 .buttun-section {

@@ -2,11 +2,15 @@
   <div class="form-container">
     <section class="form-section">
       <!-- Submit Section -->
-       <!-- :disabled="!['admin', 'w2150108', 'w2190810', 'w2180619'].includes(getUserId())" -->
+
       <div class="button-container">
         <el-form-item v-if="props.applicationType === 'create'">
           <el-button
-            
+            :disabled="
+              !['admin', 'w2150108', 'w2190810', 'w2180619'].includes(
+                getUserId()
+              )
+            "
             type="primary"
             class="action-button"
             @click="submitForm('submit')"
@@ -16,7 +20,7 @@
         </el-form-item>
         <!-- :disabled="!['admin', 'w2150108', 'w2190810', 'w2180619'].includes(getUserId())" -->
         <el-form-item v-else-if="props.applicationType === 'load'">
-          <el-button            
+          <el-button
             type="primary"
             class="action-button"
             @click="submitForm('update')"

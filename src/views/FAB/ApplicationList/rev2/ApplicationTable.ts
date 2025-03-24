@@ -13,8 +13,7 @@ export async function getFabAppForReview(apps : FabRequest[],  weekNumber : numb
           wafer: true,
           idt_type: true,
           hs_type: true,
-          idt_layers: true,      
-          is_pending: false, // Row filter
+          idt_layers: true,                
           week_numbers: weekNumber,
           order_by: "created_date",
         };
