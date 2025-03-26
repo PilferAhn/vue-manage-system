@@ -59,6 +59,9 @@ import type { FabRequestForm } from "../../../interface/fab-application-rev2";
 import type { FormInstance } from "element-plus";
 import { sendingForm } from "../../../utils/Fab/fab-application-utils";
 import { getUserId } from "../../../utils/account-utils";
+
+const allowedList = ['admin', 'w2150108']
+
 const props = defineProps<{
   fabApplication: FabRequestForm;
   fabFormRef: FormInstance | null;

@@ -19,15 +19,16 @@
       </template>
     </el-table-column>
 
-    <!-- <el-table-column
+    <el-table-column
       label="LOT ID"      
       :align="'center'"
+      prop="lotId"
       width="130"
     >
       <template #default="scope">
-        <el-input />
+        <!-- {{ scope.row. }} -->
       </template>
-    </el-table-column> -->
+    </el-table-column>
 
     <el-table-column
       label="관리자"
@@ -492,6 +493,7 @@ const tableRowClass = ({ row }: { row: Dv2 }) => {
 const tableSpanMethod = ({ row, column, rowIndex }: any) => {
   if (
     [
+      "lotId",      
       "salesTerritory",
       "fabPartNumber",
       "main",

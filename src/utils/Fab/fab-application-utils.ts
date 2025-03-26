@@ -33,7 +33,8 @@ import type { TegApplication as TegApplicationInterface } from "../../Common/App
 import type { Bom, FabRequest } from "../../interface/fab-application-rev2";
 import { fa } from "element-plus/es/locale";
 
-export const serverUrl = "http://10.29.11.57:40000";
+// export const serverUrl = "http://10.29.11.57:40000";
+export const serverUrl = ""
 
 export async function getBomCodeList() {
   const url = "/api/sapinfo";
