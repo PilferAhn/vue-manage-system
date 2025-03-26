@@ -105,8 +105,8 @@
     pstId : props.fabApplication.pstId,
     isGfl : props.fabApplication.isGfl,
     isCap : props.fabApplication.isCap,
-    isMst : props.fabApplication.isMst
-  
+    isMst : props.fabApplication.isMst,
+    needLteEtching : props.fabApplication.isNeededLtEtching
   }));
   
   watch(

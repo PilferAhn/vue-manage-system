@@ -1,7 +1,23 @@
-import type { OptionInterface, OptionBooleanInterface } from "../interface/option";
+import { type OptionInterface, type OptionBooleanInterface, OptionNumberInterface } from "../interface/option";
 import { ref } from "vue";
 import { sendGetRequest } from "./httpProtocol";
 
+export const createNumberOptions = (num : number) => {
+
+  const numbers = ref<OptionNumberInterface[]>([]);
+
+  for(let i = 0 ; i < num; i++){
+
+    numbers.value.push({
+      key : i,
+      value : i,
+      label : i.toString()
+    })
+  }
+  
+  return numbers.value
+
+}
 
 export const checkFileExtension = (fileName) => {
   // 파일 확장자 가져오기

@@ -187,6 +187,7 @@ export interface FabRequestForm {
   tcLayers?: Layer[];
   hsType?: HsType;
   passivationType?: passivationType[];
+  activeLots?: ActiveLot[];
 }
 
 export interface band {

@@ -55,7 +55,7 @@
     try {
       
       const response = await axios.get(
-        "http://10.29.11.57:40000/fab_monitoring_rev2/get_saw_types_list"
+        "/fab_monitoring_rev2/get_saw_types_list"
       );
   
       const rawData = response.data;    
