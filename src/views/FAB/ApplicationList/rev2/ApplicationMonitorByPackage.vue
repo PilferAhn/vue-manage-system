@@ -88,7 +88,7 @@ export default {};
 
       <el-table-column
         label="Wafer LOT ID"
-        width="105"
+        width="130"
         :align="'center'"
         fixed="left"
       >
