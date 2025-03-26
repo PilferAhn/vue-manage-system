@@ -7,7 +7,7 @@
         <el-form-item v-if="props.applicationType === 'create'">
           <el-button
             :disabled="
-              !['admin', 'w2150108', 'w2190810', 'w2180619'].includes(
+              !allowedList.includes(
                 getUserId()
               )
             "
@@ -21,6 +21,11 @@
         <!-- :disabled="!['admin', 'w2150108', 'w2190810', 'w2180619'].includes(getUserId())" -->
         <el-form-item v-else-if="props.applicationType === 'load'">
           <el-button
+          :disabled="
+              !allowedList.includes(
+                getUserId()
+              )
+            "
             type="primary"
             class="action-button"
             @click="submitForm('update')"
@@ -58,6 +63,9 @@ import type { FabRequestForm } from "../../../interface/fab-application-rev2";
 import type { FormInstance } from "element-plus";
 import { sendingForm } from "../../../utils/Fab/fab-application-utils";
 import { getUserId } from "../../../utils/account-utils";
+
+const allowedList = ['admin', 'w2150108']
+
 const props = defineProps<{
   fabApplication: FabRequestForm;
   fabFormRef: FormInstance | null;
