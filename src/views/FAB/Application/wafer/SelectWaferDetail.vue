@@ -179,9 +179,9 @@
     (newVal) => {
       if (props.applicationType !== "load") {
         if (props.fabApplication.waferType === "TC") {
-          props.fabApplication.waferAngle = 126;
+          props.fabApplication.waferAngle = 126;          
         }
-        else if (props.fabApplication.waferType === "NS") {
+        else if(props.fabApplication.waferType === "NS"){
           props.fabApplication.waferAngle = 42;
         }
          else {

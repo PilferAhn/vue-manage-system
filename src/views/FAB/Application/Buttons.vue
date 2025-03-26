@@ -7,7 +7,7 @@
         <el-form-item v-if="props.applicationType === 'create'">
           <el-button
             :disabled="
-              !allowedList.includes(
+              !excludeList.includes(
                 getUserId()
               )
             "
@@ -18,14 +18,10 @@
             제출
           </el-button>
         </el-form-item>
-        <!-- :disabled="!['admin', 'w2150108', 'w2190810', 'w2180619'].includes(getUserId())" -->
+        
         <el-form-item v-else-if="props.applicationType === 'load'">
           <el-button
-          :disabled="
-              !allowedList.includes(
-                getUserId()
-              )
-            "
+          :disabled="!excludeList.includes(getUserId())"
             type="primary"
             class="action-button"
             @click="submitForm('update')"
@@ -71,6 +67,8 @@ const props = defineProps<{
   fabFormRef: FormInstance | null;
   applicationType: string;
 }>();
+
+const excludeList = ["admin", "w220112", "w2150108"] 
 
 // Submit 함수
 const submitForm = (type: string) => {

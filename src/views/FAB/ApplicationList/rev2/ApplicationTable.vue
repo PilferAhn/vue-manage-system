@@ -30,9 +30,9 @@ export default {};
   </div>
   <!-- Element Plus Table -->
   <ApplicationTableHeader
-      :process-data="props.processData"
-      :week-number="props.weekNumber"
-    />
+    :process-data="props.processData"
+    :week-number="props.weekNumber"
+  />
   <div class="table-wrapper">
     <el-table
       :data="filteredData"
@@ -118,10 +118,32 @@ export default {};
           <el-tag v-else type="danger">No</el-tag>
         </template>
       </el-table-column>
+
       <el-table-column
+        v-if="['w2150108', 'admin'].includes(getUserId())"
         prop="quantity"
         label="수량"
-        width="60"
+        width="80"
+        :align="'center'"
+      >
+        <template #default="scope">
+          <el-select v-model="scope.row.quantity">
+            <el-option
+              v-for="numberOption in createNumberOptions(25)"
+              :key="numberOption.key"
+              :value="numberOption.value"
+              :label="numberOption.label"
+            />
+          </el-select>
+          <!-- <SelectNumberOption v-model="scope.row.quantity"
+        :options="[1,2,3,4,5]"></SelectNumberOption> -->
+        </template>
+      </el-table-column>
+      <el-table-column
+        v-else
+        prop="quantity"
+        label="수량"
+        width="80"
         :align="'center'"
       />
 
@@ -436,16 +458,23 @@ import {
 import type { FabRequestForm } from "../../../../interface/fab-application-rev2";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { receivePriorityList } from "../../../../utils/Fab/fab-application-utils";
-import { OptionInterface } from "../../../../interface/option";
+import {
+  OptionInterface,
+  OptionNumberInterface,
+} from "../../../../interface/option";
 import { createBooleanOptions } from "../../../../utils/utility";
 import { downloadExcelWithCountdown } from "../../../../utils/Fab/fab-aplication-review-utils";
 import { getFabAppForReview } from "./ApplicationTable";
 import ApplicationTableHeader from "./ApplicationTableHeader.vue";
+import { createNumberOptions } from "../../../../utils/utility";
+import { createQuantityOptions } from "../../../../utils/module_group/application-utils";
 
 const props = defineProps<{
   processData: FabRequest[];
   weekNumber: number;
 }>();
+
+const waferQuantity = ref<OptionNumberInterface[]>([]);
 
 // ✅ 사용자가 선택한 날짜
 const selectedDate = ref<string | null>(null);
@@ -538,6 +567,7 @@ async function handleStatus(
 
 onMounted(async () => {
   priorityList.value = await receivePriorityList();
+  waferQuantity.value = createNumberOptions(25);
   await getFabAppForReview(props.processData, props.weekNumber, getUserId());
 });
 
@@ -573,20 +603,20 @@ const cellClass = ({ row, rowIndex, column, columnIndex }) => {
     // if ([0].includes(columnIndex)) {
     //   return "even-row";
     // }
-    return "drop-row"        
-  }
-  else if (!isNaN(targetDate.getTime()) && !row.isFabCardCreated) {
+    return "drop-row";
+  } else if (!isNaN(targetDate.getTime()) && !row.isFabCardCreated) {
     const diffMs = targetDate.getTime() - now.getTime();
     const diffHours = diffMs / (1000 * 60 * 60);
 
     if (diffHours >= 0 && diffHours <= 24) {
+      return "warning-row";
+    } else if (targetDate.getTime() <= now.getTime()) {
       return "warning-row";
     }
   }
 
   return "";
 };
-
 </script>
 
 <style lang="scss" scoped>
