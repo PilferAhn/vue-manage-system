@@ -87,8 +87,8 @@ export default {};
       </el-table-column>
 
       <el-table-column
-        label="LOT ID"
-        width="120"
+        label="Wafer LOT ID"
+        width="105"
         :align="'center'"
         fixed="left"
       >
@@ -96,6 +96,21 @@ export default {};
             
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             {{ item.lotId }}
+            <br />
+          </span>
+        </template>
+      </el-table-column>
+
+      <el-table-column
+        label="Wafer ID"
+        width="100"
+        :align="'center'"
+        fixed="left"
+      >
+        <template #default="scope">
+            
+          <span v-for="(item, index) in scope.row.lotStatus" :key="index">
+            {{ item.waferId }}
             <br />
           </span>
         </template>

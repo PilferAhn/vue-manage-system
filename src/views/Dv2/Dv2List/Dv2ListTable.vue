@@ -15,20 +15,11 @@
     >
       <template #default="scope">
         <!-- <el-input v-model="scope.row.productName" class="table-input" /> -->
-         {{ scope.row.productName }}
+        {{ scope.row.productName }}
       </template>
     </el-table-column>
 
-    <el-table-column
-      label="LOT ID"      
-      :align="'center'"
-      prop="lotId"
-      width="130"
-    >
-      <template #default="scope">
-        <!-- {{ scope.row. }} -->
-      </template>
-    </el-table-column>
+
 
     <el-table-column
       label="관리자"
@@ -44,6 +35,12 @@
           class="table-input1"
         />
         <el-input v-else v-model="scope.row.designer" class="table-input1" />
+      </template>
+    </el-table-column>
+
+    <el-table-column label="LOT ID" :align="'center'" prop="lotId" width="130">
+      <template #default="scope">
+        {{ scope.row.lotId }}
       </template>
     </el-table-column>
 
@@ -161,7 +158,7 @@
             :size="'small'"
             style="width: 150px"
           /> -->
-          {{ scope.row.currentStage }} <br>
+          {{ scope.row.currentStage }} <br />
           {{ scope.row.locationTime }}
           <!-- <span v-if="scope.row.locationTime === null">
             <el-input
@@ -439,10 +436,12 @@ import { formatDate } from "../../../utils/date-utils";
 import { FabApplicationForm } from "../../FAB/Interface/mes-interface";
 import { getFabRequestFormByModelNames } from "../../FAB/ApplicationList/ApplicationList";
 import { cursorTo } from "readline";
+import { getApplicationListByDict } from "../../../utils/Fab/fab-application-utils";
+import { FabRequestForm } from "../../../interface/fab-application-rev2";
 
 const props = defineProps<{
   dv2TableData: Dv2[];
-  fabApp: FabApplicationForm[];
+  fabApp: FabRequestForm[];
 }>();
 const dv2Data = ref<Dv2[]>([]);
 const packageOptions = ref<OptionInterface[]>([]);
@@ -450,7 +449,7 @@ const packageOptions = ref<OptionInterface[]>([]);
 // ✅ `dv2` 데이터를 로컬 상태로 복사
 // const localDv2Table: Ref<Dv2[]> = ref({ ...props.dv2TableData });
 const localDv2Table = ref<Dv2[]>([]);
-const localFabApp = ref<FabApplicationForm[]>([]);
+const localFabApp = ref<FabRequestForm[]>([]);
 
 const pageSize = ref(28); // 페이지당 표시할 개수 (기본값: 7)
 const currentPage = ref(1); // 현재 페이지
@@ -484,7 +483,6 @@ function getNextRow(index) {
 
 const tableRowClass = ({ row }: { row: Dv2 }) => {
   if (row.backgroundColor === "warning") {
-    
     return "warning-row"; // Ensure this matches your CSS class
   }
   return "";
@@ -493,7 +491,7 @@ const tableRowClass = ({ row }: { row: Dv2 }) => {
 const tableSpanMethod = ({ row, column, rowIndex }: any) => {
   if (
     [
-      "lotId",      
+      "lotId",
       "salesTerritory",
       "fabPartNumber",
       "main",
@@ -582,19 +580,21 @@ const handleRemove = async (row: Dv2) => {
       },
     ]);
 
-    localFabApp.value = await getFabRequestFormByModelNames(
-      getModelNameList(localDv2Table.value),
-      localFabApp.value
-    );
-    updateDv2TableData(localFabApp.value, localFabApp.value);
+    // localFabApp.value = await getFabRequestFormByModelNames(
+    //   getModelNameList(localDv2Table.value),
+    //   localFabApp.value
+    // );
+
+
+    // updateDv2TableData(localFabApp.value, localFabApp.value);
   }
 };
 
 const handleUpdate = async (cuurentRow: Dv2, nextRow: Dv2) => {
   const tempEstMdr = cuurentRow.dateOfMdr;
   const tempEstCer = cuurentRow.dateOfCer;
-  const tempDesigner = nextRow.designer
-  
+  const tempDesigner = nextRow.designer;
+
   // 다음 줄의 MDR 시간.
   cuurentRow.dateOfEstimatedMdr = cuurentRow.dateOfMdr;
   cuurentRow.dateOfEstimatedCer = cuurentRow.dateOfCer;
@@ -605,8 +605,6 @@ const handleUpdate = async (cuurentRow: Dv2, nextRow: Dv2) => {
   const res = sendDv2(cuurentRow, "update");
   cuurentRow.dateOfMdr = tempEstMdr;
   cuurentRow.dateOfCer = tempEstCer;
-  
-  
 
   // if (res) {
 

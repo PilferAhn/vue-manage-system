@@ -8,6 +8,7 @@ interface Operation {
 // LotData 인터페이스 정의
 export interface LotStatus {
   lotId: string;
+  waferId? : string;
   historySeq: number;
   lotType: string;
   quantity: number;

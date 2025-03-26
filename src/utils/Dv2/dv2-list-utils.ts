@@ -11,6 +11,116 @@ import { sendGetRequest, sendPostRequest } from "../httpProtocol";
  * @param dv2TableData - 테이블에서 사용되는 dv2 데이터 배열
  * @param fabApp - FabApplicationForm 배열
  */
+export function updateDv2TableDataRev(
+  dv2TableData: Dv2[],
+  fabApp: FabRequestForm[]
+): void {
+  let isFound = false;
+
+  for (let i = 0; i < dv2TableData.length; i++) {
+    if (isFound) {
+      isFound = false;
+      continue;
+    }
+
+    for (let j = 0; j < fabApp.length; j++) {
+      // console.log(fabApp[j].modelName)    
+      if (dv2TableData[i].productName === fabApp[j].productName) {
+        let maxIndex = -1;
+        let maxSequance = -1;
+
+        if (fabApp[j].activeLots.length >= 1) {
+          const latestLot = fabApp[j].activeLots.reduce((latest, lot) => {
+            return new Date(lot.mesCreationDate) >
+              new Date(latest.mesCreationDate)
+              ? lot
+              : latest;
+          }, fabApp[j].activeLots[0]);
+          dv2TableData[i].lotId = latestLot.lotId
+          console.log(latestLot)
+        }
+
+        // if(fabApp[j].modelName === "MHM01BA4001A"){
+        // if(fabApp[j].modelName  === "MHM01BA4001A"){
+        //   console.log(dv2TableData[i])
+        //   console.log("FOUND")
+        // }
+
+        for (let k = 0; k < fabApp[j].lotStatus.length; k++) {
+          if (fabApp[j].lotStatus[k].historySeq >= maxSequance) {
+            maxSequance = fabApp[j].lotStatus[k].historySeq;
+            maxIndex = k;
+          }
+        }
+
+        if (fabApp[j].lotStatus.length >= 1 && maxIndex != -1) {
+          dv2TableData[i + 1].dateOfFabIn = formatDate(
+            fabApp[j].lotStatus[maxIndex].creationDate
+          );
+
+          // dv2TableData[i].supporter = fabApp[j].requester;
+          // dv2TableData[i].supporterId = fabApp[j].requesterId;
+          // dv2TableData[i + 1].supporter = fabApp[j].designer;
+          // dv2TableData[i + 1].supporterId = fabApp[j].designerId;
+
+          if (
+            fabApp[j].lotStatus[maxIndex]["operation"]["name"] ===
+            "Transit 공정"
+          ) {
+            dv2TableData[i + 1].dateOfHqOut = formatDate(
+              fabApp[j].lotStatus[maxIndex].moveinDate
+            );
+          }
+
+          if (
+            new Date(getTodayDatetime()).getTime() >=
+            new Date(dv2TableData[i].dateOfHqOut).getTime()
+          ) {
+            if (dv2TableData[i + 1].dateOfHqOut === null) {
+              dv2TableData[i].backgroundColor = "warning";
+              dv2TableData[i + 1].backgroundColor = "warning";
+            }
+          }
+
+          // if (
+          //   dv2TableData[i].currentStage !== null &&
+          //   dv2TableData[i].locationTime === null
+          // ) {
+          //   dv2TableData[i].locationTime =
+          //     fabApp[j].lotStatus[maxIndex].moveinDate;
+          // } else if (dv2TableData[i].currentStage === null) {
+          //   dv2TableData[i].currentStage =
+          //     fabApp[j].lotStatus[maxIndex].operation.name;
+          //   dv2TableData[i].locationTime =
+          //     fabApp[j].lotStatus[maxIndex].moveinDate;
+          // }
+
+          dv2TableData[i].currentStage =
+            fabApp[j].lotStatus[maxIndex].operation.name;
+          dv2TableData[i].locationTime =
+            fabApp[j].lotStatus[maxIndex].moveinDate;
+
+          if (fabApp[j].lotStatus[maxIndex].hanoiCsp !== null) {
+            dv2TableData[i + 1].dateOfWhcIn = formatDate(
+              fabApp[j].lotStatus[maxIndex].hanoiCsp.creationDate
+            );
+            dv2TableData[i + 1].dateOfAssyIn = formatDate(
+              fabApp[j].lotStatus[maxIndex].hanoiCsp.moveinDate
+            );
+          }
+
+          isFound = true;
+        }
+      }
+    }
+  }
+}
+
+/**
+ * dv2TableData 업데이트 함수
+ * @param dv2TableData - 테이블에서 사용되는 dv2 데이터 배열
+ * @param fabApp - FabApplicationForm 배열
+ */
 export function updateDv2TableData(
   dv2TableData: Dv2[],
   fabApp: FabApplicationForm[]
@@ -161,6 +271,7 @@ export function initDv2() {
 }
 
 import { ElMessageBox, ElMessage } from "element-plus";
+import { FabRequestForm } from "../../interface/fab-application-rev2";
 
 export async function removeDv2(dv2: Dv2) {
   try {

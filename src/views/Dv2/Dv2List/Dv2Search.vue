@@ -22,13 +22,13 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits } from "vue";
 import type { Dv2 } from "../../../interface/Dv2/dv2-list-interface";
-import type { FabApplicationForm } from "../../FAB/Interface/mes-interface";
+import { FabRequestForm } from "../../../interface/fab-application-rev2";
 import Dv2Actions from "./Dv2Actions.vue";
 
 const props = defineProps<{
   dv2TableData: Dv2[];
   dv2Data : Dv2[];
-  fabApp: FabApplicationForm[];  
+  fabApp: FabRequestForm[];  
 }>();
 
 const searchType = ref("productName"); // 기본 검색 기준

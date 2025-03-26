@@ -1,7 +1,12 @@
 <template>
-  <div>    
-    <Dv2Search :dv2TableData="filteredData" :fab-app="fabApp" :dv2-data="dv2Data" @updateSearchQuery="handleSearchQuery" />
-    <Dv2ListTable :dv2TableData="filteredData" :fab-app="fabApp"></Dv2ListTable>            
+  <div>
+    <Dv2Search
+      :dv2TableData="filteredData"
+      :fab-app="fabApp"
+      :dv2-data="dv2Data"
+      @updateSearchQuery="handleSearchQuery"
+    />
+    <Dv2ListTable :dv2TableData="filteredData" :fab-app="fabApp"></Dv2ListTable>
   </div>
 </template>
 
@@ -20,19 +25,22 @@ import {
   sendDv2,
   updateDv2TableData,
   getModelNameList,
+  updateDv2TableDataRev,
 } from "../../../utils/Dv2/dv2-list-utils";
 import { Dv2 } from "../../../interface/Dv2/dv2-list-interface";
 import { sendGetRequest, sendPostRequest } from "../../../utils/httpProtocol";
 import { RefSymbol } from "@vue/reactivity";
 import { convertPep8ToCamelCase2 } from "../../../utils/key-converter";
 import { getUserId, getUserName } from "../../../utils/account-utils";
+import { FabRequestForm } from "../../../interface/fab-application-rev2";
+import { getApplicationListByDict } from "../../../utils/Fab/fab-application-utils";
 
 // 📌 기존 데이터 저장 (ref 사용)
-const fabApp = ref<FabApplicationForm[]>([]);
+const fabApp = ref<FabRequestForm[]>([]);
 const dv2TableData = ref<Dv2[]>([]); // 원본 데이터를 저장할 ref
 const dv2Data = ref<Dv2[]>([]);
 const adminList = ["w2220604", "w2171210", "w2171209", "admin", "w2170211"];
-const adminNameList = [""]
+const adminNameList = [""];
 // 📌 onMounted에서 데이터 로드 및 업데이트
 onMounted(async () => {
   const formData = new FormData();
@@ -40,7 +48,7 @@ onMounted(async () => {
   formData.append("order_dir", "asc");
   const data = await sendPostRequest("/dv2/get_dv2_list", formData);
   dv2Data.value = convertPep8ToCamelCase2(data);
-  
+
   // for(let i = 0 ; i < dv2Data.length; i++){
 
   //   await sendDv2(dv2Data[i], "create")
@@ -64,7 +72,6 @@ onMounted(async () => {
         dateOfMeasIn: row.dateOfEstimatedMeasIn,
         dateOfCer: row.dateOfEstimatedCer,
         // supporter: row.supporter,
-
       };
 
       const secondRow = {
@@ -83,27 +90,38 @@ onMounted(async () => {
         dateOfCer: row.dateOfCer,
         // supporter: row.designer,
       };
-      
+
       // 특정 조건이 만족하면 secondRow 추가
       if (adminList.includes(getUserId().toLocaleLowerCase())) {
         return [firstRow, secondRow];
-      } 
-      else if(getUserName() === row.supporter){
+      } else if (getUserName() === row.supporter) {
         return [firstRow, secondRow];
-      }
-      else {
+      } else {
         return []; // 조건을 만족하지 않으면 첫 번째 행만 추가
       }
     });
-    // fabApp.value = await fetchProcessData(fabApp.value);
-    fabApp.value = await getFabRequestFormByModelNames(
-      getModelNameList(dv2TableData.value),
-      fabApp.value
-    );
-    updateDv2TableData(dv2TableData.value, fabApp.value);
+
+
+    // getApplicationList를 호출하고 결과를 기다림
+    let para = {
+      users: true,
+      wafer: false,
+      idt_type: false,
+      hs_type: false,
+      idt_layers: false,
+      lot_status: true,
+      product_names: getModelNameList(dv2TableData.value),
+    };
+
+    fabApp.value = await getApplicationListByDict(para);
+
+    fabApp.value.forEach((d, index) => {
+
+    });
+
+    updateDv2TableDataRev(dv2TableData.value, fabApp.value);
   });
 });
-
 
 const searchQuery = ref({
   searchType: "productName",
@@ -114,8 +132,6 @@ const searchQuery = ref({
 const handleSearchQuery = (query) => {
   searchQuery.value = query;
 };
-
-
 
 const filteredData = computed(() => {
   return dv2TableData.value.filter((item) => {
@@ -128,6 +144,4 @@ const filteredData = computed(() => {
     return !searchQuery.value.searchQuery || itemValue.includes(searchValue);
   });
 });
-
-
 </script>
