@@ -28,13 +28,15 @@ import { formatDateTime } from "../date-utils";
 import { OptionInterface } from "../../interface/option";
 import { Option } from "element-plus/es/components/select-v2/src/select.types";
 import { objectEach } from "highcharts";
-import type { TegApplication as TegApplicationInterface } from "../../Common/ApplicationTypes";
-// import type { TegApplication as TegApplicationInterface} from "../../interface/Teg/teg";
+// import type { TegApplication as TegApplicationInterface } from "../../Common/ApplicationTypes";
+
+import type { TegApplication as TegApplicationInterface } from "../../views/TegPage/Common/ApplicationTypes";
+
 import type { Bom, FabRequest } from "../../interface/fab-application-rev2";
 import { fa } from "element-plus/es/locale";
 
-// export const serverUrl = "http://10.29.11.57:40000";
-export const serverUrl = ""
+// export const serverUrl = "http://10.29.11.124:40000";
+export const serverUrl = "";
 
 export async function getBomCodeList() {
   const url = "/api/sapinfo";
@@ -351,11 +353,14 @@ export function allocFabFormToTegForm(
   fabApp: FabRequestForm,
   tegApp: TegApplicationInterface
 ) {
+  const excludeList = ["note"];
+
   for (const key in fabApp) {
     if (
       fabApp.hasOwnProperty(key) && // fabApp에 해당 키가 존재하는지 확인
       tegApp.hasOwnProperty(key) && // tegApp에 해당 키가 존재하는지 확인
-      typeof (fabApp as any)[key] === typeof (tegApp as any)[key] // 타입 비교
+      typeof (fabApp as any)[key] === typeof (tegApp as any)[key] && // 타입 비교
+      !excludeList.includes(key)
     ) {
       tegApp[key] = fabApp[key];
       // (tegApp as any)[key] = (fabApp as any)[key]; // 값을 복사
@@ -365,7 +370,8 @@ export function allocFabFormToTegForm(
   tegApp.requesterId = fabApp.requester.id;
   tegApp.designerId = fabApp.designer.id;
   tegApp.designer = fabApp.designer.userName;
-  tegApp.waferQuantity = fabApp.quantity;
+  tegApp.waferQuantity = 1;
+  tegApp.purpose = fabApp.note;
 
   if (fabApp.isAoi) {
     tegApp.isAOI = "O";
@@ -373,6 +379,28 @@ export function allocFabFormToTegForm(
     tegApp.isAOI = "X";
   }
 
+  const shotSize = Math.ceil(
+    fabApp.shotX > fabApp.shotY ? fabApp.shotX : fabApp.shotY
+  );
+  if (5 < shotSize && shotSize <= 7) {
+    tegApp.waferSize = "4 Inch (7mm)";
+  } else if (7 > shotSize) {
+    tegApp.waferSize = "4 Inch (10mm)";
+  }
+
+  
+  if (fabApp.activeLots.length > 1) {
+    const latestLot = fabApp.activeLots.reduce((latest, lot) => {
+      return new Date(lot.mesCreationDate) > new Date(latest.mesCreationDate)
+        ? lot
+        : latest;
+    }, fabApp.activeLots[0]);
+    
+    tegApp.lotID = latestLot.lotId.slice(0, -1) + "0";
+  }
+
+  tegApp.waferType = fabApp.wafer.sawTypeId;
+  tegApp.packageType = fabApp.packageId;
   tegApp.shotSize = fabApp.shotX + "*" + fabApp.shotY;
   tegApp.chipSize = fabApp.chipX + "*" + fabApp.chipY;
 }
@@ -385,8 +413,21 @@ export async function getAppRev2ByProductName(
   form.append("product_name", productName);
 
   try {
-    const data = await sendPostRequest(url, form); // Promise 해제
-    return convertKeysToCamelCase(data) as FabRequestForm; // 데이터 변환 후 반환
+    let para = {
+      users: true,
+      wafer: true,
+      idt_type: true,
+      hs_type: true,
+      lot_status : true,
+      idt_layers: true,
+      order_by: "created_date",
+      product_names: [productName],
+    };
+
+    const data: FabRequestForm[] = await getApplicationListByDict(para);
+    const app = convertKeysToCamelCase(data[0]) as FabRequestForm; // 데이터 변환 후 반환
+
+    return app;
   } catch (error) {
     console.error("Error in getAppRev2ByProductName:", error);
     throw error; // 에러를 호출자에게 전달
@@ -612,9 +653,9 @@ export async function sendingForm(application: FabRequestForm, type: string) {
 
     if (type === "submit") {
       url = serverUrl + "/fab_monitoring_rev2/create_fab_request";
-    } 
-    else if (type === "partial update")
-      url = serverUrl +
+    } else if (type === "partial update")
+      url =
+        serverUrl +
         "/fab_monitoring_rev2/update_fab_request_partial/" +
         application.productName;
     else {
@@ -623,15 +664,14 @@ export async function sendingForm(application: FabRequestForm, type: string) {
         "/fab_monitoring_rev2/update_fab_request/" +
         application.currentProductName;
     }
-    
+
     // dvrChecker(application, type);
     packageChecker(application, type);
     checkPassivation(application);
-    
+
     // passivation Checker
 
     try {
-
       if (application.wantedFabFinishDate !== undefined) {
         application.wantedFabFinishDate = formatDateTime(
           application.wantedFabFinishDate

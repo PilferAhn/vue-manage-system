@@ -61,6 +61,38 @@ export async function sendPostRequestWithBody(url: string, payload: object) {
   }
 }
 
+export async function sendingPostRequestByOptions(
+  url: string,
+  formData: FormData,
+  options?: {
+    contentType?: string | null;
+    accept?: string | null;
+  }
+) {
+  try {
+    const headers: Record<string, string> = {};
+
+    if (options?.contentType) {
+      headers["Content-Type"] = options.contentType;
+    }
+
+    if (options?.accept) {
+      headers["Accept"] = options.accept;
+    }
+
+    const response = await axios.post(url, formData, { headers });
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error("Axios 에러:", error.response?.data || error.message);
+    } else {
+      console.error("알 수 없는 에러:", error);
+    }
+    return null;
+  }
+}
+
 export async function sendPostRequestWithHeader(
   url: string,
   formData: FormData
@@ -82,6 +114,34 @@ export async function sendPostRequestWithHeader(
       console.error("알 수 없는 에러:", error);
     }
     return null;
+  }
+}
+
+export async function downloadFileFromServerByObject(
+  url: string,
+  formData: FormData
+): Promise<void> {
+  try {
+    const response = await axios.post(url, formData, {
+      responseType: "blob",
+    });
+
+    // 파일 이름 파싱
+    const disposition = response.headers["content-disposition"];
+    const fileNameMatch = disposition?.match(/filename="?([^"]+)"?/);
+    const fileName = fileNameMatch?.[1] || "downloaded-file";
+
+    // 파일 다운로드 처리
+    const blob = new Blob([response.data]);
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = decodeURIComponent(fileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+  } catch (error) {
+    console.error("파일 다운로드 실패:", error);
   }
 }
 
@@ -131,7 +191,7 @@ export const sendPostRequestByInterface = async (
 ) => {
   try {
     const res = await axios.post(url, data);
-    
+
     data = convertPep8ToCamelCase2(res.data);
     return data;
   } catch (error) {

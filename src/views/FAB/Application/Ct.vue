@@ -76,6 +76,7 @@
     () => props.fabApplication.waferType,
     (newVal) => {
       if (newVal === "TC") {
+
         if (props.sawType.tcTypes.length == 1) {
           props.fabApplication.tcId = props.sawType.tcTypes[0].tcId;
           machineList.value = createMachineList(
@@ -90,18 +91,21 @@
         props.fabApplication.tcId = null;
         props.fabApplication.tcLayers = [];
       }
-    }
+    },
+    {immediate : true}
   );
   
   // tcId 변경 감지
   watch(
     () => props.fabApplication.tcId,
     (newVal) => {
-      if (newVal !== undefined && newVal !== null) {
+      if (newVal !== undefined && newVal !== null) {        
         layerOptions.value = getLayerOptions(newVal, props.sawType.tcTypes);
+        console.log(props.fabApplication.tcLayers)
         props.fabApplication.tcLayers = layerOptions.value;
       }
-    }
+    },
+    {immediate : true}
   );
   </script>
   

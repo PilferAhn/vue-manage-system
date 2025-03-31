@@ -57,10 +57,9 @@ onMounted(async () => {
       order_by: "created_date",
     };
 
-
     if (getUserId() !== "admin" && getRole() !== "group leader") {
-      para["observer_id"] = getUserId();      
-    }    
+      para["observer_id"] = getUserId();
+    }
 
     // Object.assign(apps, await getApplicationListByDictRev2(para));
     const rawApps = await getApplicationListByDictRev2(para);
@@ -81,8 +80,11 @@ onMounted(async () => {
 
     // apps.forEach((app) => app.createMesInfo())
 
-    Object.assign(cspApps, getAppByPackageType(apps, ["CSP"], ["WHC"]));
-    Object.assign(wlpApps, getAppByPackageType(apps, ["WLP", "BDMP"], ["WHC"]));
+    Object.assign(cspApps, getAppByPackageType(apps, ["CSP"], ["WHC", "WTC"]));
+    Object.assign(
+      wlpApps,
+      getAppByPackageType(apps, ["WLP", "BDMP"], ["WHC", "WTC"])
+    );
     Object.assign(
       etcApps,
       getAppByPackageType(apps, ["WLP", "BDMP", "CSP"], ["개발전달"])

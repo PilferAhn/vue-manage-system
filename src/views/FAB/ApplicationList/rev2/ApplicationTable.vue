@@ -49,16 +49,17 @@ export default {};
         label="No"
         width="50"
         :align="'center'"
+        fixed="left"
       ></el-table-column>
 
-      <el-table-column label="FabCard 작성유무" width="80" :align="'center'">
+      <el-table-column label="FabCard 작성유무" width="80" :align="'center'" fixed="left">
         <template #default="scope">
           <el-tag v-if="!scope.row.isFabCardCreated" type="danger">No</el-tag>
           <el-tag v-else type="success">Yes</el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column prop="group" label="Group" width="140" :align="'center'">
+      <el-table-column prop="group" label="Group" width="140" :align="'center'" fixed="left">
         <template #default="scope">
           {{ scope.row.designer.department }}
         </template>
@@ -79,6 +80,7 @@ export default {};
         label="Priority"
         width="85"
         :align="'center'"
+        fixed="left"
       >
         <template #default="scope">
           <el-select v-model="scope.row.priorityId">
@@ -97,6 +99,7 @@ export default {};
         label="Priority"
         width="85"
         :align="'center'"
+        fixed="left"
       />
 
       <el-table-column
@@ -104,12 +107,14 @@ export default {};
         label="Package"
         width="80"
         :align="'center'"
+        fixed="left"
       />
       <el-table-column
         prop="productName"
         label="Model Name"
         width="140"
         :align="'center'"
+        fixed="left"
       />
       <el-table-column prop="note" label="목적" width="300" :align="'center'" />
       <el-table-column prop="is_aoi" label="AOI" width="70" :align="'center'">
@@ -464,10 +469,10 @@ import {
 } from "../../../../interface/option";
 import { createBooleanOptions } from "../../../../utils/utility";
 import { downloadExcelWithCountdown } from "../../../../utils/Fab/fab-aplication-review-utils";
-import { getFabAppForReview } from "./ApplicationTable";
+import { getFabAppForReview, getMesFabFormInfo } from "./ApplicationTable";
 import ApplicationTableHeader from "./ApplicationTableHeader.vue";
 import { createNumberOptions } from "../../../../utils/utility";
-import { createQuantityOptions } from "../../../../utils/module_group/application-utils";
+
 
 const props = defineProps<{
   processData: FabRequest[];
@@ -569,6 +574,7 @@ onMounted(async () => {
   priorityList.value = await receivePriorityList();
   waferQuantity.value = createNumberOptions(25);
   await getFabAppForReview(props.processData, props.weekNumber, getUserId());
+  await getMesFabFormInfo(props.processData)
 });
 
 const isDownloading = ref(false);

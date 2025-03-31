@@ -155,7 +155,7 @@
           <div class="cell-item">PKG Size</div>
         </template>
         <div>
-          <el-input v-model="props.bom.pkgSize" disabled></el-input>
+          <el-input v-model="props.bom.pkgSize"></el-input>
         </div>
       </el-descriptions-item>
       <el-descriptions-item span="2">
@@ -163,7 +163,7 @@
           <div class="cell-item">P/N</div>
         </template>
         <div>
-          <el-input v-model="props.bom.partNumber" disabled></el-input>
+          <el-input v-model="props.bom.partNumber"></el-input>
         </div>
       </el-descriptions-item>
       <el-descriptions-item span="2">
@@ -171,7 +171,7 @@
           <div class="cell-item">SH당 수량</div>
         </template>
         <div>
-          <el-input v-model="props.bom.shQuantity" disabled></el-input>
+          <el-input v-model="props.bom.shQuantity"></el-input>
         </div>
       </el-descriptions-item>
       <el-descriptions-item span="2">
@@ -427,7 +427,6 @@ watch(
   (newVal) => {
     if (newVal.length >= 1) {
       packageOptioins.value = createPackageOptions(packageList.value);
-      console.log(packageOptioins.value);
     }
   }
 );
