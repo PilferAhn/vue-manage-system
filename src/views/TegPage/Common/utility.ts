@@ -104,6 +104,7 @@ export const initTegApplication = (): TegApplicationInterface =>
     maskName: "",
     isMaskChange: "",
     isAOI: "",
+    
     port: "",
     detail: "",
     shortPatternNo: "",

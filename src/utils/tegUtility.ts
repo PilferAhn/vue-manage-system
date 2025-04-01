@@ -4,7 +4,7 @@ import { ref, nextTick } from "vue";
 import { ElMessage, FormInstance } from "element-plus";
 import { TegApplication, waferInformation, MeasInfo } from "./tegTypes";
 import { TegApplication as oldTegApplication } from "./waferMeasurementHelper";
-import { TegApplication as newTegApp } from "../interface/Teg/teg"
+import { TegApplication as newTegApp } from "../interface/Teg/teg";
 import { measTypes } from "./waferApplicationHelper";
 import cloneDeep from "lodash/cloneDeep";
 import { convertPep8ToCamelCase2 } from "./key-converter";
@@ -17,17 +17,23 @@ function checkMeasTypes(measInfo: MeasInfo[]): boolean {
   const validTypes: string[] = [
     // "Pre-TEG",
     "TEG",
+    "TEG-1",
+    "TEG-1.5",
+    "TEG-N",
+    "TEG-2",
+    "TEG-3",
     "TCF",
     "CPW",
     "Delay Line",
   ];
 
+  console.log(measTypes)
   for (let i = 0; i < measTypes.length; i++) {
     for (let j = 0; j < validTypes.length; j++) {
       if (measTypes[i] === validTypes[j]) {
         tempBool = true;
         break;
-      }
+      }1
     }
   }
 
@@ -40,19 +46,21 @@ function checkMeasTypes(measInfo: MeasInfo[]): boolean {
   return tempBool;
 }
 
-export async function getTegApplicationsByFinishDateStatus(dateTime : string, status : string) {
-  
-  const form = new FormData()
-  const tegApp = ref<newTegApp[]>([])
-  const url = "http://10.29.11.57:40000/teg_application/get_applications_by_finish_date_status"
-  form.append("status" , status)
-  form.append("date", "2025-02-14 00:00:00")
-  const data = await sendPostRequest(url , form)
-  
-  tegApp.value = convertPep8ToCamelCase2(data)
-  
-  return tegApp.value
+export async function getTegApplicationsByFinishDateStatus(
+  dateTime: string,
+  status: string
+) {
+  const form = new FormData();
+  const tegApp = ref<newTegApp[]>([]);
+  const url =
+    "http://10.29.11.57:40000/teg_application/get_applications_by_finish_date_status";
+  form.append("status", status);
+  form.append("date", "2025-02-14 00:00:00");
+  const data = await sendPostRequest(url, form);
 
+  tegApp.value = convertPep8ToCamelCase2(data);
+
+  return tegApp.value;
 }
 
 async function create_teg_application_excel(application_uuid: string) {
@@ -198,7 +206,8 @@ async function sendRequestForCopies(
   formDataCopies: TegApplication[],
   file: File,
   applicationUuid,
-  activateDownload
+  activateDownload,
+  files: File[]
 ) {
   try {
     for (const copy of formDataCopies) {
@@ -211,6 +220,10 @@ async function sendRequestForCopies(
       // ✅ 파일 업로드
       if (file && response.status === 200) {
         await uploadImage(file, response.data.applicationUUID);
+      }
+
+      if (files.length > 0 && response.status == 200) {
+        await uploadFiles(files, response.data.applicationUUID);
       }
 
       // ✅ 서버 응답이 성공일 경우
@@ -240,21 +253,19 @@ export async function createTegApplicationsForDvr(
   tegApp: TegApplication,
   file: File,
   applicationUuid,
-  activateDownload
+  activateDownload,
+  files: File[] | null
 ) {
-
-  
-  if(tegApp.waferType === null || tegApp.packageType === null){
-    ElMessage.error('공정조건 혹은 Package 값이 누락되었습니다.')
-    return 
+  if (tegApp.waferType === null || tegApp.packageType === null) {
+    ElMessage.error("공정조건 혹은 Package 값이 누락되었습니다.");
+    return;
   }
-  console.log(10)
+
   let dvrApplicationList = [];
   if (
     tegApp.waferType === "HS" &&
     ["CSP", "BDMP"].includes(tegApp.packageType)
   ) {
-    
     dvrApplicationList = [
       {
         applicationType: "TEG-1",
@@ -293,7 +304,6 @@ export async function createTegApplicationsForDvr(
       },
     ];
   } else if (tegApp.waferType === "HS" && tegApp.packageType === "WLP") {
-    console.log(2)
     dvrApplicationList = [
       {
         applicationType: "TEG-1",
@@ -348,7 +358,7 @@ export async function createTegApplicationsForDvr(
     ["NS", "TC"].includes(tegApp.waferType) &&
     ["CSP", "BDMP"].includes(tegApp.packageType)
   ) {
-    console.log(3)
+    console.log(3);
     dvrApplicationList = [
       {
         applicationType: "TEG-1",
@@ -377,7 +387,6 @@ export async function createTegApplicationsForDvr(
     ["NS", "TC"].includes(tegApp.waferType) &&
     tegApp.packageType === "WLP"
   ) {
-    console.log(4)
     dvrApplicationList = [
       {
         applicationType: "TEG-1",
@@ -434,17 +443,20 @@ export async function createTegApplicationsForDvr(
   }
 
   for (let i = 0; i < dvrApplicationList.length; i++) {
-    console.log(5)
     for (let j = 0; j < dvrApplicationList[i].app.length; j++) {
-      console.log(6)
       const tempApp = tegApp;
       tempApp.measInfo[0].measType = dvrApplicationList[i].applicationType;
       tempApp.modelName = dvrApplicationList[i].app[j].modelName;
       tempApp.lotID = dvrApplicationList[i].app[j].lotId;
-      await sendSingleRequest(tempApp, file, applicationUuid, activateDownload);
+      await sendSingleRequest(
+        tempApp,
+        file,
+        applicationUuid,
+        activateDownload,
+        files
+      );
     }
   }
-
 }
 
 /**
@@ -458,7 +470,8 @@ async function sendSingleRequest(
   formData: TegApplication,
   file: File,
   applicationUuid,
-  activateDownload
+  activateDownload,
+  files: File[]
 ) {
   try {
     // ✅ 서버로 개별 데이터 전송 (의뢰서 생성)
@@ -470,6 +483,10 @@ async function sendSingleRequest(
     // ✅ 파일 업로드 (서버 응답이 성공했을 경우만)
     if (file && response.status === 200) {
       await uploadImage(file, response.data.applicationUUID);
+    }
+
+    if (files.length > 0 && response.status == 200) {
+      await uploadFiles(files, response.data.applicationUUID);
     }
 
     // ✅ 서버 응답이 성공일 경우
@@ -534,7 +551,7 @@ export async function submitForm(
           isTCF = true;
         }
       });
-      
+
       if (!isTCF) {
         if (!Array.isArray(tegTypes?.value)) {
           console.error("tegTypes is not a valid array:", tegTypes);
@@ -585,14 +602,16 @@ export async function submitForm(
             formData,
             file,
             applicationUuid,
-            activateDownload
+            activateDownload,
+            []
           );
         } else {
           await sendRequestForCopies(
             formDataCopies,
             file,
             applicationUuid,
-            activateDownload
+            activateDownload,
+            []
           );
         }
 
@@ -646,7 +665,8 @@ export async function submitForm(
           formData,
           file,
           applicationUuid,
-          activateDownload
+          activateDownload,
+          []
         );
 
         // try {
@@ -687,6 +707,127 @@ export async function submitForm(
         //   console.error("Error during copy request:", copyError);
         //   ElMessage.error("데이터 전송 중 오류가 발생했습니다.");
         // }
+      }
+
+      // 1. tegTypes가 배열인지 확인
+    } else {
+      ElMessage.error("입력되지 않은 항목이 남아있습니다.");
+      console.error("Validation failed.");
+    }
+  });
+}
+
+export async function submitForm2(
+  form: FormInstance | null,
+  formData: TegApplication,
+  file: File,
+  files: File[] | null,
+  activateDownload,
+  applicationUuid,
+  tegTypes: any | null
+) {
+  form?.validate(async (valid: boolean) => {
+    activateDownload.value = false;
+    if (valid) {
+      // Wafer 이름 중복 확인
+      if (hasDuplicateWaferName(formData.waferInformation)) {
+        ElMessage.error("Wafer 이름 중 중복되는 이름이 존재합니다.");
+        return false;
+      }
+
+      // Wafer 이름 누락 확인
+      if (!hasEmptyWaferName(formData.waferInformation)) {
+        ElMessage.error("Wafer 이름을 입력해 주세요");
+        return false;
+      }
+
+      // Frequency Section 이름 누락 확인
+      if (!hasEmptyFreqSectionName(formData.measInfo)) {
+        return false;
+      }
+
+      // 우선순위 설정
+      formData.priority = setPriority(formData.applicationType, formData.isAOI);
+
+      let isTCF = false;
+      formData.measInfo.forEach((val, index) => {
+        if (val.measType === "TCF") {
+          isTCF = true;
+        }
+      });
+
+      if (!isTCF) {
+        if (!Array.isArray(tegTypes?.value)) {
+          console.error("tegTypes is not a valid array:", tegTypes);
+          return false;
+        }
+        formData.temperatures = []
+        // 2. needMeas가 true인 항목 필터링
+        const needMeasTrueTypes = tegTypes.value.filter(
+          (type: any) => type.options.needMeas === true
+        );
+
+        let step: string = "";
+        needMeasTrueTypes.forEach((type: any, index: number) => {
+          step += needMeasTrueTypes[index].name + "->";
+        });
+
+        formData.note = formData.note + "\n" + step;
+        // 3. needMeasTrueTypes 갯수만큼 formData 복사본 생성
+        // 3. needMeasTrueTypes 갯수만큼 formData 깊은 복사본 생성
+        const formDataCopies = needMeasTrueTypes.map(() => cloneDeep(formData));
+
+        // 4. 복사본에 measType 할당
+        needMeasTrueTypes.forEach((type: any, index: number) => {
+          if (!needMeasTrueTypes[index]["options"].needDelay) {
+            formDataCopies[index].measInfo.forEach((measInfo, i) => {
+              if (measInfo.measType === "Delay Line") {
+                formDataCopies[index].measInfo.splice(i, 1); // 해당 요소 제거
+              }
+            });
+          }
+
+          if (!needMeasTrueTypes[index]["options"].needCPW) {
+            formDataCopies[index].measInfo.forEach((measInfo, i) => {
+              if (measInfo.measType === "CPW") {
+                formDataCopies[index].measInfo.splice(i, 1); // 해당 요소 제거
+              }
+            });
+          }
+
+          formDataCopies[index].measInfo[0].measType =
+            needMeasTrueTypes[index].name;
+        });
+
+        await nextTick();
+
+        if (formData.isDvr) {
+          createTegApplicationsForDvr(
+            formData,
+            file,
+            applicationUuid,
+            activateDownload,
+            files
+          );
+        } else {
+          await sendRequestForCopies(
+            formDataCopies,
+            file,
+            applicationUuid,
+            activateDownload,
+            files
+          );
+        }
+
+        // 요청 실행
+      } else {
+        await sendSingleRequest(
+          formData,
+          file,
+          applicationUuid,
+          activateDownload,
+          files
+        );
       }
 
       // 1. tegTypes가 배열인지 확인
@@ -778,6 +919,29 @@ export const uploadImage = async (file: File, uuid: string) => {
 
   try {
     const url = "teg_application/upload_teg_application_image";
+    const response = await axios.post(url, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    console.log("서버 응답:", response.data);
+    return response.data; // 함수가 서버 응답을 반환하도록 설정
+  } catch (error) {
+    console.error("업로드 에러:", error);
+    throw error; // 오류를 호출자에게 전달
+  }
+};
+
+export const uploadFiles = async (files: File[], uuid: string) => {
+  const formData = new FormData();
+
+  for (let i = 0; i < files.length; i++) {
+    formData.append("files", files[i]); // key 이름은 백엔드에서 기대하는 이름과 같아야 함
+  }
+  formData.append("teg_application_uuid", uuid); // UUID 추가
+
+  try {
+    const url = "teg_application/upload_teg_application_files";
     const response = await axios.post(url, formData, {
       headers: {
         "Content-Type": "multipart/form-data",

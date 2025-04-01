@@ -14,20 +14,8 @@ export async function getApplicationDetail(uuid, tegApplication) {
     try {
       const response = await axios.get(
         "teg_application/get_teg_application_by_uuid/" + uuid
-      );
-
-      
-      // console.log(convertPep8ToCamelCase2(response.data))
-
-      // 모든 필드를 한 번에 업데이트
-      // Object.keys(tegApplication).forEach((key) => {
-      //   tegApplication[key] = response.data[key];
-      // });
-
-      Object.assign(tegApplication, convertPep8ToCamelCase2(response.data))
-      
-      console.log(tegApplication)
-
+      );  
+      Object.assign(tegApplication, convertPep8ToCamelCase2(response.data))      
     } catch (error) {
       console.error("Error fetching application details:", error);
     }

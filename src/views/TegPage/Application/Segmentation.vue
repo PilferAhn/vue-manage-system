@@ -1,3 +1,7 @@
+<script lang="ts">
+export default {};
+</script>
+
 <template>
   <div>
     <div v-if="measInfo.length === 0">
@@ -29,6 +33,7 @@ import { MeasInfo } from "../../../utils/tegTypes";
 const props = defineProps<{ measInfo: MeasInfo[] }>();
 const internalValue = ref(props.measInfo);
 
+
 const emit = defineEmits(["updateMeasInfo"]);
 
 const handleUpdate = (updatedFreqSections, index) => {
@@ -46,6 +51,4 @@ watch(
 );
 </script>
 
-<script lang="ts">
-export default {};
-</script>
+

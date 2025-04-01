@@ -1,3 +1,6 @@
+<script lang="ts">
+export default {};
+</script>
 <template>
   <el-form
     :model="tegApplicationForm"
@@ -54,18 +57,20 @@
             </el-form-item>
 
             <SelectOptionsNew2
-            v-model:="tegApplicationForm.waferType"
-            label="Wafer Type"
-            placeholder="HS / NS / TC"
-            :rules="rules.waferType"
-            :options="waferTypeList"></SelectOptionsNew2>
+              v-model:="tegApplicationForm.waferType"
+              label="Wafer Type"
+              placeholder="HS / NS / TC"
+              :rules="rules.waferType"
+              :options="waferTypeList"
+            ></SelectOptionsNew2>
 
             <SelectOptionsNew2
-            v-model:="tegApplicationForm.packageType"
-            label="Package Type"
-            placeholder="CSP / WLP / BDMP"
-            :rules="rules.packageType"
-            :options="packageList"></SelectOptionsNew2>
+              v-model:="tegApplicationForm.packageType"
+              label="Package Type"
+              placeholder="CSP / WLP / BDMP"
+              :rules="rules.packageType"
+              :options="packageList"
+            ></SelectOptionsNew2>
 
             <SelectOptionsNew2
               v-model="tegApplicationForm.applicationType"
@@ -187,15 +192,6 @@
               <el-form-item label="DVR 유무"
                 ><el-switch v-model="tegApplicationForm.isDvr"></el-switch
               ></el-form-item>
-
-              <!-- <select-option
-                v-model="tegApplicationForm.isAOI"
-                label="DVR 여부"
-                prop="isDvr"
-                :rules="null"
-                placeholder="DVR 여부"
-                :options="maskChanges"
-              ></select-option> -->
             </el-col>
           </el-row>
           <el-row :gutter="20">
@@ -218,12 +214,12 @@
               />
             </el-col>
           </el-row>
-          <el-row :gutter="20">
+          <!-- <el-row :gutter="20">
             <el-col :span="12">
               <InputText
                 v-model="tegApplicationForm.openPatternNo"
                 label="OPEN Pattern No."
-                prop="openPatternNo"
+                prop=""
                 :rules="rules.openPatternNo"
                 placeholder="3"
               />
@@ -232,12 +228,12 @@
               <InputText
                 v-model="tegApplicationForm.rawPatternNo"
                 label="RAW Pattern No."
-                prop="rawPatternNo"
-                :rules="rules.rawPatternNo"
+                prop=""
+                :rules="[]"
                 placeholder="4"
               />
             </el-col>
-          </el-row>
+          </el-row> -->
           <el-row :gutter="20">
             <el-col :span="12">
               <InputText
@@ -249,6 +245,11 @@
               />
             </el-col>
           </el-row>
+          <ApplicationFiles
+            :application-data="props.applicationData"
+            :application-type="props.applicationType"
+            v-model:files="selectFiles"
+          ></ApplicationFiles>
           <SelectImage @update-file="handleFileUpdate"></SelectImage>
         </div>
       </div>
@@ -282,7 +283,11 @@
         </div>
         <div class="form-box">
           <div class="meas-types-container">
-            <MeasType @updateMeasInfo="updateMeasInfo" />
+            <MeasType
+              :application-data="props.applicationData"
+              :application-type="props.applicationType"
+              @updateMeasInfo="updateMeasInfo"
+            />
 
             <MeasTemperature
               :measInfo="tegApplicationForm.measInfo"
@@ -296,20 +301,34 @@
             />
           </div>
 
-          <span
+          <span v-if="['create', 'clone'].includes(props.applicationType)"
             ><el-button type="primary" @click="handleFormSubmission"
               >의뢰서 작성</el-button
+            >
+            <span> / </span>
+          </span>
+          <!-- <span v-else-if="props.applicationType === 'load'"
+            ><el-button type="primary" @click="handleFormSubmission" disabled
+              >업데이트</el-button
             ></span
-          >
+          > -->
 
-          <!-- <span>
-            <el-button
-              type="primary"
-              @click="handleDownload"
-              :disabled="!activateDownload"
+          <span v-if="['load', 'create'].includes(props.applicationType)">
+            <el-button type="primary" @click="handleDownload"
               >의뢰서 다운로드</el-button
             >
-          </span> -->
+          </span>
+
+          <span v-if="['load', 'clone'].includes(props.applicationType)">
+            <span v-if="['load'].includes(props.applicationType)">
+              <span> / </span>
+              <el-button type="success" @click="changeRouter"
+                >비슷한 의뢰서 만들기</el-button
+              >
+            </span>
+            <span> / </span>
+            <el-button type="danger" @click="handleAppRemove">삭제</el-button>
+          </span>
         </div>
       </div>
     </div>
@@ -327,7 +346,7 @@ import {
   portOptions,
   waferSizeList,
   waferTypeList,
-  packageList
+  packageList,
 } from "./../../../utils/tegTypes";
 
 import { getWaferInfoBySize } from "./../../../utils/waferApplicationHelper";
@@ -336,14 +355,14 @@ import type {
   TestTypeOptions as TestTypeOptionsInterface,
 } from "../Common/ApplicationTypes";
 import { tegApplicationRules } from "./../../../utils/tegApplicationRules";
-import { submitForm, download } from "./../../../utils/tegUtility";
+import { submitForm2, download } from "./../../../utils/tegUtility";
 
 import { applicationGroupOptions } from "../../../utils/dropdown-options";
 // 기능
 
 import { tegTypes } from "../Common/utility";
 import { useUserOptions } from "../../Common/utility";
-
+import { useRouter } from "vue-router";
 // 하위 component 정의
 import InputText from "./InputText.vue"; // assuming generic text input component
 import LongInputText from "./LongInputText.vue"; // assuming generic text input component
@@ -355,6 +374,8 @@ import MeasTemperature from "./MeasTemperature.vue";
 import Wafer from "../Wafer.vue";
 import WaferInformationUpdate from "./WaferInfomation.vue";
 import SelectOptionsNew2 from "../../Common/SelectOptionsNew2.vue";
+import ApplicationFiles from "./TegApplicationFiles.vue";
+import { sendRemoveRequest } from "./LoadTegApplication";
 
 // Define props to receive processData
 const props = defineProps<{
@@ -396,6 +417,7 @@ const activateDownload = ref(false);
 const applicationUuid = ref("");
 const applicationForm = ref<FormInstance>();
 const selectedFile = ref<File | null>(null);
+const selectFiles = ref<File[]>([]);
 
 const tegApplicationForm = props.applicationData;
 // const tegApplicationForm = tegApplicationForm;
@@ -407,11 +429,12 @@ const rules = tegApplicationRules;
 function handleFormSubmission() {
   if (applicationForm.value) {
     activateDownload.value = false;
-    
-    submitForm(
+
+    submitForm2(
       applicationForm.value,
       tegApplicationForm,
       selectedFile.value,
+      selectFiles.value,
       activateDownload,
       applicationUuid,
       tegTypes
@@ -442,14 +465,28 @@ watch(
   }
 );
 
+watch(
+  () => tegApplicationForm.applicationType,
+  (newVal) => {
+    if (
+      ["차세대공법그룹", "차세대SAW그룹 - TEG", "상품화개발 - TEG"].includes(
+        newVal
+      )
+    ) {
+      tegApplicationForm.isAOI = "X";
+    } else {
+      tegApplicationForm.isAOI = "O";
+    }
+  }
+);
+
 const handleActiveShots = (shots) => {
   activeShots = shots;
   tegApplicationForm.activeShots = activeShots;
 };
 
 const handleDownload = async () => {
-  const temp = applicationUuid.value;
-
+  const temp = props.applicationData.uuid;
   await download(temp);
 };
 
@@ -462,6 +499,10 @@ function handleTemperatures(values) {
   tegApplicationForm.temperatures = values;
 }
 
+function handleAppRemove() {
+  sendRemoveRequest(tegApplicationForm.uuid, router);
+}
+
 // measInfo 업데이트 핸들러
 const handleFinalUpdate = (updatedMeasInfo, index) => {
   tegApplicationForm.measInfo[index] = updatedMeasInfo;
@@ -471,12 +512,23 @@ const handleFinalUpdate = (updatedMeasInfo, index) => {
 const handleFileUpdate = (file: File | null) => {
   selectedFile.value = file;
 };
+
+// useRouter 훅을 사용하여 라우터 인스턴스를 가져옵니다.
+const router = useRouter();
+
+async function changeRouter() {
+  try {
+    await router.push({
+      name: "CloneTegApplication",
+      params: { uuid: tegApplicationForm.uuid },
+    });
+  } catch (error) {
+    console.error("Routing error:", error);
+  }
+  // moveToAnotherRoute("CloneTegApplication", tegApplicationForm.uuid, router);
+}
 </script>
 
 <style>
 @import "../../../assets/css/TegApplication.css";
 </style>
-
-<script lang="ts">
-export default {};
-</script>

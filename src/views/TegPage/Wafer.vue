@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, reactive, computed, defineEmits, watch } from 'vue';
+import { defineProps, reactive, computed, defineEmits, watch } from "vue";
 
 const props = defineProps<{
   waferInfo: {
@@ -27,59 +27,70 @@ const props = defineProps<{
     disableShots: string[];
     size: number;
     status: string[];
-  }
+  };
 }>();
 
-
-
-const emits = defineEmits(['updateActiveShots']);
+const emits = defineEmits(["updateActiveShots"]);
 
 // Initialize buttonStates without data initially
 const buttonStates = reactive([]);
 
 // Watch for changes in waferInfo and update buttonStates accordingly
-watch(() => props.waferInfo, (newVal) => {
-  buttonStates.splice(
-    0,
-    buttonStates.length,
-    ...newVal.shots.map((shot, index) => ({
-      text: shot,
-      active: newVal.status[index] === 'activate',
-      disabled: newVal.disableShots.includes(shot)
-    }))
-  );
-}, { deep: true });
+watch(
+  () => props.waferInfo,
+  (newVal) => {
+    
+    if (props.waferInfo.shots.length == 169) {
+      props.waferInfo.status[48] = "activate";
+      props.waferInfo.status[72] = "activate";
+      props.waferInfo.status[96] = "activate";
+      props.waferInfo.status[120] = "activate";
+    }
 
-
+    buttonStates.splice(
+      0,
+      buttonStates.length,
+      ...newVal.shots.map((shot, index) => ({
+        text: shot,
+        active: newVal.status[index] === "activate",
+        disabled: newVal.disableShots.includes(shot),
+      }))
+    );
+  },
+  { deep: true }
+);
 
 const toggleButton = (index: number) => {
   buttonStates[index].active = !buttonStates[index].active;
-  props.waferInfo.status[index] = "activate"
-  emits('updateActiveShots', buttonStates.filter(b => b.active).map(b => b.text));
+  props.waferInfo.status[index] = "activate";
+  emits(
+    "updateActiveShots",
+    buttonStates.filter((b) => b.active).map((b) => b.text)
+  );
 };
 
 const gridStyle = computed(() => ({
-  display: 'grid',
+  display: "grid",
   gridTemplateColumns: `repeat(${props.waferInfo.size}, 1fr)`,
-  gap: '5px'
+  gap: "5px",
 }));
 
 const buttonStyle = computed(() => {
-  let buttonWidth = '50px'; // Default button width
-  let buttonHeight = '50px'; // Default button height
+  let buttonWidth = "50px"; // Default button width
+  let buttonHeight = "50px"; // Default button height
 
-  if (props.waferInfo.size === 13) { // Adjusting for "4 Inch (0.5CM)" or "6 Inch"
-    buttonWidth = '40px'; // Smaller button width
-    buttonHeight = '40px'; // Smaller button height
+  if (props.waferInfo.size === 13) {
+    // Adjusting for "4 Inch (0.5CM)" or "6 Inch"
+    buttonWidth = "40px"; // Smaller button width
+    buttonHeight = "40px"; // Smaller button height
   }
 
   return {
     width: buttonWidth,
     height: buttonHeight,
-    margin: '2px', // Add margin if needed
+    margin: "2px", // Add margin if needed
   };
 });
-
 </script>
 
 <style scoped>
@@ -94,10 +105,10 @@ const buttonStyle = computed(() => {
 }
 
 .is-active {
-  background-color: #4CAF50; /* Green background for active buttons */
+  background-color: #4caf50; /* Green background for active buttons */
   color: white;
   font-weight: bold;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transform: scale(1.05); /* Slightly larger scale for emphasis */
 }
 

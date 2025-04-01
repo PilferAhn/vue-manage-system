@@ -1,46 +1,4 @@
 import { reactive } from "vue";
-import type { TegApplication } from "../../interface/teg/teg-interface";
 
-export const initTegApplication = (): TegApplication => reactive({
-  uuid: "",
-  designer: "",
-  requester: "",
-  purpose: "",  
-  lotID: "",
-  status: "",
-  shotSize: "",
-  chipSize: "",
-  chipQuantity: "",
-  maskName: "",
-  isMaskChange: "",
-  isAoi: "",
-  isDvr : false,
-  port: "",
-  detail: "",
-  shortPatternNo: "",
-  thruPatternNo: "",
-  openPatternNo: "",
-  rawPatternNo: "",
-  preTegPatternMeasShot: "",
-  waferQuantity: 0,
-  waferIDList: [],
-  waferSize: "",
-  activeShots: [],
-  measInfo: [],
-  dateOfCreated: "",
-  dateOfReserve: "",
-  dateOfFinish: "",
-  dateOfMeasStart: null,
-  temperatures: [],
-  note: "",
-  modelName: "",
-  shotInformation: {
-    shots: [],
-    disableShots: [],
-    size: 0,
-    status: [],
-  },
-  waferInformation: [],
-  priority: "",
-  applicationType: "",
-});
+
+

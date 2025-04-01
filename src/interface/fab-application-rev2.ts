@@ -627,9 +627,7 @@ export class FabRequest implements FabRequestForm {
     try {
       // "Special" 타입일 경우
       if (this.idtType.name === "Special") {
-        waferInfoStr = this.metalNote.split("\n")[0];
-        console.log(this.metalNote.split("\n"))
-        console.log()
+        waferInfoStr = this.metalNote.split("\n")[0];        
       } else {
         if (this.idtLayers !== null && this.idtType !== null) {
           waferInfoStr +=

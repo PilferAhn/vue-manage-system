@@ -48,13 +48,17 @@ const props = defineProps({
 });
 
 const numberSelected = ref(props.info.freqSectionInfo.length); // Default section count
-
 const generatedFreqSections = reactive([...props.info.freqSectionInfo]);
 
-watch(
-  numberSelected,
 
+watch(()=> props.info.freqSectionInfo, (newVal) => {
+  numberSelected.value = props.info.freqSectionInfo.length
+})
+
+watch(
+  numberSelected,  
   (newValue) => {
+    
     for (let i = 0; i < newValue; i++) {
       if (!generatedFreqSections[i]) {
         generatedFreqSections[i] = {
@@ -66,6 +70,11 @@ watch(
       }
     }
     generatedFreqSections.length = newValue; // Adjust the length of the array
+
+    if(props.info.freqSectionInfo.length >= 1){
+      Object.assign(generatedFreqSections , props.info.freqSectionInfo)
+    }
+
     emit("updateFreqInfo", generatedFreqSections, props.index);
   },
   { immediate: true }

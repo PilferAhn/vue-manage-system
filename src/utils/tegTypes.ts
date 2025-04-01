@@ -3,8 +3,8 @@ import { OptionInterface } from "../interface/option";
 
 // Exporting the wafer size list for use in other files
 export const waferSizeList: string[] = [
-  "4 Inch (0.5CM) ",
-  "4 Inch (1CM)",
+  "4 Inch (7mm) ",
+  "4 Inch (10mm)",
   "6 Inch",
 ];
 

@@ -80,8 +80,8 @@ export interface TegApplication {
   maskName: string;
   isMaskChange: string;
   isAOI: string;
-  isAoi: boolean;
-  isDvr: string;
+  isAoi?: boolean;
+  isDvr?: string;
   port: string;
   waferType?:string;
   packageType? : string
@@ -118,4 +118,14 @@ export interface TegApplication {
 
   priority: string;
   applicationType: string;
+  files? : TegApplicationFile[]
+}
+
+export interface TegApplicationFile{
+  uuid? : string;
+  applicationUuid? : string;
+  name? : string;
+  ext? : string;
+  file_type? : string | null
+  file_path? : string | null
 }

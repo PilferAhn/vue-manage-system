@@ -59,6 +59,9 @@ export const tegApplicationRules: FormRules = {
   rawPatternNo: [
     { required: true, message: "RAW Pattern 을 입력하세요", trigger: "blur" },
   ],
+  preTegPatternMeasShot: [
+    { required: true, message: "Pre Teg Pattern 을 입력하세요", trigger: "blur" },
+  ],
   purpose : [
     { required: true, message: "의뢰 목적을 입력하세요", trigger: "blur" },
   ],

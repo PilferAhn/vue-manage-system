@@ -150,7 +150,7 @@ export function getWaferInfoBySize(waferSize: string): shotInformation {
   let size: number = 0;
   const shots: string[] = [];
 
-  if (waferSize === "4 Inch (1CM)") {
+  if (waferSize === "4 Inch (10mm)") {
     const tempDisableShot: string[] = [];
     size = 9;
     // for (let x = 0; x < size; x++) {

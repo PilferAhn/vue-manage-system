@@ -341,7 +341,7 @@ const routes: RouteRecordRaw[] = [
         },
         component: () =>
           import(
-            /* webpackChunkName: "table" */ "../views/TegPage/Application/LoadTegApplication.vue"
+            /* webpackChunkName: "table" */ "../views/TegPage/Application/LoadTegApplication2.vue"
           ),
       },
       {
@@ -353,7 +353,7 @@ const routes: RouteRecordRaw[] = [
         },
         component: () =>
           import(
-            /* webpackChunkName: "table" */ "../views/TegPage/Application/CloneApplication.vue"
+            /* webpackChunkName: "table" */ "../views/TegPage/Application/CloneApplication2.vue"
           ),
       },
       {
