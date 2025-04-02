@@ -129,7 +129,7 @@ export const readFileContent = (file) => {
 export async function getPackageList(){
 
   const options = ref<OptionInterface[]>([]);
-  const data = await sendGetRequest("http://10.29.11.124:40000/fab_monitoring_rev2", "get_fab_packages_list")
+  const data = await sendGetRequest("/fab_monitoring_rev2", "get_fab_packages_list")
 
   for(let i = 0 ; i < data.length; i++){
     const temp = {

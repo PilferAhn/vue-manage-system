@@ -24,35 +24,30 @@ export function updateDv2TableDataRev(
     }
 
     for (let j = 0; j < fabApp.length; j++) {
-      // console.log(fabApp[j].modelName)    
+      // console.log(fabApp[j].modelName)
       if (dv2TableData[i].productName === fabApp[j].productName) {
         let maxIndex = -1;
         let maxSequance = -1;
 
+        let latestIndex = 0;
         if (fabApp[j].activeLots.length >= 1) {
-          const latestLot = fabApp[j].activeLots.reduce((latest, lot) => {
-            return new Date(lot.mesCreationDate) >
-              new Date(latest.mesCreationDate)
-              ? lot
-              : latest;
-          }, fabApp[j].activeLots[0]);
-          dv2TableData[i].lotId = latestLot.lotId
-          console.log(latestLot)
+          let latestLot = fabApp[j].activeLots[0];
+          
+
+          fabApp[j].activeLots.forEach((lot, idx) => {
+            if (
+              new Date(lot.mesCreationDate) >
+              new Date(latestLot.mesCreationDate)
+            ) {
+              latestLot = lot;
+              latestIndex = idx;
+            }
+          });
+
+          dv2TableData[i].lotId = latestLot.lotId;
         }
 
-        // if(fabApp[j].modelName === "MHM01BA4001A"){
-        // if(fabApp[j].modelName  === "MHM01BA4001A"){
-        //   console.log(dv2TableData[i])
-        //   console.log("FOUND")
-        // }
-
-        for (let k = 0; k < fabApp[j].lotStatus.length; k++) {
-          if (fabApp[j].lotStatus[k].historySeq >= maxSequance) {
-            maxSequance = fabApp[j].lotStatus[k].historySeq;
-            maxIndex = k;
-          }
-        }
-
+        maxIndex = latestIndex
         if (fabApp[j].lotStatus.length >= 1 && maxIndex != -1) {
           dv2TableData[i + 1].dateOfFabIn = formatDate(
             fabApp[j].lotStatus[maxIndex].creationDate
@@ -81,19 +76,6 @@ export function updateDv2TableDataRev(
               dv2TableData[i + 1].backgroundColor = "warning";
             }
           }
-
-          // if (
-          //   dv2TableData[i].currentStage !== null &&
-          //   dv2TableData[i].locationTime === null
-          // ) {
-          //   dv2TableData[i].locationTime =
-          //     fabApp[j].lotStatus[maxIndex].moveinDate;
-          // } else if (dv2TableData[i].currentStage === null) {
-          //   dv2TableData[i].currentStage =
-          //     fabApp[j].lotStatus[maxIndex].operation.name;
-          //   dv2TableData[i].locationTime =
-          //     fabApp[j].lotStatus[maxIndex].moveinDate;
-          // }
 
           dv2TableData[i].currentStage =
             fabApp[j].lotStatus[maxIndex].operation.name;
@@ -134,7 +116,7 @@ export function updateDv2TableData(
     }
 
     for (let j = 0; j < fabApp.length; j++) {
-      // console.log(fabApp[j].modelName)    
+      // console.log(fabApp[j].modelName)
       if (dv2TableData[i].productName === fabApp[j].modelName) {
         let maxIndex = -1;
         let maxSequance = -1;
@@ -330,10 +312,9 @@ export function getModelNameList(dv2List: Dv2[]) {
     }
   }
   // Set을 배열로 변환 후, ","로 연결하여 문자열 반환
-  const tempStr = Array.from(uniqueProductNames).join(",");  
+  const tempStr = Array.from(uniqueProductNames).join(",");
   return tempStr;
 }
-
 
 export async function sendDv2(dv2: Dv2, sendingType: string) {
   let url = sendingType === "update" ? "/dv2/update" : "/dv2/create";
@@ -342,8 +323,8 @@ export async function sendDv2(dv2: Dv2, sendingType: string) {
     const response = await axios.post(url, convertKeysToPEP8(dv2));
 
     if (response.status === 200) {
-      ElMessage.success("DV2 데이터가 성공적으로 업데이트되었습니다!");      
-      Object.assign(dv2 , convertKeysToPEP8(response.data))
+      ElMessage.success("DV2 데이터가 성공적으로 업데이트되었습니다!");
+      Object.assign(dv2, convertKeysToPEP8(response.data));
       return true;
     }
 
@@ -354,4 +335,3 @@ export async function sendDv2(dv2: Dv2, sendingType: string) {
     throw error;
   }
 }
-

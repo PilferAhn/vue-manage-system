@@ -49,11 +49,6 @@ onMounted(async () => {
   const data = await sendPostRequest("/dv2/get_dv2_list", formData);
   dv2Data.value = convertPep8ToCamelCase2(data);
 
-  // for(let i = 0 ; i < dv2Data.length; i++){
-
-  //   await sendDv2(dv2Data[i], "create")
-
-  // }
 
   nextTick(async () => {
     dv2TableData.value = dv2Data.value.flatMap((row) => {
@@ -115,9 +110,7 @@ onMounted(async () => {
 
     fabApp.value = await getApplicationListByDict(para);
 
-    fabApp.value.forEach((d, index) => {
-
-    });
+    console.log(fabApp.value[0])
 
     updateDv2TableDataRev(dv2TableData.value, fabApp.value);
   });
