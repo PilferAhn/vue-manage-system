@@ -63,6 +63,18 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
       ),
   },
   {
+    path: "/fab/fab-card-moniter",
+    name: "PlanedWholeApps",
+    meta: {
+      title: "투입 계획서 목록",
+      permiss: "11",
+    },
+    component: () =>
+      import(
+        /* webpackChunkName: "table" */ "../views/FAB/ApplicationList/rev2/FabCardMoniter.vue"
+      ),
+  },
+  {
     path: "/fab/my-application-status",
     name: "MyApplicationStatus",
     meta: {

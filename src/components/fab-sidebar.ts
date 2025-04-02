@@ -30,6 +30,11 @@ export const fabSilderBarList =  {
       permiss: "11",
     },      
     {
+      index: "/fab/fab-card-moniter",
+      title: "Fab Card 작성 현황",
+      permiss: "11",
+    },      
+    {
       index: "/fab/view-application-list-rev2",
       title: "My Form List",
       permiss: "11",
