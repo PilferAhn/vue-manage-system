@@ -299,8 +299,9 @@ const cellClass = ({ row, rowIndex, column, columnIndex }) => {
 
 .custom-table ::v-deep(.drop-row) {
   // box-shadow: inset 0px 1px 2px 3px rgba(218, 24, 24, 0.3);
-  background-color: rgb(250, 217, 217);
-  border: 1px solid rgb(250, 217, 217);
+  background-color: rgb(235, 29, 29);
+  border: 1px solid rgb(235, 29, 29);
+  color: black;
   border-radius: 1px;
   // padding: 4px;
 }
@@ -326,7 +327,7 @@ const cellClass = ({ row, rowIndex, column, columnIndex }) => {
 }
 
 .el-table__row.danger-row {
-  background-color: rgb(250, 214, 214);
+  background-color: rgb(230, 12, 12);
 }
 
 .filter-section {
