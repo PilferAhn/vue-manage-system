@@ -251,6 +251,10 @@ export default {};
             v-model:files="selectFiles"
           ></ApplicationFiles>
           <SelectImage @update-file="handleFileUpdate"></SelectImage>
+          <LoadImage v-if="props.applicationType !== 'create'"
+              :application-uuid="tegApplicationForm.uuid"
+              :image-type="'layout'"
+            ></LoadImage>
         </div>
       </div>
     </div>
@@ -389,6 +393,7 @@ import SelectOptionsNew2 from "../../Common/SelectOptionsNew2.vue";
 import ApplicationFiles from "./TegApplicationFiles.vue";
 import { sendRemoveRequest } from "./LoadTegApplication";
 import { getUserId } from "../../../utils/account-utils";
+import LoadImage from "./LoadImage.vue";
 
 // Define props to receive processData
 const props = defineProps<{
