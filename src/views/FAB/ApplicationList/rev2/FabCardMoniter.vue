@@ -30,7 +30,7 @@ export default {};
           label="FabCard 작성유무"
           :align="'center'"
           fixed="left"
-          :min-width="30"
+          :min-width="35"
         >
           <template #default="scope">
             <el-tag v-if="!scope.row.isFabCardCreated" type="danger">No</el-tag>
@@ -43,7 +43,7 @@ export default {};
           label="Group"
           :align="'center'"
           fixed="left"
-          :min-width="60"
+          :min-width="70"
         >
           <template #default="scope">
             {{ scope.row.designer.department }}
@@ -55,7 +55,7 @@ export default {};
           label="Process"
           fixed="left"
           :align="'center'"
-          :min-width="30"
+          :min-width="35"
         >
           <template #default="scope">
             <span class="uppercase">{{ scope.row.wafer.sawTypeId }}</span>
@@ -67,22 +67,22 @@ export default {};
           label="Model Name"
           :align="'center'"
           fixed="left"
-          :min-width="50"
+          :min-width="65"
         />
 
-        <el-table-column label="담당자" :align="'center'" :min-width="50">
+        <el-table-column label="담당자" :align="'center'" :min-width="40" show-overflow-tooltip="true">
           <template #default="scope">
             {{ scope.row.designer.userName }}
           </template>
         </el-table-column>
 
-        <el-table-column label="투입일" :align="'center'" :min-width="50">
+        <el-table-column label="투입일" :align="'center'" :min-width="40">
           <template #default="scope">
             {{ formatDate(scope.row.wantedFabStartDate) }}
           </template>
         </el-table-column>
 
-        <el-table-column label="완료일" :min-width="50"   :align="'center'">
+        <el-table-column label="완료일" :min-width="40"   :align="'center'">
           <template #default="scope">
             <span
               :style="{
@@ -94,7 +94,7 @@ export default {};
           </template>
         </el-table-column>
 
-        <el-table-column label="Fab Card 전달일" :align="'center'" :min-width="50"  >
+        <el-table-column label="Fab Card 전달일" :align="'center'" :min-width="40"  >
           <template #default="scope">
             <span>{{ scope.row.calFabCardConveyDate() }}</span>
           </template>
@@ -292,7 +292,7 @@ const cellClass = ({ row, rowIndex, column, columnIndex }) => {
 }
 
 .custom-table {
-  font-size: 20px;
+  font-size: 25px;
   padding-right: 10px;
   margin-right: 10px;
 }
