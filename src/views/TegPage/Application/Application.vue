@@ -469,11 +469,12 @@ watch(
   () => tegApplicationForm.waferSize,
   (newSize, oldSize) => {
     if (newSize) {
-      Object.assign(
-        tegApplicationForm.shotInformation,
-        getWaferInfoBySize(newSize)
-      );
-      // console.log(tegApplicationForm.shotInformation); // Logs updated wafer info for debugging
+      if (["create", "clone"].includes(props.applicationType)) {
+        Object.assign(
+          tegApplicationForm.shotInformation,
+          getWaferInfoBySize(newSize)
+        );
+      }
     }
   }
 );
