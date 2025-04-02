@@ -105,7 +105,7 @@ export default {};
 </template>
 
 <script lang="ts" setup>
-import { defineProps, computed, ref, onMounted, reactive, watch } from "vue";
+import { defineProps, computed, ref, onMounted, reactive, watch, onBeforeUnmount  } from "vue";
 import { FabRequest } from "../../../../interface/fab-application-rev2";
 import {
   handleDateChange as externalHandleDateChange,
@@ -178,13 +178,10 @@ const emit = defineEmits<{
   (e: "update:currentWeek", updatedData: FabRequest[]): void;
 }>();
 
-onMounted(async () => {
-  priorityList.value = await receivePriorityList();
-  waferQuantity.value = createNumberOptions(25);
+const fetchData = async () => {
   await getFabAppForReview(currentWeek, weekNumber, getUserId());
   await getFabAppForReview(previousWeek, weekNumber - 1, getUserId());
 
-  // 두 주차 데이터 합치기
   const merged = [...currentWeek, ...previousWeek];
 
   merged.sort((a, b) => {
@@ -194,11 +191,49 @@ onMounted(async () => {
     );
   });
 
-  // processData에 덮어쓰기 (깊은 복사 필요하면 아래 방식)
   Object.assign(processData, merged);
-
   await getMesFabFormInfo(processData);
+};
+
+let refreshInterval: number;
+
+onMounted(async () => {
+  priorityList.value = await receivePriorityList();
+  waferQuantity.value = createNumberOptions(25);
+
+  await fetchData(); // ✅ 최초 호출
+
+  // ✅ 10분마다 자동 업데이트
+  refreshInterval = window.setInterval(async () => {
+    await fetchData();
+  }, 600000); // 10분
 });
+
+onBeforeUnmount(() => {
+  clearInterval(refreshInterval);
+});
+
+// onMounted(async () => {
+//   priorityList.value = await receivePriorityList();
+//   waferQuantity.value = createNumberOptions(25);
+//   await getFabAppForReview(currentWeek, weekNumber, getUserId());
+//   await getFabAppForReview(previousWeek, weekNumber - 1, getUserId());
+
+//   // 두 주차 데이터 합치기
+//   const merged = [...currentWeek, ...previousWeek];
+
+//   merged.sort((a, b) => {
+//     return (
+//       new Date(a.wantedFabStartDate).getTime() -
+//       new Date(b.wantedFabStartDate).getTime()
+//     );
+//   });
+
+//   // processData에 덮어쓰기 (깊은 복사 필요하면 아래 방식)
+//   Object.assign(processData, merged);
+
+//   await getMesFabFormInfo(processData);
+// });
 
 const isDownloading = ref(false);
 const countdown = ref(20);
