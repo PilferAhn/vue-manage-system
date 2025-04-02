@@ -272,8 +272,7 @@ export default {};
               @update-wafer="handleWaferUpdate"
             />
 
-            <WaferInformation              
-            v-if="getUserId() === 'admin' && props.applicationType !== 'load'"
+            <WaferInformation                          
               label="Wafer 매수"
               prop="waferQuantity"
               :rules="rules.waferQuantity"
