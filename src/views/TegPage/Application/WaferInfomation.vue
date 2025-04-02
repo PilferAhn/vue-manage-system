@@ -1,3 +1,6 @@
+<script lang="ts">
+export default {};
+</script>
 <template>
   <div>
     <el-form-item label="Wafer 수량">
@@ -82,6 +85,4 @@ watch(
 }
 </style>
 
-<script lang="ts">
-export default {};
-</script>
+

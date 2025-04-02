@@ -259,6 +259,7 @@ export default {};
         <div class="form-box">
           <div class="meas-types-container">
             <WaferInformationUpdate
+              v-if="getUserId() === 'admin'"
               label="Wafer 매수"
               prop="waferQuantity"
               :rules="rules.waferQuantity"
@@ -266,6 +267,16 @@ export default {};
               :wafer-information="tegApplicationForm.waferInformation"
               @update-wafer="handleWaferUpdate"
             />
+
+            <WaferInformation
+              v-if="getUserId() !== 'admin'"
+              label="Wafer 매수"
+              prop="waferQuantity"
+              :rules="rules.waferQuantity"
+              :wafer-quantity="tegApplicationForm.waferQuantity"
+              :wafer-information="tegApplicationForm.waferInformation"
+              @update-wafer="handleWaferUpdate"
+            ></WaferInformation>
 
             <SelectOption
               v-model="tegApplicationForm.waferSize"
@@ -372,10 +383,12 @@ import SelectOption from "./SelectOption.vue"; // assuming generic text input co
 import Segmentation from "./Segmentation.vue";
 import MeasTemperature from "./MeasTemperature.vue";
 import Wafer from "../Wafer.vue";
-import WaferInformationUpdate from "./WaferInfomation.vue";
+import WaferInformationUpdate from "./WaferInfomationload.vue";
+import WaferInformation from "./WaferInfomation.vue";
 import SelectOptionsNew2 from "../../Common/SelectOptionsNew2.vue";
 import ApplicationFiles from "./TegApplicationFiles.vue";
 import { sendRemoveRequest } from "./LoadTegApplication";
+import { getUserId } from "../../../utils/account-utils";
 
 // Define props to receive processData
 const props = defineProps<{
