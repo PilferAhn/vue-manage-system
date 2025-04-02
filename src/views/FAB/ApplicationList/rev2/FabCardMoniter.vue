@@ -2,19 +2,18 @@
 export default {};
 </script>
 <template>
-  <div class="container">
+  <div>
     <!-- Element Plus Table -->
-    <ApplicationTableHeader
+    <!-- <ApplicationTableHeader
       :process-data="currentWeek"
       :week-number="weekNumber"
-    />
+    /> -->
     <div class="table-wrapper">
       <el-table
         :data="filteredData"
         class="custom-table"
-        style="min-width: 1000px"
         :border="true"
-        height="700"
+        :fit="true"
         :row-style="{ height: '30px' }"
         :lazy="true"
         :row-class-name="cellClass"
@@ -22,16 +21,16 @@ export default {};
         <el-table-column
           type="index"
           label="No"
-          width="50"
           :align="'center'"
           fixed="left"
+          :min-width="30"
         ></el-table-column>
 
         <el-table-column
           label="FabCard 작성유무"
-          width="80"
           :align="'center'"
           fixed="left"
+          :min-width="30"
         >
           <template #default="scope">
             <el-tag v-if="!scope.row.isFabCardCreated" type="danger">No</el-tag>
@@ -42,19 +41,21 @@ export default {};
         <el-table-column
           prop="group"
           label="Group"
-          width="140"
           :align="'center'"
           fixed="left"
+          :min-width="50"
         >
           <template #default="scope">
             {{ scope.row.designer.department }}
           </template>
         </el-table-column>
+
         <el-table-column
           prop="process"
           label="Process"
-          width="75"
+          fixed="left"
           :align="'center'"
+          :min-width="50"
         >
           <template #default="scope">
             <span class="uppercase">{{ scope.row.wafer.sawTypeId }}</span>
@@ -62,68 +63,26 @@ export default {};
         </el-table-column>
 
         <el-table-column
-          prop="priorityId"
-          label="Priority"
-          width="85"
-          :align="'center'"
-          fixed="left"
-        />
-
-        <el-table-column
-          prop="packageId"
-          label="Package"
-          width="80"
-          :align="'center'"
-          fixed="left"
-        />
-        <el-table-column
           prop="productName"
           label="Model Name"
-          width="140"
           :align="'center'"
           fixed="left"
-        />
-        <el-table-column
-          prop="note"
-          label="목적"
-          width="300"
-          :align="'center'"
-        />
-        <!-- <el-table-column prop="is_aoi" label="AOI" width="70" :align="'center'">
-          <template #default="scope">
-            <el-tag v-if="scope.row.isAoi" type="success">Yes</el-tag>
-            <el-tag v-else type="danger">No</el-tag>
-          </template>
-        </el-table-column> -->
-
-        <!-- <el-table-column
-          prop="quantity"
-          label="수량"
-          width="80"
-          :align="'center'"
+          :min-width="50"
         />
 
-        <el-table-column
-          prop="code"
-          label="Code"
-          width="80"
-          :align="'center'"
-        ></el-table-column> -->
-
-        <!-- FAB Insert Date를 날짜 선택기로 수정 -->
-        <el-table-column label="담당자" width="150" :align="'center'">
+        <el-table-column label="담당자" :align="'center'" :min-width="50">
           <template #default="scope">
             {{ scope.row.designer.userName }}
           </template>
         </el-table-column>
 
-        <el-table-column label="투입일" width="110" :align="'center'">
+        <el-table-column label="투입일" :align="'center'" :min-width="50">
           <template #default="scope">
             {{ formatDate(scope.row.wantedFabStartDate) }}
           </template>
         </el-table-column>
 
-        <el-table-column label="완료일" width="120" :align="'center'">
+        <el-table-column label="완료일" :min-width="50"   :align="'center'">
           <template #default="scope">
             <span
               :style="{
@@ -135,139 +94,11 @@ export default {};
           </template>
         </el-table-column>
 
-        <el-table-column label="Fab Card 전달일" width="130" :align="'center'">
+        <el-table-column label="Fab Card 전달일" :align="'center'" :min-width="50"  >
           <template #default="scope">
             <span>{{ scope.row.calFabCardConveyDate() }}</span>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="waferCompany"
-          label="Wafer 제조사"
-          width="70"
-          :align="'center'"
-        >
-          <template #default="scope">
-            {{ scope.row.wafer.waferCompany }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="waferAngle"
-          label="Wafer Angle"
-          width="70"
-          :align="'center'"
-        />
-        <el-table-column
-          prop="waferThickness"
-          label="Wafer Thickness"
-          width="90"
-          :align="'center'"
-        />
-        <el-table-column
-          prop="waferType"
-          label="Wafer Type"
-          width="80"
-          :align="'center'"
-        >
-          <template #default="scope">
-            {{ scope.row.wafer.sawTypeId }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="idtMachineName"
-          label="Machine Name"
-          width="80"
-          :align="'center'"
-        />
-        <el-table-column
-          prop="idtThickness"
-          label="막두께"
-          width="300"
-          :align="'center'"
-        >
-          <template #default="scope">
-            {{ scope.row.createWaferInfo() }}
-          </template>
-        </el-table-column>
-
-        <el-table-column label="엔지니어 Call" :align="'center'">
-          <template #default="scope">
-            <el-tag v-if="scope.row.isNeedEngineerCall == true" type="success"
-              >Yes</el-tag
-            >
-            <el-tag v-else type="danger">No</el-tag>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="MST" :align="'center'" prop="isMst">
-          <template #default="scope">
-            <el-tag v-if="scope.row.mstThickness !== null" type="success"
-              >Yes</el-tag
-            >
-            <el-tag v-else type="danger">No</el-tag>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="Dual IDT" :align="'center'">
-          <template #default="scope">
-            <!-- {{ scope.row.idt2Id }} -->
-            <el-tag v-if="scope.row.idt2Id !== null" type="success">Yes</el-tag>
-            <el-tag v-else type="danger">No</el-tag>
-          </template>
-        </el-table-column>
-
-        <!-- v-if="['w2150108', 'admin'].includes(getUserId())" -->
-        <el-table-column width="160" :align="'center'" label="MASK 입고일 IDT">
-          <template #default="scope">
-            {{ formatDate(scope.row.idtMaskArrivalDate) }}
-          </template>
-        </el-table-column>
-        <!-- <el-table-column v-else label="MASK 입고일 IDT" width="110" :align="'center'">
-        <template #default="scope">
-          {{ formatDate(scope.row.idtMaskArrivalDate) }}
-        </template>
-      </el-table-column> -->
-
-        <!-- v-if="['w2150108', 'admin'].includes(getUserId())" -->
-        <el-table-column
-          width="160"
-          :align="'center'"
-          label="MASK 입고일 PST"
-          prop="pstMaskArrivalDate"
-        >
-          <template #default="scope">
-            {{ formatDate(scope.row.pstMaskArrivalDate) }}
-          </template>
-        </el-table-column>
-        <!-- <el-table-column v-else label="MASK 입고일 IDT" width="120" :align="'center'">
-        <template #default="scope">
-          <span
-            :style="{ color: scope.row.checkFabOutDate() ? 'inherit' : 'red' }"
-          >
-            {{ formatDate(scope.row.pstMaskArrivalDate) }}
-          </span>
-        </template>
-      </el-table-column> -->
-        <el-table-column label="비고" prop="note" width="180" :align="'center'">
-          <template #default="scope">
-            {{ scope.row.createTrimmingInfo() }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="HS W/F 조건"
-          prop="hsWaferInfo"
-          width="400"
-          :align="'center'"
-        >
-          <template #default="scope">
-            {{ scope.row.createHsWaferCondition() }}
-          </template>
-        </el-table-column>
-
-        <!--         v-if="
-          getUserId() === 'admin' ||
-          getRole() === 'group leader' ||
-          getUserId() === 'w2150108'"
-        " -->
       </el-table>
     </div>
   </div>
@@ -300,7 +131,7 @@ import {
 import { createBooleanOptions } from "../../../../utils/utility";
 import { downloadExcelWithCountdown } from "../../../../utils/Fab/fab-aplication-review-utils";
 import { getFabAppForReview, getMesFabFormInfo } from "./ApplicationTable";
-import ApplicationTableHeader from "./ApplicationTableHeader.vue";
+import ApplicationTableHeader from "./FabCardMoniterHeader.vue";
 import { createNumberOptions } from "../../../../utils/utility";
 
 const processData = reactive<FabRequest[]>([]);
@@ -321,16 +152,15 @@ const uniqueDates = computed(() => {
 
 const filteredData = computed(() => {
   const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0); // 오늘 00:00:00
+  todayStart.setHours(0, 0, 0, 0); // 오늘 00:00:00 기준
 
   return processData.filter((item) => {
-    
+    if (item.isPending) return false; // ✅ pending이면 제거
 
     const itemDate = new Date(item.calFabCardConveyDate());
     return !item.isFabCardCreated || itemDate.getTime() >= todayStart.getTime();
   });
 });
-
 
 
 // ✅ 필터 초기화 (날짜 선택 해제)
@@ -407,13 +237,15 @@ const cellClass = ({ row, rowIndex, column, columnIndex }) => {
     const diffMs = targetDate.getTime() - now.getTime();
     const diffHours = diffMs / (1000 * 60 * 60);
 
-    if (diffHours >= 0 && diffHours <= 24) {
-      return "warning-row";
-    } else if (targetDate.getTime() <= now.getTime()) {
+    if(diffHours >= 24 && diffHours <= 48){
       return "warning-row";
     }
+    else if (diffHours >= 0 && diffHours <= 24) {
+      return "drop-row";
+    } else if (targetDate.getTime() <= now.getTime()) {
+      return "drop-row";
+    }
   }
-
   return "";
 };
 </script>
@@ -425,7 +257,7 @@ const cellClass = ({ row, rowIndex, column, columnIndex }) => {
 }
 
 .custom-table {
-  font-size: 12px;
+  font-size: 20px;
   padding-right: 10px;
   margin-right: 10px;
 }
