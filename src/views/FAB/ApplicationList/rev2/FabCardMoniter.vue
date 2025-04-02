@@ -43,7 +43,7 @@ export default {};
           label="Group"
           :align="'center'"
           fixed="left"
-          :min-width="50"
+          :min-width="60"
         >
           <template #default="scope">
             {{ scope.row.designer.department }}
@@ -55,7 +55,7 @@ export default {};
           label="Process"
           fixed="left"
           :align="'center'"
-          :min-width="50"
+          :min-width="30"
         >
           <template #default="scope">
             <span class="uppercase">{{ scope.row.wafer.sawTypeId }}</span>
