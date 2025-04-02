@@ -263,7 +263,7 @@ export default {};
         <div class="form-box">
           <div class="meas-types-container">
             <WaferInformationUpdate
-              v-if="getUserId() === 'admin'"
+              v-if="getUserId() === 'admin' && props.applicationType === 'load'"
               label="Wafer 매수"
               prop="waferQuantity"
               :rules="rules.waferQuantity"
@@ -272,8 +272,8 @@ export default {};
               @update-wafer="handleWaferUpdate"
             />
 
-            <WaferInformation
-              v-if="getUserId() !== 'admin'"
+            <WaferInformation              
+            v-if="getUserId() === 'admin' && props.applicationType !== 'load'"
               label="Wafer 매수"
               prop="waferQuantity"
               :rules="rules.waferQuantity"
