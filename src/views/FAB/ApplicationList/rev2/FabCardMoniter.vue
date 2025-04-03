@@ -23,18 +23,25 @@ export default {};
           label="No"
           :align="'center'"
           fixed="left"
-          :min-width="30"
+          :min-width="20"
         ></el-table-column>
 
         <el-table-column
-          label="FabCard 작성유무"
+          label="FabCard Status"
           :align="'center'"
           fixed="left"
-          :min-width="35"
+          :min-width="23"
         >
           <template #default="scope">
-            <el-tag v-if="!scope.row.isFabCardCreated" type="danger">No</el-tag>
-            <el-tag v-else type="success">Yes</el-tag>
+            <el-tag v-if="scope.row.isFabCardCreated === null" type="warning"
+              >Not Found</el-tag
+            >
+            <el-tag v-else-if="scope.row.isFabCardCreated" type="success"
+              >Completed</el-tag
+            >
+            <el-tag v-else-if="!scope.row.isFabCardCreated" type="danger"
+              >Waiting</el-tag
+            >
           </template>
         </el-table-column>
 
@@ -43,22 +50,10 @@ export default {};
           label="Group"
           :align="'center'"
           fixed="left"
-          :min-width="70"
+          :min-width="40"
         >
           <template #default="scope">
             {{ scope.row.designer.department }}
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          prop="process"
-          label="Process"
-          fixed="left"
-          :align="'center'"
-          :min-width="35"
-        >
-          <template #default="scope">
-            <span class="uppercase">{{ scope.row.wafer.sawTypeId }}</span>
           </template>
         </el-table-column>
 
@@ -70,19 +65,34 @@ export default {};
           :min-width="65"
         />
 
-        <el-table-column label="담당자" :align="'center'" :min-width="40" show-overflow-tooltip="true">
+        <el-table-column
+          label="담당자"
+          :align="'center'"
+          :min-width="40"
+          show-overflow-tooltip="true"
+        >
           <template #default="scope">
             {{ scope.row.designer.userName }}
           </template>
         </el-table-column>
 
-        <el-table-column label="투입일" :align="'center'" :min-width="40">
+        <el-table-column
+          label="Fab Card 전달일"
+          :align="'center'"
+          :min-width="40"
+        >
+          <template #default="scope">
+            <span>{{ scope.row.calFabCardConveyDate() }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="투입예정일" :align="'center'" :min-width="40">
           <template #default="scope">
             {{ formatDate(scope.row.wantedFabStartDate) }}
           </template>
         </el-table-column>
 
-        <el-table-column label="완료일" :min-width="40"   :align="'center'">
+        <!-- <el-table-column label="완료일" :min-width="40"   :align="'center'">
           <template #default="scope">
             <span
               :style="{
@@ -92,20 +102,22 @@ export default {};
               {{ formatDate(scope.row.wantedFabFinishDate) }}
             </span>
           </template>
-        </el-table-column>
-
-        <el-table-column label="Fab Card 전달일" :align="'center'" :min-width="40"  >
-          <template #default="scope">
-            <span>{{ scope.row.calFabCardConveyDate() }}</span>
-          </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { defineProps, computed, ref, onMounted, reactive, watch, onBeforeUnmount  } from "vue";
+import {
+  defineProps,
+  computed,
+  ref,
+  onMounted,
+  reactive,
+  watch,
+  onBeforeUnmount,
+} from "vue";
 import { FabRequest } from "../../../../interface/fab-application-rev2";
 import {
   handleDateChange as externalHandleDateChange,
@@ -161,7 +173,6 @@ const filteredData = computed(() => {
     return !item.isFabCardCreated || itemDate.getTime() >= todayStart.getTime();
   });
 });
-
 
 // ✅ 필터 초기화 (날짜 선택 해제)
 const clearFilter = () => {
@@ -263,25 +274,31 @@ const now = new Date();
 const cellClass = ({ row, rowIndex, column, columnIndex }) => {
   // 예: 짝수 행에만 스타일을 적용
   const targetDate = new Date(row.calFabCardConveyDate?.());
+
+
   if (row.isPending) {
     // if ([0].includes(columnIndex)) {
     //   return "even-row";
     // }
     return "drop-row";
-  } else if (!isNaN(targetDate.getTime()) && !row.isFabCardCreated) {
+  }
+  else if(row.isFabCardCreated){
+    return "success-row"
+  }
+   else if (!isNaN(targetDate.getTime()) && !row.isFabCardCreated) {
     const diffMs = targetDate.getTime() - now.getTime();
     const diffHours = diffMs / (1000 * 60 * 60);
 
-    if(diffHours >= 24 && diffHours <= 48){
+    if (diffHours >= 24 && diffHours <= 48) {
       return "warning-row";
-    }
-    else if (diffHours >= 0 && diffHours <= 24) {
+    } else if (diffHours >= 0 && diffHours <= 24) {
       return "drop-row";
     } else if (targetDate.getTime() <= now.getTime()) {
       return "drop-row";
     }
   }
-  return "";
+
+  return ;
 };
 </script>
 
@@ -305,6 +322,15 @@ const cellClass = ({ row, rowIndex, column, columnIndex }) => {
   border-radius: 1px;
   // padding: 4px;
 }
+
+.custom-table ::v-deep(.success-row) {
+  background-color: #cce4ff;  /* ✅ 은은하면서도 좀 더 또렷한 파랑 */
+  border: 1px solid #99caff;  /* 테두리도 조금 더 진하게 */
+  color: #0a1f44;             /* 살짝 어두운 글씨 */
+  border-radius: 4px;
+}
+
+
 
 .custom-table ::v-deep(.warning-row) {
   // box-shadow: inset 0px 1px 2px 3px rgba(218, 24, 24, 0.3);

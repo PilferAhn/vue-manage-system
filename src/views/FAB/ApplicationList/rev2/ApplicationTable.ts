@@ -44,13 +44,12 @@ export async function getMesFabFormInfo(apps: FabRequest[]) {
       console.log(apps[i])
     }
     
-
+    let isFound = false
     for (let j = 0; j < fabMesDataList.length; j++) {
-
       
-
-      // if(apps[i].productName === fabMesDataList[j].pmname && apps[i].quantity.toString() === fabMesDataList[j].pcnt && formatDate(apps[i].wantedFabStartDate) === fabMesDataList[j].psdt){                      
-      if(apps[i].productName === fabMesDataList[j].pmname){
+      if(apps[i].productName === fabMesDataList[j].pmname && apps[i].quantity.toString() === fabMesDataList[j].pcnt && formatDate(apps[i].wantedFabStartDate) === fabMesDataList[j].psdt){                      
+      // if(apps[i].productName === fabMesDataList[j].pmname){
+      // if(apps[i].productName === fabMesDataList[j].pmname && apps[i].quantity.toString() === fabMesDataList[j].pcnt){
 
           if([0,1].includes(fabMesDataList[j].flev)){
             apps[i].isFabCardCreated = false            
@@ -58,8 +57,14 @@ export async function getMesFabFormInfo(apps: FabRequest[]) {
           else{
             apps[i].isFabCardCreated = true
           }        
-      }
+          isFound = true
+      }      
     }
+
+    if(!isFound){
+      apps[i].isFabCardCreated = null
+    }
+
   }
 
   return {
