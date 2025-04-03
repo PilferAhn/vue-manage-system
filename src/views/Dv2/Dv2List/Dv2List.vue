@@ -109,9 +109,6 @@ onMounted(async () => {
     };
 
     fabApp.value = await getApplicationListByDict(para);
-
-    console.log(fabApp.value[0])
-
     updateDv2TableDataRev(dv2TableData.value, fabApp.value);
   });
 });

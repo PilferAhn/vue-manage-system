@@ -1,10 +1,41 @@
 import type { Dv2 } from "../../interface/Dv2/dv2-list-interface";
-import type { FabApplicationForm } from "../../interface/mes-interface";
+import type {
+  FabApplicationForm,
+  LotStatus,
+} from "../../interface/mes-interface";
 import { formatDate, formatDateTime, getTodayDatetime } from "../date-utils";
 import { ref } from "vue";
 import axios from "axios";
 import { convertKeysToPEP8 } from "../key-converter";
 import { sendGetRequest, sendPostRequest } from "../httpProtocol";
+
+// interface HanoiCsp {
+//   child: HanoiCsp | null;
+//   operation: {
+//     name: string;
+//   };
+//   creationDate: string;
+// }
+
+function getDeepestOperationInfo(hanoiCsp: LotStatus): {
+  operationName: string;
+  creationDate: string;
+} | null {
+  if (!hanoiCsp) return null;
+
+  let current = hanoiCsp;
+  let previous = null;
+
+  while (current?.child) {
+    previous = current;
+    current = current.child;
+  }
+
+  return {
+    operationName: current?.operation?.name ?? "Unknown",
+    creationDate: previous?.creationDate ?? "Unknown",
+  };
+}
 
 /**
  * dv2TableData 업데이트 함수
@@ -32,7 +63,6 @@ export function updateDv2TableDataRev(
         let latestIndex = 0;
         if (fabApp[j].activeLots.length >= 1) {
           let latestLot = fabApp[j].activeLots[0];
-          
 
           fabApp[j].activeLots.forEach((lot, idx) => {
             if (
@@ -44,19 +74,65 @@ export function updateDv2TableDataRev(
             }
           });
 
-          dv2TableData[i].lotId = latestLot.lotId;
+          const originalLotId = latestLot.lotId; // 예: 'A1234B'
+          // dv2TableData[i].lotId = latestLot.lotId;
+          if (typeof originalLotId === "string" && originalLotId.length > 0) {
+            const modifiedLotId = originalLotId.slice(0, -1) + "0";
+            dv2TableData[i].lotId = modifiedLotId;
+          }
         }
 
-        maxIndex = latestIndex
+        // if(fabApp[j].modelName === "MHM01BA4001A"){
+        // if(fabApp[j].modelName  === "MHM01BA4001A"){
+        //   console.log(dv2TableData[i])
+        //   console.log("FOUND")
+        // }
+
+        // for (let k = 0; k < fabApp[j].lotStatus.length; k++) {
+        //   if (fabApp[j].lotStatus[k].historySeq >= maxSequance) {
+        //     maxSequance = fabApp[j].lotStatus[k].historySeq;
+        //     maxIndex = k;
+        //   }
+        // }
+
+        for (let k = 0; k < fabApp[j].lotStatus.length; k++) {
+          if (fabApp[j].lotStatus[k].hanoiCsp !== null) {
+            maxIndex = k;
+          }
+          // if (fabApp[j].lotStatus[k].historySeq >= maxSequance) {
+          //   maxSequance = fabApp[j].lotStatus[k].historySeq;
+          //   maxIndex = k;
+          // }
+        }
+
+        if (fabApp[j].productName === "MHM71BA4000A") {
+          console.log(fabApp[j]);
+          console.log(maxIndex);
+          console.log(latestIndex);
+        }
+
+        const tempMaxSeq = fabApp[j].lotStatus[latestIndex].historySeq;
+        maxIndex = maxIndex >= 0 ? maxIndex : latestIndex;
+
+        try {          
+          const result = getDeepestOperationInfo(
+            fabApp[j].lotStatus[maxIndex].hanoiCsp
+          );
+          dv2TableData[i].currentStage = result.operationName;
+          dv2TableData[i].locationTime = result.creationDate;
+        } catch (error) {
+          
+          dv2TableData[i].currentStage =
+            fabApp[j].lotStatus[maxIndex].operation.name;
+          dv2TableData[i].locationTime =
+            fabApp[j].lotStatus[maxIndex].moveinDate;
+        }
+
+        // maxIndex = latestIndex
         if (fabApp[j].lotStatus.length >= 1 && maxIndex != -1) {
           dv2TableData[i + 1].dateOfFabIn = formatDate(
             fabApp[j].lotStatus[maxIndex].creationDate
           );
-
-          // dv2TableData[i].supporter = fabApp[j].requester;
-          // dv2TableData[i].supporterId = fabApp[j].requesterId;
-          // dv2TableData[i + 1].supporter = fabApp[j].designer;
-          // dv2TableData[i + 1].supporterId = fabApp[j].designerId;
 
           if (
             fabApp[j].lotStatus[maxIndex]["operation"]["name"] ===
@@ -77,11 +153,6 @@ export function updateDv2TableDataRev(
             }
           }
 
-          dv2TableData[i].currentStage =
-            fabApp[j].lotStatus[maxIndex].operation.name;
-          dv2TableData[i].locationTime =
-            fabApp[j].lotStatus[maxIndex].moveinDate;
-
           if (fabApp[j].lotStatus[maxIndex].hanoiCsp !== null) {
             dv2TableData[i + 1].dateOfWhcIn = formatDate(
               fabApp[j].lotStatus[maxIndex].hanoiCsp.creationDate
@@ -90,7 +161,6 @@ export function updateDv2TableDataRev(
               fabApp[j].lotStatus[maxIndex].hanoiCsp.moveinDate
             );
           }
-
           isFound = true;
         }
       }
