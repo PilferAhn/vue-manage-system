@@ -27,6 +27,7 @@ import { computed } from "vue";
 import { Router, useRouter } from "vue-router";
 import type { FabRequestForm } from "../../../interface/fab-application-rev2";
 import { sendPostRequest } from "../../../utils/httpProtocol";
+import { formatDate } from "../../../utils/date-utils";
 
 const props = defineProps<{
   visible: boolean;
@@ -50,18 +51,26 @@ function createApplication(fabApplication: FabRequestForm, type: string) {
       name: "CreateTegApplicationByFabForm",
       params: { productName: fabApplication.productName },
     });
-  }
-  else if(type === "fabcard"){
-
-    const productName = fabApplication.productName
-    const url = "fabcard://10.29.11.57:40000/fab_monitoring_rev2/get_fab_request_for_fab_card/" + productName;
-  // const url = "fab.exe http://10.29.11.124:40000/fab_monitoring_rev2/get_fab_request_for_fab_card/HSTESTMODEL1"
-
-    const url2 = "http://10.29.11.57:40000/fab_monitoring_rev2/set_is_fab_card_created"
-    const form = new FormData()
-    form.append("product_name" , productName)
-    form.append("new_value", String(true))
-    sendPostRequest(url2 , form)
+  } else if (type === "fabcard") {
+    //x2230116
+    const productName = fabApplication.productName;
+    const fabInsertData = fabApplication.wantedFabStartDate;
+    const quantity = fabApplication.quantity.toString();
+    const url =
+      "fabcard://10.29.11.57:40000/fab_monitoring_rev2/get_fab_request_for_fab_card/" +
+      productName +
+      "_" +
+      formatDate(fabInsertData) +
+      "_" +
+      quantity;
+    // const url = "fab.exe http://10.29.11.124:40000/fab_monitoring_rev2/get_fab_request_for_fab_card/HSTESTMODEL1"
+    console.log(url)
+    const url2 =
+      "http://10.29.11.57:40000/fab_monitoring_rev2/set_is_fab_card_created";
+    const form = new FormData();
+    form.append("product_name", productName);
+    form.append("new_value", String(true));
+    sendPostRequest(url2, form);
 
     window.location.href = url;
   }
