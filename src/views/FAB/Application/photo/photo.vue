@@ -119,7 +119,7 @@
         newValues.idtProcessId !== null
       ) {
         
-        console.log(1)
+
         needIdt.value = true;
         needBpd.value = newValues.packageId === "BDMP";
         needGfl.value = props.fabApplication.isGfl;
@@ -250,7 +250,7 @@
           });
         }
         
-        console.log(needBridge.value)
+        
         if (needBridge.value) {
           props.fabApplication.photo.photoProcesses.push({
             processName: "브릿지",

@@ -79,30 +79,17 @@ const passvationRandList = [
 ];
 
 const passRankOptions = ref<OptionNumberInterface[]>([
-  { key: 0, label: "X0", value: 0 },
-  { key: 1, label: "X5", value: 5 },
+  
   { key: 2, label: "X10", value: 10 },
-  { key: 3, label: "X15", value: 15 },
-  { key: 4, label: "X20", value: 20 }, // 새 항목 추가
   { key: 5, label: "X25", value: 25 },
   { key: 6, label: "X30", value: 30 },
   { key: 7, label: "X35", value: 35 },
   { key: 8, label: "X40", value: 40 },
   { key: 9, label: "X45", value: 45 },
   { key: 10, label: "X50", value: 50 },
-  { key: 11, label: "X55", value: 55 },
-  { key: 12, label: "X60", value: 60 },
+  { key: 11, label: "X55", value: 55 },  
   { key: 13, label: "X65", value: 65 },
-  { key: 14, label: "X70", value: 70 },
-  { key: 15, label: "X75", value: 75 },
-  { key: 16, label: "X80", value: 80 },
-  { key: 17, label: "X85", value: 85 },
-  { key: 18, label: "X90", value: 90 },
-  { key: 19, label: "X95", value: 95 },
-  { key: 20, label: "X100", value: 100 },
-  { key: 21, label: "X105", value: 105 },
-  { key: 22, label: "X110", value: 110 },
-  { key: 23, label: "X115", value: 115 },
+
 ]);
 
 watch(
