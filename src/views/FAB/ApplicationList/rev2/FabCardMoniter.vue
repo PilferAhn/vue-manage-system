@@ -145,11 +145,13 @@ import { downloadExcelWithCountdown } from "../../../../utils/Fab/fab-aplication
 import { getFabAppForReview, getMesFabFormInfo } from "./ApplicationTable";
 import ApplicationTableHeader from "./FabCardMoniterHeader.vue";
 import { createNumberOptions } from "../../../../utils/utility";
+import { getCurrentWeekNumber } from "../../../../utils/date-utils";
 
 const processData = reactive<FabRequest[]>([]);
 const currentWeek = reactive<FabRequest[]>([]);
 const previousWeek = reactive<FabRequest[]>([]);
-const weekNumber = 14;
+const previousWeek2 = reactive<FabRequest[]>([]);
+const weekNumber = getCurrentWeekNumber()
 
 const waferQuantity = ref<OptionNumberInterface[]>([]);
 
@@ -192,8 +194,10 @@ const emit = defineEmits<{
 const fetchData = async () => {
   await getFabAppForReview(currentWeek, weekNumber, getUserId());
   await getFabAppForReview(previousWeek, weekNumber - 1, getUserId());
+  await getFabAppForReview(previousWeek2, weekNumber - 2, getUserId());
 
-  const merged = [...currentWeek, ...previousWeek];
+
+  const merged = [...currentWeek, ...previousWeek, ...previousWeek2];
 
   merged.sort((a, b) => {
     return (
@@ -223,28 +227,6 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   clearInterval(refreshInterval);
 });
-
-// onMounted(async () => {
-//   priorityList.value = await receivePriorityList();
-//   waferQuantity.value = createNumberOptions(25);
-//   await getFabAppForReview(currentWeek, weekNumber, getUserId());
-//   await getFabAppForReview(previousWeek, weekNumber - 1, getUserId());
-
-//   // 두 주차 데이터 합치기
-//   const merged = [...currentWeek, ...previousWeek];
-
-//   merged.sort((a, b) => {
-//     return (
-//       new Date(a.wantedFabStartDate).getTime() -
-//       new Date(b.wantedFabStartDate).getTime()
-//     );
-//   });
-
-//   // processData에 덮어쓰기 (깊은 복사 필요하면 아래 방식)
-//   Object.assign(processData, merged);
-
-//   await getMesFabFormInfo(processData);
-// });
 
 const isDownloading = ref(false);
 const countdown = ref(20);
@@ -285,7 +267,7 @@ const cellClass = ({ row, rowIndex, column, columnIndex }) => {
   else if(row.isFabCardCreated){
     return "success-row"
   }
-   else if (!isNaN(targetDate.getTime()) && !row.isFabCardCreated) {
+   else if (!isNaN(targetDate.getTime()) && !row.isFabCardCreated && row.designer.department !== "차세대공법개발그룹") {
     const diffMs = targetDate.getTime() - now.getTime();
     const diffHours = diffMs / (1000 * 60 * 60);
 
