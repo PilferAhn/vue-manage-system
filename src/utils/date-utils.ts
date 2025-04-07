@@ -279,7 +279,8 @@ function isWeekend(date: Date): boolean {
   return day == 0 || day == 6;
 }
 
-function isHoliday(date: Date, holidays: Set<string>): boolean {
+export function isHoliday(date: Date, holidays: Set<string>): boolean {
+  
   return holidays.has(date.toISOString().split("T")[0]); // YYYY-MM-DD 형식으로 변환하여 체크
 }
 
@@ -313,6 +314,8 @@ export const holidaysList = [
   "2024-02-12",
   "2024-03-01",
   "2024-04-10",
+  "2024-05-01",
+  "2024-05-02",
   "2024-05-05",
   "2024-05-06",
   "2024-05-15",
