@@ -59,8 +59,8 @@ export default {};
             <SelectOptionsNew2
               v-model="tegApplicationForm.waferType"
               label="Wafer Type"
-              placeholder="HS / NS / TC"              
-              :rules="rules.waferType"              
+              placeholder="HS / NS / TC"
+              :rules="rules.waferType"
               :options="waferTypeList"
               :prop="'waferType'"
               :disable="false"
@@ -80,7 +80,7 @@ export default {};
 
             <SelectOptionsNew2
               v-model="tegApplicationForm.applicationType"
-              label="의뢰 구분"              
+              label="의뢰 구분"
               :rules="rules.applicationType"
               placeholder="의뢰 구분"
               :options="applicationGroupOptions"
@@ -259,10 +259,11 @@ export default {};
             v-model:files="selectFiles"
           ></ApplicationFiles>
           <SelectImage @update-file="handleFileUpdate"></SelectImage>
-          <LoadImage v-if="props.applicationType !== 'create'"
-              :application-uuid="tegApplicationForm.uuid"
-              :image-type="'layout'"
-            ></LoadImage>
+          <LoadImage
+            v-if="props.applicationType !== 'create'"
+            :application-uuid="tegApplicationForm.uuid"
+            :image-type="'layout'"
+          ></LoadImage>
         </div>
       </div>
     </div>
@@ -280,7 +281,7 @@ export default {};
               @update-wafer="handleWaferUpdate"
             />
 
-            <WaferInformation                          
+            <WaferInformation
               label="Wafer 매수"
               prop="waferQuantity"
               :rules="rules.waferQuantity"
@@ -487,6 +488,13 @@ watch(
           tegApplicationForm.shotInformation,
           getWaferInfoBySize(newSize)
         );
+
+        if (tegApplicationForm.shotInformation.shots.length == 169) {
+          tegApplicationForm.shotInformation.status[48] = "activate";
+          tegApplicationForm.shotInformation.status[72] = "activate";
+          tegApplicationForm.shotInformation.status[96] = "activate";
+          tegApplicationForm.shotInformation.status[120] = "activate";
+        }
       }
     }
   }

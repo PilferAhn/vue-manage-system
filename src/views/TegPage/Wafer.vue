@@ -28,7 +28,7 @@ const props = defineProps<{
     size: number;
     status: string[];
   };
-  applicationType : string;
+  applicationType: string;
 }>();
 
 const emits = defineEmits(["updateActiveShots"]);
@@ -37,16 +37,29 @@ const emits = defineEmits(["updateActiveShots"]);
 const buttonStates = reactive([]);
 
 // Watch for changes in waferInfo and update buttonStates accordingly
+let cnt = 0
 watch(
   () => props.waferInfo,
-  (newVal) => {
+  (newVal, oldVal) => {
+    // if (
+    //   props.waferInfo.shots.length == 169 &&
+    //   !["clone", "load"].includes(props.applicationType)
+    // ) {
+    //   props.waferInfo.status[48] = "activate";
+    //   props.waferInfo.status[72] = "activate";
+    //   props.waferInfo.status[96] = "activate";
+    //   props.waferInfo.status[120] = "activate";
+    // }
     
-    if (props.waferInfo.shots.length == 169 && !["clone", "load"].includes(props.applicationType)) {
-      props.waferInfo.status[48] = "activate";
-      props.waferInfo.status[72] = "activate";
-      props.waferInfo.status[96] = "activate";
-      props.waferInfo.status[120] = "activate";
-    }
+    console.log(newVal)
+    // // 예: 어떤 shot의 status가 바뀌었는지 확인
+    // newVal.status.forEach((status, index) => {
+    //   if (status !== oldVal.status[index]) {
+    //     console.log(
+    //       `✅ status changed at index ${index}: ${oldVal.status[index]} -> ${status}`
+    //     );
+    //   }
+    // });
 
     buttonStates.splice(
       0,
@@ -63,7 +76,13 @@ watch(
 
 const toggleButton = (index: number) => {
   buttonStates[index].active = !buttonStates[index].active;
-  props.waferInfo.status[index] = "activate";
+  
+  if(buttonStates[index].active){
+    props.waferInfo.status[index] = "activate";
+  }
+  else{
+    props.waferInfo.status[index] = "deactivate";
+  }
   emits(
     "updateActiveShots",
     buttonStates.filter((b) => b.active).map((b) => b.text)
