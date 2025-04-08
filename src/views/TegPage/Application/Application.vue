@@ -57,11 +57,14 @@ export default {};
             </el-form-item>
 
             <SelectOptionsNew2
-              v-model:="tegApplicationForm.waferType"
+              v-model="tegApplicationForm.waferType"
               label="Wafer Type"
-              placeholder="HS / NS / TC"
-              :rules="rules.waferType"
+              placeholder="HS / NS / TC"              
+              :rules="rules.waferType"              
               :options="waferTypeList"
+              :prop="'waferType'"
+              :disable="false"
+              :need-bold="false"
             ></SelectOptionsNew2>
 
             <SelectOptionsNew2
@@ -70,15 +73,20 @@ export default {};
               placeholder="CSP / WLP / BDMP"
               :rules="rules.packageType"
               :options="packageList"
+              :prop="'packageType'"
+              :disable="false"
+              :need-bold="false"
             ></SelectOptionsNew2>
 
             <SelectOptionsNew2
               v-model="tegApplicationForm.applicationType"
-              label="의뢰 구분"
-              prop="applicationType"
+              label="의뢰 구분"              
               :rules="rules.applicationType"
               placeholder="의뢰 구분"
               :options="applicationGroupOptions"
+              :prop="'applicationType'"
+              :disable="false"
+              :need-bold="false"
             ></SelectOptionsNew2>
 
             <InputText
@@ -292,6 +300,7 @@ export default {};
             <Wafer
               :waferInfo="tegApplicationForm.shotInformation"
               @updateActiveShots="handleActiveShots"
+              :application-type="props.applicationType"
             />
           </div>
         </div>
