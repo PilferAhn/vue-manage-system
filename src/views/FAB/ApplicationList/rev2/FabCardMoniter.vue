@@ -267,7 +267,7 @@ const cellClass = ({ row, rowIndex, column, columnIndex }) => {
   else if(row.isFabCardCreated){
     return "success-row"
   }
-   else if (!isNaN(targetDate.getTime()) && !row.isFabCardCreated && row.designer.department !== "차세대공법개발그룹") {
+   else if (!isNaN(targetDate.getTime()) && !row.isFabCardCreated) {
     const diffMs = targetDate.getTime() - now.getTime();
     const diffHours = diffMs / (1000 * 60 * 60);
 
