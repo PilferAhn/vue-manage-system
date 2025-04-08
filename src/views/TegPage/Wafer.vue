@@ -1,7 +1,5 @@
-<!-- Wafer.vue -->
 <template>
   <div>
-    <!-- <h3>Wafer Size: {{ props.waferInfo.size }} x {{ props.waferInfo.size }}</h3> -->
     <div class="grid-container" :style="gridStyle">
       <el-button
         v-for="(button, index) in buttonStates"
@@ -28,47 +26,64 @@ const props = defineProps<{
     size: number;
     status: string[];
   };
+  applicationType: string;
 }>();
 
 const emits = defineEmits(["updateActiveShots"]);
 
-// Initialize buttonStates without data initially
-const buttonStates = reactive([]);
+// 🧠 로컬 복사본으로 반응형 상태 관리
+const buttonStates = reactive<Array<{
+  text: string;
+  active: boolean;
+  disabled: boolean;
+}>>([]);
 
-// Watch for changes in waferInfo and update buttonStates accordingly
+// 상태만 따로 복사해 놓기 (props 직접 수정하지 않기 위함)
+const localStatus = reactive<string[]>([]);
+
+// Watch props.waferInfo 변경 감지
 watch(
   () => props.waferInfo,
   (newVal) => {
-    
-    if (props.waferInfo.shots.length == 169) {
-      props.waferInfo.status[48] = "activate";
-      props.waferInfo.status[72] = "activate";
-      props.waferInfo.status[96] = "activate";
-      props.waferInfo.status[120] = "activate";
+    // 로컬 상태 초기화
+    localStatus.length = 0;
+    localStatus.push(...newVal.status);
+
+    // 특정 조건일 때 상태 값 조정 (props 직접 변경 X)
+    if (
+      newVal.shots.length === 169 &&
+      !["load", "clone"].includes(props.applicationType)
+    ) {
+      [48, 72, 96, 120].forEach((idx) => {
+        localStatus[idx] = "activate";
+      });
     }
 
-    buttonStates.splice(
-      0,
-      buttonStates.length,
-      ...newVal.shots.map((shot, index) => ({
+    // 버튼 상태 초기화
+    buttonStates.splice(0, buttonStates.length); // clear
+    newVal.shots.forEach((shot, index) => {
+      buttonStates.push({
         text: shot,
-        active: newVal.status[index] === "activate",
+        active: localStatus[index] === "activate",
         disabled: newVal.disableShots.includes(shot),
-      }))
-    );
+      });
+    });
   },
-  { deep: true }
+  { immediate: true, deep: true }
 );
 
+// 버튼 클릭 핸들러
 const toggleButton = (index: number) => {
   buttonStates[index].active = !buttonStates[index].active;
-  props.waferInfo.status[index] = "activate";
+  localStatus[index] = buttonStates[index].active ? "activate" : "inactive";
+
   emits(
     "updateActiveShots",
     buttonStates.filter((b) => b.active).map((b) => b.text)
   );
 };
 
+// 스타일 계산
 const gridStyle = computed(() => ({
   display: "grid",
   gridTemplateColumns: `repeat(${props.waferInfo.size}, 1fr)`,
@@ -76,19 +91,18 @@ const gridStyle = computed(() => ({
 }));
 
 const buttonStyle = computed(() => {
-  let buttonWidth = "50px"; // Default button width
-  let buttonHeight = "50px"; // Default button height
+  let buttonWidth = "50px";
+  let buttonHeight = "50px";
 
   if (props.waferInfo.size === 13) {
-    // Adjusting for "4 Inch (0.5CM)" or "6 Inch"
-    buttonWidth = "40px"; // Smaller button width
-    buttonHeight = "40px"; // Smaller button height
+    buttonWidth = "40px";
+    buttonHeight = "40px";
   }
 
   return {
     width: buttonWidth,
     height: buttonHeight,
-    margin: "2px", // Add margin if needed
+    margin: "2px",
   };
 });
 </script>
@@ -105,22 +119,23 @@ const buttonStyle = computed(() => {
 }
 
 .is-active {
-  background-color: #4caf50; /* Green background for active buttons */
+  background-color: #4caf50;
   color: white;
   font-weight: bold;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transform: scale(1.05); /* Slightly larger scale for emphasis */
+  transform: scale(1.05);
 }
 
 .grid-button:not(:disabled):not(.is-active) {
-  background-color: #f0f0f0; /* Lighter for non-active but enabled buttons */
+  background-color: #f0f0f0;
   color: #333;
 }
 
 .grid-button:disabled {
-  opacity: 0.5; /* Less emphasis on disabled buttons */
+  opacity: 0.5;
 }
 </style>
+
 <script lang="ts">
 export default {};
 </script>

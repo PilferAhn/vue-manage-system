@@ -169,7 +169,7 @@ function getSystemBand() {
   if (props.targetPosition === undefined){
     systemBand = -999
   }
-  else if (props.targetPosition === "HIGH") {
+  else if (props.targetPosition.toUpperCase() === "HIGH") {
     systemBand = Number(props.systemBandInfo[1]);
   } else {
     systemBand = Number(props.systemBandInfo[0]);
@@ -187,6 +187,7 @@ watch(
   [() => props.systemBandInfo, () => props.targetPosition],
   () => {
     systemBand.value = getSystemBand();
+    console.log(systemBand.value)
   },
   { immediate: true }
 );

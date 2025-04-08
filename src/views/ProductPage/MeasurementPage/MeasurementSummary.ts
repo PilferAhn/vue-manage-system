@@ -258,9 +258,13 @@ export async function handleSampleNumberUpdate(pdtSampleUuid : string, sampleNum
     // 
 
     const formData = new FormData();
+    const temp = {
+      "pdt_sample_uuid" : pdtSampleUuid,
+      "sample_number" :  sampleNumber
+    }
     formData.append("pdt_sample_uuid", pdtSampleUuid)
     formData.append("sample_number", sampleNumber)
-    const response = await axios.post("pdt_measurement/update_sample_number", formData)
+    const response = await axios.post("pdt_measurement/update_sample_number", temp)
 
     if(!response.data.status){      
       ElMessage.error(response.data.message)
