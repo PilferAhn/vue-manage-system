@@ -103,11 +103,12 @@ import {
 } from "../../../utils/waferMeasurementHelper";
 import { formatDateTime } from "../../../utils/date-utils";
 import type { FabApplicationForm } from "../../../interface/mes-interface";
+import { FabRequest } from "../../../interface/fab-application-rev2";
 
 const props = defineProps<{
   category: string;
   pageSize: number;
-  fabApp: FabApplicationForm[];
+  fabApp: FabRequest[];
 }>();
 
 const userType = localStorage.getItem("ms_username");
@@ -124,9 +125,13 @@ onMounted(async () => {
     for (let i = 0; i < applications.value.length; i++) {
       let isFound = false;
       for (let j = 0; j < props.fabApp.length; j++) {
-        if (applications.value[i].productName === props.fabApp[j].modelName) {
+        if (applications.value[i].productName === props.fabApp[j].productName) {
           let isFound2 = false;
           let foundedIndex = -1;
+
+          if(props.fabApp[j].productName === "TWG45AAS005A"){
+            console.log(props.fabApp[j].productName)
+          }
 
           for (let k = 0; k <= props.fabApp[j].lotStatus.length; k++) {
             if (
@@ -191,7 +196,7 @@ watch(
       for (let i = 0; i < applications.value.length; i++) {
         let isFound = false;
         for (let j = 0; j < props.fabApp.length; j++) {
-          if (applications.value[i].productName === props.fabApp[j].modelName) {
+          if (applications.value[i].productName === props.fabApp[j].productName) {
             let isFound2 = false;
             let foundedIndex = -1;
 

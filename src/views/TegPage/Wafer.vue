@@ -41,25 +41,6 @@ let cnt = 0
 watch(
   () => props.waferInfo,
   (newVal, oldVal) => {
-    // if (
-    //   props.waferInfo.shots.length == 169 &&
-    //   !["clone", "load"].includes(props.applicationType)
-    // ) {
-    //   props.waferInfo.status[48] = "activate";
-    //   props.waferInfo.status[72] = "activate";
-    //   props.waferInfo.status[96] = "activate";
-    //   props.waferInfo.status[120] = "activate";
-    // }
-    
-    console.log(newVal)
-    // // 예: 어떤 shot의 status가 바뀌었는지 확인
-    // newVal.status.forEach((status, index) => {
-    //   if (status !== oldVal.status[index]) {
-    //     console.log(
-    //       `✅ status changed at index ${index}: ${oldVal.status[index]} -> ${status}`
-    //     );
-    //   }
-    // });
 
     buttonStates.splice(
       0,

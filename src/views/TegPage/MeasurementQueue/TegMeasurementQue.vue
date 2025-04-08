@@ -13,7 +13,7 @@
               :category="'next'"
               key="next"
               :page-size="5"
-              :fab-app="fabApp"
+              :fab-app="fabAppList"
             />
           </template>
         </el-tab-pane>
@@ -23,7 +23,7 @@
               :category="'delay'"
               key="delay"
               :page-size="5"
-              :fab-app="fabApp"
+              :fab-app="fabAppList"
             />
           </template>
         </el-tab-pane>
@@ -37,7 +37,7 @@
               :category="'product'"
               key="product"
               :page-size="10"
-              :fab-app="fabApp"
+              :fab-app="fabAppList"
             />
           </template>
         </el-tab-pane>
@@ -47,7 +47,7 @@
               :category="'model'"
               key="model"
               :page-size="10"
-              :fab-app="fabApp"
+              :fab-app="fabAppList"
             />
           </template>
         </el-tab-pane>
@@ -57,7 +57,7 @@
               :category="'tcf'"
               key="tcf"
               :page-size="10"
-              :fab-app="fabApp"
+              :fab-app="fabAppList"
             />
           </template>
         </el-tab-pane>
@@ -88,8 +88,9 @@ const runningMeas = ref<TegRunningMeas[]>([]);
 
 onMounted(async () => {
   try {
+
     runningMeas.value = await getRunningMeasurement();
-    fabApp.value = await fetchProcessData(fabApp.value);
+    // fabApp.value = await fetchProcessData(fabApp.value);
 
     let tempNames = ""
 
@@ -107,10 +108,10 @@ onMounted(async () => {
       tempNames += runningMeas.value[i].productName + ","
     }
 
-    para["product_names"] = tempNames
+    // para["product_names"] = tempNames
 
     fabAppList.value = await getApplicationListByDictRev2(para)
-
+    console.log(fabAppList.value.length)
 
   } catch (error) {
     console.error("Error fetching applications:", error);

@@ -493,7 +493,7 @@ export async function getApplicationListByDictRev2(
   for (let i = 0; i < data.length; i++) {
     applications.value.push(convertPep8ToCamelCase2(data[i]));
   }
-
+  
   return applications.value;
 }
 
