@@ -5,12 +5,12 @@ import { ApplicationForm, UserForm } from '../utils/types'; // ApplicationForm ì
 export const useForm = () => {
   const form = ref<UserForm>({
     id : '',
-    name: "JiminAhn"  ,
-    email: 'w2200202@wisol.co.kr',
+    name: ""  ,
+    email: '',
     password: '',
     passwordConfirmation: '',
     department: '',
-    employeeId: 'w2200202'
+    employeeId: ''
   });
 
   return form;
