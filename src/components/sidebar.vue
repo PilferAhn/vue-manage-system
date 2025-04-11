@@ -343,6 +343,11 @@ const items = [
         title: "내 전 력",
         permiss: "2",
       },
+      {
+        index: "/rules/pcb",
+        title: "Package(PCB) COST",
+        permiss: "2",
+      },
     ],
   },
   // {

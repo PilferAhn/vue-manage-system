@@ -497,6 +497,18 @@ const routes: RouteRecordRaw[] = [
           ),
       },
       {
+        path: "/rules/pcb",
+        name: "PCB",
+        meta: {
+          title: "PCB COST",
+          permiss: "2",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "table" */ "../views/Rules/PcbCost.vue"
+          ),
+      },
+      {
         path: "/table",
         name: "basetable",
         meta: {
