@@ -39,7 +39,7 @@ watch(
 
 onMounted(async () => {  
   await getApplicationDetail(route.params.uuid, tegApp.value);
-  console.log(tegApp.value)
+  
 });
 </script>
 

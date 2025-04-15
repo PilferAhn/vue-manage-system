@@ -1,36 +1,43 @@
 <template>
   <div v-if="isTCF">
     <!-- 온도 조건 선택 가능하도록 조건부 렌더링 적용 -->
-    <el-form-item label="온도 조건">
-      <el-select
-        v-model="selectedCount"
-        placeholder="Select number of temperatures"
-      >
-        <el-option v-for="num in 6" :key="num" :label="num" :value="num" />
-      </el-select>
-    </el-form-item>
-
-    <el-form-item>
-      <!-- 동적으로 생성된 온도 입력 필드 -->
-      <el-row :gutter="10">
-        <el-col
-          :span="calculateSpan(displayInputs.length)"
-          v-for="(input, index) in displayInputs"
-          :key="index"
+    <div v-if="props.tegApplication.temperatures.length >= 3">
+      <el-input v-model="props.tegApplication.temperatures "></el-input>
+      <br/>
+      <br/>
+    </div>
+    <div v-else>
+      <el-form-item label="온도 조건">
+        <el-select
+          v-model="selectedCount"
+          placeholder="Select number of temperatures"
         >
-          <el-form-item :class="{ 'error-input': inputErrors[index] }">
-            <el-input
-              v-model="displayInputs[index]"
-              placeholder="Enter temperature"
-              @input="validateInput(index)"
-            />
-            <span v-if="inputErrors[index]" class="error-text"
-              >Please enter a valid number</span
-            >
-          </el-form-item>
-        </el-col>
-      </el-row>
-    </el-form-item>
+          <el-option v-for="num in 6" :key="num" :label="num" :value="num" />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item>
+        <!-- 동적으로 생성된 온도 입력 필드 -->
+        <el-row :gutter="10">
+          <el-col
+            :span="calculateSpan(displayInputs.length)"
+            v-for="(input, index) in displayInputs"
+            :key="index"
+          >
+            <el-form-item :class="{ 'error-input': inputErrors[index] }">
+              <el-input
+                v-model="displayInputs[index]"
+                placeholder="Enter temperature"
+                @input="validateInput(index)"
+              />
+              <span v-if="inputErrors[index]" class="error-text"
+                >Please enter a valid number</span
+              >
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form-item>
+    </div>
   </div>
   <div v-else>
     <el-form-item label="">
@@ -104,10 +111,15 @@
 import { ref, computed, watch } from "vue";
 import { MeasInfo } from "../../../utils/waferApplicationHelper";
 // import { tegTypes } from "../Common/utility";
-import type { TestTypeOptions as TestTypeOptionsInterface } from "../Common/ApplicationTypes";
+import type {
+  TestTypeOptions as TestTypeOptionsInterface,
+  TegApplication as TegApplicationInterface,
+} from "../Common/ApplicationTypes";
+
 const props = defineProps<{
   measInfo: MeasInfo[];
   tegTypes: any;
+  tegApplication: TegApplicationInterface;
 }>();
 
 const emit = defineEmits(["updateTemperature"]);
@@ -132,6 +144,7 @@ watch(
   (newValue) => {
     temperatureInputs.value = Array(newValue).fill("");
     inputErrors.value = Array(newValue).fill(false);
+    console.log(props);
   },
   { immediate: true }
 );

@@ -316,6 +316,7 @@ export default {};
             <MeasTemperature
               :measInfo="tegApplicationForm.measInfo"
               :tegTypes="tegTypes"
+              :teg-application="props.applicationData"
               @updateTemperature="handleTemperatures"
             ></MeasTemperature>
 
