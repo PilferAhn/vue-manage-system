@@ -1,7 +1,7 @@
 <template>
   <div v-if="isTCF">
     <!-- 온도 조건 선택 가능하도록 조건부 렌더링 적용 -->
-    <div v-if="props.tegApplication.temperatures.length >= 3">
+    <div v-if="props.applicationType === 'load'">
       <el-input v-model="props.tegApplication.temperatures "></el-input>
       <br/>
       <br/>
@@ -120,6 +120,7 @@ const props = defineProps<{
   measInfo: MeasInfo[];
   tegTypes: any;
   tegApplication: TegApplicationInterface;
+  applicationType : string;
 }>();
 
 const emit = defineEmits(["updateTemperature"]);
