@@ -28,30 +28,30 @@ import type { OptionInterface } from "../../interface/option";
 import type { FormRules } from "element-plus";
 import { ElInput, FormItemRule } from "element-plus";  // FormItemRule 타입 가져오기
 
-// const props = defineProps({
-//   modelValue: String,
-//   label: String,
-//   prop: String,
-//   rules: {
-//     type: [Object, Array] as PropType<FormItemRule | FormItemRule[]>,
-//     default: () => [],
-//   },
-//   placeholder: String,
-//   options: Array as PropType<OptionInterface[]>,
-//   disable: Boolean,
-//   needBold: Boolean,
-// });
+const props = defineProps({
+  modelValue: String,
+  label: String,
+  prop: String,
+  rules: {
+    type: [Object, Array] as PropType<FormItemRule | FormItemRule[]>,
+    default: () => [],
+  },
+  placeholder: String,
+  options: Array as PropType<OptionInterface[]>,
+  disable: Boolean,
+  needBold: Boolean,
+});
 
-const props = defineProps<{
-  modelValue: string | any;
-  label: string;
-  prop: string;
-  rules: FormItemRule | FormItemRule[] | null;  // FormItemRule 또는 배열로 명시
-  placeholder: string;
-  needBold : boolean;
-  options : OptionInterface[];
-  disable : boolean
-}>();
+// const props = defineProps<{
+//   modelValue: string | any;
+//   label: string;
+//   prop: string;
+//   rules: FormItemRule | FormItemRule[] | null;  // FormItemRule 또는 배열로 명시
+//   placeholder: string;
+//   needBold : boolean;
+//   options : OptionInterface[];
+//   disable : boolean
+// }>();
 
 const emit = defineEmits(["update:modelValue"]);
 const internalValue = ref(props.modelValue);
