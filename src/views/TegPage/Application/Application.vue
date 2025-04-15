@@ -260,7 +260,7 @@ export default {};
           ></ApplicationFiles>
           <SelectImage @update-file="handleFileUpdate"></SelectImage>
           <LoadImage
-            v-if="props.applicationType !== 'create'"
+            v-if="!['create', 'clone'].includes(props.applicationType)"
             :application-uuid="tegApplicationForm.uuid"
             :image-type="'layout'"
           ></LoadImage>
