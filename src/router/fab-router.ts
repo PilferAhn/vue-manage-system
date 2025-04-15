@@ -95,7 +95,7 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
     },
     component: () =>
       import(
-        /* webpackChunkName: "table" */ "../views/FAB/ApplicationList/rev2/ApplicationList.vue"
+        /* webpackChunkName: "table" */ "../views/FAB/ApplicationList/rev2/MyApplicationList.vue"
       ),
   },
   {
@@ -108,6 +108,30 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
     component: () =>
       import(
         /* webpackChunkName: "table" */ "../views/FAB/ApplicationList/rev2/ApplicationReviewList.vue"
+      ),
+  },
+  {
+    path: "/fab/admin-control",
+    name: "AdminCortrol",
+    meta: {
+      title: "관리자 메뉴",
+      permiss: "16",
+    },
+    component: () =>
+      import(
+        /* webpackChunkName: "table" */ "../views/FAB/Admin/Admin.vue"
+      ),
+  },
+  {
+    path: "/fab/review-application2",
+    name: "ApplicationReviewList2",
+    meta: {
+      title: "투입 계획서 검토",
+      permiss: "11",
+    },
+    component: () =>
+      import(
+        /* webpackChunkName: "table" */ "../views/FAB/ApplicationList/rev2/application_review/AppReview.vue"
       ),
   },
   {

@@ -1,4 +1,4 @@
-export const fabSilderBarList =  {
+export const fabSilderBarList = {
   icon: "DocumentAdd",
   index: "3",
   title: "Development SAMPLE",
@@ -28,27 +28,37 @@ export const fabSilderBarList =  {
       index: "/fab/create-application2",
       title: "Create Request Form",
       permiss: "11",
-    },      
+    },
     {
       index: "/fab/fab-card-moniter",
       title: "Fab Card 작성 현황",
       permiss: "11",
-    },      
+    },
     {
       index: "/fab/view-application-list-rev2",
       title: "My Form List",
       permiss: "11",
-    }
-    ,{
+    },
+    {
       index: "/fab/review-application",
       title: "Form Review",
+      permiss: "11",
+    },
+    {
+      index: "/fab/admin-control",
+      title: "Admin Option",
+      permiss: "16",
+    },
+    {
+      index: "/fab/review-application2",
+      title: "Form Review2",
       permiss: "11",
     },
     {
       index: "/fab/feb-application-list3",
       title: "Sample Monitor",
       permiss: "11",
-    },
+    },    
     {
       index: "/fab/mes",
       title: "Other Sites",
@@ -75,7 +85,7 @@ export const fabSilderBarList =  {
         //   permiss: "11",
         // },
       ],
-    },      
+    },
     // {
     //   index: "/fab/weekly-applications",
     //   title: "투입 계획서 현황",
@@ -88,4 +98,4 @@ export const fabSilderBarList =  {
     //   permiss: "11",
     // },
   ],
-}
+};
