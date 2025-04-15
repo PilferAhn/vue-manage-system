@@ -23,7 +23,7 @@
             </template>
           </el-table-column>        
           <el-table-column label="Machine" :align="'center'">
-            <template #default="">
+            <template>
               <el-select v-model="props.fabApplication.tcMachineName">
                 <el-option
                   v-for="machine in machineList"

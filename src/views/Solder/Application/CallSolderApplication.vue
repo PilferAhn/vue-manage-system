@@ -24,7 +24,7 @@ const initData = reactive(initializeApplicationData2());
 
 const callApplication = async (uuid: string) => {
   const fetchedData = await fetchApplicationData(initData, uuid); // 객체 속성만 갱신
-
+  console.log(fetchedData)
   if (fetchedData) {
     sortApplicationDataByNumber(fetchedData);
     Object.assign(initData, fetchedData); // 정렬된 데이터를 할당

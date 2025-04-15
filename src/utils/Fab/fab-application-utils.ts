@@ -35,8 +35,18 @@ import type { TegApplication as TegApplicationInterface } from "../../views/TegP
 import type { Bom, FabRequest } from "../../interface/fab-application-rev2";
 import { fa } from "element-plus/es/locale";
 import { holidaysList , isHoliday } from "../date-utils";
+import { getUserId } from "../account-utils";
 // export const serverUrl = "http://10.29.11.124:40000";
 export const serverUrl = "";
+
+export async function canCreateFabRequest() {
+  const url = serverUrl + "/fab_monitoring_rev2/check_fab_reqeust_create_schedule"
+  const form = new FormData()
+  const userId = getUserId()
+  form.append("user_id", userId)
+  const data = await sendPostRequest(url , form)
+  return data
+}
 
 export async function getBomCodeList() {
   const url = "/api/sapinfo";

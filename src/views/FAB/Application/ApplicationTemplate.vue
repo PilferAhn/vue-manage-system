@@ -1,3 +1,8 @@
+<script lang="ts">
+export default {
+  components: {},
+};
+</script>
 <template>
     <div>
       <el-form
@@ -105,11 +110,7 @@
   );
   </script>
   
-  <script lang="ts">
-  export default {
-    components: {},
-  };
-  </script>
+
   
   <style scoped>
   .form-container {

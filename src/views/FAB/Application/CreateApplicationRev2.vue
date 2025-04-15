@@ -1,10 +1,12 @@
 <template>
-    <ApplicationTemplate
+
+    <ApplicationTemplate v-if="isOnTime"
       :fab-application="fabApplication"        
       applicationType="create"
       :options="sawTypes"
       :sawType="sawType"
     />
+    <ApplicationUnavailableMessage v-else></ApplicationUnavailableMessage>
   </template>
   
   <script lang="ts" setup>
@@ -31,10 +33,13 @@
     initFabApplication2,
     initFabApplication3,
     getBandList,
+    canCreateFabRequest,
   } from "../../../utils/Fab/fab-application-utils";
   
   import { getUserId, getUserName } from "../../../utils/account-utils";
   import axios from "axios";
+import ApplicationUnavailableMessage from "./ApplicationUnavailableMessage.vue";
+import { sendGetRequest, sendPostRequest } from "../../../utils/httpProtocol";
   //   import type { FabApplicationInterface  } from "../../interface/fab";
   
   const bom = initBom();
@@ -42,8 +47,9 @@
   const bandList = ref<band[]>([]);
   const sawTypes = reactive<SawType[]>([]);
   const sawType = reactive<SawType>({});
-  
+  const isOnTime = ref<boolean>(true)
   onMounted(async () => {
+
     fabApplication.requester.userName = getUserName();
     fabApplication.requester.id = getUserId();
     fabApplication.requesterId = getUserId();
@@ -60,12 +66,19 @@
   
       const rawData = response.data;    
       Object.assign(sawTypes , convertPep8ToCamelCase2(rawData))
-  
-      
+                        
     } catch (error) {
       console.error("Error fetching saw types:", error);
     }
+
+    isOnTime.value = false
+    isOnTime.value = await canCreateFabRequest()
+    
   });
+
+  function checkxxx(){
+
+  }
   </script>
   
   <style>

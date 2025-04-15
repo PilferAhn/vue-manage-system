@@ -127,6 +127,7 @@ import router from "../../../../router";
 import { getUserId } from "../../../../utils/account-utils";
 import { userInfo } from "os";
 import { get } from "http";
+import { adjustDate, getTodayDate, getTodayDatetime } from "../../../../utils/date-utils";
 
 const applications = reactive<FabRequestForm[]>([]);
 const isLoad = ref<boolean>(false);
@@ -156,6 +157,13 @@ onMounted(async () => {
     if (getUserId() !== "admin") {
       option["observer_id"] = getUserId();
     }
+    else{
+
+      option["created_date_start"] = adjustDate(getTodayDate(), -20)      
+    }
+
+
+
     applications.length = 0;
     const data = await getApplicationListByDict(option);
 

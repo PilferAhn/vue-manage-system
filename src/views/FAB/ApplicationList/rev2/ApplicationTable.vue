@@ -52,14 +52,25 @@ export default {};
         fixed="left"
       ></el-table-column>
 
-      <el-table-column label="FabCard 작성유무" width="80" :align="'center'" fixed="left">
+      <el-table-column
+        label="FabCard 작성유무"
+        width="80"
+        :align="'center'"
+        fixed="left"
+      >
         <template #default="scope">
           <el-tag v-if="!scope.row.isFabCardCreated" type="danger">No</el-tag>
           <el-tag v-else type="success">Yes</el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column prop="group" label="Group" width="140" :align="'center'" fixed="left">
+      <el-table-column
+        prop="group"
+        label="Group"
+        width="140"
+        :align="'center'"
+        fixed="left"
+      >
         <template #default="scope">
           {{ scope.row.designer.department }}
         </template>
@@ -128,7 +139,7 @@ export default {};
         v-if="['w2150108', 'admin'].includes(getUserId())"
         prop="quantity"
         label="수량"
-        width="80"
+        width="90"
         :align="'center'"
       >
         <template #default="scope">
@@ -148,7 +159,7 @@ export default {};
         v-else
         prop="quantity"
         label="수량"
-        width="80"
+        width="90"
         :align="'center'"
       />
 
@@ -175,9 +186,27 @@ export default {};
       ></el-table-column>
 
       <!-- FAB Insert Date를 날짜 선택기로 수정 -->
-      <el-table-column label="담당자" width="150" :align="'center'">
+      <el-table-column
+        label="담당자"
+        fixed="left"
+        width="150"
+        :align="'center'"
+      >
         <template #default="scope">
           {{ scope.row.designer.userName }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="주 차" prop="weekNumber" :align="'center'" width="90">
+        <template #default="scope">
+          <el-select v-model="scope.row.weekNumber">
+            <el-option
+              v-for="weekNum in 52"
+              :key="weekNum"
+              :value="weekNum"
+              :label="weekNum.toString()"
+            ></el-option>
+          </el-select>
         </template>
       </el-table-column>
 
@@ -473,14 +502,13 @@ import { getFabAppForReview, getMesFabFormInfo } from "./ApplicationTable";
 import ApplicationTableHeader from "./ApplicationTableHeader.vue";
 import { createNumberOptions } from "../../../../utils/utility";
 
-
 const props = defineProps<{
   processData: FabRequest[];
   weekNumber: number;
 }>();
 
 const waferQuantity = ref<OptionNumberInterface[]>([]);
-
+const maxWeekNumber = createNumberOptions(53)
 // ✅ 사용자가 선택한 날짜
 const selectedDate = ref<string | null>(null);
 
@@ -574,7 +602,7 @@ onMounted(async () => {
   priorityList.value = await receivePriorityList();
   waferQuantity.value = createNumberOptions(25);
   await getFabAppForReview(props.processData, props.weekNumber, getUserId());
-  await getMesFabFormInfo(props.processData)
+  await getMesFabFormInfo(props.processData);
 });
 
 const isDownloading = ref(false);
