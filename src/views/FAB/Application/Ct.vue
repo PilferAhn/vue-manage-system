@@ -23,7 +23,7 @@
             </template>
           </el-table-column>        
           <el-table-column label="Machine" :align="'center'">
-            <template>
+            <template #default="scope">
               <el-select v-model="props.fabApplication.tcMachineName">
                 <el-option
                   v-for="machine in machineList"
@@ -82,6 +82,7 @@
           machineList.value = createMachineList(
             props.sawType.tcTypes[0].tcMachines
           );
+          console.log(machineList.value)
         } else {
           props.fabApplication.tcLayers = [];
         }
@@ -100,9 +101,17 @@
     () => props.fabApplication.tcId,
     (newVal) => {
       if (newVal !== undefined && newVal !== null) {        
+
+
         layerOptions.value = getLayerOptions(newVal, props.sawType.tcTypes);
-        console.log(props.fabApplication.tcLayers)
-        props.fabApplication.tcLayers = layerOptions.value;
+        
+        if(props.fabApplication.tcLayers.length === 0){
+          props.fabApplication.tcLayers = layerOptions.value;
+        }
+        else{
+          layerOptions.value = props.fabApplication.tcLayers
+        }
+        
       }
     },
     {immediate : true}
