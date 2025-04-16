@@ -14,7 +14,7 @@
       <div>
         <el-table :data="calculatedSummaries" border style="width: 100%">
           <el-table-column
-            v-if="name !== 'admin'"
+            v-if="!adminList.includes(getUserId())"
             prop="sampleNumber"
             label="Sample Number"
             width="180"
@@ -51,7 +51,7 @@
             label="Pout@P1[dBm]"
           ></el-table-column>
 
-          <el-table-column v-if="name === 'admin'" label="Action">
+          <el-table-column v-if="adminList.includes(getUserId())" label="Action">
             <template #default="scope">
               <el-button type="success" @click="handleSampleNumberUpdate(scope.row.pdtSampleUuid, scope.row.sampleNumber)"
                 >업데이트</el-button
@@ -151,6 +151,7 @@ import {
 } from "./MeasurementSummary.ts";
 import LinveGraph from "./LinveGraph.vue";
 import ScatterChart from "./ScatterChart.vue";
+import { getUserId, getUserName } from "../../../utils/account-utils.js";
 
 const props = defineProps<{
   uuid: string;
@@ -159,6 +160,7 @@ const props = defineProps<{
   temperature: string;
 }>();
 
+const adminList = ["admin", "wh2409001"]
 // const targetFreq = ref<string[]>([]);
 // const db3Label = "𝒇 -3dB @" + props.temperature;
 
