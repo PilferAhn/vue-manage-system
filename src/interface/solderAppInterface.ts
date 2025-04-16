@@ -14,6 +14,9 @@ export interface Measurement {
   detailInHanoi? : string;
   measurer? : string
   note? : string
+  peQuantity? : number
+  realQuantity? : number
+  idealQuantity? : number
 }
 
 export interface Segment {

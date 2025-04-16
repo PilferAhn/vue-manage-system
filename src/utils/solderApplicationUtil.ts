@@ -208,6 +208,39 @@ export const initializeApplicationData = () => {
         detail: "",
         wantedFinishedDate : "",
       },
+      {
+        number: "7",
+        measurementType: "JIG", // 빈 문자열
+        isMeasured: false, // 초기값 false
+        quantity: 0, // 초기값 '0' 문자열로 설정
+        status: "",
+        placeHolder: "",
+        detail: "",
+        wantedFinishedDate : "",
+      },
+      {
+        number: "8",
+        measurementType: "Sample (Reel)", // 빈 문자열
+        isMeasured: false, // 초기값 false
+        quantity: 0, // 초기값 '0' 문자열로 설정
+        status: "",
+        placeHolder: "",
+        detail: "",
+        wantedFinishedDate : "",
+      },
+      {
+        number: "9",
+        measurementType: "Sample (EVB)", // 빈 문자열
+        isMeasured: false, // 초기값 false
+        quantity: 0, // 초기값 '0' 문자열로 설정
+        status: "",
+        placeHolder: "",
+        idealQuantity : 0,
+        peQuantity : 0,
+        realQuantity : 0,
+        detail: "",
+        wantedFinishedDate : "",
+      },
     ], // Initialize with an empty array
     segmentQuantity: 0,
     segments: [
