@@ -53,7 +53,7 @@
       <el-col :span="7">
         <input-text
           v-model="props.fabApplication.bomMainCode"
-          props="ProductName"
+          props="Code"
           label="대표코드"
           :disable="true"
         />
@@ -253,7 +253,7 @@
     <!-- 날짜 선택 -->
     <el-row :gutter="20" class="form-row">
       <el-col :span="12">
-        <el-form-item label="FAB Est Start (Fab 투입 예정일)">
+        <el-form-item label="FAB Est Start (Fab 투입 예정일)" prop="wantedFabStartDate">
           <el-date-picker
             type="date"
             placeholder="FAB Est Start"
@@ -265,7 +265,7 @@
       </el-col>
       <el-col :span="12">
         <!-- <el-form-item label="FAB 완료 예정일" class="date-picker-container"> -->
-        <el-form-item label="FAB Est Out (Fab 완료 예정일)">
+        <el-form-item label="FAB Est Out (Fab 완료 예정일)" prop="wantedFabFinishDate">
           <el-date-picker
             type="date"
             placeholder="FAB Est Complete"
@@ -279,7 +279,7 @@
     <!-- 날짜 선택 -->
     <el-row :gutter="20" class="form-row">
       <el-col :span="12">
-        <el-form-item label="MASK 입고일 IDT">
+        <el-form-item label="MASK 입고일 IDT" prop="idtMaskArrivalDate">
           <el-date-picker
             type="date"
             placeholder="FAB Est Start"
@@ -291,7 +291,7 @@
       </el-col>
       <el-col :span="12">
         <!-- <el-form-item label="FAB 완료 예정일" class="date-picker-container"> -->
-        <el-form-item label="MASK 입고일 PST">
+        <el-form-item label="MASK 입고일 PST" prop="pstMaskArrivalDate">
           <el-date-picker
             type="date"
             placeholder="FAB Est Complete"

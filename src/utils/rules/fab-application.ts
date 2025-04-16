@@ -61,6 +61,8 @@ const requiredFields = [
   "wantedFabStartDate",
   "wantedFabFinishDate",
   "note",
+  "idtMaskArrivalDate",
+  "pstMaskArrivalDate"
 ];
 
 // 숫자 항목
