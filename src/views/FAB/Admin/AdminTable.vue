@@ -1,25 +1,6 @@
 <script lang="ts">
 export default {};
 </script>
-<!-- components/AdminTable.vue -->
-<script lang="ts" setup>
-import { computed, defineProps, ref } from "vue";
-import { FabRequestCreateSchedule } from "../../../interface/fab-request-create-schedule";
-
-const props = defineProps<{
-  userList: FabRequestCreateSchedule[];
-}>();
-
-const currentPage = ref(1);
-const pageSize = 13;
-
-const paginatedData = computed(() => {
-  const start = (currentPage.value - 1) * pageSize;
-  return props.userList.slice(start, start + pageSize);
-});
-
-function handleUpdate(fabRequest: FabRequestCreateSchedule) {}
-</script>
 
 <template>
   <div>
@@ -56,9 +37,8 @@ function handleUpdate(fabRequest: FabRequestCreateSchedule) {}
 
       <el-table-column label="Action" prop="action" :align="'center'">
         <template #default="scope">
-          <el-button type="primary" @change="handleUpdate(scope.row)"
-            >Update</el-button
-          >
+          <el-button type="primary" @click="handleUpdate(scope.row)"
+            >Update</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -73,3 +53,33 @@ function handleUpdate(fabRequest: FabRequestCreateSchedule) {}
     />
   </div>
 </template>
+
+<!-- components/AdminTable.vue -->
+<script lang="ts" setup>
+import { computed, defineProps, ref } from "vue";
+import { FabRequestCreateSchedule } from "../../../interface/fab-request-create-schedule";
+import { sendPostRequest } from "../../../utils/httpProtocol";
+import { getUserId } from "../../../utils/account-utils";
+import { updateSchedule } from "../../../utils/Fab/fab-request-create-schedule";
+
+const props = defineProps<{
+  userList: FabRequestCreateSchedule[];
+}>();
+
+const currentPage = ref(1);
+const pageSize = 13;
+
+const paginatedData = computed(() => {
+  const start = (currentPage.value - 1) * pageSize;
+  return props.userList.slice(start, start + pageSize);
+});
+
+function handleUpdate(fabRequest: FabRequestCreateSchedule) {
+
+  console.log(fabRequest)
+  updateSchedule(fabRequest)
+
+}
+</script>
+
+

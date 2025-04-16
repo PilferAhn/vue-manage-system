@@ -2,7 +2,10 @@ import { ref } from "vue"
 import { sendPostRequest } from "../httpProtocol"
 import type { FabRequestCreateSchedule } from "../../interface/fab-request-create-schedule"
 import { convertPep8ToCamelCase2 } from "../key-converter"
-const serverUrl = "http://10.29.11.124:40000"
+import { serverUrl } from "./fab-application-utils"
+import { FabRequest } from "../../interface/fab-application-rev2"
+import { getUserId } from "../account-utils"
+
 
 export async function getFabRequestCreateScheduleList(){
     
@@ -11,5 +14,17 @@ export async function getFabRequestCreateScheduleList(){
 
     const data = await sendPostRequest(url , null)    
     return convertPep8ToCamelCase2(data)
+
+}
+
+export async function updateSchedule(fabRequest : FabRequestCreateSchedule){
+
+    const formData = new FormData()
+    const url = serverUrl + "fab_monitoring_rev2/set_fab_reqeust_create_schedule"
+    formData.append("start_date" , fabRequest.startDate)
+    formData.append("end_date", fabRequest.endDate)
+    formData.append("users_id" , getUserId().toLocaleLowerCase())
+    console.log("1")
+    await sendPostRequest(url , formData)
 
 }

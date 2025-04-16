@@ -1,3 +1,6 @@
+<script lang="ts">
+export default {};
+</script>
 <!-- components/SearchBar.vue -->
 <script lang="ts" setup>
 import { ref } from 'vue';
