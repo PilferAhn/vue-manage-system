@@ -460,14 +460,6 @@
           >
             비슷한 의뢰 만들기
           </el-button>
-          <!-- <el-button
-            type="danger"
-            @click="
-              removeApplication(applicationData)
-            "
-          >
-            의뢰서 삭제
-          </el-button> -->
         </el-col>
       </el-row>
       <el-row v-else :gutter="20" style="margin-top: 20px"
@@ -524,6 +516,7 @@ import { removeApplicationHandler } from "../../../utils/Solder/application-util
 import { optionList } from "../../Calculator/SParameter/sparameter";
 import SolderMeasurement from "./SolderMeasurement.vue";
 import SolderMeasureList from "./SolderMeasurementList.vue";
+import { forceRouteReload } from "../../../utils/utility";
 const router = useRouter();
 
 // Define props to receive processData
@@ -830,6 +823,8 @@ function moveRounter(vueRouterName: string) {
     name: vueRouterName,
   });
 }
+
+
 
 function moveRounterbyApplicationUuid(vueRouterName: string, uuid: string) {
   router.push({

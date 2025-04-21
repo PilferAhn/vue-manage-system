@@ -121,7 +121,7 @@ export function useApplicationData(
 }
 
 export function initMeasurements(solderApplication: ApplicationData) {
-  solderApplication.measurementQuantity =  6
+  solderApplication.measurementQuantity = 9;
   solderApplication.measurements = [
     {
       number: "1",
@@ -131,6 +131,7 @@ export function initMeasurements(solderApplication: ApplicationData) {
       status: "",
       placeHolder: "",
       detail: "",
+      wantedFinishedDate: "",
     },
     {
       number: "2",
@@ -140,6 +141,7 @@ export function initMeasurements(solderApplication: ApplicationData) {
       status: "",
       placeHolder: "메탈 마스크 WHC 보유 여부 확인, 없다면 의뢰 必",
       detail: "",
+      wantedFinishedDate: "",
     },
     {
       number: "3",
@@ -147,9 +149,9 @@ export function initMeasurements(solderApplication: ApplicationData) {
       isMeasured: false, // 초기값 false
       quantity: 0, // 초기값 '0' 문자열로 설정
       placeHolder: "",
-
       status: "",
       detail: "",
+      wantedFinishedDate: "",
     },
     {
       number: "4",
@@ -159,6 +161,7 @@ export function initMeasurements(solderApplication: ApplicationData) {
       status: "",
       placeHolder: "고객사 기재할 것 (중화, K1)",
       detail: "",
+      wantedFinishedDate: "",
     },
     {
       number: "5",
@@ -166,9 +169,9 @@ export function initMeasurements(solderApplication: ApplicationData) {
       isMeasured: false, // 초기값 false
       quantity: 0, // 초기값 '0' 문자열로 설정
       status: "",
-      placeHolder:
-        "샘플 제작 : WHC / TCF : 본사  (WHC 이관 이후 Update 예정)",
+      placeHolder: "샘플 제작 : WHC / TCF : 본사  (WHC 이관 이후 Update 예정)",
       detail: "",
+      wantedFinishedDate: "",
     },
     {
       number: "6",
@@ -178,8 +181,42 @@ export function initMeasurements(solderApplication: ApplicationData) {
       status: "",
       placeHolder: "",
       detail: "",
+      wantedFinishedDate: "",
     },
-  ] // Initialize with an empty array
+    {
+      number: "7",
+      measurementType: "JIG", // 빈 문자열
+      isMeasured: false, // 초기값 false
+      quantity: 0, // 초기값 '0' 문자열로 설정
+      status: "",
+      placeHolder: "",
+      detail: "",
+      wantedFinishedDate: "",
+    },
+    {
+      number: "8",
+      measurementType: "Sample (Reel)", // 빈 문자열
+      isMeasured: false, // 초기값 false
+      quantity: 0, // 초기값 '0' 문자열로 설정
+      status: "",
+      placeHolder: "",
+      detail: "",
+      wantedFinishedDate: "",
+    },
+    {
+      number: "9",
+      measurementType: "Sample (EVB)", // 빈 문자열
+      isMeasured: false, // 초기값 false
+      quantity: 0, // 초기값 '0' 문자열로 설정
+      status: "",
+      placeHolder: "",
+      idealQuantity: 0,
+      peQuantity: 0,
+      realQuantity: 0,
+      detail: "",
+      wantedFinishedDate: "",
+    },
+  ]; // Initialize with an empty array// Initialize with an empty array
 }
 
 // Function to initialize an empty ApplicationData object

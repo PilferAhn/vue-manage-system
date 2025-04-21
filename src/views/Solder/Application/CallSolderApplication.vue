@@ -1,8 +1,10 @@
 <template>
-  <SolderApplicationTemplate
-    :application-data="initData"
-    :application-type="'load'"
-  ></SolderApplicationTemplate>
+  <div>
+    <SolderApplicationTemplate
+      :application-data="initData"
+      :application-type="'load'"
+    ></SolderApplicationTemplate>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -24,7 +26,7 @@ const initData = reactive(initializeApplicationData2());
 
 const callApplication = async (uuid: string) => {
   const fetchedData = await fetchApplicationData(initData, uuid); // 객체 속성만 갱신
-  console.log(fetchedData)
+
   if (fetchedData) {
     sortApplicationDataByNumber(fetchedData);
     Object.assign(initData, fetchedData); // 정렬된 데이터를 할당
@@ -33,7 +35,7 @@ const callApplication = async (uuid: string) => {
   // 데이터를 number로 정렬하는 함수
   function sortApplicationDataByNumber(data: ApplicationData) {
     if (data.measurements) {
-      data.measurements.sort((a, b) => Number(a.number) - Number(b.number));      
+      data.measurements.sort((a, b) => Number(a.number) - Number(b.number));
     }
     if (data.segments) {
       data.segments.sort((a, b) => Number(a.number) - Number(b.number));
@@ -44,15 +46,18 @@ const callApplication = async (uuid: string) => {
   }
 };
 
-// Watch the `uuid` route parameter, fetch data immediately and when it changes
 watch(
-  () => route.params.applicationUuid, // Watching route parameter change
-  (uuid) => {
+  () => route.params.applicationUuid,
+  async (uuid) => {
     if (uuid) {
-      callApplication(uuid as string); // Fetch data when uuid changes
+      try {
+        await callApplication(uuid as string);
+      } catch (err) {
+        console.error("❌ callApplication 실패:", err);
+      }
     }
   },
-  { immediate: true } // Trigger immediately on component mount
+  { immediate: true }
 );
 </script>
 
