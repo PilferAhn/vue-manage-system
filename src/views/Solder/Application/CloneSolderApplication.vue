@@ -2,7 +2,7 @@
   <div>
     <SolderApplicationTemplate
       :application-data="initData"
-      :application-type="'load'"
+      :application-type="'clone'"
     ></SolderApplicationTemplate>
   </div>
 </template>
