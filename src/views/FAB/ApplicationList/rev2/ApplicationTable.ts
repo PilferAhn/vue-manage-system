@@ -39,11 +39,7 @@ export async function getMesFabFormInfo(apps: FabRequest[]) {
   for (let i = 0; i < apps.length; i++) {
     // if(apps[i].isFabCardCreated) continue
     apps[i].isFabCardCreated = false
-    
-    if(apps[i].productName === "DDM02AA4002A"){
-      console.log(apps[i])
-    }
-    
+        
     let isFound = false
     for (let j = 0; j < fabMesDataList.length; j++) {
       

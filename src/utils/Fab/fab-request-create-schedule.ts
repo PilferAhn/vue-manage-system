@@ -20,11 +20,10 @@ export async function getFabRequestCreateScheduleList(){
 export async function updateSchedule(fabRequest : FabRequestCreateSchedule){
 
     const formData = new FormData()
-    const url = serverUrl + "fab_monitoring_rev2/set_fab_reqeust_create_schedule"
+    const url = serverUrl + "/fab_monitoring_rev2/set_fab_reqeust_create_schedule"
     formData.append("start_date" , fabRequest.startDate)
     formData.append("end_date", fabRequest.endDate)
-    formData.append("users_id" , getUserId().toLocaleLowerCase())
-    console.log("1")
+    formData.append("users_id" , fabRequest.userId.toLocaleLowerCase())        
     await sendPostRequest(url , formData)
 
 }

@@ -74,10 +74,10 @@ const paginatedData = computed(() => {
   return props.userList.slice(start, start + pageSize);
 });
 
-function handleUpdate(fabRequest: FabRequestCreateSchedule) {
+async function handleUpdate(fabRequest: FabRequestCreateSchedule) {
 
   console.log(fabRequest)
-  updateSchedule(fabRequest)
+  await updateSchedule(fabRequest)
 
 }
 </script>
