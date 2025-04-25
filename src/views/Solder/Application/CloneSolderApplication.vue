@@ -35,7 +35,7 @@ const callApplication = async (uuid: string) => {
 
   initData.uuid = "";
   initMeasurements(initData);
-
+  initData.files = []  
   // 데이터를 number로 정렬하는 함수
   function sortApplicationDataByNumber(data: ApplicationData) {
     if (data.measurements) {

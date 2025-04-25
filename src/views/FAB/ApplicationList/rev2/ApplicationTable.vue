@@ -543,8 +543,7 @@ const emit = defineEmits<{
   (e: "update:processData", updatedData: FabRequest[]): void;
 }>();
 
-async function handleUpdate(row: FabRequest) {
-  console.log(row);
+async function handleUpdate(row: FabRequest) {  
   await sendingForm(row, "partial update");
 }
 

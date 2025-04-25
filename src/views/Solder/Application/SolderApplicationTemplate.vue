@@ -256,7 +256,7 @@
       </el-card>
 
       <el-row
-        v-if="props.applicationType === 'create'"
+        v-if="['create', 'clone'].includes(props.applicationType)"
         :gutter="20"
         style="margin-top: 20px"
       >
