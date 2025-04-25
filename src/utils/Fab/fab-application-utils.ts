@@ -36,8 +36,8 @@ import type { Bom, FabRequest } from "../../interface/fab-application-rev2";
 import { fa } from "element-plus/es/locale";
 import { holidaysList , isHoliday } from "../date-utils";
 import { getUserId } from "../account-utils";
-export const serverUrl = "http://10.29.11.124:40000";
-// export const serverUrl = "";
+// export const serverUrl = "http://10.29.11.124:40000";
+export const serverUrl = "";
 
 export async function canCreateFabRequest() {
   const url = serverUrl + "/fab_monitoring_rev2/check_fab_reqeust_create_schedule"
