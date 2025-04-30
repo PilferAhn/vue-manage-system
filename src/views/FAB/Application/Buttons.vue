@@ -2,15 +2,11 @@
   <div class="form-container">
     <section class="form-section">
       <!-- Submit Section -->
-
+      <!-- endTime = 2025-01-02 -->
       <div class="button-container">
         <el-form-item v-if="props.applicationType === 'create'">
           <el-button
-            :disabled="
-              !excludeList.includes(
-                getUserId()
-              )
-            "
+
             type="primary"
             class="action-button"
             @click="submitForm('submit')"
@@ -18,7 +14,7 @@
             제출
           </el-button>
         </el-form-item>
-        
+                
         <el-form-item v-else-if="props.applicationType === 'load'">
           <el-button
           :disabled="!excludeList.includes(getUserId())"
@@ -33,10 +29,9 @@
           <el-button
             type="warning"
             class="action-button"
-            @click="resetForm"
-            disabled
+            @click="resetForm"            
           >
-            초기화
+            재투입
           </el-button>
         </el-form-item>
         <el-form-item>
@@ -48,7 +43,7 @@
           >
             삭제
           </el-button>
-        </el-form-item>
+        </el-form-item>        
       </div>
     </section>
   </div>
@@ -59,8 +54,10 @@ import type { FabRequestForm } from "../../../interface/fab-application-rev2";
 import type { FormInstance } from "element-plus";
 import { sendingForm } from "../../../utils/Fab/fab-application-utils";
 import { getUserId } from "../../../utils/account-utils";
+import { ElMessageBox } from 'element-plus';
+import { getCurrentWeekNumber } from "../../../utils/date-utils";
+import { sendPostRequest } from "../../../utils/httpProtocol";
 
-const allowedList = ['admin', 'w2150108']
 
 const props = defineProps<{
   fabApplication: FabRequestForm;
@@ -68,7 +65,7 @@ const props = defineProps<{
   applicationType: string;
 }>();
 
-const excludeList = ["admin", "w220112", "w2150108"] 
+const excludeList = ["admin", "w220112", "w2180511", "w223051"] 
 
 // Submit 함수
 const submitForm = (type: string) => {
@@ -82,11 +79,45 @@ const submitForm = (type: string) => {
   });
 };
 
-// Reset 함수
-const resetForm = () => {
-  props.fabFormRef?.resetFields();
-  console.log("폼 리셋 완료");
+
+
+
+const resetForm = async () => {
+  try {
+    await ElMessageBox.confirm(
+      '...', // 제목 또는 간단한 안내
+      '알림',
+      {
+        confirmButtonText: '예',
+        cancelButtonText: '아니오',
+        type: 'warning',
+        dangerouslyUseHTMLString: true,
+        message: `
+          <div style="line-height: 1.6;">
+            <p><strong>해당 의뢰서를 초기화하여 재사용합니다.</strong></p>
+            <p>투입일, 수량 등의 항목을 수정한 후 <strong>업데이트 버튼</strong>을 눌러 저장해주세요.</p>
+            <p style="margin-top: 1em;">의뢰서를 재사용하시겠습니까?</p>
+          </div>
+        `
+      }
+    );
+
+    props.fabApplication.wantedFabStartDate = null
+    props.fabApplication.wantedFabFinishDate = null
+    props.fabApplication.quantity = 0
+
+    const currentWeekNum = getCurrentWeekNumber()
+    props.fabApplication.weekNumber = currentWeekNum
+    props.fabApplication.isPending = false
+      
+    console.log('재투입 실행');
+    // 재투입 처리 로직
+
+  } catch {
+    console.log('재투입 취소');
+  }
 };
+
 
 // Cancel 함수
 const cancelForm = () => {
