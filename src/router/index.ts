@@ -753,7 +753,7 @@ const routes: RouteRecordRaw[] = [
         path: "/whc/call-application/:applicationUuid",
         name: "CallSolderApplication",
         meta: {
-          title: "Solder Application",
+          title: "Call Solder Application",
           permiss: "11",
         },
         component: () =>
@@ -762,7 +762,7 @@ const routes: RouteRecordRaw[] = [
           ),
       },
       {
-        path: "/whc/call-application/:applicationUuid",
+        path: "/whc/clone-application/:applicationUuid",
         name: "CloneSolderApplication",
         meta: {
           title: "Clone Solder Application",
@@ -771,6 +771,25 @@ const routes: RouteRecordRaw[] = [
         component: () =>
           import(
             /* webpackChunkName: "table" */ "../views/Solder/Application/CloneSolderApplication.vue"
+          ),
+      },
+      {
+        path: "/force-redirect",
+        name: "ForceRedirectBlank",
+        component: {
+          template: "<div></div>", // 아무것도 안 보이는 빈 컴포넌트
+        },
+      },
+      {
+        path: "/whc/redirect-clone",
+        name: "RedirectWrapper",
+        meta: {
+          title: "중간단계",
+          permiss: "11",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "table" */ "../views/Solder/Application/RediectWrapper.vue"
           ),
       },
       {
@@ -824,7 +843,7 @@ const routes: RouteRecordRaw[] = [
       ...fabRouteIndexList,
       ...whcRouteIndexList,
       ...dv2RouteIndexList,
-      // ...modulesRouteIndexList,
+      ...modulesRouteIndexList,
       ...tegRouteIndexList,
       ...pdtRouteIndexList,
     ],
