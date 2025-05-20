@@ -10,6 +10,16 @@ export const whcSilderBarList = {
       permiss: "11",
     },
     {
+      index: "/whc/create-cspzolip",
+      title: "CSP Request Form",
+      permiss: "11",
+    },
+    {
+      index: "/whc/cspzolip-list",
+      title: "CSP Req Form List",
+      permiss: "11",
+    },
+    {
       index: "/whc/application-list",
       title: "Measurement monitor",
       permiss: "11",

@@ -9,18 +9,18 @@ import * as os from 'os';
 export const getServerIpAddress = (): string => {
 	const networkInterfaces = os.networkInterfaces();
 	for (const interfaceName of Object.keys(networkInterfaces)) {
-	  const networkInterface = networkInterfaces[interfaceName];
-	  if (networkInterface) {
-		for (const interfaceDetails of networkInterface) {
-		  const { family, address, internal } = interfaceDetails;
-		  if (family === 'IPv4' && !internal) {
-			return address;
-		  }
+		const networkInterface = networkInterfaces[interfaceName];
+		if (networkInterface) {
+			for (const interfaceDetails of networkInterface) {
+				const { family, address, internal } = interfaceDetails;
+				if (family === 'IPv4' && !internal) {
+					return address;
+				}
+			}
 		}
-	  }
 	}
 	return 'Unable to determine IP address';
-  };
+};
 
 export default defineConfig({
 	base: './',
@@ -45,34 +45,64 @@ export default defineConfig({
 	server: {
 		host: getServerIpAddress(),
 		port: 40006,
-		proxy : {
-			"/pdt_measurement" : "http://10.29.11.59:40000",
-			"/pdt_application" : "http://10.29.11.59:40000",
-			"/measurement" : "http://10.29.11.57:40000",
-			"/wafer" : "http://10.29.11.57:40000",
-			"/application" : "http://10.29.11.57:40000",
-			"/user" : "http://10.29.11.59:40000",
-			"/teg_application" : "http://10.29.11.57:40000",
-			"/tcf" : "http://10.29.11.57:8002",
-			"/s-parameter" : "http://10.29.11.57:8002",
-			"/machine" : "http://10.29.11.59:40000",
-			"/deembed" : "http://10.29.11.59:40001",			
-			"/rf-limit" : "http://10.29.11.59:8002",
-			"/solder" : "http://10.29.11.57:40000",
-			"/fab_monitoring" : "http://10.29.11.57:40000",
-			"/bfsm2" : "http://10.20.10.114",			
-			"/mes" : "http://10.29.11.57:40000",
-			"/OpeationMns" : "http://10.70.21.216:9086",
-			"/reel" : "http://10.29.11.57:40000",
-			"/dv2" : "http://10.29.11.57:40000",
-			"/test" : "http://10.29.11.59:8002",
-			"/fab_monitoring_rev2": "http://10.29.11.57:40000",
-			"/customer": "http://10.29.11.57:40000",
-			"/band": "http://10.29.11.57:40000",			
-			"/api": "http://10.20.10.128",
-			"/excel" : "http://10.29.11.57:39999"
-		}
-	  },
+			proxy : {
+				"/pdt_measurement" : "http://10.29.11.59:40000",
+				"/pdt_application" : "http://10.29.11.59:40000",
+				"/measurement" : "http://10.29.11.57:40000",
+				"/wafer" : "http://10.29.11.57:40000",
+				"/application" : "http://10.29.11.57:40000",
+				"/user" : "http://10.29.11.59:40000",
+				"/teg_application" : "http://10.29.11.57:40000",
+				"/tcf" : "http://10.29.11.57:8002",
+				"/s-parameter" : "http://10.29.11.57:8002",
+				"/machine" : "http://10.29.11.59:40000",
+				"/deembed" : "http://10.29.11.59:40001",			
+				"/rf-limit" : "http://10.29.11.59:8002",
+				"/solder" : "http://10.29.11.57:40000",
+				"/fab_monitoring" : "http://10.29.11.57:40000",
+				"/bfsm2" : "http://10.20.10.114",			
+				"/mes" : "http://10.29.11.57:40000",
+				"/OpeationMns" : "http://10.70.21.216:9086",
+				"/reel" : "http://10.29.11.57:40000",
+				"/dv2" : "http://10.29.11.57:40000",
+				"/test" : "http://10.29.11.59:8002",
+				"/fab_monitoring_rev2": "http://10.29.11.57:40000",
+				"/customer": "http://10.29.11.57:40000",
+				"/band": "http://10.29.11.57:40000",			
+				"/api": "http://10.20.10.128",
+				"/excel" : "http://10.29.11.57:39999"
+			}
+		  },
+
+		// proxy: {
+		// 	"/pdt_measurement": "http://10.60.41.83:40000",
+		// 	"/pdt_application": "http://10.60.41.83:40000",
+		// 	"/measurement": "http://10.60.41.83:40000",
+		// 	"/wafer": "http://10.60.41.83:40000",
+		// 	"/application": "http://10.60.41.83:40000",
+		// 	"/user": "http://10.29.11.59:40000",
+		// 	"/teg_application": "http://10.60.41.83:40000",
+		// 	"/tcf": "http://10.60.41.83:8002",
+		// 	"/s-parameter": "http://10.60.41.83:8002",
+		// 	"/machine": "http://10.60.41.83:40000",
+		// 	"/deembed": "http://10.60.41.83:40001",
+		// 	"/rf-limit": "http://10.60.41.83:8002",
+		// 	"/solder": "http://10.60.41.83:40000",
+		// 	"/fab_monitoring": "http://10.60.41.83:40000",
+		// 	"/bfsm2": "http://10.20.10.114:40000",
+		// 	"/mes": "http://10.60.41.83:40000",
+		// 	"/OpeationMns": "http://10.70.21.216:9086",
+		// 	"/reel": "http://10.60.41.83:40000",
+		// 	"/dv2": "http://10.60.41.83:40000",
+		// 	"/test": "http://10.60.41.83:8002",
+		// 	"/fab_monitoring_rev2": "http://10.60.41.83:40000",
+		// 	"/customer": "http://10.60.41.83:40000",
+		// 	"/band": "http://10.60.41.83:40000",
+		// 	"/api": "http://10.20.10.128",
+		// 	"/excel": "http://10.60.41.83:39999",
+		// 	"/csp":"http://10.60.41.83:40000"
+		// }
+	// },
 });
 
 
