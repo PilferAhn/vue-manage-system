@@ -199,6 +199,7 @@
               />
             </el-col>
           </el-row>
+
           <SelectImage @update-file="handleFileUpdate"></SelectImage>
         </div>
       </div>

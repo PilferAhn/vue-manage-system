@@ -122,18 +122,18 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
         /* webpackChunkName: "table" */ "../views/FAB/Admin/Admin.vue"
       ),
   },
-  {
-    path: "/fab/review-application2",
-    name: "ApplicationReviewList2",
-    meta: {
-      title: "투입 계획서 검토",
-      permiss: "11",
-    },
-    component: () =>
-      import(
-        /* webpackChunkName: "table" */ "../views/FAB/ApplicationList/rev2/application_review/AppReview.vue"
-      ),
-  },
+  // {
+  //   path: "/fab/review-application2",
+  //   name: "ApplicationReviewList2",
+  //   meta: {
+  //     title: "투입 계획서 검토",
+  //     permiss: "11",
+  //   },
+  //   component: () =>
+  //     import(
+  //       /* webpackChunkName: "table" */ "../views/FAB/ApplicationList/rev2/application_review/AppReview.vue"
+  //     ),
+  // },
   {
     path: "/fab/load_application2/:productName",
     name: "LoadApplication2",

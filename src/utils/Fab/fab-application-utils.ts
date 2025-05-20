@@ -430,7 +430,8 @@ export async function getAppRev2ByProductName(
       hs_type: true,
       lot_status : true,
       idt_layers: true,
-      order_by: "created_date",
+      is_active: true,
+      order_by: "created_date",      
       product_names: [productName],
     };
 
@@ -704,7 +705,20 @@ export async function sendingForm(application: FabRequestForm, type: string) {
         );
       }
 
-      const app = convertKeysToPEP8(application);
+      // Check BOM
+      if (
+        application.bom &&
+        application.bom.epoxy &&
+        (
+          !application.bom.epoxy.modelName || // "", null, undefined 모두 체크됨
+          application.bom.epoxy.code === undefined || application.bom.epoxy.code === null
+        )
+      ) {
+        application.bom.epoxy = undefined
+
+      }
+
+      const app = convertKeysToPEP8(application); 
       const response = await axios.post(url, app);
       // console.log(response.data);
       // console.log(convertPep8ToCamelCase2(response.data));

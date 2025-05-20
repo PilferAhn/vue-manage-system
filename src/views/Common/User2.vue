@@ -23,7 +23,7 @@
           ></el-input>
         </el-form-item>
       </el-col>
-      <!-- <el-col :span="6">
+      <el-col :span="6">
         <el-form-item label="Requester">
           <el-autocomplete
             v-model="props.fabApplication.requester.userName"
@@ -45,7 +45,7 @@
             style="width: 220px"
           ></el-input>
         </el-form-item>
-      </el-col> -->
+      </el-col>
     </el-row>
   </template>
   

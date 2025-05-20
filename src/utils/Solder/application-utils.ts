@@ -106,7 +106,7 @@ export function updateMeasurementDataByClient(
       } else if (meas.measurementType === "TCF") {
         meas.isMeasured = true;
         meas.quantity = 2;
-        meas.detail = "TEMP(-30 25 55 85)";
+        meas.detail = "TEMP(-30 0 25 55 85)";
       } else if (meas.measurementType === "비선형") {
         meas.isMeasured = true;
         meas.quantity = 2;

@@ -243,17 +243,18 @@
     () => props.fabApplication.idtProcessId,
     (newVal) => {
       
+      console.log(props.sawType.idtTypes)
       depositionOptions.value = generateIdtOptions2(
         props.sawType.idtTypes,
         newVal
       );
-  
+      console.log(depositionOptions.value)
       if (["HS", "NS"].includes(props.fabApplication.waferType)) {
         
         // machineOptions.value = generateMachineOptions(
         //   props.sawType.idtTypes,
         //   props.fabApplication.idtId.toString()
-        // );
+        // );        
 
       } else {
         // TC CASE

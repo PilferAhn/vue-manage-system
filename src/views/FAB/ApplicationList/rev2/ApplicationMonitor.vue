@@ -54,6 +54,7 @@ onMounted(async () => {
       idt_layers: false,
       lot_status: true,
       is_pending: false,
+      is_active: true,
       order_by: "created_date",
     };
 
@@ -80,14 +81,14 @@ onMounted(async () => {
 
     // apps.forEach((app) => app.createMesInfo())
 
-    Object.assign(cspApps, getAppByPackageType(apps, ["CSP"], ["WHC", "WTC"]));
+    Object.assign(cspApps, getAppByPackageType(apps, ["CSP"], ["WHC", "WTC", "개발전달"]));
     Object.assign(
       wlpApps,
       getAppByPackageType(apps, ["WLP", "BDMP"], ["WHC", "WTC"])
     );
     Object.assign(
       etcApps,
-      getAppByPackageType(apps, ["WLP", "BDMP", "CSP"], ["개발전달"])
+      getAppByPackageType(apps, ["WLP", "BDMP"], ["개발전달"])
     );
 
     console.log("Fetched app count:", apps.length);

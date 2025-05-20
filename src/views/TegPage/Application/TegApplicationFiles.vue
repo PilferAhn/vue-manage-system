@@ -4,7 +4,7 @@ export default {};
 
 <template>
   <el-table :data="props.applicationData.files">
-    <el-table-column label="File Name" prop="name">
+    <el-table-column label="CER Text File" prop="name">
       <template #default="scope">
         {{ scope.row.name }}{{ scope.row.ext }}
       </template>
@@ -39,7 +39,7 @@ export default {};
   >
     <el-icon class="el-icon--upload"><upload-filled /></el-icon>
     <div class="el-upload__text">
-      Drop file here or <em>click to upload</em>
+      Drop CER Text file here or <em>click to upload</em>
     </div>
     <template #tip>
       <div class="el-upload__tip">CER 0 관련 파일을 선택하세요</div>

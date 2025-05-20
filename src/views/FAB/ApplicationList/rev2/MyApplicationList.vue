@@ -159,7 +159,7 @@ onMounted(async () => {
     }
     else{
 
-      option["created_date_start"] = adjustDate(getTodayDate(), -20)      
+      option["created_date_start"] = adjustDate(getTodayDate(), -80)      
     }
 
 

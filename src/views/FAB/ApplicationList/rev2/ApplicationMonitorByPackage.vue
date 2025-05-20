@@ -70,13 +70,13 @@ export default {};
         :fixed="'left'"
         prop="productName"
         label="P/N"
-        width="150"
+        width="140"
         :align="'center'"
       />
 
       <el-table-column
         label="개발자"
-        width="120"
+        width="110"
         :align="'center'"
         :fixed="'left'"
       >
@@ -88,7 +88,7 @@ export default {};
 
       <el-table-column
         label="Wafer LOT ID"
-        width="130"
+        width="110"
         :align="'center'"
         fixed="left"
       >
@@ -147,7 +147,7 @@ export default {};
       <el-table-column
         label="FAB 현위치(투입시간)"
         :align="'center'"
-        width="270"
+        width="320"
       >
         <template #default="scope">
           <span
