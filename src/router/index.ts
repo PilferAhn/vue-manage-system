@@ -641,6 +641,30 @@ const routes: RouteRecordRaw[] = [
             /* webpackChunkName: "table" */ "../views/Solder/Application/CreateSolderApplication.vue"
           ),
       },
+      {
+        path: "/whc/create-cspzolip",
+        name: "CSPForm",
+        meta: {
+          title: "CSP 조립의뢰서작성",
+          permiss: "2",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "table" */ "../views/Csp/ApplicationPage/CSPRequestForm.vue"
+          ),
+      },
+      {
+        path: "/whc/cspzolip-list",
+        name: "CSPList",
+        meta: {
+          title: "CSP FORM LIST",
+          permiss: "2",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "table" */ "../views/Csp/ApplicationPage/CSPFormList.vue"
+          ),
+      },
       // {
       //   path: "/whc/solder-stock-management/stock-list",
       //   name: "Soler Stock List",

@@ -135,3 +135,9 @@ const options = ref({
 ## License
 
 [MIT](https://github.com/lin-xin/vue-manage-system/blob/master/LICENSE)
+
+
+
+<!-- 
+    이지은 프로 펩의뢰서 투입 후 SAP 에서 변경되는 정보가 뭐가 있는지
+ -->
