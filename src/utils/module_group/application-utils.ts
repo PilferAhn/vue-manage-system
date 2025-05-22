@@ -147,7 +147,12 @@ const appendFileGroup = async (
   file_type: string,
   app_id: number | string
 ) => {
-  const url = "http://10.29.11.59:8002/module/upload_files";
+  //ORIGINAL 배포시 수정
+  // const url = "http://10.29.11.59:8002/module/upload_files";
+
+  //TEST용
+  const url = "/module/upload_files";
+
   const formData = new FormData();
   if (fileList.length === 0) return;
 
@@ -180,7 +185,7 @@ export const sendingFiles = async (
   file_objs: ModuleFiles
 ) => {
   
-  if (app.naApp?.id && file_objs.stateFileList.length > 0) {
+  if (app.naApp?.id && file_objs.stateFileList?.length > 0) {
     await appendFileGroup(
       app.naApp.stateFile,
       file_objs.stateFileList,
@@ -188,8 +193,15 @@ export const sendingFiles = async (
       app.naApp.id
     );
   }
-
-  if (app.nfApp?.id && file_objs.matchingFileList.length > 0) {
+  if (app.naApp?.id && file_objs.s2pFileList?.length > 0) {
+    await appendFileGroup(
+      app.naApp.s2pFile,
+      file_objs.s2pFileList,
+      "s2p",
+      app.naApp.id
+    );
+  }
+  if (app.nfApp?.id && file_objs.matchingFileList?.length > 0) {
     await appendFileGroup(
       app.nfApp.matchingFile,
       file_objs.matchingFileList,
@@ -198,7 +210,7 @@ export const sendingFiles = async (
     );
   }
 
-  if (app.id && file_objs.referenceFileList.length > 0) {
+  if (app.id && file_objs.referenceFileList?.length > 0) {
     
     await appendFileGroup(
       app.referenceFile,
@@ -208,7 +220,7 @@ export const sendingFiles = async (
     );
   }
 
-  if (app.id && file_objs.evbAssembleFileList.length > 0) {
+  if (app.id && file_objs.evbAssembleFileList?.length > 0) {
     
     await appendFileGroup(
       app.evbAssembleManual,
@@ -218,11 +230,11 @@ export const sendingFiles = async (
     );
   }
 
-  if (app.id && file_objs.xmlFileList.length > 0) {
+  if (app.id && file_objs.xmlFileList?.length > 0) {
     await appendFileGroup(app.xmlFile, file_objs.xmlFileList, "xml", app.id);
   }
 
-  if (app.id && file_objs.configFileList.length > 0) {
+  if (app.id && file_objs.configFileList?.length > 0) {
     await appendFileGroup(
       app.configFile,
       file_objs.configFileList,
@@ -231,7 +243,7 @@ export const sendingFiles = async (
     );
   }
 
-  if (app.id && file_objs.referenceFileList.length > 0) {
+  if (app.id && file_objs.referenceFileList?.length > 0) {
     await appendFileGroup(
       app.rffeFile,
       file_objs.configFileList,
@@ -246,8 +258,10 @@ export const updateApplication = async (
   file_objs: ModuleFiles
 ) => {
   const convertedData = convertKeysToPEP8(app);
-  const url = "http://10.29.11.59:8002/module/update_app";
-
+  //ORIGINAL 배포시 수정
+  //const url = "http://10.29.11.59:8002/module/update_app";
+  //TEST용
+  const url = "/module/update_app";
   try {
     const response = await axios.post(url, convertedData);
 
@@ -283,11 +297,11 @@ export const submitApplication = async (
   const convertedData = convertKeysToPEP8(app);
   let url = "";
   if (submitType === "create") {
-    url = "http://10.29.11.59:8002/module/create_app";
+    url = "module/create_app";
   } else if (submitType === "update") {
-    url = "http://10.29.11.59:8002/module/update_app";
+    url = "/module/update_app";
   } else if (submitType === "delete") {
-    url = "http://10.29.11.59:8002/module/delete_app";
+    url = "/module/delete_app";
   } else {
     return false;
   }
@@ -303,7 +317,7 @@ export const submitApplication = async (
     if (response.status === 200) {      
 
       if(submitType === "update"){
-        const url = "module/get_app_by_id";
+        const url = "/module/get_app_by_id";
         
         const temp = await sendGetRequest(url, app.id.toString());
         Object.assign(app, convertPep8ToCamelCase2(temp));
@@ -341,13 +355,13 @@ export const checkFiles = (
 ) => {
   const fileName = ref<String>("");
 
-  if (fileObjs.configFileList.length == 0) {
+  if (fileObjs.configFileList?.length == 0) {
     fileName.value = "Config File";
   } 
-  else if(application.naApp !== null && application.naApp?.na === "rohde" && fileObjs.xmlFileList.length == 0){
+  else if(application.naApp !== null && application.naApp?.na === "rohde" && fileObjs.xmlFileList?.length == 0){
     fileName.value = "XML File";
   }
-  else if (application.naApp !== null && fileObjs.stateFileList.length == 0) {
+  else if (application.naApp !== null && fileObjs.stateFileList?.length == 0) {
     fileName.value = "State File";
   }
 

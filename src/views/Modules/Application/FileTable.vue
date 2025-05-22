@@ -57,10 +57,10 @@ const handleButtons = async (
   formData.append("file_type", fileType);
 
   if (buttonType === "download") {
-    const url = "http://10.29.11.59:8002/module/get_file";
+    const url = "/module/get_file";
     downloadSolderApplication(url , formData);
   } else if (buttonType === "delete") {
-    const url = "http://10.29.11.59:8002/module/delete_file";
+    const url = "/module/delete_file";
     const response = await sendPostRequest(url, formData);
     removeFileById(app.uId);
   }

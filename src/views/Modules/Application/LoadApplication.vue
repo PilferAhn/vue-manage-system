@@ -27,7 +27,7 @@ watch(
   () => route.params.id, // Watching route parameter change
   async (id) => {
     if (id) {
-      const url = "module/get_app_by_id";
+      const url = "/module/get_app_by_id";
 
       const tempApp = await sendGetRequest(url, id as any);
 

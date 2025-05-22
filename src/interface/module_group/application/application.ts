@@ -9,6 +9,7 @@ export interface ModuleFiles {
   configFileList: UploadFile[];
   rffeFileList: UploadFile[];
   xmlFileList: UploadFile[];  
+  s2pFileList: UploadFile[];
 }
 
 export interface ModuleMeasurementApp {
@@ -60,6 +61,7 @@ export interface NaApplication {
   sParaType?: string;
   note?: string;
   stateFile?: ApplicationFile[];
+  s2pFile?: ApplicationFile[];
 }
 
 export interface NfApplication {

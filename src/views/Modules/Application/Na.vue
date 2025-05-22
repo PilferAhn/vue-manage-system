@@ -59,6 +59,27 @@ export default {};
         </el-form-item>
       </el-col>
     </el-row>
+    <el-col :span="24" v-if="props.application.naApp.deMethod === 'De-Embedding'">
+  <file-table
+    :app-file="props.application.naApp.s2pFile"
+    file_type="s2p"
+  ></file-table>
+
+  <el-upload
+    drag
+    :auto-upload="false"
+    :multiple="false"
+    :on-remove="handleS2pFileRemove"
+    :on-change="handleS2pFileChange"
+    :show-file-list="true"
+    :file-list="props.fileObjList.s2pFileList"
+  >
+    <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+    <div class="el-upload__text">
+      <em>S2P 파일 선택</em>
+    </div>
+  </el-upload>
+</el-col>
     <file-table :app-file="props.application.naApp.stateFile" file_type="state"></file-table>
     <el-upload
       drag
@@ -109,6 +130,16 @@ watch(
     }
   }
 );
+
+// S2P 파일 선택 핸들러
+const handleS2pFileChange: UploadProps["onChange"] = (file) => {
+  props.fileObjList.s2pFileList = [file];
+};
+
+// S2P 파일 파일 삭제 핸들러
+const handleS2pFileRemove: UploadProps["onRemove"] = () => {
+  props.fileObjList.s2pFileList = [];
+};
 
 // Reference 파일 선택 핸들러
 const handleStateFileChange: UploadProps["onChange"] = (file) => {
