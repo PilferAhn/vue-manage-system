@@ -45,6 +45,9 @@ const fileObjList = ref<ModuleFiles>({
   configFileList : [],
   rffeFileList : [],
   xmlFileList : [],
+  s2pFileList: [],
+  naSpecialFileList: [],
+  nfSpecialFileList: []
 })
 
 const formRef = ref<FormInstance>();

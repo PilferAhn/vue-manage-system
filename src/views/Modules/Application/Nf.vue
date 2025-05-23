@@ -56,6 +56,18 @@
       placeholder=""
       row-cnt="3"
     />
+     <file-table :app-file="props.application.nfApp.nfSpecialFile" file_type="nf_special"></file-table>
+    <el-upload
+      drag
+      :auto-upload="false"
+      :multiple="false"
+      :on-remove="handleSpecialFileRemove"
+      :on-change="handleSpecialFileChange"
+      :show-file-list="true"
+      :file-list="props.fileObjList.nfSpecialFileList"
+    >
+  <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+      <div class="el-upload__text"><em>NF 특이사항 이미지 File 선택</em></div></el-upload>
   </div>
 </template>
 
@@ -98,6 +110,16 @@ const handleMatchingFileChange: UploadProps["onChange"] = (file) => {
 // EVB 조립 메뉴얼 파일 삭제 핸들러
 const handleMatchingFileRemove: UploadProps["onRemove"] = () => {
   props.fileObjList.matchingFileList = [];
+};
+
+//특이사항 파일 선택 핸들러
+const handleSpecialFileChange: UploadProps["onChange"] = (file) => {
+  props.fileObjList.nfSpecialFileList = [file]
+};
+
+//특이사항 조립 메뉴얼 파일 삭제 핸들러
+const handleSpecialFileRemove: UploadProps["onRemove"] = () => {
+  props.fileObjList.nfSpecialFileList = []
 };
 </script>
 

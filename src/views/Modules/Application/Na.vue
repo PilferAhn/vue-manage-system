@@ -100,6 +100,18 @@ export default {};
       placeholder=""
       row-cnt="3"
     />
+    <file-table :app-file="props.application.naApp.naSpecialFile" file_type="na_special"></file-table>
+    <el-upload
+      drag
+      :auto-upload="false"
+      :multiple="false"
+      :on-remove="handleSpecialFileRemove"
+      :on-change="handleSpecialFileChange"
+      :show-file-list="true"
+      :file-list="props.fileObjList.naSpecialFileList"
+    >
+  <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+      <div class="el-upload__text"><em>NA 특이사항 이미지 File 선택</em></div></el-upload>
   </div>
 </template>
 
@@ -150,7 +162,18 @@ const handleStateFileChange: UploadProps["onChange"] = (file) => {
 const handleStateFileRemove: UploadProps["onRemove"] = () => {
   props.fileObjList.stateFileList = []
 };
+
+//특이사항 파일 선택 핸들러
+const handleSpecialFileChange: UploadProps["onChange"] = (file) => {
+  props.fileObjList.naSpecialFileList = [file]
+};
+
+//특이사항 조립 메뉴얼 파일 삭제 핸들러
+const handleSpecialFileRemove: UploadProps["onRemove"] = () => {
+  props.fileObjList.naSpecialFileList = []
+};
 </script>
+
 
 <style>
 .el-upload__text {

@@ -56,6 +56,8 @@ const handleButtons = async (
   formData.append("u_id", app.uId);
   formData.append("file_type", fileType);
 
+  console.log(`다운로드 요청 데이터 u.id: ${formData.get("u_id")}, file_type: ${formData.get("file_type")}`);
+
   if (buttonType === "download") {
     const url = "/module/get_file";
     downloadSolderApplication(url , formData);
@@ -71,6 +73,7 @@ async function downloadSolderApplication(
   formData: FormData
 ) {
   try {
+    
     const response = await axios({
       url: target_url,
       method: "POST",

@@ -10,6 +10,8 @@ export interface ModuleFiles {
   rffeFileList: UploadFile[];
   xmlFileList: UploadFile[];  
   s2pFileList: UploadFile[];
+  naSpecialFileList: UploadFile[];
+  nfSpecialFileList: UploadFile[];
 }
 
 export interface ModuleMeasurementApp {
@@ -62,6 +64,7 @@ export interface NaApplication {
   note?: string;
   stateFile?: ApplicationFile[];
   s2pFile?: ApplicationFile[];
+  naSpecialFile?: ApplicationFile[];
 }
 
 export interface NfApplication {
@@ -71,4 +74,5 @@ export interface NfApplication {
   isRealMatching?: boolean;
   matchingFile?: ApplicationFile[];
   note?: string;
+  nfSpecialFile?: ApplicationFile[];
 }
