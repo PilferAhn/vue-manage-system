@@ -12,6 +12,7 @@ export interface ModuleFiles {
   s2pFileList: UploadFile[];
   naSpecialFileList: UploadFile[];
   nfSpecialFileList: UploadFile[];
+  offsetFileList: UploadFile[];
 }
 
 export interface ModuleMeasurementApp {
@@ -75,4 +76,5 @@ export interface NfApplication {
   matchingFile?: ApplicationFile[];
   note?: string;
   nfSpecialFile?: ApplicationFile[];
+  offsetFile?: ApplicationFile[];
 }

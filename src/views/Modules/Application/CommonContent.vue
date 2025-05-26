@@ -96,7 +96,7 @@
               v-model="props.application.mold"
               label="MOLD"
               :prop="'mold'"
-              :rules="[]"
+              :rules="[{required: true,}]"
               :need-bold="false"
               :disable="false"
               :placeholder="''"

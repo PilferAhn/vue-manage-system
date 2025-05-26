@@ -209,6 +209,14 @@ export const sendingFiles = async (
       app.naApp.id
     );
   }
+  if (app.nfApp?.id && file_objs.offsetFileList?.length > 0) {
+    await appendFileGroup(
+      app.nfApp.offsetFile,
+      file_objs.offsetFileList,
+      "offset",
+      app.nfApp.id
+    );
+  }
   if (app.nfApp?.id && file_objs.matchingFileList?.length > 0) {
     await appendFileGroup(
       app.nfApp.matchingFile,

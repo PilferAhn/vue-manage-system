@@ -59,7 +59,7 @@ export default {};
         </el-form-item>
       </el-col>
     </el-row>
-    <el-col :span="24" v-if="props.application.naApp.deMethod === 'De-Embedding'">
+    <el-col :span="24" v-if="props.application.naApp?.deMethod === 'De-Embedding'">
   <file-table
     :app-file="props.application.naApp.s2pFile"
     file_type="s2p"
@@ -80,7 +80,7 @@ export default {};
     </div>
   </el-upload>
 </el-col>
-    <file-table :app-file="props.application.naApp.stateFile" file_type="state"></file-table>
+    <file-table :app-file="props.application.naApp?.stateFile" file_type="state"></file-table>
     <el-upload
       drag
       :auto-upload="false"
@@ -100,7 +100,7 @@ export default {};
       placeholder=""
       row-cnt="3"
     />
-    <file-table :app-file="props.application.naApp.naSpecialFile" file_type="na_special"></file-table>
+    <file-table :app-file="props.application.naApp?.naSpecialFile" file_type="na_special"></file-table>
     <el-upload
       drag
       :auto-upload="false"

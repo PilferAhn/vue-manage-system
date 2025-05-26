@@ -34,8 +34,23 @@
     <el-row :gutter="20">
       <el-col :span="12"> </el-col>
       <el-col :span="12"> </el-col>
-    </el-row>    
-    <file-table :app-file="props.application.nfApp.matchingFile" file_type="matching"></file-table>
+    </el-row>  
+    <el-col :span="24" v-if="props.application.nfApp.deMethod === 'Offset Table'">
+    <file-table :app-file="props.application.nfApp.offsetFile" file_type="offset"></file-table>
+    <el-upload
+      drag
+      :auto-upload="false"
+      :multiple="false"
+      :on-remove="handleOffsetFileRemove"
+      :on-change="handleOffsetFileChange"
+      :show-file-list="true"
+      :file-list="props.fileObjList.offsetFileList"
+    >
+      <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+      <div class="el-upload__text"><em>Offset 테이블 파일 선택</em></div>
+    </el-upload>  
+    </el-col>
+    <file-table :app-file="props.application.nfApp?.matchingFile" file_type="matching"></file-table>
     <el-upload
       v-if="props.application.nfApp.isRealMatching"
       drag
@@ -56,7 +71,7 @@
       placeholder=""
       row-cnt="3"
     />
-     <file-table :app-file="props.application.nfApp.nfSpecialFile" file_type="nf_special"></file-table>
+     <file-table :app-file="props.application.nfApp?.nfSpecialFile" file_type="nf_special"></file-table>
     <el-upload
       drag
       :auto-upload="false"
@@ -112,12 +127,22 @@ const handleMatchingFileRemove: UploadProps["onRemove"] = () => {
   props.fileObjList.matchingFileList = [];
 };
 
+//OFFSET TABLE 파일 선택 핸들러
+const handleOffsetFileChange: UploadProps["onChange"] = (file) => {
+  props.fileObjList.offsetFileList = [file]
+};
+
+//OFFSET TABLE 파일 삭제 핸들러
+const handleOffsetFileRemove: UploadProps["onRemove"] = () => {
+  props.fileObjList.offsetFileList = []
+};
+
 //특이사항 파일 선택 핸들러
 const handleSpecialFileChange: UploadProps["onChange"] = (file) => {
   props.fileObjList.nfSpecialFileList = [file]
 };
 
-//특이사항 조립 메뉴얼 파일 삭제 핸들러
+//특이사항 파일 삭제 핸들러
 const handleSpecialFileRemove: UploadProps["onRemove"] = () => {
   props.fileObjList.nfSpecialFileList = []
 };
