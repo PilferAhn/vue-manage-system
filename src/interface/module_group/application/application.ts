@@ -25,6 +25,7 @@ export interface ModuleMeasurementApp {
   mold?: string;
   wantedFinishedDate?: string;
   lotId?: string;
+  deliveryMethod?: string;
   dateOfDeliveryDate?: string;
   dateOfExpectedFinished?: string;
   referenceChar?: string;
