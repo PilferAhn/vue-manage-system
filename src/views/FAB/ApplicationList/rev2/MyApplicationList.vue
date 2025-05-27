@@ -79,8 +79,10 @@
         <template #default="scope">{{ scope.row.wafer.sawTypeId }}</template>
       </el-table-column>
       <el-table-column prop="band" label="Band" :align="'center'" width="100" show-overflow-tooltip>
-      </el-table-column>
+      </el-table-column> 
       <el-table-column label="출하" prop="destinationId" :align="'center'">
+      </el-table-column>
+      <el-table-column label="생성일" prop="createdDate" width="100" :align="'center'" :formatter="callFormatDate">
       </el-table-column>
       <el-table-column
         label="Action"
@@ -128,6 +130,7 @@ import { getUserId } from "../../../../utils/account-utils";
 import { userInfo } from "os";
 import { get } from "http";
 import { adjustDate, getTodayDate, getTodayDatetime } from "../../../../utils/date-utils";
+import { formatDate } from "../../Common/Application";
 
 const applications = reactive<FabRequestForm[]>([]);
 const isLoad = ref<boolean>(false);
@@ -173,6 +176,10 @@ onMounted(async () => {
     console.error("Error fetching application list:", error);
   }
 });
+
+function callFormatDate(row, column, cellValue) {
+  return formatDate(cellValue);
+}
 
 function handleButton(action: string, application: FabRequestForm) {
   if (action === "view") {
