@@ -58,7 +58,7 @@
           <el-col :span="12">
             <inputText
               v-model="props.application.smtHistory"
-              label="SMT 이력"
+              label="조립차수"
               prop="smtHistory"
               placeholder=""
             />
@@ -165,6 +165,7 @@
           :application="props.application"
           :applicationType="props.applicationType"
           :file-obj-list="props.fileObjList"
+           @updatePortextensionLoss="props.application.naApp.portExtensionLoss = $event"
         ></NaSection>
 
         <NfSection          

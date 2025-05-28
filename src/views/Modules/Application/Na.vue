@@ -143,6 +143,16 @@ watch(
   }
 );
 
+const emit = defineEmits(['updatePortextensionLoss']);
+watch(
+  () => props.application.naApp?.deMethod,
+  (newVal) => {
+    if (newVal) {
+      props.application.naApp.portExtensionLoss = (newVal !== 'De-Embedding')
+    }
+  }
+);
+
 // S2P 파일 선택 핸들러
 const handleS2pFileChange: UploadProps["onChange"] = (file) => {
   props.fileObjList.s2pFileList = [file];

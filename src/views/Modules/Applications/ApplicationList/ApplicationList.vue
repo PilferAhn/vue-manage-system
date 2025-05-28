@@ -17,7 +17,7 @@
         </template>
       </el-table-column> -->
       <el-table-column
-        label="SMT 이력"
+        label="조립차수"
         prop="smtHistory"
         :align="'center'"
       ></el-table-column>
