@@ -25,6 +25,7 @@ export function initApplication() {
     requesterId: "",
     smtHistory: "",
     mold: "",
+    deliveryMethod: null,
     dateOfDeliveryDate: null,
     wantedFinishedDate: "",
     lotId: null,
@@ -64,6 +65,7 @@ export function initApplication2() {
     requesterId: userName,
     smtHistory: null,
     mold: "",
+    deliveryMethod: null,
     dateOfDeliveryDate: null,
     dateOfExpectedFinished: null,
     wantedFinishedDate: null,
@@ -201,6 +203,22 @@ export const sendingFiles = async (
       app.naApp.id
     );
   }
+  if (app.naApp?.id && file_objs.naSpecialFileList?.length > 0) {
+    await appendFileGroup(
+      app.naApp.naSpecialFile,
+      file_objs.naSpecialFileList,
+      "na_special",
+      app.naApp.id
+    );
+  }
+  if (app.nfApp?.id && file_objs.offsetFileList?.length > 0) {
+    await appendFileGroup(
+      app.nfApp.offsetFile,
+      file_objs.offsetFileList,
+      "offset",
+      app.nfApp.id
+    );
+  }
   if (app.nfApp?.id && file_objs.matchingFileList?.length > 0) {
     await appendFileGroup(
       app.nfApp.matchingFile,
@@ -209,7 +227,14 @@ export const sendingFiles = async (
       app.nfApp.id
     );
   }
-
+  if (app.nfApp?.id && file_objs.nfSpecialFileList?.length > 0) {
+    await appendFileGroup(
+      app.nfApp.nfSpecialFile,
+      file_objs.nfSpecialFileList,
+      "nf_special",
+      app.nfApp.id
+    );
+  }
   if (app.id && file_objs.referenceFileList?.length > 0) {
     
     await appendFileGroup(

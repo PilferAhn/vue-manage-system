@@ -16,6 +16,8 @@
           <el-col :span="12">
             <OptionNumber
               v-model="props.application.quantity"
+
+
               label="Quantity"
               prop="quantity"
               :disable="false"
@@ -56,7 +58,7 @@
           <el-col :span="12">
             <inputText
               v-model="props.application.smtHistory"
-              label="SMT 이력"
+              label="조립차수"
               prop="smtHistory"
               placeholder=""
             />
@@ -96,7 +98,7 @@
               v-model="props.application.mold"
               label="MOLD"
               :prop="'mold'"
-              :rules="[]"
+              :rules="[{required: true,}]"
               :need-bold="false"
               :disable="false"
               :placeholder="''"
@@ -115,7 +117,16 @@
               :need-bold="false"
             />
           </el-col>
-          <el-col :span="12"> </el-col>
+          <el-col :span="12">
+            <input-text
+              v-model="props.application.deliveryMethod"
+              label="샘플 전달방법"
+              prop="deliveryMethod"
+              :disable="false"
+              placeholder=""
+              :need-bold="false"
+            />
+          </el-col>
         </el-row>
 
 
@@ -154,6 +165,7 @@
           :application="props.application"
           :applicationType="props.applicationType"
           :file-obj-list="props.fileObjList"
+           @updatePortextensionLoss="props.application.naApp.portExtensionLoss = $event"
         ></NaSection>
 
         <NfSection          

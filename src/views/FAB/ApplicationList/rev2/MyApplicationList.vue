@@ -79,7 +79,7 @@
         <template #default="scope">{{ scope.row.wafer.sawTypeId }}</template>
       </el-table-column>
       <el-table-column prop="band" label="Band" :align="'center'" width="100" show-overflow-tooltip>
-      </el-table-column>
+      </el-table-column> 
       <el-table-column label="출하" prop="destinationId" :align="'center'">
       </el-table-column>
       <el-table-column label="생성일" prop="createdDate" width="100" :align="'center'" :formatter="callFormatDate">

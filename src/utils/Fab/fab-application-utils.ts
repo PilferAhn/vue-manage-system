@@ -1014,25 +1014,25 @@ export function addWorkdays(startDate: Date, numDays: number): Date {
   const date = new Date(startDate);
   let daysAdded = 0;
 
-
+  const holidays = new Set(holidaysList);
 
   while (daysAdded < numDays) {
     date.setDate(date.getDate() + 1); // 하루를 더함
     // 주말이 아니면 daysAdded를 증가시킴
-    if (date.getDay() !== 0 && date.getDay() !== 6) {
+    if (date.getDay() !== 0 && date.getDay() !== 6 && !isHoliday(date, holidays)) {
       daysAdded++;
     }
   }
 
-  const holidays = new Set(holidaysList); // 공휴일을 Set으로 변환하여 빠른 검색 가능
-  let tempCounter = 0
+  // const holidays = new Set(holidaysList); // 공휴일을 Set으로 변환하여 빠른 검색 가능
+  // let tempCounter = 0
   
-  while (isHoliday(new Date(date.getTime() + 9 * 60 * 60 * 1000), holidays)) {
-    tempCounter += 1;
-    date.setDate(date.getDate() + 1);
-    if (tempCounter >= 20) {
-      break;
-    }    
-  }
+  // while (isHoliday(new Date(date.getTime() + 9 * 60 * 60 * 1000), holidays)) {
+  //   tempCounter += 1;
+  //   date.setDate(date.getDate() + 1);
+  //   if (tempCounter >= 20) {
+  //     break;
+  //   }    
+  // }
   return date;
 }
