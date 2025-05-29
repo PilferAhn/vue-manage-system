@@ -82,6 +82,8 @@
       </el-table-column>
       <el-table-column label="출하" prop="destinationId" :align="'center'">
       </el-table-column>
+      <el-table-column label="생성일" prop="createdDate" width="100" :align="'center'" :formatter="callFormatDate">
+      </el-table-column>
       <el-table-column
         label="Action"
         :align="'center'"
@@ -128,6 +130,7 @@ import { getUserId } from "../../../../utils/account-utils";
 import { userInfo } from "os";
 import { get } from "http";
 import { adjustDate, getTodayDate, getTodayDatetime } from "../../../../utils/date-utils";
+import { formatDate } from "../../Common/Application";
 
 const applications = reactive<FabRequestForm[]>([]);
 const isLoad = ref<boolean>(false);
@@ -159,7 +162,7 @@ onMounted(async () => {
     }
     else{
 
-      option["created_date_start"] = adjustDate(getTodayDate(), -80)      
+      option["created_date_start"] = adjustDate(getTodayDate(), -180)      
     }
 
 
@@ -173,6 +176,10 @@ onMounted(async () => {
     console.error("Error fetching application list:", error);
   }
 });
+
+function callFormatDate(row, column, cellValue) {
+  return formatDate(cellValue);
+}
 
 function handleButton(action: string, application: FabRequestForm) {
   if (action === "view") {
