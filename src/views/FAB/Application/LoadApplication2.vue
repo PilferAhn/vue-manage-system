@@ -19,7 +19,13 @@
   import type {
     FabRequestForm,
     SawType,
-    band,
+    Layer,
+    Epoxy,
+    IdtType,
+    TcType,
+    PstType,
+    passivationType,
+    seedType
   } from "../../../interface/fab-application-rev2";
   import {
     convertKeysToCamelCase,
@@ -32,59 +38,98 @@
   import { defineSawTypeByWaferType } from "../../../utils/Fab/fab_application-wafer-utils";
   import { initPhoto } from "../../../utils/Fab/photo-utils";
   import { serverUrl } from "../../../utils/Fab/fab-application-utils";
-  const route = useRoute(); // Access the route
-  const app = reactive<FabRequestForm>({});
-  const isLoad = ref<boolean>(false);
   
+  const isLoad = ref<boolean>(false);
+  const route = useRoute(); // Access the route
+  
+  const app = reactive<FabRequestForm>({});
   const sawTypes = reactive<SawType[]>([]);
   const sawType = reactive<SawType>({});
   
   // Function to fetch the application data from the server
-
+  
   const fetchApplication = async (productName: any) => {
     try {
-      const url = serverUrl + "/fab_monitoring_rev2/get_fab_request";
-      const formData = new FormData();
-      formData.append("product_name", productName);
+      // Get form data
+      let appData: FabRequestForm = {};
+      {
+        const url = serverUrl + "/fab_monitoring_rev2/get_fab_request";
+        const formData = new FormData();
+        formData.append("product_name", productName);
+        const response = await axios.post(url, formData);
+        appData  = convertPep8ToCamelCase2(response.data) as FabRequestForm;
+      }
+            
+      // Get SawType
+      let sawTypesData:SawType[] = []
+      {
+        const response1 = await axios.get(
+          serverUrl + "/fab_monitoring_rev2/get_saw_types_list");
+        const rawData = response1.data;
+        sawTypesData = convertPep8ToCamelCase2(rawData) as SawType[];
+      }
+      const sawTypeData: SawType = defineSawTypeByWaferType(appData.wafer.sawTypeId, sawTypesData)
+
+      // Setup Origilal productName
+      appData.currentProductName = appData.productName
+
+      // Restore Other properties
+      appData.photo = appData.photo ?? initPhoto();            
+      appData.waferType = appData.wafer.sawTypeId;
+      appData.isDualIdt = appData.idt2Id != null;
+
   
-      const response = await axios.post(url, formData);
-      const convertedData = convertPep8ToCamelCase2(response.data);
+      if(appData.bom  != null){
+        appData.isNewBom = true
+        appData.bom.epoxy ??= { modelName: "" } as Epoxy;
+      }
+      
+      if(appData.bom2 != null){
+        appData.isNewBom2 = true
+        appData.bom2.epoxy ??= { modelName: "" } as Epoxy;
+      }
+
+      // Fix layers
+      const fixLayers = (targetId: any, targetLayers: Layer[], type: any[], searchFucnc :CallableFunction) => {
+        console.log("Target Id: ", targetId);
+        console.log("Target Layers: ", targetLayers)
+        console.log("Types: ", type);
+        
+        if (targetId != null) {
+          const layers: Layer[] = type.find(
+            (item) => searchFucnc(item, targetId)
+          )?.layers ?? [];
+          
+          // console.log("CallableFunction: ", toString(CallableFunction));
+          
+          if (layers.length !== targetLayers.length) {
+            targetLayers.splice(0, targetLayers.length, ...layers);
+          }
+        }
+      }
+
+      // console.log("idtLayers");
+      fixLayers(appData.idtId, appData.idtLayers, sawTypeData.idtTypes, (type: IdtType, id: any) => type.idtId === id);
+      // console.log("idt2Layers");
+      fixLayers(appData.idt2Id, appData.idt2Layers, sawTypeData.idtTypes, (type: IdtType, id: any) => type.idtId === id);
+      // console.log("tcLayers");
+      fixLayers(appData.tcId, appData.tcLayers, sawTypeData.tcTypes, (type: TcType, id: any) => type.tcId === id);
+      // console.log("pstLayers");
+      fixLayers(appData.pstId, appData.pstLayers, sawTypeData.pstTypes, (type: PstType, id: any) => type.pstId === id);
+      // console.log("seedLayers");
+      fixLayers(appData.seedId, appData.seedLayers, sawTypeData.seedTypes, (type: seedType, id: any) => type.seedId === id);
+      // console.log("passivationLayers");
+      fixLayers(appData.passivationId, appData.passivationLayers, sawTypeData.passivationTypes, (type: passivationType, id: any) => type.passivationId === id);
+
       
       // Assign the converted data to processData
-      Object.assign(app, convertedData);
-      
-      app.currentProductName = app.productName
-      if(app.photo === null){
-        app.photo = initPhoto()
-      }
-  
-      if(app.idt2Id !== null){
-        app.isDualIdt = true  
-      }
-  
-      if(app.bom !== null){
-        app.isNewBom = true
-      }
-      
-      if(app.bom2 !== null){
-        app.isNewBom2 = true
-      }
-  
-      app.waferType = app.wafer.sawTypeId;
-    
-      const response1 = await axios.get(
-        serverUrl + "/fab_monitoring_rev2/get_saw_types_list"
-      );
-      const rawData = response1.data;
-      
-      Object.assign(sawTypes, convertPep8ToCamelCase2(rawData));
-      Object.assign(
-        sawType,
-        defineSawTypeByWaferType(app.wafer.sawTypeId, sawTypes)
-      );        
-  
+      Object.assign(app, appData);
+      Object.assign(sawTypes, sawTypesData);
+      Object.assign(sawType, sawTypeData);
+
       isLoad.value = true;
-    } catch (error) {
+    } 
+    catch (error) {
       console.error("Error fetching application:", error);
     }
   };

@@ -23,7 +23,7 @@
         </el-table-column> -->
       <el-table-column label="Rank">
         <template #default="scope">
-          <el-select v-model="scope.row.thickness">
+          <el-select v-model="scope.row.thickness" clearable>
             <el-option
               v-for="opt in passRankOptions"
               :key="opt.key"

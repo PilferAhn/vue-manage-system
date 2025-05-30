@@ -130,14 +130,20 @@
       if (props.fabApplication.waferType === "NS") {
         props.fabApplication.pstLayers = [];
       } else {
-        layers.value = getPstLayerOptions(newVal, props.sawType.pstTypes);
-  
-        if(props.fabApplication.waferType === "TC" && layers.value.length == 3){
-          layers.value[0].thickness = 5
-          layers.value[2].thickness = 5
+        if (newVal === undefined || newVal === null) {
+          layers.value = [];
+          props.fabApplication.pstLayers = [];
+          
+        } else {
+          layers.value = getPstLayerOptions(newVal, props.sawType.pstTypes);
+    
+          if(props.fabApplication.waferType === "TC" && layers.value.length == 3){
+            layers.value[0].thickness = 5
+            layers.value[2].thickness = 5
+          }
+    
+          props.fabApplication.pstLayers = layers.value;
         }
-  
-        props.fabApplication.pstLayers = layers.value;      
         // updateTable()
       }
     }
