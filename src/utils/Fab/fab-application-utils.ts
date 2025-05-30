@@ -658,6 +658,89 @@ export function checkPassivation(application: FabRequestForm) {
   }
 }
 
+export async function partialUpdateForm(application: FabRequestForm) : Promise<FabRequestForm> {
+  const url = serverUrl +
+        "/fab_monitoring_rev2/update_fab_request_partial/" +
+        application.productName;
+
+  try {
+    if (application.wantedFabFinishDate !== undefined) {
+      application.wantedFabFinishDate = formatDateTime(
+        application.wantedFabFinishDate
+      );
+    }
+    if (application.wantedFabStartDate !== undefined) {
+      application.wantedFabStartDate = formatDateTime(
+        application.wantedFabStartDate
+      );
+    }
+
+    if (application.idtMaskArrivalDate !== undefined) {
+      application.idtMaskArrivalDate = formatDateTime(
+        application.idtMaskArrivalDate
+      );
+    }
+    if (application.pstMaskArrivalDate !== undefined) {
+      application.pstMaskArrivalDate = formatDateTime(
+        application.pstMaskArrivalDate
+      );
+    }
+
+    const app = convertKeysToPEP8(application); 
+      const response = await axios.post(url, app);
+      // console.log(response.data);
+      // console.log(convertPep8ToCamelCase2(response.data));
+      
+
+      // 성공 알림
+      ElNotification({
+        title: "성공",
+        message: "의뢰서가 성공적으로 업데이트되었습니다.",
+        type: "success",
+      });
+
+
+    return  convertPep8ToCamelCase2(response.data) as FabRequestForm;
+
+  } catch (error) {
+    if (error.response) {
+      console.log(error);
+      const status = error.response.status;
+      const errorMessage =
+        error.response.data?.detail || "알 수 없는 서버 에러가 발생했습니다.";
+
+      // 사용자에게 알림
+      ElNotification({
+        title: `에러 (HTTP ${status})`,
+        message: errorMessage,
+        type: "error",
+      });
+
+      console.error("상세 에러 데이터:", error.response.data);
+    } else if (error.request) {
+      // 서버에 요청이 도달하지 않음
+      ElNotification({
+        title: "네트워크 오류",
+        message:
+          "서버로부터 응답을 받을 수 없습니다. 네트워크 상태를 확인하세요.",
+        type: "error",
+      });
+
+      console.error("요청 객체:", error.request);
+    } else {
+      // 설정 중 에러
+      ElNotification({
+        title: "요청 설정 에러",
+        message: `요청 처리 중 문제가 발생했습니다: ${error.message}`,
+        type: "error",
+      });
+
+      console.error("에러 메시지:", error.message);
+    }
+  }
+}
+
+
 export async function sendingForm(application: FabRequestForm, type: string) {
   if (validatingForm(application)) {
     let url = ""; // 조건문 외부에서 선언

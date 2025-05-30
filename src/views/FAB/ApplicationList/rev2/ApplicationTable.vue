@@ -487,7 +487,7 @@ import { convertKeysToPEP8 } from "../../../../utils/key-converter";
 import { getRole, getUserId } from "../../../../utils/account-utils";
 import {
   getApplicationListByDict,
-  sendingForm,
+  partialUpdateForm,
 } from "../../../../utils/Fab/fab-application-utils";
 import type { FabRequestForm } from "../../../../interface/fab-application-rev2";
 import { ElMessageBox, ElMessage } from "element-plus";
@@ -543,8 +543,20 @@ const emit = defineEmits<{
   (e: "update:processData", updatedData: FabRequest[]): void;
 }>();
 
-async function handleUpdate(row: FabRequest) {  
-  await sendingForm(row, "partial update");
+async function handleUpdate(row: FabRequest) {
+  const partOfFabForm: FabRequestForm = {
+    productName: row.productName,
+    priorityId : row.priorityId,
+    quantity : row.quantity,
+    code : row.code,
+    weekNumber : row.weekNumber,
+    wantedFabStartDate : row.wantedFabStartDate,
+    wantedFabFinishDate : row.wantedFabFinishDate,
+    isNeedEngineerCall : row.isNeedEngineerCall,
+    idtMaskArrivalDate : row.idtMaskArrivalDate,
+    pstMaskArrivalDate : row.pstMaskArrivalDate
+  };
+  Object.assign(row, await partialUpdateForm(partOfFabForm)); 
 }
 
 async function confirmAction(
