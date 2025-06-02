@@ -38,6 +38,7 @@
   import { defineSawTypeByWaferType } from "../../../utils/Fab/fab_application-wafer-utils";
   import { initPhoto } from "../../../utils/Fab/photo-utils";
   import { serverUrl } from "../../../utils/Fab/fab-application-utils";
+  import { initBom } from "../../../utils/Fab/bom-utils";
   
   const isLoad = ref<boolean>(false);
   const route = useRoute(); // Access the route
@@ -78,7 +79,11 @@
       appData.waferType = appData.wafer.sawTypeId;
       appData.isDualIdt = appData.idt2Id != null;
 
-  
+      if(appData.packageId === "CSP" && !appData.bom) {
+        appData.bom = initBom();
+        appData.bomMainCode = "";
+        appData.isNewBom = true;
+      }
       if(appData.bom  != null){
         appData.isNewBom = true
         appData.bom.epoxy ??= { modelName: "" } as Epoxy;
@@ -91,9 +96,9 @@
 
       // Fix layers
       const fixLayers = (targetId: any, targetLayers: Layer[], type: any[], searchFucnc :CallableFunction) => {
-        console.log("Target Id: ", targetId);
-        console.log("Target Layers: ", targetLayers)
-        console.log("Types: ", type);
+        // console.log("Target Id: ", targetId);
+        // console.log("Target Layers: ", targetLayers)
+        // console.log("Types: ", type);
         
         if (targetId != null) {
           const layers: Layer[] = type.find(
