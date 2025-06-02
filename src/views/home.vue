@@ -4,7 +4,7 @@
 	<div class="content-box" :class="{ 'content-collapse': sidebar.collapse }">
 		<v-tags></v-tags>
 		<div class="content">
-			<router-view v-slot="{ Component }">
+			<router-view :key="$route.params.productName" v-slot="{ Component }">
 				<transition name="move" mode="out-in">
 					<keep-alive :include="tags.nameList">
 						<component :is="Component"></component>
