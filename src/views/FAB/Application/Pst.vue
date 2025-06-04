@@ -137,7 +137,7 @@
         } else {
           layers.value = getPstLayerOptions(newVal, props.sawType.pstTypes);
     
-          if(props.fabApplication.waferType === "TC" && layers.value.length == 3){
+          if(props.fabApplication.waferType === "TC" && layers.value?.length == 3){
             layers.value[0].thickness = 5
             layers.value[2].thickness = 5
           }

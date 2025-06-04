@@ -84,7 +84,7 @@ export function initFabApplication3(bom: Bom) {
     weekNumber: undefined,
     isAoi: true,
     isDv2: false,
-    quantity: 0,
+    quantity: 1,
     waferType: "",
     wantedFabStartDate: null,
     wantedFabFinishDate: null,

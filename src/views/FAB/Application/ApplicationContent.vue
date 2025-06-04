@@ -177,7 +177,13 @@
         />
       </el-col>
       <el-col :span="6">
-        <SelectOptionsNew2
+        <input-text
+          v-model="props.fabApplication.priorityId"
+          prop="process"
+          label="Priority"
+          :disable="true"
+        />
+        <!-- <SelectOptionsNew2
           v-model="props.fabApplication.priorityId"
           label="Priority"
           prop="process"
@@ -185,7 +191,7 @@
           :options="priorityList"
           :disable="true"
           class="wide-select"
-        />
+        /> -->
       </el-col>
     </el-row>
 
