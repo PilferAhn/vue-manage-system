@@ -40,7 +40,8 @@ export const signalList = [
   "CW Duty 50%",
   "WIFI",
   "GSM",
-  "NR",
+  "NR(DFT-s-OFDM)",
+  "NR(CP-OFDM)",
   "LTE",
   "기타",
 ];
@@ -483,10 +484,10 @@ export function watchSignalType(
       bandList.value = [];
       bandwidthList.value = [];
 
-      if (["NR", "LTE"].includes(newVal)) {
+      if (["NR(DFT-s-OFDM)", "NR(CP-OFDM)", "LTE"].includes(newVal)) {
         applicationFormBoolean.value.duplexMode = false;
 
-        if (newVal === "NR") {
+        if (newVal === "NR(DFT-s-OFDM)" || newVal === "NR(CP-OFDM)") {
           bandList.value = Object.keys(bandInformationDict.NR);
         } else {
           bandList.value = Object.keys(bandInformationDict.LTE);
@@ -497,7 +498,7 @@ export function watchSignalType(
       } else if (newVal === "기타") {
         applicationFormBoolean.value.band = false;
         applicationFormBoolean.value.duplexMode = false;
-      } else if (!["NR", "LTE"].includes(newVal)) {
+      } else if (!["NR(DFT-s-OFDM)", "NR(CP-OFDM)", "LTE"].includes(newVal)) {
         applicationFormBoolean.value.band = false;
         applicationFormBoolean.value.duplexMode = true;
       } else {
@@ -515,8 +516,8 @@ export function watchBand(applicationForm: any, applicationFormBoolean: any) {
       applicationForm.value.link = "";
 
       if (newVal !== "") {
-        if (["NR", "LTE"].includes(applicationForm.value.signalType)) {
-          if (applicationForm.value.signalType === "NR") {
+        if (["NR(DFT-s-OFDM)", "NR(CP-OFDM)", "LTE"].includes(applicationForm.value.signalType)) {
+          if (applicationForm.value.signalType === "NR(DFT-s-OFDM)" || applicationForm.value.signalType === "NR(CP-OFDM)") {
             // bandList.value = Object.keys(bandInformationDict.NR);
             applicationForm.value.duplexMode =
               bandInformationDict.NR[applicationForm.value.band]["duplexMode"];
@@ -715,7 +716,7 @@ function initializeSampleData(
 ): SampleInformation[] {
   let useDefaultFreq = false;
   let isManualInput = true;
-  if (["LTE", "NR"].includes(signalType)) {
+  if (["LTE", "NR(DFT-s-OFDM)", "NR(CP-OFDM)"].includes(signalType)) {
     useDefaultFreq = true;
     isManualInput = false;
   } else {
@@ -751,7 +752,7 @@ function findFrequacy(applicationForm: any) {
     applicationForm.value.targetPosition !== "" &&
     applicationForm.value.link !== ""
   ) {
-    if (["LTE", "NR"].includes(applicationForm.value.signalType)) {
+    if (["LTE", "NR(DFT-s-OFDM)", "NR(CP-OFDM)"].includes(applicationForm.value.signalType)) {
       let bandInfo = {};
 
       if (applicationForm.value.signalType === "LTE") {

@@ -27,8 +27,9 @@
         ></selectOption>
 
         <div
-          v-if="
-            applicationForm.signalType === 'NR' ||
+         v-if="
+            applicationForm.signalType === 'NR(DFT-s-OFDM)' ||
+            applicationForm.signalType === 'NR(CP-OFDM)' ||
             applicationForm.signalType === 'LTE'
           "
           class="flex-item form-item"
