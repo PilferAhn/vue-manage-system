@@ -31,7 +31,7 @@
         />
       </el-col>
       <el-col :span="6">
-        <SelectOptions
+        <SelectOptionsNew2
           v-model="props.fabApplication.packageId"
           label="Package"
           prop="process"
@@ -387,7 +387,6 @@ import NoteSection from "./Note.vue";
 import {
   groupList,
   processList,
-  packageList,
   // destinationList,
   getSampleQuantityOptions,
   codeList,
@@ -405,6 +404,7 @@ import { initBom } from "../../../utils/Fab/bom-utils";
 import Bom from "./bom/Bom.vue";
 import { rules } from "../../Solder/Stock/Common/ApplicationRules";
 import { composeEventHandlers } from "element-plus/es/utils";
+import {getPackageList} from "../../../utils/utility"
 
 const props = defineProps<{
   fabApplication: FabRequestForm;
@@ -417,6 +417,7 @@ const destinationList = ref<OptionInterface[]>([]);
 const priorityList = ref<OptionInterface[]>([]);
 const filterTypeList = ref<OptionInterface[]>([]);
 const clients = ref<OptionInterface[]>([]);
+const packageList = ref<OptionInterface[]>([]);
 
 onMounted(async () => {
   destinationList.value = await receiveDestinationList();
@@ -424,6 +425,7 @@ onMounted(async () => {
   filterTypeList.value = await receivefilterTypeList();
   clients.value = await getCostomerList();
   bomCodeList.value = await getBomCodeList();
+  packageList.value = await getPackageList();
 });
 
 watch(
