@@ -53,9 +53,14 @@
       >
       <el-table-column label="Action" :align="'center'">
         <template #default="scope">
+          <div class =  "action-buttons">
           <el-button type="success" @click="handleButtons(scope.row)"
             >자세히</el-button
           >
+          <!-- <el-button type="primary" @click="exportToExcel(scope.row)" style="margin-left: 8px;">
+             Excel   
+      </el-button> -->
+    </div>
         </template>
       </el-table-column>
     </el-table>
@@ -85,6 +90,34 @@ const handleButtons = (app: ModuleMeasurementApp) => {
     params: { id: app.id },
   });
 };
+
+const exportToExcel = (app: ModuleMeasurementApp) => {
+  console.log('excel click')
+  
+  // // 간단한 예시: JSON 다운로드
+  // const blob = new Blob([JSON.stringify(app, null, 2)], {
+  //   type: "application/json",
+  // });
+  // const url = URL.createObjectURL(blob);
+  // const link = document.createElement("a");
+  // link.href = url;
+  // link.download = `Application_${app.id}.json`; // 실제로는 .xlsx 등으로 변경 가능
+  // document.body.appendChild(link);
+  // link.click();
+  // document.body.removeChild(link);
+};
 </script>
 
-<style></style>
+<style>
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.action-buttons .el-button {
+  height: 28px;
+  font-size: 13px;
+  padding: 0 12px;
+}
+</style>
