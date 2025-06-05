@@ -19,7 +19,7 @@ onMounted(async () => {
   stockInfoList.value = await fetchStockInfo("reel");
   console.log(getUserName())
 
-  if(["admin"].includes(getUserName()) || getDepartment() === "whc" || ["w2240310", "w2171209"].includes(getUserId()) ){
+  if(["admin"].includes(getUserName()) || getDepartment() === "whc" || ["w2240310", "w2171209", "w2150708"].includes(getUserId()) ){
     
   }
   else{
