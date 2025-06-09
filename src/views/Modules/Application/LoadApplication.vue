@@ -33,7 +33,7 @@ watch(
 
       Object.assign(application, convertPep8ToCamelCase2(tempApp));      
       if (application.nfApp !== null) {
-        application.isNa = true;
+        application.isNf = true;
       }
 
       if (application.naApp !== null) {

@@ -221,8 +221,8 @@ const handleExcelDownload = async () => {
     writeFieldRow(row++, l1, v1, l2, v2);
   }
 
+  if (app.isNa && app.naApp?.na) {
   writeSectionHeader(row++, 'NA 정보\nTHÔNG TIN NA', 'FFD9EAD3');
-  if (app.isNa) {
     writeMergedRow(row++, 'NA 종류\nLoại NA', app.naApp?.na || '');
     writeFieldRow(row++, '측정 방식\nPhương pháp đo', app.naApp?.measMethod || '', 'De-Embedding 방식\nPhương pháp de-embedding', app.naApp?.deMethod || '');
     writeFieldRow(row++, 'Port Extension Loss', app.naApp?.portExtensionLoss ? 'ON' : 'OFF', 'S-Parameter Type', app.naApp?.sParaType || '');
@@ -237,8 +237,8 @@ const handleExcelDownload = async () => {
       }
   }
 
-  writeSectionHeader(row++, 'NF 정보\nTHÔNG TIN NF', 'FFD9EAD3');
   if (app.isNf) {
+  writeSectionHeader(row++, 'NF 정보\nTHÔNG TIN NF', 'FFD9EAD3');
     writeFieldRow(row++, 'NF De-embedding 방식', app.nfApp?.deMethod || '', 'NF Real Matching 여부', app.nfApp?.isRealMatching ? 'O' : 'X');
     writeMergedRow(row++, 'NF 특이사항\nLưu ý về NF', app.nfApp?.note || '');
     // if (app.nfApp?.nfSpecialFile?.length > 0) {

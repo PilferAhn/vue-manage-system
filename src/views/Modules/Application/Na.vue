@@ -144,10 +144,11 @@ watch(
 );
 
 const emit = defineEmits(['updatePortextensionLoss']);
+
 watch(
   () => props.application.naApp?.deMethod,
   (newVal) => {
-    if (newVal) {
+    if(newVal){
       props.application.naApp.portExtensionLoss = (newVal !== 'De-Embedding')
     }
   }
