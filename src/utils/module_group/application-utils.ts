@@ -386,9 +386,9 @@ export const checkFiles = (
   else if(application.naApp !== null && application.naApp?.na === "rohde" && fileObjs.xmlFileList?.length == 0){
     fileName.value = "XML File";
   }
-  else if (application.naApp !== null && fileObjs.stateFileList?.length == 0) {
-    fileName.value = "State File";
-  }
+  // else if (application.naApp !== null && fileObjs.stateFileList?.length == 0) {
+  //   fileName.value = "State File";
+  // }
 
   if (fileName.value !== "") {
     ElNotification({
