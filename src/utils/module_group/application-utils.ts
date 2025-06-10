@@ -322,7 +322,7 @@ export const submitApplication = async (
   const convertedData = convertKeysToPEP8(app);
   let url = "";
   if (submitType === "create") {
-    url = "module/create_app";
+    url = "/module/create_app";
   } else if (submitType === "update") {
     url = "/module/update_app";
   } else if (submitType === "delete") {
