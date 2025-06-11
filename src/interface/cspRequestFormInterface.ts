@@ -1,3 +1,4 @@
+import { Interaction } from "chart.js"
 
 
 
@@ -57,5 +58,13 @@ export interface ApplicationData {
     analysis_fa_item:string
 
     reliability_item:string
+    others_cer_check:string
+    fb_2_spl:string
+}
 
+export interface CspImages{
+    model_name: string
+    cell_name: string
+    file_index: string
+    url:string
 }

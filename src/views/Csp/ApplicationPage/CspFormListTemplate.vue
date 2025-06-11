@@ -1,8 +1,7 @@
 <template>
-    <div v-if="username === '이정민'">
+
       <CspSearch @updateSearchQuery="handleSearchQuery" />
       <CspListTable :cspTableData="cspTableData" />
-  </div>
 </template>
 
 <script lang="ts" setup>
@@ -40,7 +39,7 @@ const username = localStorage.getItem('ms_username') || 'Guest';
 const handleSearchQuery = async (query) => {
   searchQuery.value = query;
   console.log(query.searchQuery)
-  cspTableData.value = await handleGetFormList(query.searchQuery)
+  cspTableData.value = await handleGetFormList(query.searchQuery,username)
 };
 
 

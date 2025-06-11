@@ -51,22 +51,34 @@
     <el-table-column prop="reliability_item" label="신뢰성 항목" />
 
     <el-table-column fixed="right" label="Operations" min-width="120">
-      <template #default>
-        <el-button link type="primary" size="small" @click="handleClick">
+      <template #default="scope">
+        <el-button link type="primary" size="small" @click="handleExcelClick(scope.row)">
           EXCEL
         </el-button>
         <!-- <el-button link type="primary" size="small">Edit</el-button> -->
       </template>
     </el-table-column>
 
+    <el-table-column fixed="right" label="Operations" min-width="120">
+      <template #default="scope">
+        <el-button link type="primary" size="small" @click="handleWebViewClick(scope.row)">
+          WebView
+        </el-button>
+      </template>
+    </el-table-column>
+
+
   </el-table>
 </template>
 
 <script lang="ts" setup>
 
-import { watch ,watchEffect} from 'vue';
+import { watch, watchEffect } from 'vue';
+import { Router, useRouter } from "vue-router";
+ 
+import { excelDownloadOne } from '../../../utils/cspRequestFormUtill'
 const props = defineProps<{ cspTableData: Array<any> }>();
-
+const router = useRouter();
 watch(
   () => props.cspTableData,
   (val) => {
@@ -78,10 +90,17 @@ watchEffect(() => {
   console.log("📡 watchEffect: 테이블 데이터 변경 감지됨", props.cspTableData);
 });
 
-const handleClick = () => {
-  console.log('click')
-  
+const handleExcelClick = (row: any) => {
+  console.log('클릭한 행의 model_name:', row.default_modelName);
+  excelDownloadOne( row.default_modelName)
+};
+const handleWebViewClick = (row: any) => {
+  console.log('클릭한 행의 model_name:', row.default_modelName);
+  router.push({
+      name:"CSPFormView",
+      params: { productName: row.default_modelName },
+    })
+};
 
-}
 
 </script>
