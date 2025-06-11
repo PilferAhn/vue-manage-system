@@ -33,7 +33,7 @@ export default {};
       </el-upload>
     </el-col>
 
-    <!-- EVB 조립 메뉴얼 업로드 -->
+    <!-- Config 업로드 -->
     <el-col :span="12">
       <file-table
         :app-file="props.application.configFile"
@@ -132,7 +132,7 @@ export default {};
       <el-upload
         drag
         :auto-upload="false"
-        :multiple="false"
+        :multiple="true"
         :on-remove="(file, fileList) => handleFileRemove('rffe')"
         :on-change="
           (file, fileList) => handleFileChnage('rffe', file, fileList)
@@ -180,7 +180,7 @@ const handleFileChnage = (
   } else if (fileType === "evb_assemble") {
     props.fileObjList.evbAssembleFileList = [file];
   } else if (fileType === "rffe") {
-    props.fileObjList.rffeFileList = [file];
+    props.fileObjList.rffeFileList = [...filesList];
   }
 };
 

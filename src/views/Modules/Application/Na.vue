@@ -84,9 +84,9 @@ export default {};
     <el-upload
       drag
       :auto-upload="false"
-      :multiple="false"
+      :multiple="true"
       :on-remove="handleStateFileRemove"
-      :on-change="handleStateFileChange"
+      :on-change= " (file, fileList) => handleStateFileChange('state', file, fileList)"
       :show-file-list="true"
       :file-list="props.fileObjList.stateFileList"
     >
@@ -123,6 +123,7 @@ import LongInputText2 from "../../Common/LongInputText2.vue";
 import { UploadProps } from "element-plus";
 import * as appUtiles from "../../../utils/module_group/application-utils";
 import FileTable from "./FileTable.vue";
+import type { UploadFile } from "element-plus";
 
 const props = defineProps<{
   application: ModuleMeasurementApp;
@@ -165,21 +166,25 @@ const handleS2pFileRemove: UploadProps["onRemove"] = () => {
 };
 
 // Reference 파일 선택 핸들러
-const handleStateFileChange: UploadProps["onChange"] = (file) => {
-  props.fileObjList.stateFileList = [file]
+const handleStateFileChange= (
+  fileType: string,
+  file: UploadFile,
+  filesList: UploadFile[]
+) => {
+  props.fileObjList.stateFileList = [...filesList]
 };
 
-// EVB 조립 메뉴얼 파일 삭제 핸들러
+// Reference 파일 삭제 핸들러
 const handleStateFileRemove: UploadProps["onRemove"] = () => {
   props.fileObjList.stateFileList = []
 };
 
-//특이사항 파일 선택 핸들러
+//특이사항 파일 선택 핸들러 
 const handleSpecialFileChange: UploadProps["onChange"] = (file) => {
   props.fileObjList.naSpecialFileList = [file]
 };
 
-//특이사항 조립 메뉴얼 파일 삭제 핸들러
+//특이사항 파일 삭제 핸들러
 const handleSpecialFileRemove: UploadProps["onRemove"] = () => {
   props.fileObjList.naSpecialFileList = []
 };
