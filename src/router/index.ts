@@ -654,7 +654,7 @@ const routes: RouteRecordRaw[] = [
           ),
       },
       {
-        path: "/whc/create-cspzolip",
+        path: "/whc/create-cspzolip/:productName",
         name: "CSPForm",
         meta: {
           title: "CSP 조립의뢰서작성",
@@ -663,6 +663,18 @@ const routes: RouteRecordRaw[] = [
         component: () =>
           import(
             /* webpackChunkName: "table" */ "../views/Csp/ApplicationPage/CSPRequestForm.vue"
+          ),
+      },
+      {
+        path: "/whc/create-cspzolip/view/:productName",
+        name: "CSPFormView",
+        meta: {
+          title: "CSP 조립의뢰서VIEW",
+          permiss: "2",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "table" */ "../views/Csp/ApplicationPage/CspRequestTemplateView.vue"
           ),
       },
       {

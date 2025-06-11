@@ -2,7 +2,7 @@
   <el-dialog v-model="isVisible" title="의뢰서 선택">
     <h2>{{ props.fabApplication.productName }}</h2>
     <br />
-    <el-table :data="ButtonTypes">
+    <el-table :data="ApplicationTypes">
       <el-table-column prop="name" label="측정 의뢰서 항목"></el-table-column>
       <el-table-column label="Action">
         <template #default="scope"
@@ -37,30 +37,30 @@ const props = defineProps<{
   fabApplication: FabRequestForm;
 }>();
 
-watch(
-  () => props.visible,
-  async (newVal) => {
-    if (newVal) {
-      const tempFabRequest = ref(new FabRequest(props.fabApplication));
-      await getMesFabFormInfo([tempFabRequest.value]);
+// watch(
+//   () => props.visible,
+//   async (newVal) => {
+//     if (newVal) {
+//       const tempFabRequest = ref(new FabRequest(props.fabApplication));
+//       await getMesFabFormInfo([tempFabRequest.value]);
 
-      if (tempFabRequest.value.isFabCardCreated == false) {
-        ButtonTypes.value.forEach((buttonType, index) => {
-          if (buttonType["type"] === "fabcard") {
-            buttonType["status"] = true;
-          }
-        });
-      } else {
-        ButtonTypes.value.forEach((buttonType, index) => {
-          if (buttonType["type"] === "fabcard") {            
-            buttonType["status"] = false;
-            console.log(buttonType)
-          }
-        });
-      }
-    }
-  }
-);
+//       if (tempFabRequest.value.isFabCardCreated == false) {
+//         ButtonTypes.value.forEach((buttonType, index) => {
+//           if (buttonType["type"] === "fabcard") {
+//             buttonType["status"] = true;
+//           }
+//         });
+//       } else {
+//         ButtonTypes.value.forEach((buttonType, index) => {
+//           if (buttonType["type"] === "fabcard") {            
+//             buttonType["status"] = false;
+//             console.log(buttonType)
+//           }
+//         });
+//       }
+//     }
+//   }
+// );
 
 const router = useRouter();
 function createApplication(fabApplication: FabRequestForm, type: string) {
@@ -77,6 +77,11 @@ function createApplication(fabApplication: FabRequestForm, type: string) {
   } else if (type === "teg") {
     router.push({
       name: "CreateTegApplicationByFabForm",
+      params: { productName: fabApplication.productName },
+    });
+  }  else if (type === "csp"){
+    router.push({
+      name:"CSPForm",
       params: { productName: fabApplication.productName },
     });
   } else if (type === "fabcard") {
@@ -121,57 +126,93 @@ function closeDialog() {
 
 function handleCreateApplication(type: string, applicationId: string) {}
 
-const ButtonTypes = ref<Object[]>([
-  {
-    name: "Fab Card 작성",
-    type: "fabcard",
-    status: true,
-  },
-  {
-    name: "TEG 측정 의뢰서",
-    type: "teg",
-    status: true,
-  },
-  {
-    name: "WHC 측정 의뢰서",
-    type: "whc",
-    status: true,
-  },
-  {
-    name: "PDT 측정 의뢰서",
-    type: "pdt",
-    status: true,
-  },
-]);
+// const ApplicationTypes = computed(async () => {
+//   const tempFabRequest = ref(new FabRequest(props.fabApplication));
+//   console.log("se",tempFabRequest)
+//   await getMesFabFormInfo([tempFabRequest.value]);
 
-const ApplicationTypes = [
-  {
-    name: "Fab Card 작성",
-    type: "fabcard",
-    status: true,
-  },
-  {
-    name: "TEG 측정 의뢰서",
-    type: "teg",
-    status: true,
-  },
-  {
-    name: "WHC 측정 의뢰서",
-    type: "whc",
-    status: true,
-  },
-  {
-    name: "PDT 측정 의뢰서",
-    type: "pdt",
-    status: true,
-  },
+//   const base = [
+//     {
+//       name: "Fab Card 작성",
+//       type: "fabcard",
+//       status: !tempFabRequest.value.isFabCardCreated,
+//     },
+//     {
+//       name: "TEG 측정 의뢰서",
+//       type: "teg",
+//       status: true,
+//     },
+//   ];
 
-  // {
-  //   name: "BOM List",
-  //   type: "bom",
-  //   status: false,
-  // },
-];
+//   const commonItems = [
+//     {
+//       name: "WHC 측정 의뢰서",
+//       type: "whc",
+//       status: true,
+//     },
+//     {
+//       name: "PDT 측정 의뢰서",
+//       type: "pdt",
+//       status: true,
+//     },
+//   ];
+
+//   if (props.fabApplication.packageId === "CSP") {
+//     return [...base, {
+//       name: "CSP 조립 의뢰서",
+//       type: "csp",
+//       status: true,
+//     }, ...commonItems];
+//   } else {
+//     return [...base, ...commonItems];
+//   }
+// });
+
+const ApplicationTypes = ref<any[]>([]);
+
+watch(
+  () => props.visible,
+  async (newVal) => {
+    if (newVal) {
+      const tempFabRequest = ref(new FabRequest(props.fabApplication));
+      console.log(tempFabRequest.value.isFabCardCreated)
+      await getMesFabFormInfo([tempFabRequest.value]);
+      const list = [
+        {
+          name: "Fab Card 작성",
+          type: "fabcard",
+          status: tempFabRequest.value.isFabCardCreated,
+        },
+        {
+          name: "TEG 측정 의뢰서",
+          type: "teg",
+          status: true,
+        },
+        {
+          name: "WHC 측정 의뢰서",
+          type: "whc",
+          status: true,
+        },
+        {
+          name: "PDT 측정 의뢰서",
+          type: "pdt",
+          status: true,
+        },
+      ];
+
+      if (props.fabApplication.packageId === "CSP") {
+        list.splice(2, 0, {
+          name: "CSP 조립 의뢰서",
+          type: "csp",
+          status: true,
+        });
+      }
+
+      ApplicationTypes.value = list;
+    }
+  }
+);
+
 </script>
 
 <script lang="ts">
