@@ -83,7 +83,7 @@
       <el-col :span="4"
         ><SelectCheckBox
           v-model="props.fabApplication.isNeedEngineerCall"
-          label="개발자 Call"
+          label="엔지니어 Call"
           prop="isNeedEngineerCall"
           :disable="false"
           :rules="[]"
