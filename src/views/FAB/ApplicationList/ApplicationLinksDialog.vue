@@ -181,7 +181,7 @@ watch(
         {
           name: "Fab Card 작성",
           type: "fabcard",
-          status: tempFabRequest.value.isFabCardCreated,
+          status: !tempFabRequest.value.isFabCardCreated,
         },
         {
           name: "TEG 측정 의뢰서",
