@@ -5,13 +5,8 @@
     <el-table :data="ApplicationTypes">
       <el-table-column prop="name" label="측정 의뢰서 항목"></el-table-column>
       <el-table-column label="Action">
-        <template #default="scope"
-          ><el-button
-            :disabled="!scope.row.status"
-            @click="createApplication(props.fabApplication, scope.row.type)"
-            >의뢰서 생성</el-button
-          ></template
-        >
+        <template #default="scope"><el-button :disabled="!scope.row.status"
+            @click="createApplication(props.fabApplication, scope.row.type)">의뢰서 생성</el-button></template>
       </el-table-column>
     </el-table>
     <br />
@@ -37,31 +32,6 @@ const props = defineProps<{
   fabApplication: FabRequestForm;
 }>();
 
-// watch(
-//   () => props.visible,
-//   async (newVal) => {
-//     if (newVal) {
-//       const tempFabRequest = ref(new FabRequest(props.fabApplication));
-//       await getMesFabFormInfo([tempFabRequest.value]);
-
-//       if (tempFabRequest.value.isFabCardCreated == false) {
-//         ButtonTypes.value.forEach((buttonType, index) => {
-//           if (buttonType["type"] === "fabcard") {
-//             buttonType["status"] = true;
-//           }
-//         });
-//       } else {
-//         ButtonTypes.value.forEach((buttonType, index) => {
-//           if (buttonType["type"] === "fabcard") {            
-//             buttonType["status"] = false;
-//             console.log(buttonType)
-//           }
-//         });
-//       }
-//     }
-//   }
-// );
-
 const router = useRouter();
 function createApplication(fabApplication: FabRequestForm, type: string) {
   if (type === "whc") {
@@ -79,9 +49,9 @@ function createApplication(fabApplication: FabRequestForm, type: string) {
       name: "CreateTegApplicationByFabForm",
       params: { productName: fabApplication.productName },
     });
-  }  else if (type === "csp"){
+  } else if (type === "csp") {
     router.push({
-      name:"CSPForm",
+      name: "CSPForm",
       params: { productName: fabApplication.productName },
     });
   } else if (type === "fabcard") {
@@ -124,49 +94,7 @@ function closeDialog() {
   emit("update:visible", false);
 }
 
-function handleCreateApplication(type: string, applicationId: string) {}
-
-// const ApplicationTypes = computed(async () => {
-//   const tempFabRequest = ref(new FabRequest(props.fabApplication));
-//   console.log("se",tempFabRequest)
-//   await getMesFabFormInfo([tempFabRequest.value]);
-
-//   const base = [
-//     {
-//       name: "Fab Card 작성",
-//       type: "fabcard",
-//       status: !tempFabRequest.value.isFabCardCreated,
-//     },
-//     {
-//       name: "TEG 측정 의뢰서",
-//       type: "teg",
-//       status: true,
-//     },
-//   ];
-
-//   const commonItems = [
-//     {
-//       name: "WHC 측정 의뢰서",
-//       type: "whc",
-//       status: true,
-//     },
-//     {
-//       name: "PDT 측정 의뢰서",
-//       type: "pdt",
-//       status: true,
-//     },
-//   ];
-
-//   if (props.fabApplication.packageId === "CSP") {
-//     return [...base, {
-//       name: "CSP 조립 의뢰서",
-//       type: "csp",
-//       status: true,
-//     }, ...commonItems];
-//   } else {
-//     return [...base, ...commonItems];
-//   }
-// });
+function handleCreateApplication(type: string, applicationId: string) { }
 
 const ApplicationTypes = ref<any[]>([]);
 
@@ -175,13 +103,13 @@ watch(
   async (newVal) => {
     if (newVal) {
       const tempFabRequest = ref(new FabRequest(props.fabApplication));
-      console.log(tempFabRequest.value.isFabCardCreated)
       await getMesFabFormInfo([tempFabRequest.value]);
+      
       const list = [
         {
           name: "Fab Card 작성",
           type: "fabcard",
-          status: !tempFabRequest.value.isFabCardCreated,
+          status: tempFabRequest.value.isFabCardCreated === false,
         },
         {
           name: "TEG 측정 의뢰서",
@@ -199,7 +127,7 @@ watch(
           status: true,
         },
       ];
-
+ 
       if (props.fabApplication.packageId === "CSP") {
         list.splice(2, 0, {
           name: "CSP 조립 의뢰서",
