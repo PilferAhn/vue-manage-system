@@ -82,15 +82,15 @@ export const createRequestNumber = async () => {
 
 export function getSystemBand(signalType: string, band: string) {
   const bandInfo: BandInformationDict = bandInformationDict;
-
-  if (["LTE", "NR", "CW"].includes(signalType)) {
-
+  if (["LTE", "NR", "NR(DFT-s-OFDM)","NR(CP-OFDM)","CW"].includes(signalType)) {
+    if(signalType == "NR(DFT-s-OFDM)" || signalType == "NR(CP-OFDM)"){
+      signalType = "NR";
+    }
     const bandList = Object.keys(bandInfo[signalType]);
-    
-    const tempBand = band.toLowerCase()
-
-    if (bandList.includes(tempBand)) {
-      return bandInfo[signalType][tempBand]["uplinkMhz"]
+    // const tempBand = band.toLowerCase()
+    // console.log('tempBand:::', tempBand)
+    if (bandList.includes(band)) {
+      return bandInfo[signalType][band]["uplinkMhz"]
       
     }
   }
