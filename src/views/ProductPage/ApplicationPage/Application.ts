@@ -513,7 +513,7 @@ export function watchBand(applicationForm: any, applicationFormBoolean: any) {
     () => applicationForm.value.band,
     (newVal: string, oldVal: string) => {
       applicationForm.value.targetFreq = "";
-      applicationForm.value.link = "";
+      applicationForm.value.link = upAndDown[0];
 
       if (newVal !== "") {
         if (["NR(DFT-s-OFDM)", "NR(CP-OFDM)", "LTE"].includes(applicationForm.value.signalType)) {
