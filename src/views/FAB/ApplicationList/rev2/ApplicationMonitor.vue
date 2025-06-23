@@ -5,7 +5,7 @@
         <ApplicationMonitorByPackage :fabApp="cspApps" :teg-app="tegApp" />
       </el-tab-pane>
       <el-tab-pane :label="wlpLabel" name="wlp">
-        <ApplicationMonitorByPackage :fabApp="wlpApps" :teg-app="tegApp" />
+        <ApplicationMonitorByPackage :fabApp="wlpApps" :teg-app="tegApp" :is-wlp="true"/>
       </el-tab-pane>
       <el-tab-pane :label="'ETC'" name="etc">
         <ApplicationMonitorByPackage :fabApp="etcApps" :teg-app="tegApp" />
@@ -73,7 +73,7 @@ onMounted(async () => {
     apps.forEach((app, index) => {
       for (let i = 0; i < tegApp.value.length; i++) {
         if (app.productName === tegApp.value[i].modelName) {
-          app.tegFinishedDate = tegApp.value[i].dateOfFinish;
+          app.tegFinishedDate = tegApp.value[i].dateOfFinish as string;
           app.measType = tegApp.value[i].measType;
         }
       }

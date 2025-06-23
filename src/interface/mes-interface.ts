@@ -34,6 +34,7 @@ export interface LotStatus {
   firstHistory: any | null;
   secondProbeHistory: any | null;
   hanoiCsp: LotStatus | null;
+  hanoiWlp: LotStatus | null;
   child: LotStatus | null;
 }
 
