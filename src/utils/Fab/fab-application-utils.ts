@@ -641,7 +641,7 @@ export async function packageChecker(
   application: FabRequestForm,
   type: string
 ) {
-  if (application.packageId !== "CSP") {
+  if (application.packageId !== "CSP" || application.destinationId === "개발전달" ) {
     application.bom = null;
   }
 }

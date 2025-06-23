@@ -79,7 +79,7 @@
       appData.waferType = appData.wafer.sawTypeId;
       appData.isDualIdt = appData.idt2Id != null;
 
-      if(appData.packageId === "CSP" && !appData.bom) {
+      if(appData.packageId === "CSP" && appData.destinationId !== "개발전달" && !appData.bom) {
         appData.bom = initBom();
         appData.bomMainCode = "";
         appData.isNewBom = true;

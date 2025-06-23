@@ -467,23 +467,46 @@ watch(
   }
 );
 
-watch(
-  () => props.fabApplication.packageId,
-  (newVal) => {
-    if (newVal === "CSP") {
+const bomConditions = computed(() => ({
+  packageId: props.fabApplication.packageId,
+  destinationId: props.fabApplication.destinationId,
+}));
+
+watch(bomConditions,  (newValues) => {
+     console.log('newValues:::', newValues);
+    if (newValues.packageId === "CSP" && newValues.destinationId !== "개발전달") {
+      console.log('Need bom');
       if (props.fabApplication.bomMainCode === "") {
         props.fabApplication.bom = initBom();
         props.fabApplication.isNewBom = true;
       } else {
         props.fabApplication.isNewBom = false;
         props.fabApplication.bom = null;
-      }
+      } 
     } else {
+      console.log('Do not Need bom');
       props.fabApplication.isNewBom = false;
       props.fabApplication.bom = null;
     }
-  }
-);
+});
+
+// watch(
+//   () => props.fabApplication.packageId,
+//   (newVal) => {
+//     if (newVal === "CSP") {
+//       if (props.fabApplication.bomMainCode === "") {
+//         props.fabApplication.bom = initBom();
+//         props.fabApplication.isNewBom = true;
+//       } else {
+//         props.fabApplication.isNewBom = false;
+//         props.fabApplication.bom = null;
+//       }
+//     } else {
+//       props.fabApplication.isNewBom = false;
+//       props.fabApplication.bom = null;
+//     }
+//   }
+// );
 
 watch(
   () => props.fabApplication.isNewBom,

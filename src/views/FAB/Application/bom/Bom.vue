@@ -367,20 +367,15 @@ watch(
 
 watch(
   () => props.fabApplication.packageId,
-  (newVal, oldVal) => {
-    if (["WLP", "BDMP"].includes(oldVal) && newVal === "CSP") {
-      // props.fabApplication.bom = initBom();
-
+  (newVal) => {
+    if (newVal === "CSP" && props.fabApplication.destinationId !== "개발전달") {
       if (epoList.value.length > 0) {
         const temp = epoList.value.find((e) => e["model"] === newVal);
         epoCode.value = temp["code"];
         props.fabApplication.bom.epoxy.code = temp["code"];
       }
     }
-    if (newVal === "CSP") {
-    } else {
-      // props.fabApplication.bom = null;
-    }
+    
   },
   { immediate: true }
 );
