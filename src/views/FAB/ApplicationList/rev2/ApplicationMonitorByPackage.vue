@@ -238,6 +238,9 @@ export default {};
             <span v-if="item['hanoiCsp'] !== null">
               {{ formatDate(item["hanoiCsp"]["creationDate"]) }}
             </span>
+            <span v-else-if="item['hanoiWlp'] !== null">
+              {{ formatDate(item["hanoiWlp"]["creationDate"]) }}
+            </span>
             <span v-else> -- </span>
             <br />
           </span>
@@ -263,6 +266,7 @@ export default {};
         label="WHC 현위치(투입시간)"
         :align="'center'"
         width="1500"
+        v-if="!props.isWlp"
       >
         <el-table-column label="플립본딩" width="450" :align="'center'">
           <template #default="scope">
@@ -359,6 +363,32 @@ export default {};
           </template>
         </el-table-column>
       </el-table-column>
+
+      <el-table-column
+        label="WHC 현위치(투입시간)"
+        :align="'center'"
+        width="1500"
+        v-if="props.isWlp"
+      >
+        <el-table-column label="현재 공정" width="450" :align="'center'">
+          <template #default="scope">
+            <span v-for="(item, index) in scope.row.lotStatus" :key="index">
+              <span v-if="item['hanoiWlp'] !== null">
+                {{ item["hanoiWlp"]["operation"]["name"] }}
+                {{ formatDateTime(item["hanoiWlp"]["moveinDate"]) }}
+                {{ item["hanoiWlp"]["lotId"] }}
+              </span>
+              <span v-else>--</span>
+              <br />
+            </span>
+          </template>
+        </el-table-column>
+        
+
+
+      </el-table-column>
+
+      
       <el-table-column
         label="WHC 개발팀 입고"
         width="150"
@@ -429,9 +459,11 @@ import {
   downloadFabPlanExcel,
   getLateFabRev2,
 } from "../ApplicationList";
+import { onMounted, watch } from "vue";
 const props = defineProps<{
   fabApp: FabRequest[];
   tegApp: TegApplication[];
+  isWlp?: boolean;
 }>();
 
 // 라우터 및 현재 경로 가져오기
