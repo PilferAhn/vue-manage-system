@@ -47,7 +47,7 @@ export const submitForm = async (
   if (formType === "create") {
     url = "/reel/create_reel_request";
   } else if (formType === "update") {
-    url = "/reel/update_reel_request";
+    url = `/reel/update_reel_request/${router.currentRoute.value.params.reelId}`;
   } else if (formType === "delete") {
     url = "/reel/delete_reel_request";
   }

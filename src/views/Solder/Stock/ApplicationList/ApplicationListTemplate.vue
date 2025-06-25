@@ -37,11 +37,16 @@
 
       <el-table-column
         prop="modelName"
-        label="Model Name"
+        label="PN_FAB"
         width="170"
         :align="'center'"
       ></el-table-column>
-
+       <el-table-column
+        prop="materialId"
+        label="PN_WHC"
+        width="170"
+        :align="'center'"
+      ></el-table-column>
       
       <el-table-column
         prop="designer"

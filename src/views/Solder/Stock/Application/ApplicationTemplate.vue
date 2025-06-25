@@ -6,8 +6,6 @@
       label-width="120px"
       ref="formRef"
     >
-
-      
       <el-form-item prop="reelId" label="Reel ID">
         <el-input v-model="localStockInfo.reelId" placeholder="Scan Reel ID" />
       </el-form-item>
@@ -47,7 +45,7 @@
         />
       </el-form-item>
 
-      <el-form-item prop="modelName" label="Model Name">
+      <el-form-item prop="modelName" label="PN_FAB">
         <el-input
           v-model="localStockInfo.modelName"
           placeholder="Enter the Model Name"
@@ -133,6 +131,5 @@ const querySearch = (queryString: string, cb: (results: { value: string }[]) => 
 // 선택한 사용자 반영
 const handleSelect = (item: { value: string }) => {
   localStockInfo.value.designer = item.value;
-};
-
+}; 
 </script>

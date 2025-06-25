@@ -10,6 +10,7 @@ export interface StockInfo {
     operationType? : string;
     isFound? : boolean;
     designer? : string
-    modelName?: string    
+    modelName?: string
+    materialId?: string;    
   }
   
