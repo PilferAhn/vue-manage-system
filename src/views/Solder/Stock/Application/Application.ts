@@ -42,14 +42,20 @@ export const submitForm = async (
   formType: string,
   router: ReturnType<typeof useRouter>
 ) => {
+  let data : StockInfo | FormData
+
   if (!formRef) return;
   let url = "";
   if (formType === "create") {
     url = "/reel/create_reel_request";
+    data = convertToPep8(request_form);
   } else if (formType === "update") {
-    url = `/reel/update_reel_request/${router.currentRoute.value.params.reelId}`;
+    url = `/reel/update_reel_request/${request_form.id}`;
+    data = convertToPep8(request_form);
   } else if (formType === "delete") {
     url = "/reel/delete_reel_request";
+    data = new FormData();
+    data.append("id", request_form.id.toString());
   }
   try {
     await formRef.validate();
@@ -67,12 +73,10 @@ export const submitForm = async (
       }
     );
 
-    const pep8Style = convertToPep8(request_form);
-
     if (confirmation === "confirm") {
       // Send HTTP request after confirmation
       console.log(url)
-      await axios.post(url, pep8Style);
+      await axios.post(url, data);
       ElMessage.success("process completed");
     }
     if (formType === "delete" || formType === "create") {

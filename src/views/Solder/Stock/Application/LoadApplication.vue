@@ -15,10 +15,10 @@ import ApplicationTemplate from "./ApplicationTemplate.vue";
 const stockInfo = ref(initializeStockInfo());
 
 // Function to fetch the application data from the server
-const fetchApplication = async (reel_id: string) => {
+const fetchApplication = async (id: number) => {
   try {
     const form = new FormData();
-    form.append("reel_id", reel_id);
+    form.append("id", id.toString());
 
     const response = await axios.post(`/reel/get_reel_request_by_id`, form);
     
@@ -32,11 +32,11 @@ const fetchApplication = async (reel_id: string) => {
 
 // Watch the `uuid` route parameter, fetch data immediately and when it changes
 watch(
-  () => route.params.reelId, // Watching route parameter change
+  () => route.params.id, // Watching route parameter change
   (id) => {
     if (id) {
       ``;
-      fetchApplication(id as string); // Fetch data when uuid changes
+      fetchApplication(Number(route.params.id)); // Fetch data when uuid changes
     }
   },
   { immediate: true } // Trigger immediately on component mount

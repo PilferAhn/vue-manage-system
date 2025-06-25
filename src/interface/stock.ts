@@ -1,5 +1,5 @@
 export interface StockInfo {
-
+    id?: number;
     reelId?: string;    
     dateOfCreated?: string;
     location?: string;

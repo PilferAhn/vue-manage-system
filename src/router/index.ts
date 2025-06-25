@@ -714,7 +714,7 @@ const routes: RouteRecordRaw[] = [
           ),
       },
       {
-        path: "/whc/stock-management/load-stock/:reelId",
+        path: "/whc/stock-management/load-stock/:id",
         name: "LoadLotStock",
         meta: {
           title: "LoadLotStock",

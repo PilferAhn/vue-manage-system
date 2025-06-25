@@ -227,7 +227,7 @@ function handleClear() {
 function handleDetail(row: StockInfo) {
   router.push({
     name: "LoadLotStock",
-    params: { reelId: row.reelId },
+    params: { id: row.id },
   });
 }
 
@@ -235,7 +235,7 @@ async function handleUpdate(row: StockInfo) {
   const vals = convertKeysToPEP8(row);
 
   try {
-    const response = await sendPostRequestByInterface("/reel/update_reel_request", vals);
+    const response = await sendPostRequestByInterface(`/reel/update_reel_request/${row.id}`, vals);
 
     if (response?.success === false) {
       console.error("❌ Update failed:", response.error);
