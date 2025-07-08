@@ -86,7 +86,7 @@ export default {};
       :auto-upload="false"
       :multiple="true"
       :on-remove="handleStateFileRemove"
-      :on-change= " (file, fileList) => handleStateFileChange('state', file, fileList)"
+      :on-change= "(file, fileList) => handleStateFileChange('state', file, fileList)"
       :show-file-list="true"
       :file-list="props.fileObjList.stateFileList"
     >
@@ -104,9 +104,9 @@ export default {};
     <el-upload
       drag
       :auto-upload="false"
-      :multiple="false"
+      :multiple="true"
       :on-remove="handleSpecialFileRemove"
-      :on-change="handleSpecialFileChange"
+      :on-change= "(file, fileList) => handleSpecialFileChange(file ,fileList)"
       :show-file-list="true"
       :file-list="props.fileObjList.naSpecialFileList"
     >
@@ -141,7 +141,7 @@ watch(
     } else if (newVal === false) {
       props.application.naApp = null;
     }
-  }
+  },
 );
 
 const emit = defineEmits(['updatePortextensionLoss']);
@@ -166,7 +166,7 @@ const handleS2pFileRemove: UploadProps["onRemove"] = () => {
 };
 
 // Reference 파일 선택 핸들러
-const handleStateFileChange= (
+const handleStateFileChange = (
   fileType: string,
   file: UploadFile,
   filesList: UploadFile[]
@@ -180,8 +180,11 @@ const handleStateFileRemove: UploadProps["onRemove"] = () => {
 };
 
 //특이사항 파일 선택 핸들러 
-const handleSpecialFileChange: UploadProps["onChange"] = (file) => {
-  props.fileObjList.naSpecialFileList = [file]
+const handleSpecialFileChange = (
+  file: UploadFile,
+  filesList: UploadFile[]
+) => {
+  props.fileObjList.naSpecialFileList = [...filesList];
 };
 
 //특이사항 파일 삭제 핸들러

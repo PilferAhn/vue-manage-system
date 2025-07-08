@@ -76,6 +76,7 @@ export default defineConfig({
 				"/excel" : "http://10.29.11.57:39999",
 				"/csp":"http://10.29.11.57:40000",
 				"/module": "http://10.29.11.57:40000",
+				"/static/": "http://10.29.11.57:40000",
 		  },
 
 		// proxy: {

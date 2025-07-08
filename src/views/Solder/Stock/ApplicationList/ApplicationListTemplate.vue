@@ -37,7 +37,7 @@
 
       <el-table-column
         label="PN_FAB"
-        width="170"
+        width="140"
         :align="'center'"
       >
         <template #default="scope">
@@ -49,7 +49,7 @@
 
       <el-table-column
         label="PN_WHC"
-        width="170"
+        width="150"
         :align="'center'"
       >
         <template #default="scope">
@@ -59,8 +59,8 @@
       
       <el-table-column
         prop="designer"
-        label="Designer"
-        width="110"
+        label="개발자"
+        width="100"
         :align="'center'"
       >
         <template #default="scope">
@@ -108,7 +108,7 @@
         v-if="props.operationType === 'reel'"
         prop="reelId"
         label="Reel ID"
-        width="170"
+        width="160"
         :align="'center'"
       ></el-table-column>
       <el-table-column
@@ -134,7 +134,7 @@
 
       <el-table-column
         label="Receiver"
-        width="150"
+        width="110"
         prop="receiver"
         :align="'center'"
       ></el-table-column>
