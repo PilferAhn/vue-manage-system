@@ -15,22 +15,16 @@ import { getDepartment, getUserId, getUserName } from "../../../../utils/account
 
 const stockInfoList = ref<StockInfo[]>([]);
 onMounted(async () => {
-  // Fetch StockInfo data on component mount
-  stockInfoList.value = await fetchStockInfo("reel");
-  console.log(getUserName())
+  
+  // console.log("UserName:",getUserName())  
+  // console.log("UserId:", getUserId())  
+  // console.log("Department:", getDepartment())  
 
+  // Fetch StockInfo data on component mount
   if(["admin"].includes(getUserName()) || getDepartment() === "whc" || ["w2240310", "w2171209", "w2150708"].includes(getUserId()) ){
-    
+    stockInfoList.value = await fetchStockInfo("reel");
   }
   else{
-    const temp = ref<StockInfo[]>([]);
-    for(let i = 0 ; i < stockInfoList.value.length; i++){
-      if(stockInfoList.value[i].designer === getUserName()){
-        temp.value.push(stockInfoList.value[i])
-      }
-    }
-    stockInfoList.value = temp.value
-  }
-
-});
+    stockInfoList.value = await fetchStockInfo("reel",getUserId());
+}});
 </script>

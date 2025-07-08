@@ -17,7 +17,7 @@
 
     <!-- Table -->
     <el-table
-      :data="filteredData"
+      :data="stockInfoList"
       style="width: 100%; font-size: 16px; padding: 20px"
       :border="true"
       :header-cell-style="{
@@ -36,24 +36,40 @@
       </el-table-column>
 
       <el-table-column
-        prop="modelName"
         label="PN_FAB"
         width="170"
         :align="'center'"
-      ></el-table-column>
-       <el-table-column
-        prop="materialId"
+      >
+        <template #default="scope">
+          <div  v-for="firstMesMaterial in scope.row?.fromWhcspMes?.firstMesMaterials">
+            {{ firstMesMaterial.material_id}}
+          </div>
+        </template>
+      </el-table-column>
+
+      <el-table-column
         label="PN_WHC"
         width="170"
         :align="'center'"
-      ></el-table-column>
+      >
+        <template #default="scope">
+          {{ scope.row?.fromWhcspMes?.materialId }}
+        </template>
+      </el-table-column>
       
       <el-table-column
         prop="designer"
         label="Designer"
         width="110"
         :align="'center'"
-      ></el-table-column>
+      >
+        <template #default="scope">
+          <div  v-for="firstMesMaterial in scope.row?.fromWhcspMes?.firstMesMaterials">
+            {{ firstMesMaterial?.designer?.user_name }}
+          </div>
+        </template>
+
+      </el-table-column>
    
   
     <!-- <el-table-column v-if="name==='admin'"
@@ -146,13 +162,13 @@
           >
             View Detail
           </el-button>
-          <el-button
+          <!-- <el-button
           type="success"
           size="small"
           @click="handleUpdate(scope.row)"
           >
           Update
-          </el-button>
+          </el-button> -->
         </template>
       </el-table-column>
     </el-table>
@@ -160,15 +176,13 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref, computed, onMounted } from "vue";
+import { defineProps, ref} from "vue";
 import type { StockInfo } from "../../../../interface/stock";
-import { useUserOptions } from "../../../Common/utility";
+// import { useUserOptions } from "../../../Common/utility";
 import { formatDate } from "../../../../utils/date-utils";
 import { useRouter } from "vue-router";
-import { getUserList } from "../../../../utils/user-utils";
-import { User } from "../../../../interface/user";
-import { sendPostRequest, sendPostRequestByInterface } from "../../../../utils/httpProtocol";
-import { convertKeysToCamelCase, convertKeysToPEP8 } from "../../../../utils/key-converter";
+// import { sendPostRequestByInterface } from "../../../../utils/httpProtocol";
+// import { convertKeysToPEP8 } from "../../../../utils/key-converter";
 
 
 const props = defineProps<{
@@ -176,53 +190,49 @@ const props = defineProps<{
   operationType: string;
 }>();
 
-const name = localStorage.getItem("ms_username");
+// const name = localStorage.getItem("ms_username");
 
-const {userOptions}  = useUserOptions();
+// const {userOptions}  = useUserOptions();
 
-const userList = ref<User[]>([]);
+// const userList = ref<User[]>([]);
 
-const searchTerm = ref(""); // 검색어
+// const searchTerm = ref(""); // 검색어
 const router = useRouter();
 
-const isUserListLoading = ref(true); // 로딩 상태 추가
+// const isUserListLoading = ref(true); // 로딩 상태 추가
 
-onMounted(async () => {
-  getUserList().then((data) => {
-    userList.value = data;
-    isUserListLoading.value = false; // 데이터 로드 완료 후 UI 활성화
-  });
-});
-
-
-const filteredData = computed(() => {
-  console.time("⏳ Filtering Execution Time"); // 시작 시간 측정
-
-  props.stockInfoList.forEach((stock) => {
-    for (let i = 0; i < userList.value.length; i++) {
-      if (stock.designer !== null && stock.designer === userList.value[i].userName) {
-        stock.isFound = true;
-      }
-    }
-  });
-
-  if (!searchTerm.value) {
-    console.timeEnd("⏳ Filtering Execution Time"); // 종료 시간 측정
-    return props.stockInfoList;
-  }
-
-  const result = props.stockInfoList.filter((item) =>
-    item.modelName.toLowerCase().includes(searchTerm.value.toLowerCase())
-  );
-
-  console.timeEnd("⏳ Filtering Execution Time"); // 종료 시간 측정
-  return result;
-});
+// onMounted(async () => {
+//   getUserList().then((data) => {
+//     userList.value = data;
+//     isUserListLoading.value = false; // 데이터 로드 완료 후 UI 활성화
+//   });
+// });
 
 
-function handleClear() {
-  searchTerm.value = ""; // 검색어 초기화
-}
+// const filteredData = computed(() => {
+//   console.time("⏳ Filtering Execution Time"); // 시작 시간 측정
+  
+
+//   if (!searchTerm.value) {
+//     console.timeEnd("⏳ Filtering Execution Time"); // 종료 시간 측정
+//     return props.stockInfoList;
+//   }
+
+//   // const result = props.stockInfoList.filter((item) =>
+//   //   item.modelName.toLowerCase().includes(searchTerm.value.toLowerCase())
+//   // );
+
+//   const result = props.stockInfoList
+//   console.log("Props :", props.stockInfoList.values[0])  
+
+//   console.timeEnd("⏳ Filtering Execution Time"); // 종료 시간 측정
+//   return result;
+// });
+
+
+// function handleClear() {
+//   searchTerm.value = ""; // 검색어 초기화
+// }
 
 function handleDetail(row: StockInfo) {
   router.push({
@@ -231,23 +241,23 @@ function handleDetail(row: StockInfo) {
   });
 }
 
-async function handleUpdate(row: StockInfo) {
-  const vals = convertKeysToPEP8(row);
+// async function handleUpdate(row: StockInfo) {
+//   const vals = convertKeysToPEP8(row);
 
-  try {
-    const response = await sendPostRequestByInterface(`/reel/update_reel_request/${row.id}`, vals);
+//   try {
+//     const response = await sendPostRequestByInterface(`/reel/update_reel_request/${row.id}`, vals);
 
-    if (response?.success === false) {
-      console.error("❌ Update failed:", response.error);
-      alert(`Update failed: ${response.error}`); // 사용자에게 알림 표시
-    } else {
-      console.log("✅ Update successful:", response);
-      alert("Update successful!"); // 성공 메시지
-    }
-  } catch (error) {
-    console.error("❌ Unexpected error in handleUpdate:", error);
-  }
-}
+//     if (response?.success === false) {
+//       console.error("❌ Update failed:", response.error);
+//       alert(`Update failed: ${response.error}`); // 사용자에게 알림 표시
+//     } else {
+//       console.log("✅ Update successful:", response);
+//       alert("Update successful!"); // 성공 메시지
+//     }
+//   } catch (error) {
+//     console.error("❌ Unexpected error in handleUpdate:", error);
+//   }
+// }
 
 
 
@@ -258,27 +268,28 @@ const tableRowClassName = ({
   row: StockInfo;
   rowIndex: number;
 }) => {
-  if (!row.isFound) {
+  const firstMesMaterials = row?.fromWhcspMes?.firstMesMaterials
+  if (!(firstMesMaterials !== undefined && firstMesMaterials.length > 0)) {
     return "el-warning"; // Ensure this matches your CSS class
   }
   return "";
 };
 
-const querySearch = (
-  queryString: string,
-  cb: (suggestions: { value: string; label: string }[]) => void
-) => {
-  const results = userOptions.value
-    .filter((user) =>
-      user.label.toLowerCase().includes(queryString.toLowerCase()) // 입력한 값이 포함된 사용자 찾기
-    )
-    .map((user) => ({
-      value: user.label, // 사용자명
-      label: user.label, // 표시할 이름
-    }));
+// const querySearch = (
+//   queryString: string,
+//   cb: (suggestions: { value: string; label: string }[]) => void
+// ) => {
+//   const results = userOptions.value
+//     .filter((user) =>
+//       user.label.toLowerCase().includes(queryString.toLowerCase()) // 입력한 값이 포함된 사용자 찾기
+//     )
+//     .map((user) => ({
+//       value: user.label, // 사용자명
+//       label: user.label, // 표시할 이름
+//     }));
 
-  cb(results); // 자동 완성 목록에 전달
-};
+//   cb(results); // 자동 완성 목록에 전달
+// };
 
 // const handleSelect = (item: { value: string; label: string }, row: StockInfo) => {
 //   row.newUserName = item.label; // 해당 row의 newUserName을 업데이트

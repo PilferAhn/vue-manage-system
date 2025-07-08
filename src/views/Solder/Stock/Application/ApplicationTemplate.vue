@@ -45,14 +45,14 @@
         />
       </el-form-item>
 
-      <el-form-item prop="modelName" label="PN_FAB">
+      <!-- <el-form-item prop="modelName" label="PN_FAB">
         <el-input
           v-model="localStockInfo.modelName"
           placeholder="Enter the Model Name"
         />
-      </el-form-item>
+      </el-form-item> -->
 
-      <el-form-item prop="designer" label="Designer">
+      <!-- <el-form-item prop="designer" label="Designer">
         <el-autocomplete
           v-model="localStockInfo.designer"
           :fetch-suggestions="querySearch"
@@ -61,7 +61,7 @@
           clearable
           filterable
         ></el-autocomplete>
-      </el-form-item>
+      </el-form-item> -->
 
       <div v-if="props.formType === 'create'">
         <el-button type="primary" @click="handleSubmit('create')"
@@ -87,7 +87,7 @@ import { rules } from "../Common/ApplicationRules";
 import { submitForm } from "./Application";
 import type { FormInstance } from "element-plus";
 import { useRouter } from "vue-router";
-import { getUserList } from "../../../../utils/user-utils";
+// import { getUserList } from "../../../../utils/user-utils";
 import { User } from "../../../../interface/user";
 import { useUserOptions } from "../../../Common/utility";
 
@@ -107,9 +107,9 @@ const handleSubmit = async (action_type: string) => {
 
 // Watch for changes in props to keep localStockInfo in sync
 
-onMounted(async()=>{
-  userList.value = await getUserList()  
-})
+// onMounted(async()=>{
+//   userList.value = await getUserList()  
+// })
 
 watch(
   () => props.stockInfo,
@@ -120,16 +120,16 @@ watch(
 );
 
 // 검색어에 따라 필터링된 사용자 목록 반환
-const querySearch = (queryString: string, cb: (results: { value: string }[]) => void) => {
-  const results = userOptions.value
-    .filter((user) => user.label.toLowerCase().includes(queryString.toLowerCase()))
-    .map((user) => ({ value: user.label }));
+// const querySearch = (queryString: string, cb: (results: { value: string }[]) => void) => {
+//   const results = userOptions.value
+//     .filter((user) => user.label.toLowerCase().includes(queryString.toLowerCase()))
+//     .map((user) => ({ value: user.label }));
 
-  cb(results);
-};
+//   cb(results);
+// };
 
 // 선택한 사용자 반영
-const handleSelect = (item: { value: string }) => {
-  localStockInfo.value.designer = item.value;
-}; 
+// const handleSelect = (item: { value: string }) => {
+//   localStockInfo.value.designer = item.value;
+// }; 
 </script>

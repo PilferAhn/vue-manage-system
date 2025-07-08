@@ -1,3 +1,15 @@
+import { User } from "./user";
+
+interface StockItemFirstMesMaterial{
+  material_id : string;
+  designer? :  User;
+}
+
+interface StockItemFromWhcspMes {
+  materialId : string;
+  firstMesMaterials : StockItemFirstMesMaterial[]
+}
+
 export interface StockInfo {
     id?: number;
     reelId?: string;    
@@ -9,8 +21,10 @@ export interface StockInfo {
     receiver? : string;
     operationType? : string;
     isFound? : boolean;
-    designer? : string
-    modelName?: string
-    materialId?: string;    
+    // designer? : string
+    // modelName?: string
+    // materialId?: string;
+
+    fromWhcspMes? : StockItemFromWhcspMes
   }
   
