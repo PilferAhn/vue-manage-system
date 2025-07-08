@@ -181,7 +181,7 @@ const handleExcelDownload = async () => {
   const insertImageBelow = async (file, row, folder) => {
     if (!file) return row;
     try {
-      const response = await fetch(`http://10.29.9.48:40000/static/${folder}/${file.uId}.${file.ext}`);
+      const response = await fetch(`/static/${folder}/${file.uId}.${file.ext}`);
       const blob = await response.blob();
       const buffer = await blob.arrayBuffer();
       const imageId = workbook.addImage({ buffer, extension: file.ext });
@@ -225,7 +225,7 @@ const handleExcelDownload = async () => {
   writeSectionHeader(row++, 'NA 정보\nTHÔNG TIN NA', 'FFD9EAD3');
     writeMergedRow(row++, 'NA 종류\nLoại NA', app.naApp?.na || '');
     writeFieldRow(row++, '측정 방식\nPhương pháp đo', app.naApp?.measMethod || '', 'De-Embedding 방식\nPhương pháp de-embedding', app.naApp?.deMethod || '');
-    writeFieldRow(row++, 'Port Extension Loss', app.naApp?.portExtensionLoss ? 'ON' : 'OFF', 'S-Parameter Type', app.naApp?.sParaType || '');
+    writeFieldRow(row++, 'Port Extension Loss', app.naApp?.portExtensionLoss ? 'ON' : 'OFF', 'S-Parameter Type', app.naApp?.sParaType == 'true' ? 'Ideal Matching 포함' : 'Ideal Matching 미포함');
     writeMergedRow(row++, 'NA 특이사항\nLưu ý về NA', app.naApp?.note || '');
     // if (app.naApp?.naSpecialFile?.length > 0) {
     //   row = await insertImageBelow(app.naApp.naSpecialFile[0], row, 'na_special');

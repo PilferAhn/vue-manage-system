@@ -268,11 +268,11 @@ export const sendingFiles = async (
     );
   }
 
-  if (app.id && file_objs.referenceFileList?.length > 0) {
+  if (app.id && file_objs.rffeFileList?.length > 0) {
     await appendFileGroup(
       app.rffeFile,
-      file_objs.configFileList,
-      "rffe",
+      file_objs.rffeFileList,
+      "RFFE",
       app.id
     );
   }

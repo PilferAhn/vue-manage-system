@@ -3,7 +3,10 @@
     <el-divider content-position="center">측정 정보 (NF)</el-divider>
     <el-row :gutter="20">
       <el-col :span="12">
-        <el-form-item label="De-embedding 방식">
+        <el-form-item  
+          v-if="props.application.nfApp" 
+          label="De-embedding 방식"
+        >
           <el-select v-model="props.application.nfApp.deMethod">
             <el-option :value="'Offset Value'" label="Offset Value"></el-option>
             <el-option :value="'Offset Table'" label="Offset Table"></el-option>
@@ -35,7 +38,7 @@
       <el-col :span="12"> </el-col>
       <el-col :span="12"> </el-col>
     </el-row>  
-    <el-col :span="24" v-if="props.application.nfApp.deMethod === 'Offset Table'">
+    <el-col :span="24" v-if="props.application.nfApp?.deMethod === 'Offset Table'">
     <file-table :app-file="props.application.nfApp.offsetFile" file_type="offset"></file-table>
     <el-upload
       drag
@@ -52,7 +55,7 @@
     </el-col>
     <file-table :app-file="props.application.nfApp?.matchingFile" file_type="matching"></file-table>
     <el-upload
-      v-if="props.application.nfApp.isRealMatching"
+      v-if="props.application.nfApp?.isRealMatching"
       drag
       :auto-upload="false"
       :multiple="false"
@@ -65,6 +68,7 @@
       <div class="el-upload__text"><em>Matching 특성 파일 선택</em></div>
     </el-upload>
     <long-input-text-2
+      v-if="props.application.nfApp"
       v-model="props.application.nfApp.note"
       label="특이사항"
       prop="note"
@@ -75,9 +79,9 @@
     <el-upload
       drag
       :auto-upload="false"
-      :multiple="false"
+      :multiple="true"
       :on-remove="handleSpecialFileRemove"
-      :on-change="handleSpecialFileChange"
+      :on-change= "(file, fileList) => handleSpecialFileChange(file ,fileList)"
       :show-file-list="true"
       :file-list="props.fileObjList.nfSpecialFileList"
     >
@@ -97,6 +101,7 @@ import { UploadProps } from "element-plus";
 import * as appUtiles from "../../../utils/module_group/application-utils";
 import FileTable from "./FileTable.vue";
 import { ref, watch } from "vue";
+import type { UploadFile } from "element-plus";
 
 const props = defineProps<{
   application: ModuleMeasurementApp;
@@ -114,7 +119,7 @@ watch(
     } else if (newVal === null) {
       props.application.nfApp = null;
     }
-  }
+  },
 );
 
 // Reference 파일 선택 핸들러
@@ -138,8 +143,11 @@ const handleOffsetFileRemove: UploadProps["onRemove"] = () => {
 };
 
 //특이사항 파일 선택 핸들러
-const handleSpecialFileChange: UploadProps["onChange"] = (file) => {
-  props.fileObjList.nfSpecialFileList = [file]
+const handleSpecialFileChange = (
+  file: UploadFile,
+  filesList: UploadFile[]
+) => {
+  props.fileObjList.nfSpecialFileList = [...filesList]
 };
 
 //특이사항 파일 삭제 핸들러
