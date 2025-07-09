@@ -52,7 +52,7 @@
 <script lang="ts" setup>
 import type { FabRequestForm } from "../../../interface/fab-application-rev2";
 import type { FormInstance } from "element-plus";
-import { sendingForm } from "../../../utils/Fab/fab-application-utils";
+import { sendingForm, ValChkBeforeSending } from "../../../utils/Fab/fab-application-utils";
 import { getUserId } from "../../../utils/account-utils";
 import { ElMessageBox } from 'element-plus';
 import { getCurrentWeekNumber } from "../../../utils/date-utils";
@@ -68,15 +68,14 @@ const props = defineProps<{
 const excludeList = ["admin", "w220112", "w2180511", "w223051"] 
 
 // Submit 함수
-const submitForm = (type: string) => {
-  props.fabFormRef?.validate((valid) => {
-    if (valid) {
-      sendingForm(props.fabApplication, type);
-      console.log(props.fabApplication);
+const submitForm = async (type: string) => {
+  const isValid = await props.fabFormRef?.validate();
+    if (isValid) {
+      const resultApplication = await ValChkBeforeSending(props.fabApplication, type)
+      await sendingForm(resultApplication, type);
     } else {
       console.error("폼 유효성 검사 실패: 필수 항목을 확인해주세요.");
     }
-  });
 };
 
 
