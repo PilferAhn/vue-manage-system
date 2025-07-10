@@ -87,7 +87,7 @@
   const needBridge = ref<boolean>(false);
   const needCap = ref<boolean>(false);
   const needBpd = ref<boolean>(false);
-  const needPPad = ref<boolean>(false);
+  // const needPPad = ref<boolean>(false);
   const needPad = ref<boolean>(false);
   const needSio = ref<boolean>(false);
   const needSioShot = ref<boolean>(false);
@@ -131,7 +131,7 @@
         props.fabApplication.photo.photoProcesses = [];
         needCot.value = newValues.sawTypeId === "TC"
         needPst.value = newValues.sawTypeId === "TC"
-        needPPad.value = newValues.sawTypeId === "TC" && newValues.packageId === "BDMP"
+        // needPPad.value = newValues.sawTypeId === "TC" && newValues.packageId === "BDMP"
         needMs.value = newValues.sawTypeId === "TC" && props.fabApplication.isMst
         needLte.value = newValues.sawTypeId === "HS" && props.fabApplication.isNeededLtEtching
         
@@ -175,15 +175,15 @@
           });
         }
   
-        if(needPPad.value){
-          props.fabApplication.photo.photoProcesses.push({
-            processName: "P-PAD",
-            machineName: "Nikon",
-            reticleName: "",
-            isMutable: false,
-            order: 11,
-          });
-        }
+        // if(needPPad.value){
+        //   props.fabApplication.photo.photoProcesses.push({
+        //     processName: "P-PAD",
+        //     machineName: "Nikon",
+        //     reticleName: "",
+        //     isMutable: false,
+        //     order: 11,
+        //   });
+        // }
   
   
         if(newValues.sawTypeId === "HS"){
