@@ -85,6 +85,16 @@
         ></ApplicationByType>
       </template>
     </el-tab-pane>
+    <el-tab-pane label="SmarterMicro Fuse" name="SmarterMicro Fuse">
+      <!-- Life Time 탭 내용 -->
+      <template v-if="activeTabName === 'SmarterMicro Fuse'">
+        <ApplicationByType
+          :testType="'SmarterMicro Fuse'"
+          :searchType="'normal'"
+          :status="props.status"
+        ></ApplicationByType>
+      </template>
+    </el-tab-pane>
 
     <!-- 여기에 다른 탭들을 추가할 수 있습니다. -->
   </el-tabs>
