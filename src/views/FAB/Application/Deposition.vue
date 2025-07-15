@@ -28,7 +28,7 @@
            <!-- <input-text label="Special IDT Stack"></input-text> -->
         </div>
         <div v-else>
-          <el-descriptions title="Thickness" :column="4" :border="true">
+          <el-descriptions title="Thickness(IDT 증착)" :column="4" :border="true">
             <template #extra>
               <div class="extra-container">
                 <el-select
@@ -46,6 +46,7 @@
                 </el-select>
   
                 <el-select
+                  v-if="props.sawType.sawTypeId !== 'TC'"
                   v-model="props.fabApplication.idtMachineName"
                   placeholder="IDT Deposition Machine"
                 >
@@ -65,6 +66,7 @@
               :label="layer.material"
               :span="1"
               :size="'Large'"
+              v-show="true"
             >
               <el-input v-model="layer.thickness"></el-input>
             </el-descriptions-item>
@@ -79,7 +81,7 @@
           <div v-if="props.fabApplication.isDualIdt">
             <br />
   
-            <el-descriptions title="Thickness" :column="4" :border="true">
+            <el-descriptions title="Thickness(M1B IDT성막)" :column="4" :border="true">
               <template #extra>
                 <div class="extra-container">
                   <el-select
@@ -97,6 +99,7 @@
                   </el-select>
   
                   <el-select
+                  v-if="props.sawType.sawTypeId !== 'TC'"
                     v-model="props.fabApplication.idt2MachineName"
                     placeholder="IDT Deposition Machine"
                   >
@@ -177,7 +180,7 @@
   ]);
   
   onMounted(() => {
-  
+    console.log('props.sawType, props.fabApplication', props.sawType, props.fabApplication);
     if (Object.keys(props.sawType).length !== 0) {
       depositionOptions.value = generateIdtOptions(props.sawType.idtTypes);
       depositionOptions2.value = generateIdtOptions(props.sawType.idtTypes);
@@ -226,13 +229,8 @@
           ...JSON.parse(JSON.stringify(machineOptions.value))
         );
       } else {
-        // layers 배열을 완전히 새로운 배열로 대체 (반응성을 유지)
         layers2.splice(0, layers2.length);
-  
-        // Vue의 반응성을 유지하려면 spread 연산자로 새로운 배열 할당
         props.fabApplication.idt2Layers = [];
-  
-        // 다른 상태 초기화
         props.fabApplication.idt2Id = null;
       }
     }
@@ -302,6 +300,23 @@
         ];
         props.fabApplication.idtProcessId = "Lift-off"
       }
+
+      // 변경된 idtProcessId에 따라 depositionOptions을 다시 갱신
+    depositionOptions.value = generateIdtOptions2(
+      props.sawType.idtTypes,
+      props.fabApplication.idtProcessId
+    );
+
+    // IDT와 관련된 machineOptions 갱신
+    if (props.fabApplication.idtProcessId) {
+      machineOptions.value = generateMachineOptions(
+        props.sawType.idtTypes,
+        props.fabApplication.idtProcessId
+      );
+      if (machineOptions.value.length === 1) {
+        props.fabApplication.idtMachineName = machineOptions.value[0].value;
+      }
+    }
     }
   );
   // TSTESTMODEL1
