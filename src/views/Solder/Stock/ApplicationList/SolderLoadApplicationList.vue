@@ -1,21 +1,21 @@
 <!-- LoadApplicationList.vue -->
 <template>
     <div>
-      <ApplicationListTemplate :stockInfoList="stockInfoList" :operationType="'sample'"/>
+      <ApplicationListTemplate :stockItems="stockItems" :operationType="'sample'"/>
     </div>
   </template>
   
   <script setup lang="ts">
   import { ref, onMounted } from "vue";
-  import type { StockInfo } from "../../../../interface/stock";
+  import type { StockItem } from "../../../../interface/stock";
   import ApplicationListTemplate from "./ApplicationListTemplate.vue";
-  import { fetchStockInfo } from "./ApplicationList"; // Import the fetch function
+  import { fetchStockItems } from "./ApplicationList"; // Import the fetch function
   
-  const stockInfoList = ref<StockInfo[]>([]);
+  const stockItems = ref<StockItem[]>([]);
   
   onMounted(async () => {
     // Fetch StockInfo data on component mount
-    stockInfoList.value = await fetchStockInfo("sample");
+    stockItems.value = await fetchStockItems("sample");
   });
   </script>
   

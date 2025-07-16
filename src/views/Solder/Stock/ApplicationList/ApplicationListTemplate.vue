@@ -17,7 +17,7 @@
 
     <!-- Table -->
     <el-table
-      :data="stockInfoList"
+      :data="stockItems"
       style="width: 100%; font-size: 16px; padding: 20px"
       :border="true"
       :header-cell-style="{
@@ -41,8 +41,8 @@
         :align="'center'"
       >
         <template #default="scope">
-          <div  v-for="firstMesMaterial in scope.row?.fromWhcspMes?.firstMesMaterials">
-            {{ firstMesMaterial.material_id}}
+          <div  v-for="firstMesMaterial in scope.row?.stockItemLabel?.lot?.firstMesMaterials">
+            {{ firstMesMaterial.materialId || "-"}}
           </div>
         </template>
       </el-table-column>
@@ -53,7 +53,7 @@
         :align="'center'"
       >
         <template #default="scope">
-          {{ scope.row?.fromWhcspMes?.materialId }}
+          {{ scope.row?.stockItemLabel?.lot?.materialId  || "-" }}
         </template>
       </el-table-column>
       
@@ -64,8 +64,8 @@
         :align="'center'"
       >
         <template #default="scope">
-          <div  v-for="firstMesMaterial in scope.row?.fromWhcspMes?.firstMesMaterials">
-            {{ firstMesMaterial?.designer?.user_name }}
+          <div  v-for="firstMesMaterial in scope.row?.stockItemLabel?.lot?.firstMesMaterials">
+            {{ firstMesMaterial?.designer?.userName || "-" }}
           </div>
         </template>
 
@@ -106,14 +106,14 @@
 
       <el-table-column
         v-if="props.operationType === 'reel'"
-        prop="reelId"
+        prop="label"
         label="Reel ID"
         width="160"
         :align="'center'"
       ></el-table-column>
       <el-table-column
         v-else
-        prop="reelId"
+        prop="label"
         label="Assay ID"
         width="170"
         :align="'center'"
@@ -176,125 +176,38 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref} from "vue";
-import type { StockInfo } from "../../../../interface/stock";
-// import { useUserOptions } from "../../../Common/utility";
+import { defineProps } from "vue";
+import type { StockItem, StockItemType } from "../../../../interface/stock";
 import { formatDate } from "../../../../utils/date-utils";
 import { useRouter } from "vue-router";
-// import { sendPostRequestByInterface } from "../../../../utils/httpProtocol";
-// import { convertKeysToPEP8 } from "../../../../utils/key-converter";
-
 
 const props = defineProps<{
-  stockInfoList: StockInfo[];
-  operationType: string;
+  stockItems: StockItem[];
+  operationType: StockItemType;
 }>();
 
-// const name = localStorage.getItem("ms_username");
-
-// const {userOptions}  = useUserOptions();
-
-// const userList = ref<User[]>([]);
-
-// const searchTerm = ref(""); // 검색어
 const router = useRouter();
 
-// const isUserListLoading = ref(true); // 로딩 상태 추가
-
-// onMounted(async () => {
-//   getUserList().then((data) => {
-//     userList.value = data;
-//     isUserListLoading.value = false; // 데이터 로드 완료 후 UI 활성화
-//   });
-// });
-
-
-// const filteredData = computed(() => {
-//   console.time("⏳ Filtering Execution Time"); // 시작 시간 측정
-  
-
-//   if (!searchTerm.value) {
-//     console.timeEnd("⏳ Filtering Execution Time"); // 종료 시간 측정
-//     return props.stockInfoList;
-//   }
-
-//   // const result = props.stockInfoList.filter((item) =>
-//   //   item.modelName.toLowerCase().includes(searchTerm.value.toLowerCase())
-//   // );
-
-//   const result = props.stockInfoList
-//   console.log("Props :", props.stockInfoList.values[0])  
-
-//   console.timeEnd("⏳ Filtering Execution Time"); // 종료 시간 측정
-//   return result;
-// });
-
-
-// function handleClear() {
-//   searchTerm.value = ""; // 검색어 초기화
-// }
-
-function handleDetail(row: StockInfo) {
+function handleDetail(row: StockItem) {
   router.push({
     name: "LoadLotStock",
     params: { id: row.id },
   });
 }
 
-// async function handleUpdate(row: StockInfo) {
-//   const vals = convertKeysToPEP8(row);
-
-//   try {
-//     const response = await sendPostRequestByInterface(`/reel/update_reel_request/${row.id}`, vals);
-
-//     if (response?.success === false) {
-//       console.error("❌ Update failed:", response.error);
-//       alert(`Update failed: ${response.error}`); // 사용자에게 알림 표시
-//     } else {
-//       console.log("✅ Update successful:", response);
-//       alert("Update successful!"); // 성공 메시지
-//     }
-//   } catch (error) {
-//     console.error("❌ Unexpected error in handleUpdate:", error);
-//   }
-// }
-
-
-
 const tableRowClassName = ({
   row,
   rowIndex,
 }: {
-  row: StockInfo;
+  row: StockItem;
   rowIndex: number;
 }) => {
-  const firstMesMaterials = row?.fromWhcspMes?.firstMesMaterials
+  const firstMesMaterials = row?.stockItemLabel?.lot?.firstMesMaterials
   if (!(firstMesMaterials !== undefined && firstMesMaterials.length > 0)) {
     return "el-warning"; // Ensure this matches your CSS class
   }
   return "";
 };
-
-// const querySearch = (
-//   queryString: string,
-//   cb: (suggestions: { value: string; label: string }[]) => void
-// ) => {
-//   const results = userOptions.value
-//     .filter((user) =>
-//       user.label.toLowerCase().includes(queryString.toLowerCase()) // 입력한 값이 포함된 사용자 찾기
-//     )
-//     .map((user) => ({
-//       value: user.label, // 사용자명
-//       label: user.label, // 표시할 이름
-//     }));
-
-//   cb(results); // 자동 완성 목록에 전달
-// };
-
-// const handleSelect = (item: { value: string; label: string }, row: StockInfo) => {
-//   row.newUserName = item.label; // 해당 row의 newUserName을 업데이트
-// };
-
 
 </script>
 
