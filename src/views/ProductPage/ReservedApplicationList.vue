@@ -40,36 +40,13 @@
         </el-table-column>
 
         <el-table-column prop="test_type" label="TEST" align="center">
-          <!-- <template #default="scope">
-              <el-select
-                v-model="scope.row.test_type"
-                placeholder="예) Fuse Max"
-                size="small"
-              >
-                <el-option key="Max Fuse " label="Max Fuse" value="Max Fuse" />
-                <el-option key="AMR" label="AMR" value="AMR" />
-                <el-option key="Life" label="Life" value="Life" />
-                <el-option key="Aging" label="Aging" value="Aging" />
-              </el-select>
-            </template> -->
         </el-table-column>
-
-        <!-- <el-table-column
-          prop="sample_quantity"
-          label="수량"
-          align="center"
-          width="70px"
-        >
-        </el-table-column> -->
 
         <el-table-column prop="designer" label="개발자" align="center">
         </el-table-column>
 
         <el-table-column prop="requester" label="담당자" align="center">
         </el-table-column>
-
-        <!-- <el-table-column prop="purpose" label="의뢰목적" align="center">
-        </el-table-column> -->
 
         <el-table-column label="상태" align="center">
           <template #default="scope">
@@ -92,20 +69,6 @@
 
         <el-table-column label="Action" width="100" align="center">
           <template #default="scope">
-            <!-- <el-button
-              type="success"
-              size="small"
-              style="margin-right: 5px"
-              @click="handleUpdate(scope.row)"
-              >업데이트</el-button
-            >
-            <el-button
-              type="danger"
-              size="small"
-              style="margin-right: 5px"
-              @click="handleDelete(scope.row)"
-              >삭제</el-button
-            > -->
             <el-button
               type="primary"
               size="small"
@@ -127,24 +90,6 @@
         ></el-pagination>
 
     </div>
-    <!-- <el-dialog
-      :title="idEdit ? '제품 편집' : '제품 추가'"
-      v-model="visible"
-      width="500px"
-      destroy-on-close
-      :close-on-click-modal="false"
-      @close="closeDialog"
-    >
-      
-    </el-dialog>
-    <el-dialog
-      title="제품 상세 정보"
-      v-model="visible1"
-      width="700px"
-      destroy-on-close
-    >
-      <RequestDetail :data="rowData" />
-    </el-dialog> -->
   </div>
 </template>
 
@@ -155,12 +100,6 @@ import { ElMessage } from "element-plus";
 import { getLastThursday, formatDate } from "../../utils/utility";
 import { applicationRules } from "../../utils/FromRule";
 import { useRouter } from "vue-router";
-
-// const props = defineProps<{
-//   status: string;
-// }>();
-
-
 
 const getRowClassName = ({ row }) => {
   if (row.status === "in progress") {
@@ -193,16 +132,12 @@ interface ApplicationItem {
   target_position: string;
 }
 
-
-
-
 const allData = ref<ApplicationItem[]>([]);
 const tableData = ref<ApplicationItem[]>([]);
 const pageTotal = ref(0);
 
 const fetchData = async () => {
   try {
-    //props.status = 'finished'
     const response = await axios.post("pdt_application/get_application_list", {
       status: "reserved",
     });
