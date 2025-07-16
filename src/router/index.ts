@@ -698,7 +698,7 @@ const routes: RouteRecordRaw[] = [
         },
         component: () =>
           import(
-            /* webpackChunkName: "table" */ "../views/Solder/Stock/Application/SolderCreateApplication.vue"
+            /* webpackChunkName: "table" */ "../views/Solder/Stock/StockItem/CreateSolder.vue"
           ),
       },
       {
@@ -710,7 +710,7 @@ const routes: RouteRecordRaw[] = [
         },
         component: () =>
           import(
-            /* webpackChunkName: "table" */ "../views/Solder/Stock/Application/CreateApplication.vue"
+            /* webpackChunkName: "table" */ "../views/Solder/Stock/StockItem/CreateReel.vue"
           ),
       },
       {
@@ -722,7 +722,7 @@ const routes: RouteRecordRaw[] = [
         },
         component: () =>
           import(
-            /* webpackChunkName: "table" */ "../views/Solder/Stock/Application/LoadApplication.vue"
+            /* webpackChunkName: "table" */ "../views/Solder/Stock/StockItem/LoadStockItem.vue"
           ),
       },
       {

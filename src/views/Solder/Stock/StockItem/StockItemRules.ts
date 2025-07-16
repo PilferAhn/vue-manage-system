@@ -2,7 +2,7 @@
 import { FormRules } from "element-plus";
 
 export const rules: FormRules = {
-  reelId: [{ required: true, message: "Reel ID is required", trigger: "blur" }],
+  label: [{ required: true, message: "ID is required", trigger: "blur" }],
   receiver: [
     { required: true, message: "Receiver is required", trigger: "blur" },
   ],

@@ -1,30 +1,41 @@
+export type StockItemType = 'reel' | 'sample';
 import { User } from "./user";
 
-interface StockItemFirstMesMaterial{
-  material_id : string;
-  designer? :  User;
-}
-
-interface StockItemFromWhcspMes {
+interface StockItemLotFirstMesMaterial{
   materialId : string;
-  firstMesMaterials : StockItemFirstMesMaterial[]
+  designer? :  User;
+  sourceId? : string;
+  isEditable?: boolean;
 }
 
-export interface StockInfo {
+export interface StockItemLot {
+  lotId: string;
+  materialId: string;  
+  firstMesMaterials: StockItemLotFirstMesMaterial[];
+  sourceId: string;
+  isEditable?: boolean
+}
+
+export interface StockItemLabel {
+  label : string;
+  lotId? : string;
+  lot?: StockItemLot
+}
+
+export interface StockItem {
     id?: number;
-    reelId?: string;    
+    label: string;    
     dateOfCreated?: string;
-    location?: string;
+    location: string;
     remainQuantity?: number;
     quantity?: number;
     assumedQuantity?: number;
-    receiver? : string;
-    operationType? : string;
-    isFound? : boolean;
+    receiver: string;
+    operationType : StockItemType;
     // designer? : string
     // modelName?: string
     // materialId?: string;
 
-    fromWhcspMes? : StockItemFromWhcspMes
+    stockItemLabel? : StockItemLabel
   }
   

@@ -402,7 +402,6 @@ import axios from "axios";
 import { Option } from "element-plus/es/components/select-v2/src/select.types";
 import { initBom } from "../../../utils/Fab/bom-utils";
 import Bom from "./bom/Bom.vue";
-import { rules } from "../../Solder/Stock/Common/ApplicationRules";
 import { composeEventHandlers } from "element-plus/es/utils";
 import {getPackageList} from "../../../utils/utility"
 
