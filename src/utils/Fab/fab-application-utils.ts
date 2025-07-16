@@ -32,7 +32,7 @@ import { objectEach } from "highcharts";
 
 import type { TegApplication as TegApplicationInterface } from "../../views/TegPage/Common/ApplicationTypes";
 
-import type { Bom, FabRequest } from "../../interface/fab-application-rev2";
+import { Bom, FabRequest } from "../../interface/fab-application-rev2";
 import { fa } from "element-plus/es/locale";
 import { holidaysList , isHoliday } from "../date-utils";
 import { getUserId } from "../account-utils";
@@ -740,11 +740,62 @@ export async function partialUpdateForm(application: FabRequestForm) : Promise<F
   }
 }
 
+export function ValChkBeforeSending(
+  application: FabRequestForm,
+  type: string
+): FabRequestForm {
+  if (validatingForm(application)) {
+    packageChecker(application, type);
+    checkPassivation(application);
+    let checkedApplication = {...application}
+    if (application.wantedFabFinishDate !== undefined) {
+        checkedApplication.wantedFabFinishDate = formatDateTime(
+          application.wantedFabFinishDate
+        );
+      }
 
-export async function sendingForm(application: FabRequestForm, type: string) {
+     if (application.wantedFabStartDate !== undefined) {
+        checkedApplication.wantedFabStartDate = formatDateTime(
+          application.wantedFabStartDate
+        );
+      }
+
+      if (application.idtMaskArrivalDate !== undefined) {
+        checkedApplication.idtMaskArrivalDate = formatDateTime(
+          application.idtMaskArrivalDate
+        );
+      }
+      if (application.pstMaskArrivalDate !== undefined) {
+        checkedApplication.pstMaskArrivalDate = formatDateTime(
+          application.pstMaskArrivalDate
+        );
+      }
+
+      // Check BOM
+      if (
+        application.bom?.epoxy &&
+        (
+          !application.bom.epoxy.modelName || // "", null, undefined 모두 체크됨
+          application.bom.epoxy.code === undefined || application.bom.epoxy.code === null
+        )
+      ) {
+        checkedApplication.bom.epoxy = undefined
+      }
+    return checkedApplication as FabRequestForm;
+  } else {
+    ElNotification({
+          title: `에러)`,
+          message:"Before Submit 유효성 검사 실패: 폼이 유효하지 않습니다.",
+          type: "error",
+        });
+    return null; 
+  }
+}
+
+export async function sendingForm(application: FabRequestForm, type: string) : Promise<FabRequestForm> {
   if (validatingForm(application)) {
     let url = ""; // 조건문 외부에서 선언
-
+    console.log('type :::', type);
     if (type === "submit") {
       url = serverUrl + "/fab_monitoring_rev2/create_fab_request";
     } else if (type === "partial update")
@@ -759,54 +810,9 @@ export async function sendingForm(application: FabRequestForm, type: string) {
         application.currentProductName;
     }
 
-    // dvrChecker(application, type);
-    packageChecker(application, type);
-    checkPassivation(application);
-
-    // passivation Checker
-
     try {
-      if (application.wantedFabFinishDate !== undefined) {
-        application.wantedFabFinishDate = formatDateTime(
-          application.wantedFabFinishDate
-        );
-      }
-      if (application.wantedFabStartDate !== undefined) {
-        application.wantedFabStartDate = formatDateTime(
-          application.wantedFabStartDate
-        );
-      }
-
-      if (application.idtMaskArrivalDate !== undefined) {
-        application.idtMaskArrivalDate = formatDateTime(
-          application.idtMaskArrivalDate
-        );
-      }
-      if (application.pstMaskArrivalDate !== undefined) {
-        application.pstMaskArrivalDate = formatDateTime(
-          application.pstMaskArrivalDate
-        );
-      }
-
-      // Check BOM
-      if (
-        application.bom &&
-        application.bom.epoxy &&
-        (
-          !application.bom.epoxy.modelName || // "", null, undefined 모두 체크됨
-          application.bom.epoxy.code === undefined || application.bom.epoxy.code === null
-        )
-      ) {
-        application.bom.epoxy = undefined
-
-      }
-
       const app = convertKeysToPEP8(application); 
       const response = await axios.post(url, app);
-      // console.log(response.data);
-      // console.log(convertPep8ToCamelCase2(response.data));
-      Object.assign(application, convertPep8ToCamelCase2(response.data));
-
       // 성공 알림
       ElNotification({
         title: "성공",
@@ -816,6 +822,7 @@ export async function sendingForm(application: FabRequestForm, type: string) {
             : "의뢰서가 성공적으로 업데이트되었습니다.",
         type: "success",
       });
+      return convertPep8ToCamelCase2(response.data) as FabRequest;
     } catch (error) {
       if (error.response) {
         console.log(error);

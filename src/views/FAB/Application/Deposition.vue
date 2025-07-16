@@ -28,7 +28,7 @@
            <!-- <input-text label="Special IDT Stack"></input-text> -->
         </div>
         <div v-else>
-          <el-descriptions title="Thickness" :column="4" :border="true">
+          <el-descriptions title="Thickness(IDT 증착)" :column="4" :border="true">
             <template #extra>
               <div class="extra-container">
                 <el-select
@@ -46,6 +46,7 @@
                 </el-select>
   
                 <el-select
+                  v-if="props.sawType.sawTypeId !== 'TC'"
                   v-model="props.fabApplication.idtMachineName"
                   placeholder="IDT Deposition Machine"
                 >
@@ -65,6 +66,7 @@
               :label="layer.material"
               :span="1"
               :size="'Large'"
+              v-show="true"
             >
               <el-input v-model="layer.thickness"></el-input>
             </el-descriptions-item>
@@ -79,7 +81,7 @@
           <div v-if="props.fabApplication.isDualIdt">
             <br />
   
-            <el-descriptions title="Thickness" :column="4" :border="true">
+            <el-descriptions title="Thickness(M1B IDT성막)" :column="4" :border="true">
               <template #extra>
                 <div class="extra-container">
                   <el-select
@@ -97,6 +99,7 @@
                   </el-select>
   
                   <el-select
+                  v-if="props.sawType.sawTypeId !== 'TC'"
                     v-model="props.fabApplication.idt2MachineName"
                     placeholder="IDT Deposition Machine"
                   >
@@ -177,12 +180,10 @@
   ]);
   
   onMounted(() => {
-  
     if (Object.keys(props.sawType).length !== 0) {
       depositionOptions.value = generateIdtOptions(props.sawType.idtTypes);
       depositionOptions2.value = generateIdtOptions(props.sawType.idtTypes);
       Object.assign(layers, props.fabApplication.idtLayers);
-      // props.fabApplication.idtProcessId = props.fabApplication.idtType.idtProcessId;
       machineOptions.value = generateMachineOptions(
         props.sawType.idtTypes,
         props.fabApplication.idtId.toString()
@@ -198,7 +199,6 @@
       }
   
       if (props.fabApplication.idt2Id !== null) {
-        // 이건 왜 있지?
         Object.assign(layers2 , props.fabApplication.idt2Layers)
       }
     }
@@ -226,13 +226,8 @@
           ...JSON.parse(JSON.stringify(machineOptions.value))
         );
       } else {
-        // layers 배열을 완전히 새로운 배열로 대체 (반응성을 유지)
         layers2.splice(0, layers2.length);
-  
-        // Vue의 반응성을 유지하려면 spread 연산자로 새로운 배열 할당
         props.fabApplication.idt2Layers = [];
-  
-        // 다른 상태 초기화
         props.fabApplication.idt2Id = null;
       }
     }
@@ -241,37 +236,30 @@
   // IDT Thickness 입력을 활성하게 해주는 Watch
   watch(
     () => props.fabApplication.idtProcessId,
-    (newVal) => {
-      
-      console.log(props.sawType.idtTypes)
+    (newVal) => { 
       depositionOptions.value = generateIdtOptions2(
         props.sawType.idtTypes,
         newVal
       );
-      console.log(depositionOptions.value)
-      if (["HS", "NS"].includes(props.fabApplication.waferType)) {
-        
-        // machineOptions.value = generateMachineOptions(
-        //   props.sawType.idtTypes,
-        //   props.fabApplication.idtId.toString()
-        // );        
-
-      } else {
-        // TC CASE
+      // if (["HS", "NS"].includes(props.fabApplication.waferType)) {
         props.fabApplication.idtId = parseInt(depositionOptions.value[0].value);
-      }
+      // } 
+      // else {
+      //   // TC CASE
+      //   props.fabApplication.idtId = parseInt(depositionOptions.value[0].value);
+      // }
   
       if (props.fabApplication.idtId !== null) {
         machineOptions.value = generateMachineOptions(
           props.sawType.idtTypes,
           props.fabApplication.idtId.toString()
         );
-  
         if (machineOptions.value.length == 1) {
           props.fabApplication.idtMachineName = machineOptions.value[0].value;
-        } else if (props.fabApplication.idtProcessId === "Lift-off") {
-          props.fabApplication.idtMachineName = machineOptions.value[2].value;
-        }
+        } 
+        // else if (props.fabApplication.idtProcessId === "Lift-off") {
+        //   props.fabApplication.idtMachineName = machineOptions.value[0].value;
+        // }
       }
     }
   );
@@ -280,13 +268,10 @@
   watch(
     () => props.fabApplication.waferType,
     (newVal) => {
-      
-      // depositionOptions.value = generateIdtOptions(props.sawType.idtTypes);
       layerNames.value = "";
       props.fabApplication.depositionCondi = undefined;
       layers.length = 0;
       idtProcessIdList.value = [];      
-      // depositionOptions.value = [];
       props.fabApplication.idtId = null;
       props.fabApplication.idtMachineName = "";
   
@@ -302,9 +287,25 @@
         ];
         props.fabApplication.idtProcessId = "Lift-off"
       }
+      // 변경된 idtProcessId에 따라 depositionOptions을 다시 갱신
+    depositionOptions.value = generateIdtOptions2(
+      props.sawType.idtTypes,
+      props.fabApplication.idtProcessId
+    );
+
+    // IDT와 관련된 machineOptions 갱신
+    if (props.fabApplication.idtProcessId) {
+      machineOptions.value = generateMachineOptions(
+        props.sawType.idtTypes,
+        props.fabApplication.idtProcessId
+      );
+      if (machineOptions.value.length === 1) {
+        props.fabApplication.idtMachineName = machineOptions.value[0].value;
+      }
+    }
     }
   );
-  // TSTESTMODEL1
+
   // depositionCondi 변경 감지
   watch(
     () => props.fabApplication.idtId,
@@ -316,25 +317,22 @@
           getIdtTypeByIdtId(props.sawType.idtTypes, props.fabApplication.idtId)
         );
   
-        // 이건 왜 있지?
         layerNames.value = getLayerNameFromIdtTypes(
           props.sawType.idtTypes,
           props.fabApplication.idtId,
           layers
         );
-  
+
         // 증착 장비 옵션 생성
         machineOptions.value = generateMachineOptions(
           props.sawType.idtTypes,
           props.fabApplication.idtId.toString()
         );
-  
-        // 만약 증창 장비옵션에 고르기가 1번밖에 없다면 자동적으로 선택됨
-        if (machineOptions.value.length == 1) {
+
+        if (machineOptions.value) {
           props.fabApplication.idtMachineName = machineOptions.value[0].value;
         }
-  
-        // 이것도 왜있?
+
         props.fabApplication.idtLayers = layers;
   
         if (props.fabApplication.isDualIdt) {
@@ -366,7 +364,7 @@
           props.fabApplication.waferType !== "TC" &&
           props.fabApplication.idtProcessId === "Lift-off"
         ) {
-          props.fabApplication.idtMachineName = machineOptions.value[2].value;
+          props.fabApplication.idtMachineName = machineOptions.value[0].value;
         }
       }
     }
@@ -382,13 +380,11 @@
           getIdtTypeByIdtId(props.sawType.idtTypes, props.fabApplication.idt2Id)
         );
   
-        // 이건 왜 있지?
         layerNames.value = getLayerNameFromIdtTypes(
           props.sawType.idtTypes,
           props.fabApplication.idt2Id,
           layers2
         );
-        // Object.assign(layers2, props.fabApplication.idtLayers);
   
         props.fabApplication.idt2Layers = [...layers2];
       }

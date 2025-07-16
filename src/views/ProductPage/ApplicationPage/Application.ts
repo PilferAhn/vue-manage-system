@@ -33,6 +33,7 @@ export const testOptions = [
   "Self Heating",
   "Drop",
   "Step",
+  "SMARTERMICRO FUSE",
 ];
 
 export const signalList = [

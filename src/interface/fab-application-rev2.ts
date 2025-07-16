@@ -105,6 +105,7 @@ export interface FabRequestForm {
   purpose?: string;
   destinationId?: string;
   packageId?: string;
+  packageSubTypeId?: string;
   priorityId?: string;
   group?: string;
   bandGroupId?: string;
@@ -614,7 +615,6 @@ export class FabRequest implements FabRequestForm {
           "ea";
       }
     } catch (error) {
-      // console.error("Error in createTrimmingInfo:", error);
       return ""; // 🚀 오류 발생 시 빈 문자열 반환
     }
 
@@ -683,7 +683,6 @@ export class FabRequest implements FabRequestForm {
         }
       }
     } catch (error) {
-      // console.error("Error in createTrimmingInfo:", error);
       return ""; // 🚀 오류 발생 시 빈 문자열 반환
     }
 

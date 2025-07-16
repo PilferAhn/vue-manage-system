@@ -85,6 +85,16 @@
         ></measurement-tab>
       </template>
     </el-tab-pane>
+     <!-- SmarterMicro Fuse 탭 내용 -->
+    <el-tab-pane label="SmarterMicro Fuse" name="SmarterMicro Fuse">
+      <template v-if="activeTabName === 'SmarterMicro Fuse'">
+        <measurement-tab
+          :testType="'SmarterMicro Fuse'"
+          :searchType="'normal'"
+          :status = "'finished'"
+        ></measurement-tab>
+      </template>
+    </el-tab-pane>
 
     <!-- 여기에 다른 탭들을 추가할 수 있습니다. -->
   </el-tabs>
