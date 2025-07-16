@@ -4,7 +4,8 @@
             {{ stockItemLabel.label }}
         </el-form-item>
         <el-form-item prop="lotId" label="Lot ID">
-            <el-input v-model="stockItemLabel.lotId" @change="handleUpdateLotId" />
+            <el-input v-model="stockItemLabel.lotId" @change="handleUpdateLotId" style="width: 200px; display: inline-block; margin-right: 8px;" />
+            <el-button v-if="stockItemLabel.lotId && !stockItemLabel.lot" type="primary" @click="handleAddLot" style="margin-left: 8px;">Add Lot</el-button>
         </el-form-item>
         <el-form-item label="isNewLabel">
             {{ isNewLabel }}
@@ -20,7 +21,7 @@
 
     <div v-if="stockItemLabel.lot">
         <el-divider />
-        <StockItemLot v-model="stockItemLabel.lot" :is-new-lot="isNewLot" />
+        <StockItemLot :key="stockItemLabel.lotId" v-model="stockItemLabel.lot" :is-new-lot="isNewLot" />
     </div>
 </template>
 
@@ -79,6 +80,17 @@ async function handleUpdate() {
   }
 }
 
+// Add a new lot if not present
+function handleAddLot() {
+  stockItemLabel.value.lot = {
+    lotId: stockItemLabel.value.lotId,
+    materialId: '',
+    firstMesMaterials: [],
+    sourceId: 'user',
+    isEditable: true
+  };
+  isNewLot.value = true;
+}
 
 onMounted(async () => {
     handleUpdateLotId(stockItemLabel.value.lotId)
