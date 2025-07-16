@@ -8,8 +8,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import type { StockItem } from "../../../../interface/stock";
-import ApplicationListTemplate from "./ApplicationListTemplate.vue";
-import { fetchStockItems } from "./ApplicationList"; // Import the fetch function
+import ApplicationListTemplate from "./StockItemListTemplate.vue";
+import { fetchStockItems } from "./StockItemList"; // Import the fetch function
 
 const stockItems = ref<StockItem[]>([]);
 
