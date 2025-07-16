@@ -178,10 +178,10 @@ export function updateReelInfo(applicationData: ApplicationData[]) {
     if (app.stocks.length > 0) {
       app.stocks.forEach((stock) => {
         if (stock.operationType === "reel") {
-          app.reelId = stock.reelId;
+          app.reelId = stock.label;
           app.reelLoc = stock.location;
         } else {
-          app.jigSolderId = stock.reelId;
+          app.jigSolderId = stock.label;
           app.jigSolderLoc = stock.location;
         }
       });
