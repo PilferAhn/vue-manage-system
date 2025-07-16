@@ -38,7 +38,7 @@
 
     <div v-if="stockItem.stockItemLabel">
       <el-divider />
-      <StockItemLabel :key="stockItem.label" v-model="stockItem.stockItemLabel" v-model:isNewLabel="isNewLabel" />
+      <StockItemLabel :key="stockItem?.stockItemLabel?.label" v-model="stockItem.stockItemLabel" v-model:isNewLabel="isNewLabel" />
     </div>
   </div>
 </template>

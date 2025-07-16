@@ -1,5 +1,5 @@
 <template>
-    <el-form :model="stockItemLabel" label-width="120px">
+    <el-form v-loading="loading" :model="stockItemLabel" label-width="120px">
         <el-form-item prop="label" label="Label">
             {{ stockItemLabel.label }}
         </el-form-item>
@@ -21,7 +21,7 @@
 
     <div v-if="stockItemLabel.lot">
         <el-divider />
-        <StockItemLot :key="stockItemLabel.lotId" v-model="stockItemLabel.lot" :is-new-lot="isNewLot" />
+        <StockItemLot :key="stockItemLabel?.lot?.lotId" v-model="stockItemLabel.lot" :is-new-lot="isNewLot" />
     </div>
 </template>
 
@@ -37,27 +37,34 @@ import { ElMessage } from "element-plus";
 //     isNewLabel: Boolean
 // });
 
-const updateIsAllowed = computed(()=>{
-    return !stockItemLabel.value.lotId || !isNewLot.value
-})
 
 const stockItemLabel = defineModel<StockItemLabel>()
 const isNewLabel = defineModel<boolean>('isNewLabel')
 
+const loading = ref(false)
 const isNewLot = ref<boolean>(false);
+
+const updateIsAllowed = computed(()=>{
+    return !stockItemLabel.value.lotId || !isNewLot.value
+})
+
 
 async function handleUpdateLotId(newLotId: string) {
   stockItemLabel.value.lotId = newLotId = newLotId === "" ? null : newLotId;
-  isNewLot.value = true;
-  stockItemLabel.value.lot = undefined;
   if (newLotId) {
+    loading.value = true;
     const lot = await getStockItemLot(newLotId);
     if (lot) {
       stockItemLabel.value.lot = lot;
       isNewLot.value = false;
     } else {
+      stockItemLabel.value.lot = undefined;
       isNewLot.value = true;
     }
+    loading.value = false;
+  } else {
+    stockItemLabel.value.lot = undefined;
+    isNewLot.value = false;
   }
 }
 
