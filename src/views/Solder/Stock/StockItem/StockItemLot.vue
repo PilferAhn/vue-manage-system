@@ -60,7 +60,7 @@ const props = defineProps({
 });
 
 const stockItemLot = defineModel<StockItemLot>()
-console.log("StockItemLot", stockItemLot.value);
+
 // Add a new editable firstMesMaterial
 function addFirstMesMaterial() {
     if (!stockItemLot.value.firstMesMaterials) {
