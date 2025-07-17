@@ -29,7 +29,7 @@
             class="custom-table"
       :row-class-name="tableRowClassName"
     >
-    <el-table-column label="No" width="60" :align="'center'">
+    <el-table-column label="No" width="80" :align="'center'">
         <template #default="scope">
           {{ scope.$index + 1 }}
         </template>
@@ -51,7 +51,7 @@
       <el-table-column
         prop="designer"
         label="개발자"
-        width="100"
+        width="120"
         :align="'center'"
       ></el-table-column>
   
