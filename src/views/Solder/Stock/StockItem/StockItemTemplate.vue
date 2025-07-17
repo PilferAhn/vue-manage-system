@@ -28,7 +28,7 @@
       </el-form-item>
 
       <div v-if="props.formType === 'create'">
-        <el-button type="primary" :disabled="isNewLabel" @click="handleCreate(ruleFormRef)">Submit</el-button>
+        <el-button type="primary" :disabled="isNewLabel" @click="handleCreate(ruleFormRef)">Create</el-button>
       </div>
       <div v-if="props.formType === 'load'">
         <el-button type="primary" :disabled="isNewLabel" @click="handleUpdate(ruleFormRef)">Update</el-button>
@@ -129,7 +129,7 @@ async function handleUpdate(formEl: FormInstance | undefined) {
   if (await formEl.validate()) {
     const updatedStockItem = await updateStockItem(stockItem.value);
     if (updatedStockItem) {
-      Object.assign(stockItem.value, updatedStockItem);
+      stockItem.value = updatedStockItem;
     } else {
       ElMessage.error("Failed to update stock item.");
     }

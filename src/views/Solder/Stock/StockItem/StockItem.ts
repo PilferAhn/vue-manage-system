@@ -109,6 +109,27 @@ export async function updateStockItem(stockItem: StockItem): Promise<StockItem|n
     return null;
 }
 
+/**
+ * Delete a StockItem via API.
+ * @param id StockItem id
+ * @returns Promise<true|null> (true if success, null if error)
+ */
+export async function deleteStockItem(id: number): Promise<true|null> {
+  const url = "/stock/delete_stock_item";
+
+  const data = new FormData()
+  data.append("id", id.toString())
+  try {
+    await axios.post(url, data);
+    ElMessage.success("process completed");
+    return true;
+  } catch (error: any) {
+    // Log and display error message
+    console.log(error);
+    ElMessage.error(getBackendErrorMessage(error));
+  }
+    return null;
+}
 
 /**
  * Get a StockItemLabel by label via API.
@@ -164,7 +185,6 @@ export async function createStockItemLabel(stockItemLabel: StockItemLabel): Prom
     return null;
 }
 
-
 /**
  * Update a StockItemLabel via API.
  * @param stockItemLabel StockItemLabel data
@@ -192,8 +212,6 @@ export async function updateStockItemLabel(stockItemLabel: StockItemLabel): Prom
   }
     return null;
 }
-
-
 
 /**
  * Get a StockItemLot by lot ID via API.
@@ -247,21 +265,26 @@ export async function getDesignerByFirstMesMaterialId(firstMesMaterialId: string
     return null;
 }
 
-
 /**
- * Delete a StockItem via API.
- * @param id StockItem id
- * @returns Promise<true|null> (true if success, null if error)
+ * Create a StockItemLot via API.
+ * @param stockItemLot StockItemLot data
+ * @returns Promise with created StockItemLot or null
  */
-export async function deleteStockItem(id: number): Promise<true|null> {
-  const url = "/stock/delete_stock_item";
+export async function createStockItemLot(stockItemLot: StockItemLot): Promise<StockItemLot|null> {
+  const url = "/stock/create_stock_item_lot";
+  // Convert keys to PEP8 (snake_case) for backend
+  const data = convertKeysToPEP8(stockItemLot);
 
-  const data = new FormData()
-  data.append("id", id.toString())
   try {
-    await axios.post(url, data);
+    // Log the URL for debugging
+    // console.log(url);
+    // Send POST request to create the stock item
+    const response = await axios.post(url, data);
+    // Convert response keys to camelCase for frontend
+    const newStockItemLot =  convertPep8ToCamelCase2(response.data) as StockItemLot;
     ElMessage.success("process completed");
-    return true;
+
+    return newStockItemLot;
   } catch (error: any) {
     // Log and display error message
     console.log(error);
@@ -270,3 +293,30 @@ export async function deleteStockItem(id: number): Promise<true|null> {
     return null;
 }
 
+/**
+ * Update a StockItemLot via API.
+ * @param stockItemLot StockItemLot data
+ * @returns Promise with updated StockItemLot or null
+ */
+export async function updateStockItemLot(stockItemLot: StockItemLot): Promise<StockItemLot|null> {
+  const url = "/stock/update_stock_item_lot";
+  // Convert keys to PEP8 (snake_case) for backend
+  const data = convertKeysToPEP8(stockItemLot);
+
+  try {
+    // Log the URL for debugging
+    // console.log(url);
+    // Send POST request to create the stock item
+    const response = await axios.post(url, data);
+    // Convert response keys to camelCase for frontend    
+    const newStockItemLot =  response.data ? convertPep8ToCamelCase2(response.data) as StockItemLot : null;
+    ElMessage.success("process completed");
+
+    return newStockItemLot;
+  } catch (error: any) {
+    // Log and display error message
+    console.log(error);
+    ElMessage.error(getBackendErrorMessage(error));
+  }
+    return null;
+}

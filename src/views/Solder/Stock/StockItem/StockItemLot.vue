@@ -1,5 +1,5 @@
 <template>
-    <el-form :model="stockItemLot" label-width="120px">
+    <el-form :model="stockItemLot" label-width="120px" ref="ruleFormRef">
         <el-form-item prop="lotId" label="lot ID">
             {{ stockItemLot.lotId }}
         </el-form-item>
@@ -57,24 +57,29 @@
         </div>
         <el-button type="primary" @click="addFirstMesMaterial" style="margin-bottom: 16px;">Add PN FAB</el-button>
 
-
-        <el-form-item label="isNewLot">
-            {{ props.isNewLot }}
-        </el-form-item>
+        <div v-if="isNewLot">
+            <el-button type="primary"  @click="handleCreate(ruleFormRef)">Create</el-button>
+        </div>
+        <div v-else>
+            <el-button type="primary"  @click="handleUpdate(ruleFormRef)">Update</el-button>
+        </div>
 
     </el-form>
 </template>
 
 <script setup lang="ts">
 
+import { ElMessage, FormInstance } from "element-plus";
 import type {  StockItemLot } from "../../../../interface/stock";
-import { getDesignerByFirstMesMaterialId } from "./StockItem";
+import { createStockItemLot, getDesignerByFirstMesMaterialId, updateStockItemLot } from "./StockItem";
+import { ref } from "vue";
 
 const props = defineProps({
     isNewLot: Boolean
 });
 
 const stockItemLot = defineModel<StockItemLot>()
+const isNewLot = defineModel<boolean>('isNewLot')
 
 // Add a new editable firstMesMaterial
 function addFirstMesMaterial() {
@@ -103,5 +108,37 @@ async function updateFirstMesMaterialDisigner(idx: number) {
         mat.designer = await getDesignerByFirstMesMaterialId(mat.materialId);        
     }
 }
+
+
+const ruleFormRef = ref<FormInstance>();
+async function handleCreate(formEl: FormInstance) {
+    let validationResult: boolean;
+    try {
+        validationResult = await formEl.validate();
+    } catch (error) {
+        ElMessage.error("Lot form is not complete");
+        return;
+    }
+    
+    const createdStockItem = await createStockItemLot(stockItemLot.value);
+    if (createdStockItem) {
+        stockItemLot.value = createdStockItem;
+        isNewLot.value = false;
+    } else {
+        ElMessage.error("Failed to create stock item lot.");
+    }
+}
+
+async function handleUpdate(formEl: FormInstance | undefined) {
+  if (await formEl.validate()) {
+    const updatedStockItem = await updateStockItemLot(stockItemLot.value);
+    if (updatedStockItem) {
+      stockItemLot.value =  updatedStockItem;
+    } else {
+      ElMessage.error("Failed to update stock item lot.");
+    }
+  }
+}
+
 
 </script>

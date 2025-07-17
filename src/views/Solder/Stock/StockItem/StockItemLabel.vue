@@ -7,9 +7,6 @@
             <el-input v-model="stockItemLabel.lotId" @change="handleUpdateLotId" style="width: 200px; display: inline-block; margin-right: 8px;" />
             <el-button v-if="stockItemLabel.lotId && !stockItemLabel.lot" type="primary" @click="handleAddLot" style="margin-left: 8px;">Add Lot</el-button>
         </el-form-item>
-        <el-form-item label="isNewLabel">
-            {{ isNewLabel }}
-        </el-form-item>
     </el-form>
 
     <div v-if="isNewLabel">
@@ -21,7 +18,7 @@
 
     <div v-if="stockItemLabel.lot">
         <el-divider />
-        <StockItemLot :key="stockItemLabel?.lot?.lotId" v-model="stockItemLabel.lot" :is-new-lot="isNewLot" />
+        <StockItemLot :key="stockItemLabel?.lot?.lotId" v-model="stockItemLabel.lot" v-model:is-new-lot="isNewLot" />
     </div>
 </template>
 
@@ -71,7 +68,7 @@ async function handleUpdateLotId(newLotId: string) {
 async function handleCreate() {
   const createdStockItem = await createStockItemLabel(stockItemLabel.value);
   if (createdStockItem) {
-    Object.assign(stockItemLabel.value, createdStockItem);
+    stockItemLabel.value = createdStockItem;
     isNewLabel.value = false;
   } else {
     ElMessage.error("Failed to create label.");
@@ -81,7 +78,7 @@ async function handleCreate() {
 async function handleUpdate() {
   const updatedStockItem = await updateStockItemLabel(stockItemLabel.value);
   if (updatedStockItem) {
-    Object.assign(stockItemLabel.value, updatedStockItem);
+    stockItemLabel.value = updatedStockItem;
   } else {
     ElMessage.error("Failed to update label.");
   }
