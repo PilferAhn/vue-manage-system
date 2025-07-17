@@ -38,13 +38,13 @@
       <el-table-column
         prop="modelName"
         label="PN_FAB"
-        width="140"
+        width="200"
         :align="'center'"
       ></el-table-column>
        <el-table-column
         prop="materialId"
         label="PN_WHC"
-        width="150"
+        width="200"
         :align="'center'"
       ></el-table-column>
       
@@ -54,45 +54,12 @@
         width="100"
         :align="'center'"
       ></el-table-column>
-   
   
-    <!-- <el-table-column v-if="name==='admin'"
-        
-        label="ID"
-        width="150"
-        :align="'center'"
-      >
-
-      <template #default="scope">
-        
-      </template>
-    </el-table-column> -->
-
-    <!-- <el-table-column v-if="name === 'admin'" label="Designer" width="150" :align="'center'">
-  <template #default="scope">
-    <el-autocomplete
-      v-model="scope.row.designer"
-      :fetch-suggestions="(queryString, cb) => querySearch(queryString, cb)"
-      placeholder="Enter user name"
-      @select="(item) => handleSelect(item, scope.row)"
-      clearable
-      :disabled ="scope.row.isFound"
-    ></el-autocomplete>
-    <el-select v-model="scope.row.designer">
-      <el-option v-for="(u , index) in userList"
-      :key="index"
-      :label="u.userName"
-      :value="u.userName"
-      ></el-option>
-    </el-select>
-  </template>
-</el-table-column> -->
-
       <el-table-column
         v-if="props.operationType === 'reel'"
         prop="reelId"
         label="Reel ID"
-        width="160"
+        width="170"
         :align="'center'"
       ></el-table-column>
       <el-table-column
@@ -118,7 +85,7 @@
 
       <el-table-column
         label="Receiver"
-        width="110"
+        width="150"
         prop="receiver"
         :align="'center'"
       ></el-table-column>
