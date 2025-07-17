@@ -3,8 +3,17 @@
         <el-form-item prop="lotId" label="lot ID">
             {{ stockItemLot.lotId }}
         </el-form-item>
-        
-        <el-form-item prop="materialId" label="PN WHC">
+
+        <el-form-item label="Source">
+            {{ stockItemLot.sourceId }}
+        </el-form-item>
+
+        <el-form-item prop="materialId" label="PN WHC" :rules="[
+            {
+                required: true,
+                message: 'Please enter PN WHC',
+                trigger: 'blur',
+            }]">
             <div v-if="stockItemLot.isEditable">
                 <el-input v-model="stockItemLot.materialId" />
             </div>
@@ -13,14 +22,22 @@
             </div>
         </el-form-item>
 
-        
+
         <!-- PN FAB (firstMesMaterialId) - list all firstMesMaterials -->
         <div v-if="stockItemLot.firstMesMaterials && stockItemLot.firstMesMaterials.length > 0">
-            <div v-for="(mat, idx) in stockItemLot.firstMesMaterials" :key="idx" style="border:1px solid #eee; margin-bottom:8px; padding:8px; border-radius:4px;">
-                <el-form-item :label="`PN FAB #${idx+1}`">
+            <div v-for="(mat, idx) in stockItemLot.firstMesMaterials" :key="idx"
+                style="border:1px solid #eee; margin-bottom:8px; padding:8px; border-radius:4px;">
+                <el-form-item :label="`PN FAB #${idx + 1}`" :prop="`firstMesMaterials.${idx}.materialId`" :rules="[
+                    {
+                        required: true,
+                        message: 'Please enter PN FAB',
+                        trigger: 'blur',
+                    }]">
                     <template v-if="mat.isEditable">
-                        <el-input v-model="mat.materialId" placeholder="Enter PN FAB" style="width: 200px;" />
-                        <el-button type="danger" icon="el-icon-delete" @click="removeFirstMesMaterial(idx)" circle size="small" style="margin-left:8px;" />
+                        <el-input v-model="mat.materialId" placeholder="Enter PN FAB" style="width: 200px;"
+                            @change="updateFirstMesMaterialDisigner(idx)" />
+                        <el-button type="danger" icon="Delete" @click="removeFirstMesMaterial(idx)" circle size="small"
+                            style="margin-left:8px;" />
                     </template>
                     <template v-else>
                         {{ mat.materialId }}
@@ -40,9 +57,6 @@
         </div>
         <el-button type="primary" @click="addFirstMesMaterial" style="margin-bottom: 16px;">Add PN FAB</el-button>
 
-        <el-form-item label="Source">
-            {{ stockItemLot.sourceId }}
-        </el-form-item>
 
         <el-form-item label="isNewLot">
             {{ props.isNewLot }}
@@ -54,6 +68,7 @@
 <script setup lang="ts">
 
 import type {  StockItemLot } from "../../../../interface/stock";
+import { getDesignerByFirstMesMaterialId } from "./StockItem";
 
 const props = defineProps({
     isNewLot: Boolean
@@ -82,5 +97,11 @@ function removeFirstMesMaterial(idx: number) {
     }
 }
 
+async function updateFirstMesMaterialDisigner(idx: number) {
+    const mat = stockItemLot.value.firstMesMaterials?.[idx];
+    if (mat && mat.isEditable && mat.materialId) {
+        mat.designer = await getDesignerByFirstMesMaterialId(mat.materialId);        
+    }
+}
 
 </script>

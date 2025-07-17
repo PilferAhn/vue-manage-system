@@ -1,3 +1,4 @@
+import type { User } from "../../../../interface/user";
 import type { StockItem, StockItemLabel, StockItemLot, StockItemType } from "../../../../interface/stock";
 import { ElMessage } from "element-plus";
 import axios from "axios";
@@ -219,6 +220,33 @@ export async function getStockItemLot(lotId: string): Promise<StockItemLot|null>
   }
     return null;
 }
+
+/**
+ * Get a Designer by firstMesMaterialId via API.
+ * @param lotId Lot ID
+ * @returns Promise with User or null
+ */
+export async function getDesignerByFirstMesMaterialId(firstMesMaterialId: string): Promise<User|null> {
+
+  const url = "/stock/get_designer_by_first_material_id";
+  const data = new FormData()
+  data.append("first_material_id", firstMesMaterialId)
+
+  try {
+    
+    const response = await axios.post(url, data);
+    // Convert response keys to camelCase for frontend
+    const designer =  response.data ? convertPep8ToCamelCase2(response.data) as User : null;
+
+    return designer;
+  } catch (error: any) {
+    // Log and display error message
+    console.log(error);
+    ElMessage.error(getBackendErrorMessage(error));
+  }
+    return null;
+}
+
 
 /**
  * Delete a StockItem via API.
