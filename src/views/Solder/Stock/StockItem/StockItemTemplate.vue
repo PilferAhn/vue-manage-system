@@ -28,11 +28,11 @@
       </el-form-item>
 
       <div v-if="props.formType === 'create'">
-        <el-button type="primary" :disabled="isNewLabel" @click="handleCreate(ruleFormRef)">Create</el-button>
+        <el-button type="primary" :disabled="isNewLabel" @click="handleCreate(ruleFormRef)">Create new stock item</el-button>
       </div>
       <div v-if="props.formType === 'load'">
-        <el-button type="primary" :disabled="isNewLabel" @click="handleUpdate(ruleFormRef)">Update</el-button>
-        <el-button type="danger" @click="handleDelete()">Remove</el-button>
+        <el-button type="primary" :disabled="isNewLabel" @click="handleUpdate(ruleFormRef)">Update stock item</el-button>
+        <el-button type="danger" @click="handleDelete()">Remove stock item</el-button>
       </div>
     </el-form>
 
@@ -137,20 +137,30 @@ async function handleUpdate(formEl: FormInstance | undefined) {
 }
 
 async function handleDelete() {
-  const confirmation = await ElMessageBox.confirm(
-    "Are you sure you want to delete this item? Deleted data cannot be restored.",
-    "Confirmation",
-    {
-      confirmButtonText: "Delete",
-      cancelButtonText: "No",
-      type: "error",
-    }
-  );
-  if (confirmation === "confirm") {
-    const result = await deleteStockItem(stockItem.value.id);
-    if (!result) {
-      ElMessage.error("Failed to delete stock item.");
-    }
+
+  let confirmed = false;
+  try {
+    await ElMessageBox.confirm(
+      "Are you sure you want to delete this item? Deleted data cannot be restored.",
+      {
+        confirmButtonText: "Delete",
+        cancelButtonText: "No",
+        type: "error",
+      }
+    );
+    confirmed = true;
+  } catch (error) {
+    // Cancelled or closed
+    confirmed = false;
+  }
+  if (!confirmed) return;
+
+  const result = await deleteStockItem(stockItem.value.id);
+  if (!result) {
+    ElMessage.error("Failed to delete stock item.");
+  } else {
+    // Try to emit close event if parent listens, otherwise fallback to router.back()
+    router.back();
   }
 }
 

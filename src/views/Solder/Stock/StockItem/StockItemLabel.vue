@@ -10,10 +10,10 @@
     </el-form>
 
     <div v-if="isNewLabel">
-        <el-button type="primary" :disabled="!updateIsAllowed" @click="handleCreate()">Create</el-button>
+        <el-button type="primary" :disabled="!updateIsAllowed" @click="handleCreate()">Create stock label</el-button>
     </div>
     <div v-else>
-        <el-button type="primary" :disabled="!updateIsAllowed" @click="handleUpdate()">Update</el-button>
+        <el-button type="primary" :disabled="!updateIsAllowed" @click="handleUpdate()">Update stock label</el-button>
     </div>
 
     <div v-if="stockItemLabel.lot">
@@ -28,7 +28,7 @@ import { computed, onMounted, ref} from "vue";
 import type { StockItemLabel } from "../../../../interface/stock";
 import StockItemLot from "./StockItemLot.vue";
 import { createStockItemLabel, getStockItemLot, updateStockItemLabel } from "./StockItem";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 // const {isNewLabel = true} = defineProps({
 //     isNewLabel: Boolean
@@ -76,6 +76,24 @@ async function handleCreate() {
 }
 
 async function handleUpdate() {
+
+  let confirmed = false;
+  try {
+    await ElMessageBox.confirm(
+      "These changes will affect all stock items with the same label.",
+      {
+        confirmButtonText: "Update",
+        cancelButtonText: "No",
+        type: "info",
+      }
+    );
+    confirmed = true;
+  } catch (error) {
+    // Cancelled or closed
+    confirmed = false;
+  }
+  if (!confirmed) return;
+
   const updatedStockItem = await updateStockItemLabel(stockItemLabel.value);
   if (updatedStockItem) {
     stockItemLabel.value = updatedStockItem;

@@ -47,21 +47,28 @@
                     {{ mat.sourceId || '-' }}
                 </el-form-item>
 
-                <el-form-item label="Designer Name" v-if="mat.designer">
-                    {{ mat.designer.userName || '-' }}
-                </el-form-item>
-                <el-form-item label="Designer Email" v-if="mat.designer">
-                    {{ mat.designer.email || '-' }}
-                </el-form-item>
+                <template v-if="mat.designer">
+                    <el-form-item label="Designer Name">
+                        {{ mat.designer.userName }}
+                    </el-form-item>
+                    <el-form-item label="Designer Email">
+                        {{ mat.designer.email }}
+                    </el-form-item> 
+                </template>
+                <template v-else-if="mat.materialId && mat.designer === null">
+                    Fab request not found
+                </template>
+
             </div>
         </div>
-        <el-button type="primary" @click="addFirstMesMaterial" style="margin-bottom: 16px;">Add PN FAB</el-button>
+        <el-button type="primary" @click="addFirstMesMaterial" style="margin-bottom: 16px;">Add PN FAB to the
+            lot</el-button>
 
         <div v-if="isNewLot">
-            <el-button type="primary"  @click="handleCreate(ruleFormRef)">Create</el-button>
+            <el-button type="primary" @click="handleCreate(ruleFormRef)">Create lot</el-button>
         </div>
         <div v-else>
-            <el-button type="primary"  @click="handleUpdate(ruleFormRef)">Update</el-button>
+            <el-button type="primary" @click="handleUpdate(ruleFormRef)">Update lot</el-button>
         </div>
 
     </el-form>
@@ -69,7 +76,7 @@
 
 <script setup lang="ts">
 
-import { ElMessage, FormInstance } from "element-plus";
+import { ElMessage, ElMessageBox, FormInstance } from "element-plus";
 import type {  StockItemLot } from "../../../../interface/stock";
 import { createStockItemLot, getDesignerByFirstMesMaterialId, updateStockItemLot } from "./StockItem";
 import { ref } from "vue";
@@ -131,9 +138,26 @@ async function handleCreate(formEl: FormInstance) {
 
 async function handleUpdate(formEl: FormInstance | undefined) {
   if (await formEl.validate()) {
+    let confirmed = false;
+    try {
+      await ElMessageBox.confirm(
+        "These changes will affect all stock items associated with the same lot id.",
+        {
+          confirmButtonText: "Update",
+          cancelButtonText: "No",
+          type: "info",
+        }
+      );
+      confirmed = true;
+    } catch (error) {
+      // Cancelled or closed
+      confirmed = false;
+    }
+    if (!confirmed) return;
+
     const updatedStockItem = await updateStockItemLot(stockItemLot.value);
     if (updatedStockItem) {
-      stockItemLot.value =  updatedStockItem;
+      stockItemLot.value = updatedStockItem;
     } else {
       ElMessage.error("Failed to update stock item lot.");
     }
