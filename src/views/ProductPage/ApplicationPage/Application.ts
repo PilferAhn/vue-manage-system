@@ -82,7 +82,7 @@ export function computeChannelBandwidth(testType: string, duplexMode: string) {
     }
   } else if (testType === "AMR") {
     return ["5Mhz"];
-  } else if (["Life", "Max Fuse", "Step Stress"].includes(testType)) {
+  } else if (["Life", "Max Fuse", "Step Stress", "SMARTERMICRO FUSE"].includes(testType)) {
     return ["1.4Mhz", "5Mhz", "10Mhz", "20Mhz"];
   } else {
     return [];
@@ -595,7 +595,7 @@ export function setBandwidthOptions(
     (newVal: string, oldVal: string) => {
       applicationForm.value.bandwidth = "";
       applicationForm.value.duty = "";
-
+      console.log('band watch')
       if (applicationForm.value.testType === "Aging") {
         if (applicationForm.duplexMode === "TDD") {
           bandwidthList.value = ["5Mhz"];
@@ -605,7 +605,7 @@ export function setBandwidthOptions(
       } else if (applicationForm.value.testType === "AMR") {
         bandwidthList.value = ["5Mhz"];
       } else if (
-        ["Life", "Max Fuse", "Step Stress"].includes(
+        ["Life", "Max Fuse", "Step Stress", "SMARTERMICRO FUSE"].includes(
           applicationForm.value.testType
         )
       ) {

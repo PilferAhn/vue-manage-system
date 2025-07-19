@@ -29,7 +29,7 @@
             class="custom-table"
       :row-class-name="tableRowClassName"
     >
-    <el-table-column label="No" width="60" :align="'center'">
+    <el-table-column label="No" width="80" :align="'center'">
         <template #default="scope">
           {{ scope.$index + 1 }}
         </template>
@@ -37,7 +37,7 @@
 
       <el-table-column
         label="PN_FAB"
-        width="140"
+        width="200"
         :align="'center'"
       >
         <template #default="scope">
@@ -49,7 +49,7 @@
 
       <el-table-column
         label="PN_WHC"
-        width="150"
+        width="200"
         :align="'center'"
       >
         <template #default="scope">
@@ -60,7 +60,7 @@
       <el-table-column
         prop="designer"
         label="개발자"
-        width="100"
+        width="120"
         :align="'center'"
       >
         <template #default="scope">
@@ -108,7 +108,7 @@
         v-if="props.operationType === 'reel'"
         prop="label"
         label="Reel ID"
-        width="160"
+        width="170"
         :align="'center'"
       ></el-table-column>
       <el-table-column
@@ -134,7 +134,7 @@
 
       <el-table-column
         label="Receiver"
-        width="110"
+        width="150"
         prop="receiver"
         :align="'center'"
       ></el-table-column>

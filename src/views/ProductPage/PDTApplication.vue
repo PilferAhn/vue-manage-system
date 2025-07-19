@@ -20,6 +20,10 @@
             />
             <el-option key="Drop" label="Drop" value="Drop" />
             <el-option key="Step" label="Step" value="Step" />
+            <el-option
+              key="SMARTERMICRO FUSE"
+              label="SMARTERMICRO FUSE"
+              value="SMARTERMICRO FUSE"/>
           </el-select>
         </el-form-item>
 
@@ -141,9 +145,6 @@
                   placeholder="Temperature"
                   :disabled="!form.isSpecEdit"
                 />
-                <!-- <el-button v-if="isEditable" @click="enableEditing"
-                    >직접 입력</el-button
-                  > -->
               </el-form-item>
             </el-col>
             <el-col class="line" :span="3">/</el-col>
@@ -470,36 +471,6 @@ const etcTest = ref("");
 let signalType = "";
 
 const form = reactive({
-  // customerCompany: "",
-  // specTemperature: "",
-  // specPower: "",
-  // isSpecEdit: false,
-
-  // modelName: "TESTING",
-  // condition: "TESTING",
-
-  // signalType: "LTE",
-  // band: "1",
-  // duplexMode: "FDD",
-  // bandwidth: "1.4Mhz",
-
-  // designer: "테스트 의뢰서 작성(무시)",
-  // requester: name,
-  // purpose: "테스트 의뢰서 작성(무시)",
-
-  // temperature: "85",
-  // duty: "",
-  // dateOfSampleConvey: "",
-
-  // waferType: "HS",
-  // packageType: "WLP - Mold",
-
-  // testType: "Max Fuse",
-  // targetPosition: "High",
-
-  // sampleQuantity: dataList.value.length,
-  // detail: "",
-
   customerCompany: "",
   specTemperature: "",
   specPower: "",

@@ -6,4 +6,5 @@ export const chartColors = {
     // MAX: '#9966FF',
     Max_Fuse: '#F7464A',
     STEP: '#39FF14',
+    SMARTERMICRO_FUSE: '#FF9F40',
   };

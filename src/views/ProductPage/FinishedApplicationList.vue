@@ -39,18 +39,7 @@
           </el-table-column>
   
           <el-table-column prop="test_type" label="TEST" align="center">
-            <!-- <template #default="scope">
-                <el-select
-                  v-model="scope.row.test_type"
-                  placeholder="예) Fuse Max"
-                  size="small"
-                >
-                  <el-option key="Max Fuse " label="Max Fuse" value="Max Fuse" />
-                  <el-option key="AMR" label="AMR" value="AMR" />
-                  <el-option key="Life" label="Life" value="Life" />
-                  <el-option key="Aging" label="Aging" value="Aging" />
-                </el-select>
-              </template> -->
+
           </el-table-column>
   
           <el-table-column prop="sample_quantity" label="수량" align="center" width="70px">          
@@ -61,10 +50,7 @@
   
           <el-table-column prop="requester" label="담당자" align="center">
           </el-table-column>
-  
-          <!-- <el-table-column prop="purpose" label="의뢰목적" align="center">
-          </el-table-column> -->
-  
+
           <el-table-column label="상태" align="center">
             <template #default="scope">
               <span v-if="scope.row.status === 'in progress'" :style="{color: 'green' }">측정 진행 중</span>
@@ -75,20 +61,6 @@
   
           <el-table-column label="Action" width="280" align="center">
             <template #default="scope">
-              <!-- <el-button
-                type="success"
-                size="small"
-                style="margin-right: 5px"
-                @click="handleUpdate(scope.row)"
-                >업데이트</el-button
-              >
-              <el-button
-                type="danger"
-                size="small"
-                style="margin-right: 5px"
-                @click="handleDelete(scope.row)"
-                >삭제</el-button
-              > -->
               <el-button
                 type="primary"
                 size="small"

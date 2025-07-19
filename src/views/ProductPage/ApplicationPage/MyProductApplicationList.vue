@@ -23,9 +23,6 @@
           label="Product Name"
           :align="'center'"
         >
-          <!-- <template #default="scope">
-              <el-input v-model="scope.row.model_name" size="small"></el-input>
-            </template> -->
         </el-table-column>
 
         <el-table-column
@@ -34,9 +31,6 @@
           :align="'center'"
           width="100px"
         >
-          <!-- <template #default="scope">
-              <el-input v-model="scope.row.band" size="small"></el-input>
-            </template> -->
         </el-table-column>
 
         <el-table-column prop="condition" label="Condition" :align="'center'">
@@ -46,18 +40,6 @@
         </el-table-column>
 
         <el-table-column prop="test_type" label="TEST" :align="'center'">
-          <!-- <template #default="scope">
-              <el-select
-                v-model="scope.row.test_type"
-                placeholder="예) Fuse Max"
-                size="small"
-              >
-                <el-option key="Max Fuse " label="Max Fuse" value="Max Fuse" />
-                <el-option key="AMR" label="AMR" value="AMR" />
-                <el-option key="Life" label="Life" value="Life" />
-                <el-option key="Aging" label="Aging" value="Aging" />
-              </el-select>
-            </template> -->
         </el-table-column>
 
         <el-table-column prop="temperature" label="온도" :align="'center'">
