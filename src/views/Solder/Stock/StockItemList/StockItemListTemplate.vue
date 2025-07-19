@@ -203,7 +203,7 @@ const tableRowClassName = ({
   rowIndex: number;
 }) => {
   const firstMesMaterials = row?.stockItemLabel?.lot?.firstMesMaterials
-  if (!(firstMesMaterials !== undefined && firstMesMaterials.length > 0)) {
+  if (!(firstMesMaterials !== undefined && firstMesMaterials.filter(m => m.designer).length > 0)) {
     return "el-warning"; // Ensure this matches your CSS class
   }
   return "";
