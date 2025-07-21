@@ -48,7 +48,7 @@ import { onMounted, ref, computed } from "vue";
 import type { StockItem } from "../../../../interface/stock";
 import { rules } from "./StockItemRules";
 import { createStockItem, deleteStockItem, updateStockItem, getStockItemLabel } from "./StockItem";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { FormInstance, ElMessageBox, ElMessage } from "element-plus";
 import StockItemLabel from "./StockItemLabel.vue";
 
@@ -56,6 +56,7 @@ const ruleFormRef = ref<FormInstance>();
 
 type FormType = 'create' | 'load';
 import type { StockItemType } from "../../../../interface/stock";
+import { useTagsStore } from "../../../../store/tags";
 const props = defineProps<{
   formType: FormType,
   itemType: StockItemType
@@ -136,6 +137,20 @@ async function handleUpdate(formEl: FormInstance | undefined) {
   }
 }
 
+const tags = useTagsStore();
+const route = useRoute();
+function closeTags(): void {
+  const index = tags.list.findIndex(item => item.path === route.fullPath);
+  const delItem = tags.list[index];
+  tags.delTagsItem(index);
+  const item = tags.list[index] ? tags.list[index] : tags.list[index - 1];
+  if (item) {
+    delItem.path === route.fullPath && router.push(item.path);
+  } else {
+    router.push("/");
+  }
+};
+
 async function handleDelete() {
 
   let confirmed = false;
@@ -160,7 +175,8 @@ async function handleDelete() {
     ElMessage.error("Failed to delete stock item.");
   } else {
     // Try to emit close event if parent listens, otherwise fallback to router.back()
-    router.back();
+    // router.back();
+    closeTags();
   }
 }
 
