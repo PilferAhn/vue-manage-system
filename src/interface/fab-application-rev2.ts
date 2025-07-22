@@ -125,6 +125,8 @@ export interface FabRequestForm {
   note?: string;
   idtMachineId?: string;
   idt2MachineId?: string;
+  idtProcessMachineName?: string;
+  idtProcessRecipie?: string;
   waferId?: number;
   waferAngle?: number;
   waferThickness?: number;
@@ -265,10 +267,17 @@ export interface IdtType {
   sawTypeId?: string;
   layers?: Layer[];
   idtMachines?: IdtMachine[];
+  idtProcessMachines?: IdtProcessMachine[];
 }
 
 export interface IdtMachine {
   machineName?: string;
+}
+
+export interface IdtProcessMachine
+{
+  idtProcessMachineName?: string;
+  idtProcessId?: string;
 }
 
 export interface FabWafer {

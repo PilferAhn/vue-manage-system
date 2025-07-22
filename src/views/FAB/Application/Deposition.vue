@@ -22,10 +22,7 @@
   
       <br />
       <section class="section">
-        <!-- <h3 class="section-title2">IDT Thickness</h3> -->
         <div v-if="props.fabApplication.idtId === 7">
-          <!-- <long-input-text-2 label="Photo 비고" row-cnt="3"></long-input-text-2> -->
-           <!-- <input-text label="Special IDT Stack"></input-text> -->
         </div>
         <div v-else>
           <el-descriptions title="Thickness(IDT 증착)" :column="4" :border="true">
@@ -70,6 +67,24 @@
             >
               <el-input v-model="layer.thickness"></el-input>
             </el-descriptions-item>
+          </el-descriptions>
+          <el-descriptions v-if="props.fabApplication.idtProcessId === 'Etching'" title="IDT Etching" :column="3" :border="true" style="margin-top: 20px;">
+            <template #extra>
+              <div class="extra-container">
+                <el-select
+                  v-model="props.fabApplication.idtProcessMachineName"
+                  placeholder="IDT Etching Machine"
+                >
+                  <el-option
+                    v-for="machine in machineOptions3"
+                    :key="machine.key"
+                    :label="machine.label"
+                    :value="machine.label"
+                  ></el-option>
+                </el-select>
+                <el-input v-model="props.fabApplication.idtProcessRecipie"></el-input>
+              </div>
+            </template>
           </el-descriptions>
           <!-- IDT 정보 테이블 섹션 -->
           <div
@@ -146,7 +161,7 @@
     getLayerNameFromIdtTypes,
     generateMachineOptions,
     getIdtTypeByIdtId,
-    genIdtProcessOptions,
+    setMachineForEtching,
   } from "../../../utils/Fab/fab-application-deposition.utils";
   import IdtProcess from "./IdtProcess.vue";
   import { ref, watch, reactive, onMounted } from "vue";
@@ -169,7 +184,8 @@
   const machineName = ref<string>("");
   const machineOptions = ref<OptionInterface[]>([]);
   const machineOptions2 = ref<OptionInterface[]>([]);
-  
+  const machineOptions3 = ref<OptionInterface[]>([]);
+
   const layers = reactive<Layer[]>([]);
   const layers2 = reactive<Layer[]>([]);
   const idtType = reactive<IdtType>({});
@@ -193,7 +209,6 @@
         props.sawType.idtTypes,
         props.fabApplication.idtId.toString()
       );
-  
       if (machineOptions.value.length == 1) {
         props.fabApplication.idtMachineName = machineOptions.value[0].value;
       }
@@ -358,14 +373,14 @@
           props.fabApplication.idt2Layers = [...layers2];
           props.fabApplication.idt2Id = props.fabApplication.idtId;
         }
-  
-        ///
+
         if (
           props.fabApplication.waferType !== "TC" &&
           props.fabApplication.idtProcessId === "Lift-off"
         ) {
           props.fabApplication.idtMachineName = machineOptions.value[0].value;
         }
+        machineOptions3.value = setMachineForEtching(newVal, props.sawType.idtTypes);
       }
     }
   );
