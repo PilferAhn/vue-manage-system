@@ -77,8 +77,6 @@ export function generateMachineOptions(idtTypes: IdtType[], idtId: string) {
 }
 
 export function setMachineForEtching (idtId: number, idtTypes: IdtType[]) {
-  console.log('idtId', idtId);
-  console.log('idtTypes', idtTypes);
   const options = ref<OptionInterface[]>([]);
 
   idtTypes.forEach((idtType) => {

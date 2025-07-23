@@ -33,6 +33,7 @@
           label="Cap"
         ></el-checkbox>
         <el-checkbox
+          v-if="isAllowDualIdt"
           v-model="props.fabApplication.isDualIdt"
           label="Dual-IDT"
         ></el-checkbox>
@@ -79,16 +80,16 @@
   }>();
   
   const isAllowBridge  = ref<boolean>(false);
+  const isAllowIdtOxi = ref<boolean>(false);
+  const isAllowSeedSio2 = ref<boolean>(false);
   const isAllowGfl = ref<boolean>(false);
   const isAllowCap = ref<boolean>(false);
+  const isAllowDualIdt = ref<boolean>(false);
   const isAllowMoreEnergy = ref<boolean>(false);
   const isAllowPadDicing = ref<boolean>(false);
-  const isAllowIdtOxi = ref<boolean>(false);
   const isAllowSio2 = ref<boolean>(false);
   const isAllowRrPs2 = ref<boolean>(false);
   const isAllowMst = ref<boolean>(false);
-  const isAllowDualIdt = ref<boolean>(false);
-  const isAllowSeedSio2 = ref<boolean>(false);
   const header = ref<string>("");
   const trackedValues = computed(() => ({
     sawTypeId: props.sawType.sawTypeId,
@@ -106,40 +107,35 @@
         newValues.destinationId !== null &&
         newValues.idtProcessId !== null
       ) {
-        isAllowIdtOxi.value = ["NS", "HS"].includes(newValues.sawTypeId);
         isAllowBridge.value = ["NS", "HS"].includes(newValues.sawTypeId);
+        isAllowIdtOxi.value = ["NS", "HS"].includes(newValues.sawTypeId);
+        isAllowSeedSio2.value = ["NS", "HS"].includes(newValues.sawTypeId);
         isAllowGfl.value = newValues.sawTypeId === "NS";
-        isAllowCap.value = ["TC", "NS"].includes(newValues.sawTypeId);
+        isAllowCap.value = ["NS"].includes(newValues.sawTypeId);
+        isAllowDualIdt.value = ["NS", "HS"].includes(newValues.sawTypeId) && newValues.idtProcessId !== "Etching";
         isAllowRrPs2.value = newValues.sawTypeId === "TC";
         isAllowPadDicing.value =
           ["NS", "HS"].includes(newValues.sawTypeId) &&
           newValues.packageId !== "WLP";
-        isAllowMoreEnergy.value = ["NS", "HS"].includes(newValues.sawTypeId);
-  
+        isAllowMoreEnergy.value = ["NS", "HS"].includes(newValues.sawTypeId) && newValues.idtProcessId !== "Etching";
         isAllowMst.value = newValues.sawTypeId === "TC";
-  
-        isAllowSeedSio2.value = ["NS", "HS"].includes(newValues.sawTypeId);
-  
         if (newValues.sawTypeId === "TC") {
           header.value = "Extra Process Information [TC]";
         } else {
           header.value = "Extra Process Information [HS / NS]";
         }
-  
         if (newValues.sawTypeId === "TC") {
           isAllowMoreEnergy.value = false;
           props.fabApplication.isMoreEnergy = true;
         } else {
-          isAllowMoreEnergy.value = true;
+          // isAllowMoreEnergy.value = true;
           // props.fabApplication.isMoreEnergy = false;
         }
         
-
         if(!isAllowBridge.value){
           props.fabApplication.hasBridge = false
           props.sawType.isAllowBridge
         }
-
 
         if (!isAllowIdtOxi.value) {
           props.fabApplication.isIdtOxi = null;
