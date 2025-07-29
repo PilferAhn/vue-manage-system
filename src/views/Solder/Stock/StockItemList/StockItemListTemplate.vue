@@ -142,7 +142,7 @@ import type { StockItem, StockItemType } from "../../../../interface/stock";
 import { formatDate } from "../../../../utils/date-utils";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-import { updateStockItemNote } from "../StockItem/StockItem";
+import { getStockItem, updateStockItemNote } from "../StockItem/StockItem";
 
 
 const props = defineProps<{
@@ -182,7 +182,17 @@ interface EditingNote {
 const dialogEditNoteVisible = ref(false);
 const editingNote = ref<EditingNote | null>(null);
 
-function handleEditNote(row: StockItem) {
+async function handleEditNote(row: StockItem) {
+  // Get frech stock item from backend to ensure we have the latest note
+  try {
+    const frechStockItem = await getStockItem(row.id);
+    Object.assign(row, frechStockItem);
+  } catch (error) {
+    ElMessage.error("Failed to fetch stock item details");
+    return;
+  }
+
+  // Prepare the editing note object and open the dialog
   editingNote.value = {
     row,
     note: row.note || "",
