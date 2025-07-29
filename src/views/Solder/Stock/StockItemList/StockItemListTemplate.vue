@@ -1,19 +1,5 @@
 <template>
   <div>
-    <!-- Search Input -->
-    <!-- <div style="margin-bottom: 20px; display: flex; justify-content: flex-start; align-items: center;">
-      <el-input
-        v-model="searchTerm"
-        placeholder="Model Name 검색"
-        clearable
-        style="width: 300px;"
-        @clear="handleClear"
-      >
-        <template #prefix>
-          <i class="el-icon-search"></i>
-        </template>
-      </el-input>
-    </div> -->
 
     <!-- Table -->
     <el-table
@@ -56,7 +42,7 @@
           {{ scope.row?.stockItemLabel?.lot?.materialId  || "-" }}
         </template>
       </el-table-column>
-      
+
       <el-table-column
         prop="designer"
         label="개발자"
@@ -70,39 +56,6 @@
         </template>
 
       </el-table-column>
-   
-  
-    <!-- <el-table-column v-if="name==='admin'"
-        
-        label="ID"
-        width="150"
-        :align="'center'"
-      >
-
-      <template #default="scope">
-        
-      </template>
-    </el-table-column> -->
-
-    <!-- <el-table-column v-if="name === 'admin'" label="Designer" width="150" :align="'center'">
-  <template #default="scope">
-    <el-autocomplete
-      v-model="scope.row.designer"
-      :fetch-suggestions="(queryString, cb) => querySearch(queryString, cb)"
-      placeholder="Enter user name"
-      @select="(item) => handleSelect(item, scope.row)"
-      clearable
-      :disabled ="scope.row.isFound"
-    ></el-autocomplete>
-    <el-select v-model="scope.row.designer">
-      <el-option v-for="(u , index) in userList"
-      :key="index"
-      :label="u.userName"
-      :value="u.userName"
-      ></el-option>
-    </el-select>
-  </template>
-</el-table-column> -->
 
       <el-table-column
         v-if="props.operationType === 'reel'"
@@ -152,34 +105,45 @@
         </template>
       </el-table-column>
 
+      <el-table-column prop="note" label="Note" width="100" :align="'Left'"></el-table-column>
+
       <!-- Button Column -->
       <el-table-column label="Actions" width="200" :align="'center'">
         <template #default="scope">
-          <el-button
-            type="primary"
-            size="small"
-            @click="handleDetail(scope.row)"
-          >
+          <el-button type="primary" size="small" @click="handleDetail(scope.row)">
             View Detail
           </el-button>
-          <!-- <el-button
-          type="success"
-          size="small"
-          @click="handleUpdate(scope.row)"
-          >
-          Update
-          </el-button> -->
+          <el-button type="primary" size="small" @click="handleEditNote(scope.row)">
+            Edit Note
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
   </div>
+
+  <el-dialog v-model="dialogEditNoteVisible" title="Edit note" width="500">
+    <el-form v-model="editingNote">
+      <el-form-item label="Note">
+        <el-input v-model="editingNote.note" :autosize="{ minRows: 5, maxRows: 10 }" type="textarea" placeholder="Please input note"/>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="handleCancelEditNote">Cancel</el-button>
+        <el-button @click="handleConfirmEditNote">Confirm</el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { defineProps } from "vue";
+import { defineProps, ref } from "vue";
 import type { StockItem, StockItemType } from "../../../../interface/stock";
 import { formatDate } from "../../../../utils/date-utils";
 import { useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
+import { updateStockItemNote } from "../StockItem/StockItem";
+
 
 const props = defineProps<{
   stockItems: StockItem[];
@@ -208,6 +172,39 @@ const tableRowClassName = ({
   }
   return "";
 };
+
+
+// Editing note functionality
+interface EditingNote {
+  row: StockItem;
+  note: string;
+}
+const dialogEditNoteVisible = ref(false);
+const editingNote = ref<EditingNote | null>(null);
+
+function handleEditNote(row: StockItem) {
+  editingNote.value = {
+    row,
+    note: row.note || "",
+  };
+  dialogEditNoteVisible.value = true;
+}
+
+async function handleConfirmEditNote() {
+  if (editingNote.value) {
+    try {
+      const updatedStockItem = await updateStockItemNote(editingNote.value.row.id, editingNote.value.note);
+      editingNote.value.row.note = updatedStockItem.note; // Update the row note
+      dialogEditNoteVisible.value = false;
+    } catch (error) {
+      ElMessage.error("Failed to update note");
+    }
+  }  
+}
+
+function handleCancelEditNote() {
+  dialogEditNoteVisible.value = false;  
+}
 
 </script>
 

@@ -110,6 +110,38 @@ export async function updateStockItem(stockItem: StockItem): Promise<StockItem|n
 }
 
 /**
+ * Update a StockItem.note via API.
+ * @param stockItemId StockItem id
+ * @param new_note New note string
+ * @returns Promise with updated StockItem or null
+ */
+export async function updateStockItemNote(stockItemId: number, new_note: string): Promise<StockItem|null> {
+  const url = `/stock/update_stock_item_note/${stockItemId}`;
+  // Convert keys to PEP8 (snake_case) for backend
+  // const data = convertKeysToPEP8(stockItem);
+
+  try {
+    // Log the URL for debugging
+    // console.log(url);
+    // Send POST request to update the stock item note
+    const response = await axios.post(url, new_note);
+    // Convert response keys to camelCase for frontend    
+    const newStockItem =  response.data ? convertPep8ToCamelCase2(response.data) as StockItem : null;
+    ElMessage.success("process completed");
+
+    return newStockItem;
+  } catch (error) {
+    // Log and display error message
+    console.log(error);
+    ElMessage.error(getBackendErrorMessage(error));
+
+    // Optionally, show a more user-friendly error message
+    // ElMessage.error("Please correct the errors in the form.");
+  }
+    return null;
+}
+
+/**
  * Delete a StockItem via API.
  * @param id StockItem id
  * @returns Promise<true|null> (true if success, null if error)

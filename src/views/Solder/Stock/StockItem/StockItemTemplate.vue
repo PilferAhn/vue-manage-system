@@ -27,6 +27,11 @@
         <el-input v-model="stockItem.receiver" :placeholder="computedPlaceholders.receiver" />
       </el-form-item>
 
+      <el-form-item prop="note" :label="computedLabels.note">
+        <el-input v-model="stockItem.note" :placeholder="computedPlaceholders.note" type="textarea" :autosize="{ minRows: 2}"/>
+      </el-form-item>
+
+
       <div v-if="props.formType === 'create'">
         <el-button type="primary" :disabled="isNewLabel" @click="handleCreate(ruleFormRef)">Create new stock item</el-button>
       </div>
@@ -72,6 +77,7 @@ const LABELS_MAP: Record<StockItemType, Record<string, string>> = {
     assumedQuantity: 'Usage Quantity',
     remain: 'Remain',
     receiver: 'Receiver',
+    note: 'Note',
   },
   sample: {
     label: 'Sample ID',
@@ -80,6 +86,7 @@ const LABELS_MAP: Record<StockItemType, Record<string, string>> = {
     assumedQuantity: 'Used Quantity',
     remain: 'Remain',
     receiver: 'Receiver',
+    note: 'Note',
   },
 };
 
@@ -90,6 +97,7 @@ const PLACEHOLDERS_MAP: Record<StockItemType, Record<string, string>> = {
     quantity: 'Entire Chip Quantity',
     assumedQuantity: 'Enter how many samples you used?',
     receiver: 'Enter the Receiver Name',
+    note: 'Enter any additional information',
   },
   sample: {
     label: 'Scan Sample ID',
@@ -97,6 +105,7 @@ const PLACEHOLDERS_MAP: Record<StockItemType, Record<string, string>> = {
     quantity: 'Total Sample Quantity',
     assumedQuantity: 'Enter used sample count',
     receiver: 'Enter the Receiver Name',
+    note: 'Enter any additional information',
   },
 };
 

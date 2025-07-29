@@ -32,6 +32,7 @@ export interface StockItem {
     assumedQuantity?: number;
     receiver: string;
     operationType : StockItemType;
+    note?: string;
     // designer? : string
     // modelName?: string
     // materialId?: string;
