@@ -11,9 +11,6 @@
           prop="processName"
           :align="'center'"
         >
-          <!-- <template #default="scope">
-            <el-input v-model="scope.row.processName"></el-input>
-          </template> -->
         </el-table-column>
         <el-table-column label="Machine Name" :align="'center'">
           <template #default="scope">
@@ -47,7 +44,6 @@
     SawType,
     PhotoProcess,
   } from "../../../../interface/fab-application-rev2";
-  import { sendGetRequest2 } from "../../../../utils/httpProtocol";
   import { machineList } from "../../Common/Application";
   const props = defineProps<{
     fabApplication: FabRequestForm;
@@ -57,8 +53,6 @@
   // Piston 선택에 의해서
   // HS 의 경우에는 Photo 의 PST 을 변경시킨다.
   //
-  
-  
   
   // IDT 1
   // GFL 2
@@ -108,7 +102,7 @@
     isMst : props.fabApplication.isMst,
     needLteEtching : props.fabApplication.isNeededLtEtching
   }));
-  
+
   watch(
     trackedValues,
     (newValues) => {
@@ -118,8 +112,6 @@
         newValues.destinationId !== null &&
         newValues.idtProcessId !== null
       ) {
-        
-
         needIdt.value = true;
         needBpd.value = newValues.packageId === "BDMP";
         needGfl.value = props.fabApplication.isGfl;
@@ -165,7 +157,7 @@
           });
         }
   
-        if(needCot.value){
+        if(needPst.value){
           props.fabApplication.photo.photoProcesses.push({
             processName: "PST",
             machineName: "",
@@ -174,17 +166,6 @@
             order: 4,
           });
         }
-  
-        // if(needPPad.value){
-        //   props.fabApplication.photo.photoProcesses.push({
-        //     processName: "P-PAD",
-        //     machineName: "Nikon",
-        //     reticleName: "",
-        //     isMutable: false,
-        //     order: 11,
-        //   });
-        // }
-  
   
         if(newValues.sawTypeId === "HS"){
   
@@ -321,225 +302,18 @@
     { deep: true }
   );
   
-  
-  // watch(
-  //   () => props.fabApplication.hasBridge,
-  //   (newVal, oldVal) => {
-  //     const temp = {
-  //       processName: "브릿지",
-  //       machineName: "Nikon",
-  //       reticleName: "",
-  //       isMutable: false,
-  //       order: 3,
-  //     };
-  
-  //     if (oldVal !== undefined) {
-  //       if (newVal) {
-  //         props.fabApplication.photo.photoProcesses.splice(
-  //           temp.order - 1,
-  //           0,
-  //           temp
-  //         );
-  //       } else {
-  //         for (
-  //           let i = props.fabApplication.photo.photoProcesses.length - 1;
-  //           i >= 0;
-  //           i--
-  //         ) {
-  //           if (
-  //             props.fabApplication.photo.photoProcesses[i].processName ===
-  //             "브릿지"
-  //           ) {
-  //             props.fabApplication.photo.photoProcesses.splice(i, 1);
-  //             return; // 한 번만 삭제 후 종료
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  // );
-  
-  // watch(
-  //   () => props.fabApplication.pstId,
-  //   (newVal) => {
-  //     if (props.fabApplication.waferType === "HS") {
-  //       // pst id == 2 D PST
-  //       // pst id == 3 M PST
-  //       console.log(newVal);
-  //       for (let j = 0; j < props.sawType.pstTypes.length; j++) {
-  //         if (props.sawType.pstTypes[j].pstId == newVal) {
-  //           for (
-  //             let i = 0;
-  //             i < props.fabApplication.photo.photoProcesses.length;
-  //             i++
-  //           ) {
-  //             if (
-  //               ["M_PST", "D_PST"].includes(
-  //                 props.fabApplication.photo.photoProcesses[i].processName
-  //               )
-  //             ) {
-  //               props.fabApplication.photo.photoProcesses[i].processName =
-  //                 props.sawType.pstTypes[j].name;
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  // );
-  
-  // watch(
-  //   () => props.fabApplication.packageId,
-  //   (newVal, oldVal) => {
-  //     if (
-  //       props.fabApplication.waferType !== undefined &&
-  //       props.fabApplication.waferType !== null
-  //     ) {
-  //       const temp = {
-  //         processName: "BDP",
-  //         machineName: "Nikon",
-  //         reticleName: "",
-  //         isMutable: false,
-  //         order: 10,
-  //       };
-  
-  //       if (newVal === "BDMP") {
-  //         for (
-  //           let i = props.fabApplication.photo.photoProcesses.length - 1;
-  //           i >= 0;
-  //           i--
-  //         ) {
-  //           if (props.fabApplication.photo.photoProcesses[i].order >= 10) {
-  //             props.fabApplication.photo.photoProcesses.splice(i - 1, 0, temp);
-  //             return;
-  //           }
-  //         }
-  //       } else {
-  //         for (
-  //           let i = props.fabApplication.photo.photoProcesses.length - 1;
-  //           i >= 0;
-  //           i--
-  //         ) {
-  //           if (
-  //             props.fabApplication.photo.photoProcesses[i].processName === "BDP"
-  //           ) {
-  //             props.fabApplication.photo.photoProcesses.splice(i, 1);
-  //             return;
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  // );
-  
-  // watch(
-  //   () => props.fabApplication.waferType,
-  //   (newVal) => {
-  //     let temp: PhotoProcess[] = [];
-  
-  //     if (props.fabApplication.photo.photoProcesses.length <= 2) {
-  //       if (newVal === "NS") {
-  //         temp = [
-  //           {
-  //             processName: "IDT",
-  //             machineName: "",
-  //             reticleName: "",
-  //             isMutable: true,
-  //             order: 1,
-  //           },
-  
-  //           {
-  //             processName: "PAD",
-  //             machineName: "Nikon",
-  //             reticleName: "",
-  //             isMutable: false,
-  //             order: 12,
-  //           },
-  //           {
-  //             processName: "SiO",
-  //             machineName: "Nikon",
-  //             reticleName: "",
-  //             isMutable: false,
-  //             order: 13,
-  //           },
-  //         ];
-  //       } else if (newVal === "HS") {
-  //         temp = [
-  //           {
-  //             processName: "IDT",
-  //             machineName: "",
-  //             reticleName: "",
-  //             isMutable: true,
-  //             order: 1,
-  //           },
-  //           {
-  //             processName: "D-PST",
-  //             machineName: "",
-  //             reticleName: "",
-  //             isMutable: true,
-  //             order: 5,
-  //           },
-  //           {
-  //             processName: "PAD",
-  //             machineName: "Nikon",
-  //             reticleName: "",
-  //             isMutable: false,
-  //             order: 12,
-  //           },
-  //           {
-  //             processName: "SiO",
-  //             machineName: "Nikon",
-  //             reticleName: "",
-  //             isMutable: false,
-  //             order: 13,
-  //           },
-  //         ];
-  //       } else {
-  //         temp = [
-  //           {
-  //             processName: "IDT",
-  //             machineName: "",
-  //             reticleName: "",
-  //             isMutable: true,
-  //             order: 1,
-  //           },
-  //           {
-  //             processName: "PST",
-  //             machineName: "",
-  //             reticleName: "",
-  //             isMutable: true,
-  //             order: 4,
-  //           },
-  //           {
-  //             processName: "COT",
-  //             machineName: "Nikon",
-  //             reticleName: "",
-  //             isMutable: false,
-  //             order: 6,
-  //           },
-  //           {
-  //             processName: "PAD",
-  //             machineName: "Nikon",
-  //             reticleName: "",
-  //             isMutable: false,
-  //             order: 12,
-  //           },
-  //           {
-  //             processName: "SiO",
-  //             machineName: "Nikon",
-  //             reticleName: "",
-  //             isMutable: false,
-  //             order: 13,
-  //           },
-  //         ];
-  //       }
-  
-  //       props.fabApplication.photo.photoProcesses = temp;
-  //     }
-  //   }
-  // );
-  
-  const tempMachineList = ["ASML#4", "ASML#5", "ASML#4,5"];
+  const currentWafer = computed(() => {
+  const allWafers = props.sawType.wafers || [];
+  return allWafers.find((w) => w.waferId === props.fabApplication.waferId);
+  });
+
+  const tempMachineList = computed(() => {
+  if (currentWafer.value?.size === 6) {
+    return ["ASML#3"];
+  } else {
+    return ["ASML#4", "ASML#5", "ASML#4,5"];
+  }
+});
   </script>
   
   <script lang="ts">
