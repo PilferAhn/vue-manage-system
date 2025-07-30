@@ -129,11 +129,11 @@ watch(
         }
       }
 
-      if (passOptions.value.length == 1) {
+      // if (passOptions.value.length == 1) {
         props.fabApplication.passivationId = parseInt(
           passOptions.value[0].value
         );
-      }
+      // }
       
     }
   },
