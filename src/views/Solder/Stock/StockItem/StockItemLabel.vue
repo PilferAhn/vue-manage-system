@@ -1,5 +1,5 @@
 <template>
-    <el-form v-loading="loading" :model="stockItemLabel" label-width="120px">
+  <el-form v-loading="loading" :model="stockItemLabel" label-width="120px" @submit.prevent>
         <el-form-item prop="label" label="Label">
             {{ stockItemLabel.label }}
         </el-form-item>
