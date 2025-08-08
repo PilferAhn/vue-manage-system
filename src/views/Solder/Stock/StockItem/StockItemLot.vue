@@ -1,5 +1,5 @@
 <template>
-    <el-form :model="stockItemLot" label-width="120px" ref="ruleFormRef">
+    <el-form :model="stockItemLot" label-width="120px" ref="ruleFormRef" @submit.prevent>
         <el-form-item prop="lotId" label="lot ID">
             {{ stockItemLot.lotId }}
         </el-form-item>
