@@ -378,7 +378,7 @@
 
                   </td>
                   <td colspan="2">
-
+                    <div style="display: flex;"> 
                     <div class="drop-zone" @click="triggerFileSelect('fileInputFB1')" @drop.prevent="onDropFB1"
                       @dragover.prevent>
                       <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
@@ -402,6 +402,11 @@
                       <input ref="fileInputFB1" type="file" accept="image/*" style="display:none"
                         @change="handleFilesChangeFB1" multiple />
                     </div>
+                    <div style="width: 100%; border:1px solid black" contenteditable="true"
+                        @input="e => formDataTemp.fb_direction = (e.target as HTMLElement).innerText">
+                        {{ formData.fb_direction }}
+                      </div>
+                  </div>
                   </td>
                   <!-- <td colspan="2" contenteditable="true" >
 
@@ -417,6 +422,7 @@
                     img
                   </td> -->
                   <td colspan="3">
+                    <div style="display: flex;">
                     <div class="drop-zone" @click="triggerFileSelect('fileInputFB2')" @drop.prevent="onDropFB2"
                       @dragover.prevent>
                       <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
@@ -440,6 +446,11 @@
                       <input ref="fileInputFB2" type="file" accept="image/*" style="display:none"
                         @change="handleFilesChangeFB2" multiple />
                     </div>
+                    <div style="width: 100%; border:1px solid black" contenteditable="true"
+                        @input="e => formDataTemp.fb_note = (e.target as HTMLElement).innerText">
+                        {{ formData.fb_note }}
+                      </div>
+                    </div>
                   </td>
                 </tr>
 
@@ -453,6 +464,8 @@
 
                   </td>
                   <td colspan="2">
+                    <div style="display: flex;">
+                       
                     <div class="drop-zone" @click="triggerFileSelect('fileInputFB3')" @drop.prevent="onDropFB3"
                       @dragover.prevent>
                       <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
@@ -476,6 +489,12 @@
                       <input ref="fileInputFB3" type="file" accept="image/*" style="display:none"
                         @change="handleFilesChangeFB3" multiple />
                     </div>
+                    <div style="width: 100%; border:1px solid black" contenteditable="true"
+                        @input="e => formDataTemp.fb_1_numbering = (e.target as HTMLElement).innerText">
+                        {{ formData.fb_1_numbering }}
+                      </div>
+                      
+                    </div>
                   </td>
                   <td class="hcell" colspan="1">
                     F/B#2
@@ -488,14 +507,14 @@
                         @dragover.prevent>
                         <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
                         <div v-for="(img, index) in existingFB4" :key="'existing-' + index"
-                        style="position: relative; display: inline-block; margin: 10px;">
-                        <img :src="img.url" style="max-width:200px;" />
+                          style="position: relative; display: inline-block; margin: 10px;">
+                          <img :src="img.url" style="max-width:200px;" />
 
-                        <button @click.stop="removeExistingImageFB4(index)"
-                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-                          ❌
-                        </button>
-                      </div>
+                          <button @click.stop="removeExistingImageFB4(index)"
+                            style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                            ❌
+                          </button>
+                        </div>
                         <div v-for="(file, index) in imagesetFB4" :key="index"
                           style="position: relative; display: inline-block; margin: 10px;">
                           <img :src="getObjectURL(file)" alt="업로드된 이미지" style="max-width: 200px; max-height: 300px;" />
@@ -531,6 +550,7 @@
 
                   </td>
                   <td colspan="2">
+                    <div style="display: flex;"> 
                     <div class="drop-zone" @click="triggerFileSelect('fileInputMK1')" @drop.prevent="onDropMK1"
                       @dragover.prevent>
                       <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
@@ -553,6 +573,12 @@
                       </div>
                       <input ref="fileInputMK1" type="file" accept="image/*" style="display:none"
                         @change="handleFilesChangeMK1" multiple />
+                    </div>
+                    <div style="width: 100%; border:1px solid black" contenteditable="true"
+                        @input="e => formDataTemp.mk_marking = (e.target as HTMLElement).innerText">
+                        {{ formData.mk_marking }}
+                      </div>
+                       
                     </div>
                   </td>
                   <td class="hcell" colspan="1">
@@ -736,12 +762,12 @@
 
             <div style="width: 100%; margin-top: 30px;">
               <el-button type="primary" style="width: 100%;height: 100px; font-weight: bold; font-size: 34px;"
-                @click="handleTempSave">
-                SUBMIT<el-icon class="el-icon--right">
+                @click="handleSubmitButtton">
+                작성완료<el-icon class="el-icon--right">
                 </el-icon>
               </el-button>
             </div>
- 
+
           </el-card>
         </el-col>
       </el-row>
@@ -831,7 +857,12 @@ const formData = reactive<ApplicationData>({
 
   reliability_item: "",
   others_cer_check: "",
-  fb_2_spl: ""
+  fb_2_spl: "",
+  fb_direction: "",
+  fb_note: "",
+  fb_1_numbering: "",
+  mk_marking: "",
+  form_status:""
 })
 
 
@@ -887,26 +918,13 @@ const formDataTemp = reactive<ApplicationData>({
 
   reliability_item: "",
   others_cer_check: "",
-  fb_2_spl: ""
+  fb_2_spl: "",
+  fb_direction: "",
+  fb_note: "",
+  fb_1_numbering: "",
+  mk_marking: "",
+  form_status:""
 })
-
-const resultReq = reactive({
-
-  fbasecode: "",
-  fpkgcode: "",
-  fepoxycode: "",
-  fmname: "",
-  fpkgpartnumber: "",
-  fepoxymodel: "",
-  fchipsize: "",
-  fwthickness: '',
-  fwcop: '',
-  fbasechipea: '',
-  fassyname: '',
-  fcnt: '',
-  fbumpboll: "",
-})
-
 const loading = ref(true);
 const application = ref<ApplicationData>();
 
@@ -953,15 +971,6 @@ const columnOptionsMap: Record<string, Ref<OptionItem[]>> = {
   wafer_pad_type: ref([])
 }
 
-// const columnOptionsMap = reactive({
-//   pkg_meterial: ref([]),
-//   epoxy_model: ref([]),
-//   bg_thickness: ref([]),
-//   bg_afterthickness: ref([]),
-//   default_productSize: ref([]),
-//   pd_dicing_line_size: ref([]),
-// })
-
 const imageUrl = ref<string | null>(null);
 
 function handleFilesChangeFB1(e: Event) {
@@ -995,38 +1004,38 @@ function removeImageFB2(index: number) {
   imagesetMK1.value.splice(index, 1);
 }
 function removeExistingImageFB1(index: number) {
-  const target = existingFB1.value[index];  
+  const target = existingFB1.value[index];
   if (target) {
-    deleteImage.value.push(target);         
-    existingFB1.value.splice(index, 1);     
+    deleteImage.value.push(target);
+    existingFB1.value.splice(index, 1);
   }
 }
 function removeExistingImageFB2(index: number) {
-  const target = existingFB2.value[index];  
+  const target = existingFB2.value[index];
   if (target) {
-    deleteImage.value.push(target);         
-    existingFB2.value.splice(index, 1);     
+    deleteImage.value.push(target);
+    existingFB2.value.splice(index, 1);
   }
 }
 function removeExistingImageFB3(index: number) {
-  const target = existingFB3.value[index];  
+  const target = existingFB3.value[index];
   if (target) {
-    deleteImage.value.push(target);         
-    existingFB3.value.splice(index, 1);     
+    deleteImage.value.push(target);
+    existingFB3.value.splice(index, 1);
   }
 }
 function removeExistingImageFB4(index: number) {
-  const target = existingFB4.value[index];  
+  const target = existingFB4.value[index];
   if (target) {
-    deleteImage.value.push(target);         
-    existingFB4.value.splice(index, 1);     
+    deleteImage.value.push(target);
+    existingFB4.value.splice(index, 1);
   }
 }
 function removeExistingImageMK1(index: number) {
-  const target = existingMK1.value[index];  
+  const target = existingMK1.value[index];
   if (target) {
-    deleteImage.value.push(target);         
-    existingMK1.value.splice(index, 1);     
+    deleteImage.value.push(target);
+    existingMK1.value.splice(index, 1);
   }
 }
 
@@ -1066,13 +1075,14 @@ function onFilesChange(event: Event, imageset: Ref<File[]>) {
 
 
 function handleSubmitButtton() {
-  if (!dataValidation(formData)) {
+  if (formData.default_modelName === '') {
+    alert('저장할 기종명이 존재하지 않습니다.')
     return;
   }
-  console.log("formData----=====>", formData);
   mappingTemp()
-  console.log(formData)
-  handleSubmitForm(formData, imagesetFB1.value, imagesetFB2.value, imagesetFB3.value, imagesetFB4.value, imagesetMK1.value);
+  console.log("saving..")
+  formData.form_status = "완료"
+  handleSubmitTempForm(formData, imagesetFB1.value, imagesetFB2.value, imagesetFB3.value, imagesetFB4.value, imagesetMK1.value, deleteImage.value);
 }
 
 function handleTempSave() {
@@ -1082,8 +1092,11 @@ function handleTempSave() {
   }
   mappingTemp()
   console.log("saving..")
+  
+  formData.form_status = "임시저장"
   handleSubmitTempForm(formData, imagesetFB1.value, imagesetFB2.value, imagesetFB3.value, imagesetFB4.value, imagesetMK1.value, deleteImage.value);
 }
+
 function mappingTemp() {
   formData.default_requireAmount = formDataTemp.default_requireAmount
   formData.default_pkgRequirement = formDataTemp.default_pkgRequirement
@@ -1091,6 +1104,10 @@ function mappingTemp() {
   formData.pkg_size = formDataTemp.pkg_size
   formData.pkg_note = formDataTemp.pkg_note
   formData.fb_2_spl = formDataTemp.fb_2_spl
+  formData.fb_1_numbering= formDataTemp.fb_1_numbering
+  formData.fb_direction = formDataTemp.fb_direction
+  formData.fb_note = formDataTemp.fb_note
+  formData.mk_marking = formDataTemp.mk_marking
   formData.mk_note = formDataTemp.mk_note
   formData.pd_note = formDataTemp.pd_note
   formData.el_link_method = formDataTemp.el_link_method
@@ -1199,6 +1216,7 @@ onMounted(async () => {
   loading.value = false;
   // formData.default_requireName = username.value;
   formData.default_requireDate = today.value;
+  console.log("del",formData)
 
 
   type ColumnKey = keyof typeof columnOptionsMap;
@@ -1276,6 +1294,10 @@ async function handleEnter(value) {
   formData.reliability_item = req.reliability_item;
   formData.others_cer_check = req.others_cer_check;
   formData.fb_2_spl = req.fb_2_spl;
+  formData.fb_direction = req.fb_direction;
+  formData.fb_note = req.fb_note;
+  formData.fb_1_numbering = req.fb_1_numbering;
+  formData.mk_marking = req.mk_marking;
 
   formData.default_modelName = req.default_modelName
   formData.default_purpose = req.default_purpose
@@ -1291,24 +1313,28 @@ async function handleEnter(value) {
   formData.wafer_mes_code = req.system_mes_wafer
   formData.pkg_erp_code = req.system_erp_pkg
 
-  formData.wafer_chip_qty = req.wafer_chip_qty 
+  formData.wafer_chip_qty = req.wafer_chip_qty
   formData.wafer_send_quantity = req.wafer_send_quantity
   formData.wafer_chip_size = req.wafer_chip_size
   formData.wafer_thickness = req.wafer_thickness
   formData.bb_ballsize = req.bb_ballsize
   formData.default_productSize = req.default_productSize
 
-  formDataTemp.default_requireAmount= formData.default_requireAmount
-  formDataTemp.default_pkgRequirement= formData.default_pkgRequirement
-  formDataTemp.wafer_mark= formData.wafer_mark
-  formDataTemp.pkg_size= formData.pkg_size
-  formDataTemp.pkg_note= formData.pkg_note
-  formDataTemp.fb_2_spl= formData.fb_2_spl
-  formDataTemp.mk_note= formData.mk_note
-  formDataTemp.pd_note= formData.pd_note
-  formDataTemp.el_link_method= formData.el_link_method
-  formDataTemp.el_EVB_setup_port= formData.el_EVB_setup_port
-  formDataTemp.analysis_fa_item= formData.analysis_fa_item
+  formDataTemp.default_requireAmount = formData.default_requireAmount
+  formDataTemp.default_pkgRequirement = formData.default_pkgRequirement
+  formDataTemp.wafer_mark = formData.wafer_mark
+  formDataTemp.pkg_size = formData.pkg_size
+  formDataTemp.pkg_note = formData.pkg_note
+  formDataTemp.fb_2_spl = formData.fb_2_spl
+  formDataTemp.mk_note = formData.mk_note
+  formDataTemp.pd_note = formData.pd_note
+  formDataTemp.el_link_method = formData.el_link_method
+  formDataTemp.el_EVB_setup_port = formData.el_EVB_setup_port
+  formDataTemp.analysis_fa_item = formData.analysis_fa_item
+  formDataTemp.fb_direction = formData.fb_direction
+  formDataTemp.fb_note = formData.fb_note
+  formDataTemp.fb_1_numbering = formData.fb_1_numbering
+  formDataTemp.mk_marking = formData.mk_marking
 
   // image seting
   if (req.image_List && req.image_List.length > 0) {
@@ -1350,24 +1376,7 @@ async function handleEnter(value) {
   // formData.pkg_erp_code = req[0].fpkgcode
   // formData.bb_ballsize = ''
 }
-
-const selectedOption = ref('')
-const othersCerOption = ref('')
-
-const formDataa = reactive({
-  notes: [] as Array<{ text: string }>,
-});
-
-function addNoteField() {
-  formDataa.notes.push({ text: '' });
-}
-
-function onNoteTextChange(e: Event, index: number) {
-  const target = e.target as HTMLElement;
-  formDataa.notes[index].text = target.innerText;
-}
-
-
+ 
 </script>
 
 <script lang="ts">

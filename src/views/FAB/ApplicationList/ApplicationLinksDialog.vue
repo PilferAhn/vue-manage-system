@@ -26,6 +26,7 @@ import { sendPostRequest } from "../../../utils/httpProtocol";
 import { formatDate } from "../../../utils/date-utils";
 import { getMesFabFormInfo } from "./rev2/ApplicationTable";
 import { buttonTypes } from "element-plus";
+import { getCheckSap } from "../../../utils/cspRequestFormUtill"
 
 const props = defineProps<{
   visible: boolean;
@@ -104,7 +105,6 @@ watch(
     if (newVal) {
       const tempFabRequest = ref(new FabRequest(props.fabApplication));
       await getMesFabFormInfo([tempFabRequest.value]);
-      
       const list = [
         {
           name: "Fab Card 작성",
@@ -127,12 +127,16 @@ watch(
           status: true,
         },
       ];
- 
+
       if (props.fabApplication.packageId === "CSP") {
+
+        const statusp = await getCheckSap(props.fabApplication.productName);
+        const isStatusTrue = statusp === 'true';
+        console.log("statusp:", statusp, "->", isStatusTrue);
         list.splice(2, 0, {
           name: "CSP 조립 의뢰서",
           type: "csp",
-          status: true,
+          status: isStatusTrue,
         });
       }
 

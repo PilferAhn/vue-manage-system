@@ -1,6 +1,15 @@
 <template>
   <el-table :data="cspTableData" style="width: 100%">
     <el-table-column prop="default_modelName" label="모델명" />
+
+    <el-table-column prop="form_status" label="상태">
+      <template #default="scope">
+        <el-tag :type="getTagType(scope.row.form_status)">
+          {{ scope.row.form_status }}
+        </el-tag>
+      </template>
+    </el-table-column>
+
     <el-table-column prop="default_requireName" label="요구자" />
     <el-table-column prop="default_requireDate" label="요구일" />
     <el-table-column prop="default_requireAmount" label="요구수량" />
@@ -75,7 +84,7 @@
 
 import { watch, watchEffect } from 'vue';
 import { Router, useRouter } from "vue-router";
- 
+
 import { excelDownloadOne } from '../../../utils/cspRequestFormUtill'
 const props = defineProps<{ cspTableData: Array<any> }>();
 const router = useRouter();
@@ -90,17 +99,30 @@ watchEffect(() => {
   console.log("📡 watchEffect: 테이블 데이터 변경 감지됨", props.cspTableData);
 });
 
+const getTagType= (status: string)=> {
+  switch (status) {
+    case '완료':
+      return 'primary';   // 파란색
+    case '임시저장':
+      return 'warning';   // 주황색
+    default:
+      return 'info';      // 기본값
+  }
+};
+
 const handleExcelClick = (row: any) => {
   console.log('클릭한 행의 model_name:', row.default_modelName);
-  excelDownloadOne( row.default_modelName)
+  excelDownloadOne(row.default_modelName)
 };
 const handleWebViewClick = (row: any) => {
   console.log('클릭한 행의 model_name:', row.default_modelName);
   router.push({
-      name:"CSPFormView",
-      params: { productName: row.default_modelName },
-    })
+    name: "CSPFormView",
+    params: { productName: row.default_modelName },
+  })
 };
+
+
 
 
 </script>

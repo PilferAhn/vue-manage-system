@@ -15,21 +15,16 @@
       clearable
       @keydown.enter.prevent="handleEnter"
     />
+    <el-text class="mx-1" type="info">
+      전체조회 ==> 공백 엔터
+    </el-text>
     <!-- <CspActions ></CspActions> -->
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, defineEmits } from "vue";
-import type { Dv2 } from "../../../interface/Dv2/dv2-list-interface";
-import { FabRequestForm } from "../../../interface/fab-application-rev2";
-import CspActions from "./CspActions.vue";
 
-const props = defineProps<{
-  dv2TableData: Dv2[];
-  dv2Data : Dv2[];
-  fabApp: FabRequestForm[];  
-}>();
 
 const searchType = ref("productName"); // 기본 검색 기준
 const searchQuery = ref("");
@@ -43,13 +38,7 @@ const getPlaceholder = computed(() => {
     : "관리자를 입력하세요";
 });
 
-// 검색어 변경 시 부모 컴포넌트에 전달
-// const emitSearch = () => {
-//   emit("updateSearchQuery", {
-//     searchType: searchType.value,
-//     searchQuery: searchQuery.value,
-//   });
-// };
+ 
 const handleEnter =() =>{
   emit("updateSearchQuery", {
     searchType: searchType.value,

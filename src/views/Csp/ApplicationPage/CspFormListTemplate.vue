@@ -38,7 +38,6 @@ const username = localStorage.getItem('ms_username') || 'Guest';
 
 const handleSearchQuery = async (query) => {
   searchQuery.value = query;
-  console.log(query.searchQuery)
   cspTableData.value = await handleGetFormList(query.searchQuery,username)
 };
 

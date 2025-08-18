@@ -335,9 +335,12 @@
                   <td colspan="2">
                     <div v-for="(img, index) in existingFB1" :key="'existing-' + index"
                       style="position: relative; display: inline-block; margin: 10px;">
-                      <img :src="img.url" style="max-width:200px;" />
+                      <img 
+                      :src="img.url"style="max-width:200px;" />
                     </div>
-
+                    <div style="width: 100%; border:1px solid black">
+                      {{ formData.fb_direction }}
+                    </div>
                   </td>
 
                   <td class="hcell" colspan="1">
@@ -351,8 +354,9 @@
                     <div v-for="(img, index) in existingFB2" :key="'existing-' + index"
                       style="position: relative; display: inline-block; margin: 10px;">
                       <img :src="img.url" style="max-width:200px;" />
-
-
+                    </div>
+                    <div style="width: 100%; border:1px solid black">
+                      {{ formData.fb_note }}
                     </div>
                   </td>
                 </tr>
@@ -370,8 +374,9 @@
                     <div v-for="(img, index) in existingFB3" :key="'existing-' + index"
                       style="position: relative; display: inline-block; margin: 10px;">
                       <img :src="img.url" style="max-width:200px;" />
-
-
+                    </div>
+                    <div style="width: 100%; border:1px solid black">
+                      {{ formData.fb_1_numbering }}
                     </div>
                   </td>
                   <td class="hcell" colspan="1">
@@ -384,15 +389,11 @@
                       <div v-for="(img, index) in existingFB4" :key="'existing-' + index"
                         style="position: relative; display: inline-block; margin: 10px;">
                         <img :src="img.url" style="max-width:200px;" />
-
-
                       </div>
                       <div style="width: 100%; border:1px solid black">
                         {{ formData.fb_2_spl }}
                       </div>
                     </div>
-
-
                   </td>
                 </tr>
 
@@ -413,8 +414,9 @@
                     <div v-for="(img, index) in existingMK1" :key="'existing-' + index"
                       style="position: relative; display: inline-block; margin: 10px;">
                       <img :src="img.url" style="max-width:200px;" />
-
-
+                    </div>
+                    <div style="width: 100%; border:1px solid black">
+                      {{ formData.mk_marking }}
                     </div>
                   </td>
                   <td class="hcell" colspan="1">
@@ -544,6 +546,11 @@
                       :class="{ 'highlighted-checkbox': formData.reliability_item.includes('Dorp') }">
                       Dorp
                     </el-checkbox>
+                    <el-checkbox :label="''" :true-label="''" :false-label="''"
+                      v-model="formData.reliability_item" :disabled="true"
+                      :class="{ 'highlighted-checkbox': formData.reliability_item.includes('') }">
+                      -
+                    </el-checkbox>
                   </td>
 
 
@@ -560,17 +567,21 @@
                   </td>
                   <td colspan="6">
 
-                    
+
                     <el-checkbox :label="'YES'" :true-label="'YES'" :false-label="''"
                       v-model="formData.others_cer_check" :disabled="true"
                       :class="{ 'highlighted-checkbox': formData.others_cer_check.includes('YES') }">
                       YES
                     </el-checkbox>
-                    <el-checkbox :label="'NO'" :true-label="'NO'" :false-label="''"
-                      v-model="formData.others_cer_check" :disabled="true"
-                      :class="{ 'highlighted-checkbox': formData.others_cer_check.includes('NO') }">
-                    
+                    <el-checkbox :label="'NO'" :true-label="'NO'" :false-label="''" v-model="formData.others_cer_check"
+                      :disabled="true" :class="{ 'highlighted-checkbox': formData.others_cer_check.includes('NO') }">
+
                       NO
+                    </el-checkbox>
+                    <el-checkbox :label="'-'" :true-label="'-'" :false-label="''" v-model="formData.others_cer_check"
+                      :disabled="true" :class="{ 'highlighted-checkbox': formData.others_cer_check.includes('') }">
+
+                      -
                     </el-checkbox>
                   </td>
                 </tr>
@@ -589,9 +600,9 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, watch, computed, reactive, Ref } from "vue";
- 
+
 import { useRoute } from "vue-router";
- 
+
 import type {
   ApplicationData,
 } from "../../../interface/cspRequestFormInterface";
@@ -659,7 +670,12 @@ const formData = reactive<ApplicationData>({
 
   reliability_item: "",
   others_cer_check: "",
-  fb_2_spl: ""
+  fb_2_spl: "",
+  fb_direction: "",
+  fb_note: "",
+  fb_1_numbering: "",
+  mk_marking: "",
+  form_status: ""
 })
 
 
@@ -715,53 +731,34 @@ const formDataTemp = reactive<ApplicationData>({
 
   reliability_item: "",
   others_cer_check: "",
-  fb_2_spl: ""
+  fb_2_spl: "",
+  fb_direction: "",
+  fb_note: "",
+  fb_1_numbering: "",
+  mk_marking: "",
+  form_status: ""
 })
- 
+
 
 const loading = ref(true);
 const application = ref<ApplicationData>();
- 
+
 const username = ref('');
 const today = ref('');
 const todayDate = new Date();
- 
+
 const existingFB1 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
 const existingFB2 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
 const existingFB3 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
 const existingFB4 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
 const existingMK1 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
- 
 
- 
-
- 
-
-interface OptionItem {
-  value: string
-  label: string
-}
-
-
-const columnOptionsMap: Record<string, Ref<OptionItem[]>> = {
-  pkg_meterial: ref([]),
-  epoxy_model: ref([]),
-  epoxy_thickness: ref([]),
-  bg_thickness: ref([]),
-  bg_afterthickness: ref([]),
-  dc_meterial: ref([]),
-  default_productSize: ref([]),
-  pd_dicing_line_size: ref([]),
-  wafer_pad_type: ref([])
-}
- 
-     
 
 onMounted(async () => {
   const product_name = route.params.productName as string
   await handleEnter(product_name)
 
-  const columnlist = await getColumnData();
+  // const columnlist = await getColumnData();
 
 
   application.value = props.applicationData;
@@ -775,22 +772,6 @@ onMounted(async () => {
   today.value = `${year}-${month}-${date}`;
 
   loading.value = false;
-  // formData.default_requireName = username.value;
-  formData.default_requireDate = today.value;
-
-
-  type ColumnKey = keyof typeof columnOptionsMap;
-
-  for (const key in columnOptionsMap) {
-    const columnKey = key as ColumnKey;
-
-    columnOptionsMap[columnKey].value = columnlist
-      .filter(item => item.column_name === columnKey)
-      .map(item => ({
-        value: item.column_value,
-        label: item.column_value
-      }));
-  }
 });
 
 
@@ -803,6 +784,7 @@ async function handleEnter(value) {
     alert(value + " NOT FOUND");
     return;
   }
+  console.log("request", req)
 
   // 여기서 필요한 처리 수행 (예: 저장, API 호출 등)
 
@@ -851,9 +833,13 @@ async function handleEnter(value) {
   formData.el_link_method = req.el_link_method;
   formData.el_EVB_setup_port = req.el_EVB_setup_port;
   formData.analysis_fa_item = req.analysis_fa_item;
-  formData.reliability_item = req.reliability_item;
-  formData.others_cer_check = req.others_cer_check;
+  req.reliability_item != null && (formData.reliability_item = req.reliability_item);
+  req.others_cer_check != null && (formData.others_cer_check = req.others_cer_check);
   formData.fb_2_spl = req.fb_2_spl;
+  formData.fb_direction = req.fb_direction;
+  formData.fb_note = req.fb_note;
+  formData.fb_1_numbering = req.fb_1_numbering;
+  formData.mk_marking = req.mk_marking;
 
   formData.default_modelName = req.default_modelName
   formData.default_purpose = req.default_purpose
@@ -876,6 +862,7 @@ async function handleEnter(value) {
   formData.bb_ballsize = req.bb_ballsize
   formData.default_productSize = req.default_productSize
 
+
   formDataTemp.default_requireAmount = formData.default_requireAmount
   formDataTemp.default_pkgRequirement = formData.default_pkgRequirement
   formDataTemp.wafer_mark = formData.wafer_mark
@@ -887,6 +874,10 @@ async function handleEnter(value) {
   formDataTemp.el_link_method = formData.el_link_method
   formDataTemp.el_EVB_setup_port = formData.el_EVB_setup_port
   formDataTemp.analysis_fa_item = formData.analysis_fa_item
+  formDataTemp.fb_direction = formData.fb_direction
+  formDataTemp.fb_note = formData.fb_note
+  formDataTemp.fb_1_numbering = formData.fb_1_numbering
+  formDataTemp.mk_marking = formData.mk_marking
 
   // image seting
   if (req.image_List && req.image_List.length > 0) {
@@ -905,7 +896,7 @@ async function handleEnter(value) {
     });
   }
 
-  
+
 }
 </script>
 
