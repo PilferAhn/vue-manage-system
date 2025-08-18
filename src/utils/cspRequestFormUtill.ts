@@ -58,7 +58,12 @@ export const initializeApplicationData = () => {
 
     reliability_item: "",
     others_cer_check:"",
-    fb_2_spl:""
+    fb_2_spl:"",
+    fb_direction:"",
+    fb_note:"",
+    fb_1_numbering:"",
+    mk_marking:"",
+    form_status:""
 
   });
 };
@@ -87,8 +92,10 @@ export async function getColumnData(){
 }
 
 
-export async function handleSubmitForm(formdata: ApplicationData, imagesFB1 :File[], imagesFB2:File[], imagesFB3 :File[], imagesFB4:File[], imagesMK1 :File[]){
+
+export async function handleSubmitForm(formdata: ApplicationData, imagesFB1 :File[], imagesFB2:File[], imagesFB3 :File[], imagesFB4:File[], imagesMK1 :File[],  deleteImage: { url: string; file_index: string; cell_name: string }[]){
   const formDataToSend = new FormData();
+  console.log("delete image +>",deleteImage);
 
   for(const key in formdata){
     if(formdata[key as keyof ApplicationData] !== undefined && formdata[key as keyof ApplicationData] !== null){
@@ -96,6 +103,7 @@ export async function handleSubmitForm(formdata: ApplicationData, imagesFB1 :Fil
     }
   }
 
+  formDataToSend.append("deleteImage", JSON.stringify(deleteImage));
   // image processing
   imagesFB1.forEach(file =>{
     formDataToSend.append('imagesetFB1',file);
@@ -128,6 +136,8 @@ export async function handleSubmitForm(formdata: ApplicationData, imagesFB1 :Fil
     throw error;
   }
 }
+
+
 export async function handleSubmitTempForm(formdata: ApplicationData, imagesFB1 :File[], imagesFB2:File[], imagesFB3 :File[], imagesFB4:File[], imagesMK1 :File[],  deleteImage: { url: string; file_index: string; cell_name: string }[]){
   const formDataToSend = new FormData();
   console.log("delete image +>",deleteImage);
@@ -168,6 +178,7 @@ export async function handleSubmitTempForm(formdata: ApplicationData, imagesFB1 
     alert("saved")
   }catch(error){
     console.error("There was an error with the submission", error);
+    alert("x")
     throw error;
   }
 }
@@ -212,4 +223,16 @@ export async function excelDownloadOne(modelCode:string){
     throw error;
   }
 
+}
+
+export async function getCheckSap(modelCode:string){
+  try{
+    const response = await axios.get(
+      "/csp/getchecksap?modelCode="+modelCode
+    );
+    return response.data;
+  }catch(err){
+    console.error("There was an error with the submission", err);
+    throw err;
+  }
 }

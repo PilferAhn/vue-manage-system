@@ -60,6 +60,11 @@ export interface ApplicationData {
     reliability_item:string
     others_cer_check:string
     fb_2_spl:string
+    fb_direction:string
+    fb_note:string
+    fb_1_numbering:string
+    mk_marking:string
+    form_status:string
 }
 
 export interface CspImages{
