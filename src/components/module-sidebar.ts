@@ -14,5 +14,10 @@ export const moduleSilderBarList = {
       title: "의뢰 항목",
       permiss: "11",
     },
+    {
+      index: "/modules/application/ordersheet",
+      title: "모듈 조립의뢰서",
+      permiss: "11",
+    }
   ],
 };
