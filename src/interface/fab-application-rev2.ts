@@ -105,6 +105,7 @@ export interface FabRequestForm {
   purpose?: string;
   destinationId?: string;
   packageId?: string;
+  packageSubTypeId?: string;
   priorityId?: string;
   group?: string;
   bandGroupId?: string;
@@ -124,6 +125,8 @@ export interface FabRequestForm {
   note?: string;
   idtMachineId?: string;
   idt2MachineId?: string;
+  idtProcessMachineName?: string;
+  idtProcessRecipie?: string;
   waferId?: number;
   waferAngle?: number;
   waferThickness?: number;
@@ -264,10 +267,17 @@ export interface IdtType {
   sawTypeId?: string;
   layers?: Layer[];
   idtMachines?: IdtMachine[];
+  idtProcessMachines?: IdtProcessMachine[];
 }
 
 export interface IdtMachine {
   machineName?: string;
+}
+
+export interface IdtProcessMachine
+{
+  idtProcessMachineName?: string;
+  idtProcessId?: string;
 }
 
 export interface FabWafer {
@@ -614,7 +624,6 @@ export class FabRequest implements FabRequestForm {
           "ea";
       }
     } catch (error) {
-      // console.error("Error in createTrimmingInfo:", error);
       return ""; // 🚀 오류 발생 시 빈 문자열 반환
     }
 
@@ -683,7 +692,6 @@ export class FabRequest implements FabRequestForm {
         }
       }
     } catch (error) {
-      // console.error("Error in createTrimmingInfo:", error);
       return ""; // 🚀 오류 발생 시 빈 문자열 반환
     }
 

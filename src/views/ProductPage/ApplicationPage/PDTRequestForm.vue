@@ -101,7 +101,6 @@
             label="제품스팩"
             prop="specTemperature"
             placeholder="Temperature"
-            :disable="applicationFormBoolean.specTemperature"
             class="wide-select"
           ></inputText>
           <inputText
@@ -109,7 +108,6 @@
             label=""
             prop="specPower"
             placeholder="Input Power"
-            :disable="applicationFormBoolean.specPower"
             class="wide-select"
           ></inputText>
         </div>
@@ -335,7 +333,6 @@ watch(
     applicationRules.value = createApplicationRules(
       applicationFormBoolean.value
     );
-    // console.log(applicationFormBoolean.value);
   }
 );
 

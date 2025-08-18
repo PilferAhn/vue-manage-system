@@ -38,6 +38,14 @@
     }  
   })
   
+  watch(()=> props.fabApplication.isAlPad, (newVal) => {
+    if(newVal){
+      props.fabApplication.metalNote = `AL PAD 적용`
+    } 
+    else{
+      props.fabApplication.metalNote = ``
+    }
+  })
   
   // 탭 배열 (label과 v-model에 들어갈 키값을 저장)
   const tabs = [

@@ -43,19 +43,28 @@
       </el-col>
     </el-row>
     <el-row :gutter="20" class="form-row">
-      <el-col :span="7">
+      <el-col :span="6">
         <input-text
           v-model="props.fabApplication.productName"
           props="ProductName"
           label="Product Name"
         />
       </el-col>
-      <el-col :span="7">
+      <el-col :span="6">
         <input-text
           v-model="props.fabApplication.bomMainCode"
           props="Code"
           label="대표코드"
           :disable="true"
+        />
+      </el-col>
+      <el-col :span="6" v-if="subPackageList.length > 0">
+        <SelectOptionsNew2
+          v-model="props.fabApplication.packageSubTypeId"
+          label="Sub Package"
+          prop="packageSubTypeId"
+          :options="subPackageList"
+          class="wide-select"
         />
       </el-col>
     </el-row>
@@ -83,7 +92,7 @@
       <el-col :span="4"
         ><SelectCheckBox
           v-model="props.fabApplication.isNeedEngineerCall"
-          label="개발자 Call"
+          label="엔지니어 Call"
           prop="isNeedEngineerCall"
           :disable="false"
           :rules="[]"
@@ -183,15 +192,6 @@
           label="Priority"
           :disable="true"
         />
-        <!-- <SelectOptionsNew2
-          v-model="props.fabApplication.priorityId"
-          label="Priority"
-          prop="process"
-          placeholder="긴급도를 선택하세요"
-          :options="priorityList"
-          :disable="true"
-          class="wide-select"
-        /> -->
       </el-col>
     </el-row>
 
@@ -402,9 +402,9 @@ import axios from "axios";
 import { Option } from "element-plus/es/components/select-v2/src/select.types";
 import { initBom } from "../../../utils/Fab/bom-utils";
 import Bom from "./bom/Bom.vue";
-import { rules } from "../../Solder/Stock/Common/ApplicationRules";
 import { composeEventHandlers } from "element-plus/es/utils";
 import {getPackageList} from "../../../utils/utility"
+import type { OptionInterfaceWithSubTypes } from "../../../utils/utility";
 
 const props = defineProps<{
   fabApplication: FabRequestForm;
@@ -417,16 +417,41 @@ const destinationList = ref<OptionInterface[]>([]);
 const priorityList = ref<OptionInterface[]>([]);
 const filterTypeList = ref<OptionInterface[]>([]);
 const clients = ref<OptionInterface[]>([]);
-const packageList = ref<OptionInterface[]>([]);
+const packageList = ref<OptionInterfaceWithSubTypes[]>([]);
+
+const subPackageList = computed(() => {
+  const selected = packageList.value.find(
+    (item) => item.value === props.fabApplication.packageId
+  );
+  return selected?.sub_types?.map((sub, index) => ({
+    key: index,
+    label: sub.description ?? sub.sub_type_id,
+    value: sub.sub_type_id,
+  } as OptionInterface)) ?? [];
+});
 
 onMounted(async () => {
-  destinationList.value = await receiveDestinationList();
-  priorityList.value = await receivePriorityList();
-  filterTypeList.value = await receivefilterTypeList();
-  clients.value = await getCostomerList();
-  bomCodeList.value = await getBomCodeList();
-  packageList.value = await getPackageList();
+  const destinationList_value =  receiveDestinationList();
+  const priorityList_value =  receivePriorityList();
+  const filterTypeList_value =  receivefilterTypeList();
+  const clients_value =  getCostomerList();
+  const packageList_value =  getPackageList();
+  const bomCodeList_value =  getBomCodeList();
+
+  destinationList.value = await destinationList_value
+  priorityList.value = await priorityList_value
+  filterTypeList.value = await filterTypeList_value
+  clients.value = await clients_value;
+  packageList.value = await packageList_value
+  bomCodeList.value = await bomCodeList_value
 });
+
+watch(
+  () => props.fabApplication.packageId,
+  () => {
+    props.fabApplication.packageSubTypeId = null;
+  }
+);
 
 watch(
   () => props.fabApplication.productName,
@@ -457,7 +482,6 @@ watch(
         props.fabApplication.bomMainCode = "";
         props.fabApplication.isNewBom = true;
       } else {
-        console.log("Comes to Here?")
         props.fabApplication.isNewBom = false;
         props.fabApplication.isNewBom2 = false;
         props.fabApplication.bom = null;
@@ -467,23 +491,46 @@ watch(
   }
 );
 
-watch(
-  () => props.fabApplication.packageId,
-  (newVal) => {
-    if (newVal === "CSP") {
+const bomConditions = computed(() => ({
+  packageId: props.fabApplication.packageId,
+  destinationId: props.fabApplication.destinationId,
+}));
+
+watch(bomConditions,  (newValues) => {
+     console.log('newValues:::', newValues);
+    if (newValues.packageId === "CSP" && newValues.destinationId !== "개발전달") {
+      console.log('Need bom');
       if (props.fabApplication.bomMainCode === "") {
         props.fabApplication.bom = initBom();
         props.fabApplication.isNewBom = true;
       } else {
         props.fabApplication.isNewBom = false;
         props.fabApplication.bom = null;
-      }
+      } 
     } else {
+      console.log('Do not Need bom');
       props.fabApplication.isNewBom = false;
       props.fabApplication.bom = null;
     }
-  }
-);
+});
+
+// watch(
+//   () => props.fabApplication.packageId,
+//   (newVal) => {
+//     if (newVal === "CSP") {
+//       if (props.fabApplication.bomMainCode === "") {
+//         props.fabApplication.bom = initBom();
+//         props.fabApplication.isNewBom = true;
+//       } else {
+//         props.fabApplication.isNewBom = false;
+//         props.fabApplication.bom = null;
+//       }
+//     } else {
+//       props.fabApplication.isNewBom = false;
+//       props.fabApplication.bom = null;
+//     }
+//   }
+// );
 
 watch(
   () => props.fabApplication.isNewBom,

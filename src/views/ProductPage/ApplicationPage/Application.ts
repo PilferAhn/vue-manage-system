@@ -33,6 +33,7 @@ export const testOptions = [
   "Self Heating",
   "Drop",
   "Step",
+  "SMARTERMICRO FUSE",
 ];
 
 export const signalList = [
@@ -81,7 +82,7 @@ export function computeChannelBandwidth(testType: string, duplexMode: string) {
     }
   } else if (testType === "AMR") {
     return ["5Mhz"];
-  } else if (["Life", "Max Fuse", "Step Stress"].includes(testType)) {
+  } else if (["Life", "Max Fuse", "Step Stress", "SMARTERMICRO FUSE"].includes(testType)) {
     return ["1.4Mhz", "5Mhz", "10Mhz", "20Mhz"];
   } else {
     return [];
@@ -513,7 +514,7 @@ export function watchBand(applicationForm: any, applicationFormBoolean: any) {
     () => applicationForm.value.band,
     (newVal: string, oldVal: string) => {
       applicationForm.value.targetFreq = "";
-      applicationForm.value.link = "";
+      applicationForm.value.link = upAndDown[0];
 
       if (newVal !== "") {
         if (["NR(DFT-s-OFDM)", "NR(CP-OFDM)", "LTE"].includes(applicationForm.value.signalType)) {
@@ -594,7 +595,7 @@ export function setBandwidthOptions(
     (newVal: string, oldVal: string) => {
       applicationForm.value.bandwidth = "";
       applicationForm.value.duty = "";
-
+      console.log('band watch')
       if (applicationForm.value.testType === "Aging") {
         if (applicationForm.duplexMode === "TDD") {
           bandwidthList.value = ["5Mhz"];
@@ -604,7 +605,7 @@ export function setBandwidthOptions(
       } else if (applicationForm.value.testType === "AMR") {
         bandwidthList.value = ["5Mhz"];
       } else if (
-        ["Life", "Max Fuse", "Step Stress"].includes(
+        ["Life", "Max Fuse", "Step Stress", "SMARTERMICRO FUSE"].includes(
           applicationForm.value.testType
         )
       ) {

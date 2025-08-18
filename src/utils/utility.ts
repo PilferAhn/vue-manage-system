@@ -126,16 +126,30 @@ export const readFileContent = (file) => {
   return false;
 };
 
-export async function getPackageList(){
+interface SubType {
+  sub_type_id: string;
+  description: string | null;
+}
 
-  const options = ref<OptionInterface[]>([]);
+export interface OptionInterfaceWithSubTypes extends OptionInterface {
+  sub_types: SubType[];
+}
+
+
+export async function getPackageList(): Promise<OptionInterfaceWithSubTypes[]>{
+  const options = ref<OptionInterfaceWithSubTypes[]>([]);
   const data = await sendGetRequest("/fab_monitoring_rev2", "get_fab_packages_list")
-
+  console.log('data', data )
   for(let i = 0 ; i < data.length; i++){
-    const temp = {
+    const temp : OptionInterfaceWithSubTypes  = {
       key : i,
       label : data[i]["description"],
-      value : data[i]["package_id"]
+      value : data[i]["package_id"],
+      sub_types: data[i]["sub_types"]?.map((sub, j) => ({
+        key: j,
+        description: sub.description ?? sub.sub_type_id,
+        sub_type_id: sub.sub_type_id,
+      })) ?? [],
     }
     options.value.push(temp)
   }

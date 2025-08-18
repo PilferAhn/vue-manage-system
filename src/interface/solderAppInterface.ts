@@ -1,5 +1,5 @@
 import type { LotStatus } from "./mes-interface";
-import type { StockInfo } from "./stock";
+import type { StockItem } from "./stock";
 export interface Measurement {
   number? : string;
   measurementType: string; // 측정 종류
@@ -92,7 +92,7 @@ export interface ApplicationData {
   matchingQuantity? : number ;
   matching? : Matching[];
   lotStatus? : LotStatus[];
-  stocks? : StockInfo[];
+  stocks? : StockItem[];
   childDepth? : number;
   childOperation? : string;
   childStageName? : string

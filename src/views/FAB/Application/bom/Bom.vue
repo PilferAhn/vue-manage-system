@@ -79,7 +79,7 @@
           <!-- <el-input
               v-model="props.fabApplication.bom.epoxy.modelName"
             ></el-input> -->
-          <el-select v-model="props.bom.epoxy.modelName">
+          <el-select v-if="props.bom?.epoxy" v-model="props.bom.epoxy.modelName">
             <el-option
               v-for="m in epoList"
               :key="m['index']"
@@ -100,7 +100,7 @@
           <div>Size (규격)</div>
         </template>
         <div class="cell-value">
-          <el-input type="number" v-model="props.bom.epoxy.size"></el-input>
+          <el-input v-if="props.bom?.epoxy" type="number" v-model="props.bom.epoxy.size"></el-input>
         </div>
       </el-descriptions-item>
       <el-descriptions-item span="2">
@@ -108,7 +108,7 @@
           <div>Epoxy Type</div>
         </template>
         <div class="cell-value">
-          <el-select v-model="props.bom.epoxy.purpose">
+          <el-select v-if="props.bom?.epoxy" v-model="props.bom.epoxy.purpose">
             <el-option
               v-for="bumpSizeOption in epoxyPurposeList"
               :key="bumpSizeOption"
@@ -123,7 +123,7 @@
           <div>Product Code</div>
         </template>
         <div>
-          <el-input v-model="props.bom.epoxy.code"></el-input>
+          <el-input v-if="props.bom?.epoxy" v-model="props.bom.epoxy.code"></el-input>
         </div>
       </el-descriptions-item>
       <el-descriptions-item span="2">
@@ -315,22 +315,6 @@ const bom = {
 };
 
 watch(
-  () => props.fabApplication.packageId,
-  (newVal) => {
-    if (
-      epoList.value.length != 0 &&
-      props.fabApplication.packageId !== undefined
-    ) {
-      // props.fabApplication.bom = bom;
-      // const packageList = tempEpoList.value.find(
-      //   (t) => t["pkgtype"] === newVal
-      // );
-      // console.log(tempEpoList);
-    }
-  }
-);
-
-watch(
   () => props.bom.pkgCompany,
   (newVal) => {
     if (props.bom.pkgSize !== null) {
@@ -354,11 +338,9 @@ const isCompanyDisabled = ref<boolean>(false);
 watch(
   () => props.bom.pkgCompany,
   (newVal) => {
-    console.log(newVal);
     if (newVal !== null) {
       if (props.bom.pkgCompany === "Daisho Denshi") {
         isCompanyDisabled.value = true;
-        console.log(isCompanyDisabled.value);
         props.bom.pkgTopAuThickness = null;
       }
     }
@@ -367,20 +349,15 @@ watch(
 
 watch(
   () => props.fabApplication.packageId,
-  (newVal, oldVal) => {
-    if (["WLP", "BDMP"].includes(oldVal) && newVal === "CSP") {
-      // props.fabApplication.bom = initBom();
-
+  (newVal) => {
+    if (newVal === "CSP" && props.fabApplication.destinationId !== "개발전달") {
       if (epoList.value.length > 0) {
         const temp = epoList.value.find((e) => e["model"] === newVal);
         epoCode.value = temp["code"];
         props.fabApplication.bom.epoxy.code = temp["code"];
       }
     }
-    if (newVal === "CSP") {
-    } else {
-      // props.fabApplication.bom = null;
-    }
+    
   },
   { immediate: true }
 );
@@ -414,7 +391,7 @@ const extractValues = (data: Record<string, any>, bom: Bom) => {
 watch(
   () => props.fabApplication.bom?.epoxy?.modelName,
   (newVal) => {
-    if (props.bom !== null && epoList.value.length > 0) {
+    if (props.bom?.epoxy && epoList.value.length > 0) {
       const temp = epoList.value.find((e) => e["model"] === newVal);
       epoCode.value = temp["code"];
       props.fabApplication.bom.epoxy.code = temp["code"];
@@ -433,10 +410,8 @@ watch(
 
 const size = ref<ComponentSize>("default");
 onMounted(async () => {
-  // props.fabApplication.bom = bom;
   packageList.value = await getPackageList();
   epoList.value = await getEpoInfoList();
-  // console.log(epoList.value);
 });
 </script>
 <script lang="ts">

@@ -5,7 +5,7 @@
         <ApplicationMonitorByPackage :fabApp="cspApps" :teg-app="tegApp" />
       </el-tab-pane>
       <el-tab-pane :label="wlpLabel" name="wlp">
-        <ApplicationMonitorByPackage :fabApp="wlpApps" :teg-app="tegApp" />
+        <ApplicationMonitorByPackage :fabApp="wlpApps" :teg-app="tegApp" :isWlp="true" />
       </el-tab-pane>
       <el-tab-pane :label="'ETC'" name="etc">
         <ApplicationMonitorByPackage :fabApp="etcApps" :teg-app="tegApp" />

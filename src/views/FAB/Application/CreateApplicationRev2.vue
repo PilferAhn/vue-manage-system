@@ -1,5 +1,4 @@
 <template>
-
     <ApplicationTemplate v-if="isOnTime"
       :fab-application="fabApplication"        
       applicationType="create"
@@ -35,12 +34,12 @@
     getBandList,
     canCreateFabRequest,
   } from "../../../utils/Fab/fab-application-utils";
-  
+  // import {generateMachineOptionsForEtching} from "../../../utils/Fab/fab-application-deposition.utils"
+  import { OptionInterface } from "../../../interface/option";
   import { getUserId, getUserName } from "../../../utils/account-utils";
   import axios from "axios";
 import ApplicationUnavailableMessage from "./ApplicationUnavailableMessage.vue";
 import { sendGetRequest, sendPostRequest } from "../../../utils/httpProtocol";
-  //   import type { FabApplicationInterface  } from "../../interface/fab";
   
   const bom = initBom();
   const { fabApplication } = initFabApplication3(bom);
@@ -49,28 +48,19 @@ import { sendGetRequest, sendPostRequest } from "../../../utils/httpProtocol";
   const sawType = reactive<SawType>({});
   const isOnTime = ref<boolean>(true)
   onMounted(async () => {
-
     fabApplication.requester.userName = getUserName();
     fabApplication.requester.id = getUserId();
     fabApplication.requesterId = getUserId();
-  
-    // fabApplication.designer.userName = getUserName();
-    // fabApplication.designer.id = getUserId();
-    // fabApplication.designerId = getUserId();
-    
     try {
-      
       const response = await axios.get(
         "/fab_monitoring_rev2/get_saw_types_list"
       );
-  
       const rawData = response.data;    
-      Object.assign(sawTypes , convertPep8ToCamelCase2(rawData))
-                        
+      Object.assign(sawTypes , convertPep8ToCamelCase2(rawData))  
     } catch (error) {
       console.error("Error fetching saw types:", error);
     }
-
+    console.log('sawTypes', sawTypes);
     isOnTime.value = false
     isOnTime.value = await canCreateFabRequest()
     

@@ -81,8 +81,11 @@ export default defineConfig({
 			"/ordersheet": "http://10.29.11.57:40000"
 		},
 	}
-},
+}
 );
+
+
+
 
 
 

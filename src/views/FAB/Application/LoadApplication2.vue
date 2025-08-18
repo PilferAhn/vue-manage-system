@@ -79,7 +79,7 @@
       appData.waferType = appData.wafer.sawTypeId;
       appData.isDualIdt = appData.idt2Id != null;
 
-      if(appData.packageId === "CSP" && !appData.bom) {
+      if(appData.packageId === "CSP" && appData.destinationId !== "개발전달" && !appData.bom) {
         appData.bom = initBom();
         appData.bomMainCode = "";
         appData.isNewBom = true;
@@ -94,18 +94,13 @@
         appData.bom2.epoxy ??= { modelName: "" } as Epoxy;
       }
 
+      
       // Fix layers
       const fixLayers = (targetId: any, targetLayers: Layer[], type: any[], searchFucnc :CallableFunction) => {
-        // console.log("Target Id: ", targetId);
-        // console.log("Target Layers: ", targetLayers)
-        // console.log("Types: ", type);
-        
         if (targetId != null) {
           const layers: Layer[] = type.find(
             (item) => searchFucnc(item, targetId)
           )?.layers ?? [];
-          
-          // console.log("CallableFunction: ", toString(CallableFunction));
           
           if (layers.length !== targetLayers.length) {
             targetLayers.splice(0, targetLayers.length, ...layers);
@@ -113,25 +108,17 @@
         }
       }
 
-      // console.log("idtLayers");
       fixLayers(appData.idtId, appData.idtLayers, sawTypeData.idtTypes, (type: IdtType, id: any) => type.idtId === id);
-      // console.log("idt2Layers");
       fixLayers(appData.idt2Id, appData.idt2Layers, sawTypeData.idtTypes, (type: IdtType, id: any) => type.idtId === id);
-      // console.log("tcLayers");
       fixLayers(appData.tcId, appData.tcLayers, sawTypeData.tcTypes, (type: TcType, id: any) => type.tcId === id);
-      // console.log("pstLayers");
       fixLayers(appData.pstId, appData.pstLayers, sawTypeData.pstTypes, (type: PstType, id: any) => type.pstId === id);
-      // console.log("seedLayers");
       fixLayers(appData.seedId, appData.seedLayers, sawTypeData.seedTypes, (type: seedType, id: any) => type.seedId === id);
-      // console.log("passivationLayers");
       fixLayers(appData.passivationId, appData.passivationLayers, sawTypeData.passivationTypes, (type: passivationType, id: any) => type.passivationId === id);
-
       
       // Assign the converted data to processData
       Object.assign(app, appData);
       Object.assign(sawTypes, sawTypesData);
       Object.assign(sawType, sawTypeData);
-
       isLoad.value = true;
     } 
     catch (error) {

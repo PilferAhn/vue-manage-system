@@ -1,5 +1,6 @@
 import { OptionInterface } from "../../interface/option";
 import { ref } from "vue";
+import axios from "axios";
 import {
   idtProcess,
   IdtType,
@@ -13,24 +14,6 @@ export function getIdtProcessId(idtTypes: IdtType[], idtId: string) {
 
 export function getIdtTypeByIdtId(idtTypes: IdtType[], idtId: number) {
   return idtTypes.find((idtType) => idtType.idtId == idtId);
-}
-
-export function genIdtProcessOptions(idtTypes: IdtType[], idtId: number) {
-  // const idx = idtId.toString();
-  const idtProcesses = ref<idtProcess[]>();
-  idtProcesses.value = idtTypes[idtId - 1].idtProcesses;
-  const options = ref<OptionInterface[]>([]);
-
-  for (let i = 0; i < idtProcesses.value.length; i++) {
-    const temp: OptionInterface = {
-      key: i,
-      label: idtProcesses.value[i].idtProcessId,
-      value: idtProcesses.value[i].idtProcessId,
-    };
-    options.value.push(temp);
-  }
-
-  return options.value;
 }
 
 export function generateIdtOptions(idtTypes: IdtType[]) {
@@ -90,6 +73,25 @@ export function generateMachineOptions(idtTypes: IdtType[], idtId: string) {
     }
   });
 
+  return options.value;
+}
+
+export function setMachineForEtching (idtId: number, idtTypes: IdtType[]) {
+  const options = ref<OptionInterface[]>([]);
+
+  idtTypes.forEach((idtType) => {
+    if(idtType.idtId === idtId) {
+      idtType.idtProcessMachines?.forEach((machine, index) =>{
+        if(machine.idtProcessId === "Etching"){
+          options.value.push({
+            key: index,
+            value: machine.idtProcessMachineName,
+            label: machine.idtProcessMachineName
+          });
+        }
+      });
+    }
+  });
   return options.value;
 }
 

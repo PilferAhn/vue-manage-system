@@ -244,6 +244,7 @@
             />
             <el-option key="Drop" label="Drop" value="Drop" />
             <el-option key="Step" label="Step" value="Step" />
+            <el-option key="SMARTERMICRO FUSE" label="SMARTERMICRO FUSE" value="SMARTERMICRO FUSE" />
           </el-select>
         </el-form-item>
 

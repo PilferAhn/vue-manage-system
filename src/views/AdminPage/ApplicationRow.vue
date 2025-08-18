@@ -71,18 +71,6 @@
         </el-table-column>
 
         <el-table-column prop="test_type" label="TEST" align="center">
-          <!-- <template #default="scope">
-            <el-select
-              v-model="scope.row.test_type"
-              placeholder="예) Fuse Max"
-              size="small"
-            >
-              <el-option key="Max Fuse " label="Max Fuse" value="Max Fuse" />
-              <el-option key="AMR" label="AMR" value="AMR" />
-              <el-option key="Life" label="Life" value="Life" />
-              <el-option key="Aging" label="Aging" value="Aging" />
-            </el-select>
-          </template> -->
         </el-table-column>
 
         <el-table-column
@@ -96,9 +84,6 @@
 
         <el-table-column prop="requester" label="담당자" align="center">
         </el-table-column>
-
-        <!-- <el-table-column prop="purpose" label="의뢰목적" align="center">
-        </el-table-column> -->
 
         <el-table-column prop="request_number" label="의뢰 번호" align="center">
         </el-table-column>

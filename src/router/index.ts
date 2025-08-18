@@ -710,7 +710,7 @@ const routes: RouteRecordRaw[] = [
         },
         component: () =>
           import(
-            /* webpackChunkName: "table" */ "../views/Solder/Stock/Application/SolderCreateApplication.vue"
+            /* webpackChunkName: "table" */ "../views/Solder/Stock/StockItem/CreateSample.vue"
           ),
       },
       {
@@ -722,11 +722,11 @@ const routes: RouteRecordRaw[] = [
         },
         component: () =>
           import(
-            /* webpackChunkName: "table" */ "../views/Solder/Stock/Application/CreateApplication.vue"
+            /* webpackChunkName: "table" */ "../views/Solder/Stock/StockItem/CreateReel.vue"
           ),
       },
       {
-        path: "/whc/stock-management/load-stock/:reelId",
+        path: "/whc/stock-management/load-stock/:id",
         name: "LoadLotStock",
         meta: {
           title: "LoadLotStock",
@@ -734,19 +734,19 @@ const routes: RouteRecordRaw[] = [
         },
         component: () =>
           import(
-            /* webpackChunkName: "table" */ "../views/Solder/Stock/Application/LoadApplication.vue"
+            /* webpackChunkName: "table" */ "../views/Solder/Stock/StockItem/LoadStockItem.vue"
           ),
       },
       {
         path: "/whc/stock-management/stock-list",
         name: "Stock List",
         meta: {
-          title: "Stock List",
+          title: "Reel List",
           permiss: "11",
         },
         component: () =>
           import(
-            /* webpackChunkName: "table" */ "../views/Solder/Stock/ApplicationList/LoadApplicationList.vue"
+            /* webpackChunkName: "table" */ "../views/Solder/Stock/StockItemList/ReelList.vue"
           ),
       },
       {
@@ -758,7 +758,7 @@ const routes: RouteRecordRaw[] = [
         },
         component: () =>
           import(
-            /* webpackChunkName: "table" */ "../views/Solder/Stock/ApplicationList/SolderLoadApplicationList.vue"
+            /* webpackChunkName: "table" */ "../views/Solder/Stock/StockItemList/SampleList.vue"
           ),
       },
       {

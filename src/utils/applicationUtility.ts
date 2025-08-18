@@ -28,7 +28,7 @@ export function computeChannelBandwidth(testType: string, duplexMode: string) {
     }
   } else if (testType === "AMR") {
     return ["5Mhz"];
-  } else if (["Life", "Max Fuse", "Step Stress"].includes(testType)) {
+  } else if (["Life", "Max Fuse", "Step Stress", "SMARTERMICRO FUSE"].includes(testType)) {
     return ["1.4Mhz", "5Mhz", "10Mhz"];
   } else {
     return [];
@@ -38,7 +38,7 @@ export function computeChannelBandwidth(testType: string, duplexMode: string) {
 export function computeSignalOptions(testType: string) {
   if (testType === "Self Heating") {
     return [{ label: "CW", value: "CW" }];
-  } else if (["Life", "Max Fuse", "Step"].includes(testType)) {
+  } else if (["Life", "Max Fuse", "Step", "SMARTERMICRO FUSE"].includes(testType)) {
     return [
       { label: "CW", value: "CW" },
       { label: "CW Duty 50%", value: "CW Duty 50%" },
@@ -61,7 +61,7 @@ export function computeRB(testType: string) {
     return ["1RB"];
   } else if (testType === "AMR") {
     return ["12RB"];
-  } else if (["Lifetime", "Max Fuse", "Step Stress"].includes(testType)) {
+  } else if (["Lifetime", "Max Fuse", "Step Stress", "SMARTERMICRO FUSE"].includes(testType)) {
     return ["1RB"];
   } else {
     return [];
@@ -82,15 +82,15 @@ export const createRequestNumber = async () => {
 
 export function getSystemBand(signalType: string, band: string) {
   const bandInfo: BandInformationDict = bandInformationDict;
-
-  if (["LTE", "NR", "CW"].includes(signalType)) {
-
+  if (["LTE", "NR", "NR(DFT-s-OFDM)","NR(CP-OFDM)","CW"].includes(signalType)) {
+    if(signalType == "NR(DFT-s-OFDM)" || signalType == "NR(CP-OFDM)"){
+      signalType = "NR";
+    }
     const bandList = Object.keys(bandInfo[signalType]);
-    
-    const tempBand = band.toLowerCase()
-
-    if (bandList.includes(tempBand)) {
-      return bandInfo[signalType][tempBand]["uplinkMhz"]
+    // const tempBand = band.toLowerCase()
+    // console.log('tempBand:::', tempBand)
+    if (bandList.includes(band)) {
+      return bandInfo[signalType][band]["uplinkMhz"]
       
     }
   }
