@@ -18,6 +18,16 @@ export const moduleSilderBarList = {
       index: "/modules/application/ordersheet",
       title: "모듈 조립의뢰서",
       permiss: "11",
+    },
+    {
+      index: "/modules/application/bomwait",
+      title: "봄 대기열",
+      permiss: "11",
+    },
+    {
+      index: "/modules/application/modulemeterialqty",
+      title: "원자재 소요량",
+      permiss: "11",
     }
   ],
 };

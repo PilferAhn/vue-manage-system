@@ -119,7 +119,7 @@ export interface BomList {
     svalue: string,
     ssize: string,
     smarker: string,
-    version_check: string,
+    bomcheck: string,
     moving_avgp: string,
     moq: string,
     remark: string
@@ -143,4 +143,30 @@ export interface CspImages {
     cell_name: string
     file_index: string
     url: string
+}
+
+export interface BomModule {
+    material_numbering: string,
+    desc: string,
+    bom_item_number: string,
+    bom_component: string,
+    maktx: string,
+    comoponent_quantity: string,
+    unit: string,
+    username: string,
+    saw_type: string,
+    module_type: string,
+    sref: string,
+}
+
+
+export interface BomModuleTable {
+    wtid: number,
+    model_code: string,
+    level: string,
+    ruser: string,
+    cuser: string,
+    comfirmyn: string,
+    status: string,
+    radte: string
 }

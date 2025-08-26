@@ -38,49 +38,73 @@ export const modulesRouteIndexList: RouteRecordRaw[] = [
       ),
   },
   {
-    path:"/modules/application/ordersheet",
+    path: "/modules/application/ordersheet",
     name: "ModuleOrderSheet",
-    meta : {
-      title:'모듈Odersheet',
-      permiss:'11'
+    meta: {
+      title: '모듈Odersheet',
+      permiss: '11'
     },
-    component: ()=>
+    component: () =>
       import(
         /* webpackChunkName: "table" */ "../views/Modules/Ordersheet/Ordersheet.vue"
       )
   },
   {
-    path:"/modules/application/ordersheet/sheet/:sheetId",
-    name: "OrderSheetCreate",
-    meta : {
-      title:'OrderSheet작성',
-      permiss:'11'
+    path: "/modules/application/bomwait",
+    name: "ModuleBomList",
+    meta: {
+      title: 'BOM대기',
+      permiss: '11'
     },
-    component: ()=>
+    component: () =>
+      import(
+        /* webpackChunkName: "table" */ "../views/Modules/Ordersheet/BomWait.vue"
+      )
+  },
+  {
+    path: "/modules/application/modulemeterialqty",
+    name: "ModuleMeterialQty",
+    meta: {
+      title: '모듈원자재소요량',
+      permiss: '11'
+    },
+    component: () =>
+      import(
+        /* webpackChunkName: "table" */ "../views/Modules/Ordersheet/ModuleMeterialQty.vue"
+      )
+  },
+  {
+    path: "/modules/application/ordersheet/sheet/:sheetId",
+    name: "OrderSheetCreate",
+    meta: {
+      title: 'OrderSheet작성',
+      permiss: '11'
+    },
+    component: () =>
       import(
         /* webpackChunkName: "table" */ "../views/Modules/Ordersheet/OrdersheetFormTemplate.vue"
       )
   },
   {
-    path:"/modules/application/ordersheet/pcb/:sheetId",
+    path: "/modules/application/ordersheet/pcb/:sheetId",
     name: "OrderSheetPcbCreate",
-    meta : {
-      title:'PCB Capture',
-      permiss:'11'
+    meta: {
+      title: 'PCB Capture',
+      permiss: '11'
     },
-    component: ()=>
+    component: () =>
       import(
         /* webpackChunkName: "table" */ "../views/Modules/Ordersheet/OrdersheetPCBFormTemplate.vue"
       )
   },
   {
-    path:"/modules/application/ordersheet/bom/:sheetId",
+    path: "/modules/application/ordersheet/bom/:sheetId",
     name: "OrderSheetBomCreate",
-    meta : {
-      title:'BOM list',
-      permiss:'11'
+    meta: {
+      title: 'BOM list',
+      permiss: '11'
     },
-    component: ()=>
+    component: () =>
       import(
         /* webpackChunkName: "table" */ "../views/Modules/Ordersheet/OrdersheetBOMFormTemplate.vue"
       )

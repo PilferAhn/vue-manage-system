@@ -56,12 +56,12 @@ export default {};
                         <table class="custom-top-table">
                             <colgroup>
                                 <col style="width :2%;" />
+                                <col style="width :2%;" />
                                 <col style="width :8%;" />
                                 <col style="width :14%;" />
-                                <col style="width :20%;" />
+                                <col style="width :24%;" />
                                 <col style="width :6%;" />
                                 <col style="width :8%;" />
-                                <col style="width :6%;" />
                                 <col style="width :6%;" />
                                 <col style="width :10%;" />
                                 <col style="width :10%;" />
@@ -72,6 +72,10 @@ export default {};
                                     <td class="bcell" style="height: 50px;">
                                         No
                                     </td>
+                                    <td class="bcell" style="line-height: 1.2;cursor: pointer;" @click="selectAll">
+                                        B
+                                    </td>
+
                                     <td class="bcell" style="background-color: #ffff00;">
                                         Ref
                                     </td>
@@ -90,9 +94,7 @@ export default {};
                                     <td class="bcell">
                                         Maker
                                     </td>
-                                    <td class="bcell">
-                                        신규/양산
-                                    </td>
+
                                     <td class="bcell" style="line-height: 1.2;">
                                         이동평균단가<br />
                                         (화폐단위 :KRW)
@@ -103,13 +105,17 @@ export default {};
                                         (구매최소수량)
                                     </td>
                                     <td class="bcell">
-                                        비고
+                                        QTY
                                     </td>
                                 </tr>
 
                                 <tr v-for="(item, index) in bomList" :key="index">
                                     <td>
                                         {{ index + 1 }}. </td>
+                                    <td>
+                                        <input type="checkbox" v-model="item.bomcheck" true-value="true"
+                                            false-value="false" />
+                                    </td>
                                     <td style="padding: 0px;">
                                         <CustomSelect v-model="bomListTemp[index].sref" :options="refs" />
                                     </td>
@@ -147,10 +153,7 @@ export default {};
                                     <td style="padding: 0px;" v-else>
                                         <CustomSelect v-model="bomListTemp[index].smarker" :options="markers" />
                                     </td>
-                                    <td contenteditable="true"
-                                        @input="e => bomListTemp[index].version_check = (e.target as HTMLElement).innerText">
-                                        {{
-                                            item.version_check }} </td>
+
                                     <td contenteditable="true"
                                         @input="e => bomListTemp[index].moving_avgp = (e.target as HTMLElement).innerText">
                                         {{
@@ -236,7 +239,7 @@ export default {};
 
 <script lang="ts" setup>
 import { ref, onMounted, watch, computed, nextTick, reactive, Ref } from "vue";
-import { getBomList, getMenu, saveBomList, getBomCode } from '../../../utils/orderShiitUtils';
+import { getBomList, getMenu, saveBomList, getBomCode, getModuleCodeRev, getSawType, getOdsBom, saveBomWait } from '../../../utils/orderShiitUtils';
 import { el } from "element-plus/es/locale";
 import CustomSelect from './components/CustomSelect.vue';
 
@@ -244,7 +247,9 @@ import type {
     BomList,
     ModuleMenu,
     SmtItem,
-    BomMeterial
+    BomMeterial,
+    BomModule,
+    BomModuleTable
 } from "../../../interface/orderSheetInterface";
 
 import { useRoute, useRouter } from "vue-router";
@@ -269,6 +274,9 @@ const makers_saw = ref<ModuleMenu[]>([]);
 const carriertapes = ref<ModuleMenu[]>([]);
 const ics = ref<ModuleMenu[]>([]);
 
+const checkedIds = ref([]);
+
+
 const showBomPopup = ref(false);
 
 const bomOptions = ref<any[]>([]);
@@ -276,6 +284,13 @@ const enterIndex = ref<number>(0);
 const selectedBom = ref<any | null>(null);
 
 const bomSearchResult = ref<BomMeterial[]>([]);
+const selectAll = () => {
+    const allSelected = bomList.value.every(item => item.bomcheck === 'true');
+    bomList.value.forEach(item => {
+        item.bomcheck = allSelected ? 'false' : 'true';
+    });
+};
+
 
 function addMeterial(index: number) {
     console.log(noneBomList.value);
@@ -366,7 +381,143 @@ async function saveChildren() {
 }
 
 async function postBom() {
-    alert("boom not work")
+    const blist = bomList.value.filter(item => item.bomcheck === "true");
+    if (blist.length === 0) {
+        alert("x");
+        return;
+    }
+
+    const modelCode = bomList.value.length > 0 ? bomList.value[0].model_code : null;
+    const level = bomList.value.length > 0 ? bomList.value[0].level : null;
+    let username = ''
+    const sheetData = await getOdsBom(modelCode, level)
+
+    if (!sheetData) {
+        alert("x1")
+        return;
+    }
+    const req = `RDM${modelCode}`
+    const rep = `GH${modelCode}`
+    const enrolledCodes = await getModuleCodeRev(req);
+    let fullCode = ''
+    let finalCode = ''
+    let smtCode = ''
+    // const sawType = await getSawType(modelCode, level)
+    if (Array.isArray(enrolledCodes) && enrolledCodes.length > 0) {
+        const lastCode = enrolledCodes[0].matnr
+
+        const parts = lastCode.split(modelCode);
+        // parts = ["RDM", "00004"]
+
+        const prefix = parts[0] + modelCode; // "RDMD5T0"
+        const numberPart = parts[1];         // "00004"
+
+        const nextNum = String(parseInt(numberPart, 10) + 1).padStart(numberPart.length, "0");
+
+        const nextCode = prefix + nextNum;
+        fullCode = nextCode
+        finalCode = rep + 'F0' + nextNum;
+        smtCode = req + 'S0' + nextNum;
+    } else {
+        fullCode = `${req}0001`
+    }
+    const bomreq: BomModule[] = [];
+
+    const a: BomModule = {
+        material_numbering: fullCode,
+        desc: `MODULE : ${modelCode}`,
+        bom_item_number: '0010',
+        bom_component: finalCode,
+        maktx: `ASSY MODULE FINAL : ${modelCode}`,
+        comoponent_quantity: '1000',
+        unit: 'EA',
+        username: sheetData.request_requestor,
+        saw_type: sheetData.saw_type,
+        module_type: sheetData.module_type,
+        sref: '',
+
+    }
+    const b: BomModule = {
+        material_numbering: finalCode,
+        desc: `ASSY MODULE FINAL : ${modelCode}`,
+        bom_item_number: '0010',
+        bom_component: smtCode,
+        maktx: `ASSY MODULE SMT : ${modelCode}`,
+        comoponent_quantity: '1000',
+        unit: 'EA',
+        username: '',
+        saw_type: '',
+        module_type: '',
+        sref: '',
+
+    }
+    // 이건 첫번쨰 레쓴
+    bomreq.push(a);
+    bomreq.push(b);
+    username = sheetData.request_requestor
+    let smtbin = 10
+    let finalbin = 10
+    for (let i = 0; i < blist.length; i++) {
+        console.log(blist[i])
+        const ref = blist[i].sref;
+        const pn = blist[i].spn;
+        const qty = blist[i].remark;
+        const bom = blist[i].sbom;
+        if (ref === 'CoverTape' || ref === 'CarrierTape' || ref === 'Epoxy') {
+            finalbin += 10; // 10씩 증가
+
+            const c: BomModule = {
+                material_numbering: finalCode,
+                desc: `ASSY MODULE FINAL : ${modelCode}`,
+                bom_item_number: finalbin.toString().padStart(4, '0'), // '0020', '0030' ...
+                bom_component: bom,
+                maktx: pn,
+                comoponent_quantity: qty,
+                unit: ref === 'Epoxy' ? 'SH' : 'M',
+                username: '',
+                saw_type: '',
+                module_type: '',
+                sref: ref,
+
+            };
+
+            bomreq.push(c);
+        }
+        else {
+            smtbin += 10
+            const c: BomModule = {
+                material_numbering: smtCode,
+                desc: `ASSY MODULE SMT : ${modelCode}`,
+                bom_item_number: smtbin.toString().padStart(4, '0'), // '0020', '0030' ...
+                bom_component: bom,
+                maktx: pn,
+                comoponent_quantity: qty ?? '1000',
+                unit: ref === 'Solder' ? 'G' : 'EA',
+                username: '',
+                saw_type: '',
+                module_type: '',
+                sref: ref,
+
+            };
+
+            bomreq.push(c);
+        }
+
+        // SAW, IC 처리 따로...
+    }
+    const table = {
+        model_code: modelCode,
+        level: level,
+        ruser: username,
+        rdate: '',
+        wtid: 0,
+        cuser: '',
+        comfirmyn: '',
+        status: '',
+        radte: ''
+    }
+    console.log("result -==>", bomreq);
+    saveBomWait(bomreq, table);
 }
 
 async function mappingData() {
@@ -502,6 +653,8 @@ function onSelectBom(item: any) {
         bomListTemp.value[index].spn = svalue
         bomList.value[index].ssize = ssize
         bomListTemp.value[index].ssize = ssize
+        bomListTemp.value[index].spn = maktx
+        bomList.value[index].spn = maktx
         // formDataTemp.pcb_code = svalue
         // formData.pcb_code = svalue
     }
@@ -527,8 +680,8 @@ function onSelectBom(item: any) {
         bomListTemp.value[index].ssize = ssize
         bomList.value[index].smarker = markerName
         bomListTemp.value[index].smarker = markerName
-        bomListTemp.value[index].spn = spn
-        bomList.value[index].spn = spn
+        bomListTemp.value[index].spn = maktx
+        bomList.value[index].spn = maktx
     }
     if (bomListTemp.value[index].sref == 'SAW') {
         bomList.value[index].smarker = 'Wisol'
@@ -603,6 +756,7 @@ onMounted(async () => {
     const result = await getBomList(sheetId)
     bomList.value = result
     bomListTemp.value = result
+
     noneBomList.value = result.filter(item => !item.sbom || item.sbom == '');
     isLoading.value = true
     console.log(noneBomList.value)

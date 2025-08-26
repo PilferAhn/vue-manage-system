@@ -713,16 +713,19 @@
                 <tr>
 
                     <td colspan="4" contenteditable="true"
-                        @input="e => formDataTemp.cellsize_l = (e.target as HTMLElement).innerText">
+                        @input="e => formDataTemp.cellsize_l = (e.target as HTMLElement).innerText"
+                        @keydown.enter.prevent="handleEnterCellsize('l')">
                         {{ formData.cellsize_l }}
                     </td>
                     <td colspan="4" contenteditable="true"
-                        @input="e => formDataTemp.cellsize_t = (e.target as HTMLElement).innerText">
-                        {{ formData.cellsize_t }}
+                        @input="e => formDataTemp.cellsize_w = (e.target as HTMLElement).innerText"
+                        @keydown.enter.prevent="handleEnterCellsize('w')">
+                        {{ formData.cellsize_w }}
                     </td>
                     <td colspan="4" contenteditable="true"
-                        @input="e => formDataTemp.cellsize_w = (e.target as HTMLElement).innerText">
-                        {{ formData.cellsize_w }}
+                        @input="e => formDataTemp.cellsize_t = (e.target as HTMLElement).innerText"
+                        @keydown.enter.prevent="handleEnterCellsize('t')">
+                        {{ formData.cellsize_t }}
                     </td>
 
                     <td colspan="9" contenteditable="true"
@@ -807,13 +810,11 @@
                         {{ smt.sbom }}
                     </td>
                     <td colspan="5" v-else>
-                        {{ getCarrierBomCode(index) }}
+                        {{ getCarrierBomCode('default', index) }}
                     </td>
-                    <td colspan="9" contenteditable="true"
-                        @input="e => formDataTemp.smt_list[index].spn = (e.target as HTMLElement).innerText"
+                    <td colspan="9"
                         v-if="smt.sref === 'CarrierTape' || formDataTemp.smt_list[index].sref === 'CarrierTape'"
-                        @keydown.enter.prevent="handleEnterKey('default', index)">
-                        {{ smt.spn }}
+                        style="padding:0px">
                         <CustomSelect v-model="formDataTemp.smt_list[index].spn" :options="carriertapes" />
                     </td>
 
@@ -873,18 +874,17 @@
                     <td colspan="3" style="padding: 0px;">
                         <CustomSelect v-model="tempSmt[index].sref" :options="refs" />
                     </td>
-                    <td colspan="5" v-if="tempSmtView[index].sref !== 'CarrierTape'" contenteditable="true"
+                    <td colspan="5" v-if="item.sref !== 'CarrierTape'" contenteditable="true"
                         @input="e => tempSmt[index].sbom = (e.target as HTMLElement).innerText">
                         {{ tempSmtView[index].sbom }}
                     </td>
                     <td colspan="5" v-else>
-                        {{ getCarrierBomCode(index) }}
+                        {{ getCarrierBomCode('new', index) }}
                     </td>
-                    <td colspan="9" contenteditable="true"
-                        @input="e => tempSmt[index].spn = (e.target as HTMLElement).innerText"
+                    <td colspan="9"
                         v-if="tempSmtView[index].sref === 'CarrierTape' || tempSmt[index].sref === 'CarrierTape'"
-                        @keydown.enter.prevent="handleEnterKey('new', index)">
-                        {{ tempSmtView[index].spn }}
+                        style="padding:0px">
+
                         <CustomSelect v-model="tempSmt[index].spn" :options="carriertapes" />
                     </td>
 
@@ -1711,6 +1711,9 @@ function onSelectBom(item: any) {
         if (parts[0] === 'SWITCH' || parts[0] === 'LNA' || parts[0] === 'COMBO') {
             refs = 'IC';
         }
+        if (item.MAKTX && /cover tape/i.test(item.MAKTX)) {
+            refs = 'CoverTape'
+        }
     }
     if (formDataTemp.smt_list[index].sref === 'Inductor' || refs === 'IND') {
         // 사이즈 추출 (쉼표 뒤 마지막 단어)
@@ -1788,6 +1791,22 @@ function onSelectBom(item: any) {
         formData.smt_list[index].smarker = markerName
         formData.smt_list[index].spn = svalue
         formDataTemp.smt_list[index].spn = svalue
+        if ((!formDataTemp.cellsize_l || !formDataTemp.cellsize_w) && ssize) {
+            let s = String(ssize);
+            if (s.length >= 4) {   // 최소 4자리 이상일 때만 파싱
+                let l = s.substring(0, 2);
+                let w = s.substring(2, 4);
+
+                let lFormatted = l[0] + "." + l[1] + " ± 0.05";
+                let wFormatted = w[0] + "." + w[1] + " ± 0.05";
+
+                formData.cellsize_l = lFormatted;
+                formData.cellsize_w = wFormatted;
+                formDataTemp.cellsize_l = lFormatted;
+                formDataTemp.cellsize_w = wFormatted;
+            }
+        }
+
         formData.smt_list[index].ssize = ssize
         formDataTemp.smt_list[index].ssize = ssize
         formDataTemp.pcb_code = svalue
@@ -1824,6 +1843,13 @@ function onSelectBom(item: any) {
 
 
     }
+    if (formDataTemp.smt_list[index].sref === 'CoverTape' || refs === 'CoverTape') {
+
+        formDataTemp.smt_list[index].sref = 'CoverTape'
+        formData.smt_list[index].sref = 'CoverTape'
+        formData.smt_list[index].sbom = item.MATNR
+        formDataTemp.smt_list[index].sbom = item.MATNR
+    }
     enterIndex.value = 0
 }
 
@@ -1852,6 +1878,9 @@ function onSelectBomNew(item: any) {
         }
         if (parts[0] === 'SWITCH' || parts[0] === 'LNA' || parts[0] === 'COMBO') {
             refs = 'IC';
+        }
+        if (item.MAKTX && /cover tape/i.test(item.MAKTX)) {
+            refs = 'CoverTape'
         }
     }
     const markerMap: Record<string, string> = {
@@ -1960,6 +1989,23 @@ function onSelectBomNew(item: any) {
         tempSmtView.value[index].smarker = markerName
         tempSmtView.value[index].spn = svalue
         tempSmt.value[index].spn = svalue
+        if ((formDataTemp.cellsize_l === '' || formDataTemp.cellsize_w === '') && ssize) {
+            let s = String(ssize);
+
+            if (s.length >= 4) {   // 최소 4자리 이상일 때만 파싱
+                let l = s.substring(0, 2);
+                let w = s.substring(2, 4);
+
+                let lFormatted = l[0] + "." + l[1] + " ± 0.05";
+                let wFormatted = w[0] + "." + w[1] + " ± 0.05";
+
+                formData.cellsize_l = lFormatted;
+                formData.cellsize_w = wFormatted;
+                formDataTemp.cellsize_l = lFormatted;
+                formDataTemp.cellsize_w = wFormatted;
+            }
+        }
+
         tempSmtView.value[index].ssize = ssize
         tempSmt.value[index].ssize = ssize
         formDataTemp.pcb_code = svalue
@@ -1993,6 +2039,14 @@ function onSelectBomNew(item: any) {
     if (tempSmt.value[index].sref == 'SAW') {
         tempSmtView.value[index].smarker = 'Wisol'
         tempSmt.value[index].smarker = 'Wisol'
+    }
+    if (tempSmt.value[index].sref == 'CoverTape' || refs === 'CoverTape') {
+        formDataTemp.smt_list[index].sref = 'CoverTape'
+        formData.smt_list[index].sref = 'CoverTape'
+        formData.smt_list[index].sbom = item.MATNR
+        formDataTemp.smt_list[index].sbom = item.MATNR
+        formData.smt_list[index].spn = item.MAKTX
+        formDataTemp.smt_list[index].spn = item.MAKTX
     }
     enterIndex.value = 0
 }
@@ -2107,13 +2161,79 @@ const mappingData = () => {
     formData.position_list = [...formDataTemp.position_list];
 }
 
-function getCarrierBomCode(index: number) {
-    const pn = formDataTemp.smt_list[index].spn
-    if (pn) {
-        const match = carrierbom.value.find(q => q.mlabel === pn);
-        formDataTemp.smt_list[index].sbom = match?.mvalue || ''
-        return match?.mvalue || '';
+function getCarrierBomCode(statec: string, index: number) {
+    // console.log(tempSmt.value)
+    console.log(tempSmt.value)
+    if (statec == 'default') {
+        const pn = formDataTemp.smt_list[index].spn
+        if (pn) {
+            const match = carrierbom.value.find(q => q.mlabel === pn);
+            formDataTemp.smt_list[index].sbom = match?.mvalue || ''
+            return match?.mvalue || '';
+        }
+    } else if (statec === 'new') {
+        const pn = tempSmt.value[index].spn
+        if (pn) {
+            const match = carrierbom.value.find(q => q.mlabel === pn);
+            tempSmt.value[index].sbom = match?.mvalue || ''
+            tempSmtView.value[index].sbom = match?.mvalue || ''
+            return match?.mvalue || '';
+        }
     }
+}
+
+function handleEnterCellsize(state: string) {
+
+    if (state === 't') {
+        const raw = formDataTemp.cellsize_t.replace(/\s+/g, ''); // 모든 공백 제거
+        const digitsOnly = raw.replace(/\D/g, '');
+        if (raw.length === 6) {
+            const left = digitsOnly.substring(0, 3);   // "055"
+            const right = digitsOnly.substring(3, 6);  // "005"
+
+            const leftFormatted = `${left[0]}.${left.substring(1)}`;   // "0.55"
+            const rightFormatted = `${right[0]}.${right.substring(1)}`; // "0.05"
+
+            const result = `${leftFormatted} ± ${rightFormatted}`;
+
+            formDataTemp.cellsize_t = result
+            formData.cellsize_t = result
+
+        }
+    } else if (state === 'l') {
+        const raw = formDataTemp.cellsize_l.replace(/\s+/g, ''); // 모든 공백 제거
+        const digitsOnly = raw.replace(/\D/g, '');
+        if (raw.length === 5) {
+            const left = digitsOnly.substring(0, 2);   // "055"
+            const right = digitsOnly.substring(2, 5);  // "005"
+
+            const leftFormatted = `${left[0]}.${left.substring(1)}`;   // "0.55"
+            const rightFormatted = `${right[0]}.${right.substring(1)}`; // "0.05"
+
+            const result = `${leftFormatted} ± ${rightFormatted}`;
+
+            formDataTemp.cellsize_l = result
+            formData.cellsize_l = result
+
+        }
+    } else if (state === 'w') {
+        const raw = formDataTemp.cellsize_w.replace(/\s+/g, ''); // 모든 공백 제거
+        const digitsOnly = raw.replace(/\D/g, '');
+        if (raw.length === 5) {
+            const left = digitsOnly.substring(0, 2);   // "055"
+            const right = digitsOnly.substring(2, 5);  // "005"
+
+            const leftFormatted = `${left[0]}.${left.substring(1)}`;   // "0.55"
+            const rightFormatted = `${right[0]}.${right.substring(1)}`; // "0.05"
+
+            const result = `${leftFormatted} ± ${rightFormatted}`;
+
+            formDataTemp.cellsize_w = result
+            formData.cellsize_w = result
+
+        }
+    }
+
 }
 
 onMounted(async () => {

@@ -1,6 +1,7 @@
 import { reactive } from "vue";
 import axios from "axios";
-import { ApplicationData, SmtItem, PositionItem, BomList, PcbInterface } from "../interface/orderSheetInterface";
+import { ApplicationData, SmtItem, PositionItem, BomList, PcbInterface, BomModule, BomModuleTable } from "../interface/orderSheetInterface";
+import ModelName from "../views/TegPage/Application/ModelName.vue";
 
 export async function getCodeWpms(modelCode: string) {
   try {
@@ -334,6 +335,185 @@ export async function savePcb(formdata: PcbInterface, imagesetPCB: File[], delet
   } catch (error) {
     console.error("There was an error with the submission", error);
     alert("x")
+    throw error;
+  }
+}
+
+export async function getModuleCodeRev(modelCode: string) {
+  try {
+    const req = {
+      type: 'module',
+      code: modelCode
+    }
+    const result = await axios.post('/api/rawmaterials', req)
+    console.log("reuslt", result.data)
+    return result.data
+  } catch (error) {
+    console.error("There was an error with the submission", error);
+    alert("x")
+    throw error;
+  }
+}
+
+export async function getSawType(modelCode: string, level: string) {
+  try {
+    const result = await axios.get('/ordersheet/getsawtype?modelCode=' + modelCode + "&level=" + level)
+    console.log("saw==>", result.data);
+  } catch (error) {
+    console.error("There was an error with the submission", error);
+    throw error;
+  }
+}
+export async function getMMQ() {
+  try {
+    const result = await axios.get('/ordersheet/getmodulesizetable')
+    return result.data;
+  } catch (error) {
+    console.error("There was an error with the submission", error);
+    throw error;
+  }
+}
+export async function postModuleSize(data) {
+  try {
+    const req = {
+      mname: data.mname,
+      msize: data.msize,
+      mthickness: data.mthickness,
+      mbaseqty: data.mbaseqty
+    }
+    console.log(req)
+    const result = await axios.post('/ordersheet/postmodulesize', req)
+    return result.data;
+  } catch (error) {
+    console.error("There was an error with the submission", error);
+    throw error;
+  }
+}
+
+export async function postModuleSolder(data) {
+  try {
+    const req = {
+      msize: data.msize,
+      mcover: data.mcover,
+      mcarrier: data.mcarrier,
+      msolder: data.msolder
+    }
+    console.log(req)
+    const result = await axios.post('/ordersheet/postmodulesolder', req)
+    return result.data;
+  } catch (error) {
+    console.error("There was an error with the submission", error);
+    throw error;
+  }
+}
+
+export async function postModuleMeterial(data) {
+  try {
+    const req = {
+      saw_type: data.saw_type,
+      mname: data.mname,
+      msize: data.msize,
+      mthickness: data.mthickness,
+      mtip: data.mtip,
+      mfilm: data.mfilm,
+      mpcb: data.mpcb,
+      meapcb: data.meapcb,
+      mbadcell: data.mbadcell,
+      mqty: data.mqty,
+      mbomrequest: data.mbomrequest,
+      msap: data.msap
+    }
+    console.log(req)
+    const result = await axios.post('/ordersheet/postmodulemeterial', req)
+    return result.data;
+  } catch (error) {
+    console.error("There was an error with the submission", error);
+    throw error;
+  }
+}
+
+export async function getMeterialQtyBySheetId(sheetId: string) {
+  try {
+
+  } catch (error) {
+    console.error("There was an error with the submission", error);
+    throw error;
+  }
+}
+
+export async function getOdsBom(modelCode: string, level: string) {
+  try {
+    const result = await axios.get('/ordersheet/getOdsBom?modelCode=' + modelCode + "&level=" + level)
+    return result.data;
+  } catch (error) {
+    console.error("There was an error with the submission", error);
+    throw error;
+  }
+}
+
+export async function saveBomWait(req: BomModule[], table: BomModuleTable) {
+  try {
+    const body = {
+      table: table,
+      details: req
+    };
+    const result = await axios.post('/ordersheet/saveBomWait', body);
+    return result.data;
+  } catch (error) {
+    console.error("There was an error with the submission", error);
+    throw error;
+  }
+}
+
+export async function getBomWait() {
+  try {
+    const result = await axios.get('/ordersheet/getBomWait')
+    return result.data;
+  } catch (error) {
+    console.error("There was an error with the submission", error);
+    throw error;
+  }
+}
+
+export async function getBomWaitById(index: number) {
+  try {
+    const result = await axios.get('/ordersheet/getBomWaitById?wtid=' + index)
+    return result.data;
+  } catch (error) {
+    console.error("There was an error with the submission", error);
+    throw error;
+  }
+}
+
+export async function postConfirm(index: number, username: string) {
+  try {
+    const result = await axios.get('/ordersheet/postConfirm?wtid=' + index + "&username=" + username)
+    return result.data;
+  } catch (error) {
+    console.error("There was an error with the submission", error);
+    throw error;
+  }
+}
+
+
+export async function SendModuleBoms(list: BomModule[], wtid: number) {
+  try {
+    const result = await axios.post('/api/SendModuleBoms', list)
+    const response = await axios.get('/ordersheet/postbom?wtid=' + wtid)
+    return result.data;
+  } catch (error) {
+    console.error("There was an error with the submission", error);
+    throw error;
+  }
+}
+
+
+export async function delBom(wtid: number) {
+  try {
+    const result = await axios.post('/ordersheet/delbom?wtid=' + wtid)
+    return result.data;
+  } catch (error) {
+    console.error("There was an error with the submission", error);
     throw error;
   }
 }
