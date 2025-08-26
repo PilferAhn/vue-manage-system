@@ -287,12 +287,14 @@
         placeholder="세부사항을 입력해주세요."
       ></longInputText>
       <el-form-item>
-        <el-button type="primary" @click="handleUpdate()"
+        <el-button type="primary" @click="handleRequestUpdate()"
           >의뢰서 업데이트</el-button
         >
-
         <el-button type="danger" @click="handleDelete()">삭제</el-button>
         <el-button type="success" @click="handleDownload">의뢰서 다운로드</el-button>
+        <!-- <el-button type="primary" @click="handleNoteUpdate()"
+          >세부사항 업데이트</el-button
+        > -->
       </el-form-item>
     </div>
   </el-form>
@@ -322,6 +324,7 @@ import {
   resetForm,
   saveForm,
   updateNote,
+  updatePdtApplicationForm,
   loadForm,
   signalList,
   packageTypeList,
@@ -341,7 +344,7 @@ import {
 } from "../ProductPage/ApplicationPage/Application";
 import { deleteApplicationByUuid, updateApplicationNumber, updateApplicationStatus } from "./ApplicationDetail";
 import {downloadExcel} from "../ProductPage/ApplicationPage/Application"
-
+import { ElNotification } from "element-plus";
 import { useRoute } from "vue-router";
 const { form: applicationForm } = usePDTRequestForm();
 const { form: applicationFormBoolean } = usePDTRequestFormBoolean();
@@ -398,17 +401,38 @@ function handleDelete() {
   deleteApplicationByUuid(uuid.toString());
 }
 
-function handleUpdate() {
+// function handleNoteUpdate() {
 
+//   formRef.value.validate((valid: boolean) => {
+//     if (valid) {
+//       console.log("Form is valid and ready for submission!");
+//       console.log('applicationForm.value', applicationForm.value);
+//       updateNote(applicationForm.value);
+//     } else {
+//       console.log("Form validation failed");
+//     }
+//   });
+// }
+
+function handleRequestUpdate() {
+  const status = applicationForm.value.status;
+  if (status !== "created" && status !== "reserved") {
+     ElNotification({
+          title: "실패",
+          message: "측정 시작 전의 의뢰서만 수정 가능합니다.",
+          type: "warning",
+          duration: 3000, // 3초 후 자동 닫힘
+          position: "top-right",
+        });
+    return;
+  }
   formRef.value.validate((valid: boolean) => {
     if (valid) {
-      console.log("Form is valid and ready for submission!");
-      updateNote(applicationForm.value);
+      updatePdtApplicationForm(applicationForm.value);
     } else {
-      console.log("Form validation failed");
+      console.log("폼 유효성 검사 실패");
     }
   });
-  
 }
 
 const fetchApplicationDetail = async () => {

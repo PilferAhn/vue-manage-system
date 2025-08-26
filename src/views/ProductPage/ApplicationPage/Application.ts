@@ -837,35 +837,36 @@ export function getTodayDate() {
   return `${year}-${month}-${day}`;
 }
 
-export async function updateNote(application: PDTRequestFormType) {
-  try {
-    // python 과 데이터를 쉽게 주고 받기 쉽게 하려고
-    // dictionary 로 치환.
-    // const applicationDictData = convertInterfaceToDict(application);
+// export async function updateNote(application: PDTRequestFormType) {
+//   try {
+//     // python 과 데이터를 쉽게 주고 받기 쉽게 하려고
+//     // dictionary 로 치환.
+//     // const applicationDictData = convertInterfaceToDict(application);
 
-    const formData = new FormData();
-    formData.append("detail", application.detail);
-    formData.append("pdt_application_uuid", application.applicationUuid);
+//     const formData = new FormData();
+//     formData.append("detail", application.detail);
+//     formData.append("pdt_application_uuid", application.applicationUuid);
 
-    const response = await axios.post(
-      "/pdt_application/update_detail_by_uuid",
-      formData
-    );
+//     console.log('updateNote 전 formData', formData)
+//     const response = await axios.post(
+//       "/pdt_application/update_detail_by_uuid",
+//       formData
+//     );
 
-    if (response.status === 200) {
-      if (response.data.status) {
-        ElMessage.success("의뢰서가 성공적으로 작성되었습니다.");
-      } else {
-        ElMessage.error("의뢰서 작성에 실패했습니다. 잠시 후에 시도하세요");
-      }
-    }
-  } catch (error) {
-    ElMessage.error("알수없는 오류가 발생했습니다. 잠시 후에 시도하세요");
-    console.error("Error:", error);
-  }
+//     if (response.status === 200) {
+//       if (response.data.status) {
+//         ElMessage.success("의뢰서가 성공적으로 작성되었습니다.");
+//       } else {
+//         ElMessage.error("의뢰서 작성에 실패했습니다. 잠시 후에 시도하세요");
+//       }
+//     }
+//   } catch (error) {
+//     ElMessage.error("알수없는 오류가 발생했습니다. 잠시 후에 시도하세요");
+//     console.error("Error:", error);
+//   }
 
-  console.log(application);
-}
+//   console.log(application);
+// }
 
 export async function submitPdtApplicationForm(
   application: PDTRequestFormType,
@@ -899,6 +900,18 @@ export async function submitPdtApplicationForm(
   }
 
   console.log(application);
+}
+
+export async function updatePdtApplicationForm(formData: any){
+  try{
+    console.log('update 전 formdata', formData)
+    const applicationDictData = convertInterfaceToDict(formData);
+    const response = await axios.post("/pdt_application/update_request_form", applicationDictData);
+    console.log("의뢰서 전체 업데이트 완료:", response.data);
+  }catch (error){
+    console.log(error.response?.data);
+    console.error("의뢰서 전체 업데이트 중 오류:", error);
+  }
 }
 
 export async function updateApplication(application: PDTRequestFormType) {
