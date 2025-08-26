@@ -35,7 +35,7 @@ export async function downloadExcelWithCountdown(
 
     // ✅ 2️⃣ FastAPI로 데이터 전송 & 다운로드 시작
     const response = await axios.post(
-      "http://10.29.11.59:8002/test/create_fab_request_review_excel",
+      "/test/create_fab_request_review_excel",
       newData.value,
       { responseType: "blob", timeout: 0 } // ✅ 긴 요청 허용
     );
