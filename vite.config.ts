@@ -66,7 +66,7 @@ export default defineConfig({
 			"/bfsm2": "http://10.20.10.114",
 			"/mes": "http://10.29.11.57:40000",
 			"/OpeationMns": "http://10.70.21.216:9086",
-			"/reel": "http://10.29.11.57:40000",
+			"/stock/": "http://10.29.11.57:40000",
 			"/dv2": "http://10.29.11.57:40000",
 			"/test": "http://10.29.11.59:8002",
 			"/fab_monitoring_rev2": "http://10.29.11.57:40000",
@@ -76,6 +76,7 @@ export default defineConfig({
 			"/excel": "http://10.29.11.57:39999",
 			"/csp": "http://10.29.11.57:40000",
 			"/module": "http://10.29.11.57:40000",
+			"/static/": "http://10.29.11.57:40000",
 			"/images": "http://10.29.11.57:40000",
 			"/wpms": "http://10.20.10.202:8000",
 			"/ordersheet": "http://10.29.11.57:40000"
