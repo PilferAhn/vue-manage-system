@@ -6,6 +6,7 @@ import { bandInformationDict } from "../../../utils/frequancyInfo";
 import { containSPL } from "./ApplicationValidation";
 import PDTRequestForm from "./PDTRequestForm.vue";
 import { OptionInterface } from "../../../interface/option";
+import { convertKeysToPEP8 } from "../../../utils/key-converter";
 
 export const signalTypeOptions = [];
 
@@ -112,7 +113,7 @@ function convertInterfaceToDict(application: PDTRequestFormType) {
     test_type: application.testType,
     target_position: application.targetPosition,
     detail: application.detail,
-    data: application.samples,
+    data: application.samples.map((item) => convertKeysToPEP8(item)),
     force: true,
     sample_quantity: application.sampleQuantity,
     request_number: application.requestNumber,
@@ -334,6 +335,7 @@ export function usePDTRequestForm() {
     bandwidth: "",
 
     designer: "",
+
     requester: "",
     purpose: "",
 
