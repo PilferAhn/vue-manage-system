@@ -458,9 +458,11 @@ export async function saveBomWait(req: BomModule[], table: BomModuleTable) {
       details: req
     };
     const result = await axios.post('/ordersheet/saveBomWait', body);
+    alert("saved")
     return result.data;
   } catch (error) {
     console.error("There was an error with the submission", error);
+    alert("There was an error with the submission")
     throw error;
   }
 }
@@ -510,8 +512,19 @@ export async function SendModuleBoms(list: BomModule[], wtid: number) {
 
 export async function delBom(wtid: number) {
   try {
-    const result = await axios.post('/ordersheet/delbom?wtid=' + wtid)
+    const result = await axios.get('/ordersheet/delbom?wtid=' + wtid)
+    console.log(result.data);
     return result.data;
+  } catch (error) {
+    console.error("There was an error with the submission", error);
+    throw error;
+  }
+}
+
+export async function excelDownload(modelCode: string, level: string) {
+  try {
+    const url = `/ordersheet/excel-download?modelCode=${encodeURIComponent(modelCode)}&level=${encodeURIComponent(level)}`;
+    window.open(url, '_blank');
   } catch (error) {
     console.error("There was an error with the submission", error);
     throw error;

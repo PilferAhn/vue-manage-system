@@ -14,10 +14,10 @@ export default {};
 
                         </div>
                     </el-card>
-                    <el-row :gutter="20">
-                        <el-col :span="20">
+                    <el-row :gutter="4">
+                        <el-col :span="19">
                         </el-col>
-                        <el-col :span="2">
+                        <el-col :span="3">
                             <div style="
       background-color: white;
       color: black;
@@ -383,7 +383,7 @@ async function saveChildren() {
 async function postBom() {
     const blist = bomList.value.filter(item => item.bomcheck === "true");
     if (blist.length === 0) {
-        alert("x");
+        alert("봄 선택 x");
         return;
     }
 
@@ -393,7 +393,7 @@ async function postBom() {
     const sheetData = await getOdsBom(modelCode, level)
 
     if (!sheetData) {
-        alert("x1")
+        alert("x1 sheet 없음")
         return;
     }
     const req = `RDM${modelCode}`
@@ -455,8 +455,10 @@ async function postBom() {
     bomreq.push(a);
     bomreq.push(b);
     username = sheetData.request_requestor
-    let smtbin = 10
+    let smtbin = 0
     let finalbin = 10
+    const tempA = [];
+    const tempB = [];
     for (let i = 0; i < blist.length; i++) {
         console.log(blist[i])
         const ref = blist[i].sref;
@@ -480,8 +482,7 @@ async function postBom() {
                 sref: ref,
 
             };
-
-            bomreq.push(c);
+            tempA.push(c);
         }
         else {
             smtbin += 10
@@ -497,14 +498,31 @@ async function postBom() {
                 saw_type: '',
                 module_type: '',
                 sref: ref,
-
             };
 
-            bomreq.push(c);
+            tempB.push(c);
         }
-
-        // SAW, IC 처리 따로...
+        tempA.sort((a, b) => {
+            if (a.material_numbering < b.material_numbering) {
+                return -1;
+            }
+            if (a.material_numbering > b.material_numbering) {
+                return 1;
+            }
+            return 0;
+        });
+        tempB.sort((a, b) => {
+            if (a.material_numbering < b.material_numbering) {
+                return -1;
+            }
+            if (a.material_numbering > b.material_numbering) {
+                return 1;
+            }
+            return 0;
+        });
     }
+    bomreq.push(...tempA);
+    bomreq.push(...tempB);
     const table = {
         model_code: modelCode,
         level: level,

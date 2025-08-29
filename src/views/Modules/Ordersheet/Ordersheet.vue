@@ -177,12 +177,11 @@ export default {};
                                                 <div class="sheet-action" @click="bomClick">
                                                     📋 Bom List
                                                 </div>
-                                                <div class="sheet-action" @click="excelDownload">
+                                                <div class="sheet-action" @click="excelDownloadFile">
                                                     📑
                                                 </div>
                                             </div>
                                         </el-card>
-
 
                                         <div style="overflow-y:auto; height: 400px;">
                                             <div v-for="(item, index) in sheetsList" :key="index">
@@ -232,7 +231,7 @@ export default {};
 
 <script lang="ts" setup>
 import { ref, onMounted, watch, computed, nextTick, reactive, Ref } from "vue";
-import { getCodeWpms, getLevels, getSheetsByLevel, createSheet, deleteSheet, copySheet, copyLevel, changeSheetName, createPcb, createBom } from '../../../utils/orderShiitUtils';
+import { getCodeWpms, getLevels, getSheetsByLevel, createSheet, deleteSheet, copySheet, copyLevel, changeSheetName, createPcb, createBom, excelDownload } from '../../../utils/orderShiitUtils';
 import { ElMessageBox, ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
 
@@ -437,8 +436,8 @@ async function bomClick() {
     sheetsList.value = list
     message.value = 'BOM 업데이트 완료'
 }
-async function excelDownload() {
-    
+async function excelDownloadFile() {
+    excelDownload(fCode.value, curLevel.value)
 }
 
 

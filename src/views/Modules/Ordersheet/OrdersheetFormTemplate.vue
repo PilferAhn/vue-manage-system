@@ -71,7 +71,7 @@ export default {};
 
                     <div v-if="viewSelect === 0">
                         <All v-if="isLoading" :formData="formData" :formDataTemp="formDataTemp" :changeProw="changeProw"
-                            :changeSrow="changeSrow" :prow="prow" :srow="srow" />
+                            :changeSrow="changeSrow" :prow="prow" :srow="srow" :mappingTempM="mappingTempM" />
                     </div>
 
                     <!-- STEP 모드: 선택된 스텝만 보여줌 -->
@@ -316,7 +316,7 @@ function tempSave() {
 
 }
 
-function mappingTemp(fq: ApplicationData) {
+function mappingTempM(fq: ApplicationData) {
     const sheetId = route.params.sheetId as '';
     formData.sheet_id = sheetId
     formData.model_name = fq.model_name
@@ -374,6 +374,7 @@ function mappingTemp(fq: ApplicationData) {
     formData.ap_dicing_t = fq.ap_dicing_t
     formData.ap_dicing_remark = fq.ap_dicing_remark
     formData.image_List = fq.image_List
+    formData.msl_level = fq.msl_level
 
     formDataTemp.sheet_id = sheetId
     formDataTemp.model_name = fq.model_name
@@ -430,6 +431,7 @@ function mappingTemp(fq: ApplicationData) {
     formDataTemp.ap_dicing_w = fq.ap_dicing_w
     formDataTemp.ap_dicing_t = fq.ap_dicing_t
     formDataTemp.ap_dicing_remark = fq.ap_dicing_remark
+    formDataTemp.msl_level = fq.msl_level
 
     const temppositionlist = [...fq.position_list]
     if (temppositionlist.length < 3) {
@@ -491,7 +493,7 @@ onMounted(async () => {
     console.log(sheetId)
     const sheet = await getOds(sheetId);
     console.log(sheet)
-    await mappingTemp(sheet)
+    await mappingTempM(sheet)
 
     // console.log("formData", formData)
     isLoading.value = true

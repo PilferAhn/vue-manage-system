@@ -1234,7 +1234,7 @@ import { Ref, ref, onMounted, nextTick, watchEffect } from "vue";
 import type {
     ApplicationData, BomMeterial, SmtItem, ModuleMenu
 } from "../../../../interface/orderSheetInterface";
-import { getBomCode, postSaveChildren, getMenu, getPcbCode } from '../../../../utils/orderShiitUtils';
+import { getBomCode, postSaveChildren, getMenu, getPcbCode, getOds } from '../../../../utils/orderShiitUtils';
 import { useRoute, useRouter } from "vue-router";
 import CustomSelect from '../components/CustomSelect.vue';
 import BomSelectModal from "../components/BomSelectModal.vue";
@@ -1248,12 +1248,14 @@ const {
     changeSrow,
     prow,
     srow,
-    menuAll
+    menuAll,
+    mappingTempM,
 } = defineProps<{
     formData: ApplicationData
     formDataTemp: ApplicationData
     changeProw: (event: string, pindex: number) => void
     changeSrow: (event: string, sindex: number) => void
+    mappingTempM: (fq: ApplicationData) => void
     prow: Ref<number>
     srow: Ref<number>
     menuAll: Ref<ModuleMenu[]>
@@ -1443,104 +1445,6 @@ async function handleEnterKey(state: string, index: number) {
         showBomPopup1.value = true;
         enterIndex.value = index;
         return;
-        if (!response || response.length === 0) {
-            alert("미등록 원자재");
-        } else if (response.length === 1) {
-            const item = response[0]
-            console.log("결과 1건:", response[0]);
-
-            const maktx = item.MAKTX || "";
-
-            // SWITCH 추출 (세미콜론 앞)
-            const sref = maktx.split(";")[0].trim();
-
-            // 사이즈 추출 (쉼표 뒤 마지막 단어)
-            const parts = maktx.split(",");
-            const ssize = parts.length > 1 ? parts[parts.length - 1].trim() : "";
-
-            if (smt.sref === 'IC') {
-                const mk = item.MATNR?.length > 4 ? item.MATNR[4] : "";
-
-                console.log("sref:", sref);   // "SWITCH"
-                console.log("ssize:", ssize); // "1.30X0.96X0.225"
-                const markerMap: Record<string, string> = {
-                    N: "NR lab",
-                    C: "Canaana",
-                    W: "Wisol",
-                    T: "Thoshiba",
-                    F: "Ferfics",
-                    I: "Infineno",
-                    P: "Peregrine",
-                    S: "Silanna",
-                    R: "TowerSemi",
-                    D: "Radrock",
-                };
-                const markerName = markerMap[mk] || "Unknown";
-
-                // formData.smt_list[index].sbom = item.MATNR
-                tempSmtView.value[index].sbom = item.MATNR
-                tempSmtView.value[index].ssize = ssize
-                tempSmtView.value[index].smarker = markerName
-                tempSmt.value[index].sbom = item.MATNR
-                // tempSmt[index].svalue = F
-                tempSmt.value[index].ssize = ssize
-                tempSmt.value[index].smarker = markerName
-            }
-            else if (smt.sref == 'Inductor' || smt.sref == 'Capcitor') {
-                // 사이즈 추출 (쉼표 뒤 마지막 단어)
-
-                const parts = maktx.split(",");
-
-                // ssize: "IND; 0402" → split(";")[1] → " 0402" → trim()
-                const ssize = parts.length > 0 ? parts[0].split(";")[1]?.trim() || "" : "";
-
-                // svalue: 그냥 두 번째 파트
-                const svalue = parts.length > 1 ? parts[1].trim() : "";
-
-                tempSmtView.value[index].sbom = item.MATNR
-                tempSmtView.value[index].ssize = ssize
-                tempSmtView.value[index].svalue = svalue
-                tempSmt.value[index].sbom = item.MATNR
-                tempSmt.value[index].ssize = ssize
-                tempSmt.value[index].svalue = svalue
-                // formData.smt_list[index].sbom = item.MATNR
-                // tempSmt[index].sbom = item.MATNR
-
-                // formData.smt_list[index].svalue = svalue
-                // tempSmt[index].svalue = svalue
-
-                // formData.smt_list[index].ssize = ssize
-                // tempSmt[index].ssize = ssize
-            }
-            else if (smt.sref === 'PCB') {
-                const parts = maktx.split(",");
-                const ssize = parts.length > 0 ? parts[0].split(";")[1]?.trim() || "" : "";
-                tempSmtView.value[index].sbom = item.MATNR
-                tempSmt.value[index].sbom = item.MATNR
-                // formDataTemp.smt_list[index].svalue = sref
-                tempSmtView.value[index].ssize = ssize
-                tempSmt.value[index].ssize = ssize
-                tempSmt.value[index].sref = formData.pcb_code = item.MATNR
-                formDataTemp.pcb_code = item.MATNR
-            }
-            else {
-                tempSmtView.value[index].sbom = item.MATNR
-                tempSmt[index].sbom = item.MATNR
-                tempSmtView.value[index].svalue = sref
-                tempSmt[index].svalue = sref
-                tempSmtView.value[index].ssize = ssize
-
-                // tempSmt[index].ssize = ssize
-                // tempSmt[index].ssize = ssize
-                // formDataTemp.smt_list[index].smarker = markerName
-            }
-        }
-        else {
-            bomOptions.value = response;
-            showBomPopup1.value = true;
-            enterIndex.value = index;
-        }
-        bomSearchResult.value = response;
     }
     else {
         const smt = formDataTemp.smt_list[index];
@@ -1571,94 +1475,6 @@ async function handleEnterKey(state: string, index: number) {
         showBomPopup.value = true;
         enterIndex.value = index;
         return;
-
-        if (!response || response.length === 0) {
-            alert("미등록 원자재");
-        } else if (response.length === 1) {
-            const item = response[0]
-            console.log("결과 1건:", response[0]);
-
-            const maktx = item.MAKTX || "";
-
-            // SWITCH 추출 (세미콜론 앞)
-            const sref = maktx.split(";")[0].trim();
-
-            // 사이즈 추출 (쉼표 뒤 마지막 단어)
-            const parts = maktx.split(",");
-            const ssize = parts.length > 1 ? parts[parts.length - 1].trim() : "";
-
-            if (smt.sref === 'IC') {
-                const mk = item.MATNR?.length > 4 ? item.MATNR[4] : "";
-
-                console.log("sref:", sref);   // "SWITCH"
-                console.log("ssize:", ssize); // "1.30X0.96X0.225"
-                const markerMap: Record<string, string> = {
-                    N: "NR lab",
-                    C: "Canaana",
-                    W: "Wisol",
-                    T: "Thoshiba",
-                    F: "Ferfics",
-                    I: "Infineno",
-                    P: "Peregrine",
-                    S: "Silanna",
-                    R: "TowerSemi",
-                    D: "Radrock",
-                };
-                const markerName = markerMap[mk] || "Unknown";
-
-                formData.smt_list[index].sbom = item.MATNR
-                formDataTemp.smt_list[index].sbom = item.MATNR
-
-                formDataTemp.smt_list[index].svalue = sref
-                formData.smt_list[index].ssize = ssize
-                formDataTemp.smt_list[index].ssize = ssize
-                formDataTemp.smt_list[index].smarker = markerName
-            }
-            else if (smt.sref == 'Inductor' || smt.sref == 'Capcitor') {
-                // 사이즈 추출 (쉼표 뒤 마지막 단어)
-
-                const parts = maktx.split(",");
-
-                // ssize: "IND; 0402" → split(";")[1] → " 0402" → trim()
-                const ssize = parts.length > 0 ? parts[0].split(";")[1]?.trim() || "" : "";
-
-                // svalue: 그냥 두 번째 파트
-                const svalue = parts.length > 1 ? parts[1].trim() : "";
-
-                formData.smt_list[index].sbom = item.MATNR
-                formDataTemp.smt_list[index].sbom = item.MATNR
-                console.log(svalue);
-                formData.smt_list[index].svalue = svalue
-                formDataTemp.smt_list[index].svalue = svalue
-
-                formData.smt_list[index].ssize = ssize
-                formDataTemp.smt_list[index].ssize = ssize
-            }
-            else if (smt.sref === 'PCB') {
-                const parts = maktx.split(",");
-                const ssize = parts.length > 0 ? parts[0].split(";")[1]?.trim() || "" : "";
-                formData.smt_list[index].sbom = item.MATNR
-                formDataTemp.smt_list[index].sbom = item.MATNR
-
-                // formDataTemp.smt_list[index].svalue = sref
-                formData.smt_list[index].ssize = ssize
-                formDataTemp.smt_list[index].ssize = ssize
-            }
-            else {
-                formData.smt_list[index].sbom = item.MATNR
-                formDataTemp.smt_list[index].sbom = item.MATNR
-
-                formDataTemp.smt_list[index].svalue = sref
-                formData.smt_list[index].ssize = ssize
-                formDataTemp.smt_list[index].ssize = ssize
-                // formDataTemp.smt_list[index].smarker = markerName
-            }
-        } else {
-            bomOptions.value = response;
-            showBomPopup.value = true;
-            enterIndex.value = index;
-        }
-        bomSearchResult.value = response;
     }
 }
 
@@ -1707,6 +1523,12 @@ function onSelectBom(item: any) {
             if (item.MATNR.startsWith("2702")) {
                 refs = 'Resistor';
             }
+            if (item.MATNR.startsWith("2703")) {
+                refs = 'Inductor';
+            }
+            if (item.MATNR.startsWith("2203")) {
+                refs = 'Capacitor';
+            }
         }
         if (parts[0] === 'SWITCH' || parts[0] === 'LNA' || parts[0] === 'COMBO') {
             refs = 'IC';
@@ -1714,8 +1536,12 @@ function onSelectBom(item: any) {
         if (item.MAKTX && /cover tape/i.test(item.MAKTX)) {
             refs = 'CoverTape'
         }
+        if (item.MAKTX && /solder/i.test(item.MAKTX)) {
+            refs = 'Solder'
+        }
+
     }
-    if (formDataTemp.smt_list[index].sref === 'Inductor' || refs === 'IND') {
+    if (formDataTemp.smt_list[index].sref === 'Inductor' || refs === 'Inductor') {
         // 사이즈 추출 (쉼표 뒤 마지막 단어)
         const parts = maktx.split(",");
         const mk = item.MATNR ? item.MATNR[item.MATNR.length - 1] : "";
@@ -1733,11 +1559,12 @@ function onSelectBom(item: any) {
         formData.smt_list[index].sref = 'Inductor'
         formData.smt_list[index].svalue = svalue
         formDataTemp.smt_list[index].svalue = svalue
-
         formData.smt_list[index].ssize = ssize
         formDataTemp.smt_list[index].ssize = ssize
+        formData.smt_list[index].spn = item.MAKTX
+        formDataTemp.smt_list[index].spn = item.MAKTX
     }
-    if (formDataTemp.smt_list[index].sref === 'Capacitor' || refs === 'CAP') {
+    if (formDataTemp.smt_list[index].sref === 'Capacitor' || refs === 'Capacitor') {
         // 사이즈 추출 (쉼표 뒤 마지막 단어)
         const parts = maktx.split(",");
         const mk = item.MATNR ? item.MATNR[item.MATNR.length - 1] : "";
@@ -1756,6 +1583,8 @@ function onSelectBom(item: any) {
         formDataTemp.smt_list[index].svalue = svalue
         formData.smt_list[index].ssize = ssize
         formDataTemp.smt_list[index].ssize = ssize
+        formData.smt_list[index].spn = item.MAKTX
+        formDataTemp.smt_list[index].spn = item.MAKTX
     }
     if (formDataTemp.smt_list[index].sref === 'Resistor' || refs === 'Resistor') {
         const parts = maktx.split(",");
@@ -1774,8 +1603,8 @@ function onSelectBom(item: any) {
         formDataTemp.smt_list[index].svalue = svalue
         formData.smt_list[index].ssize = ssize
         formDataTemp.smt_list[index].ssize = ssize
-        formData.smt_list[index].spn = spn
-        formDataTemp.smt_list[index].spn = spn
+        formData.smt_list[index].spn = item.MAKTX
+        formDataTemp.smt_list[index].spn = item.MAKTX
 
     }
     if (formDataTemp.smt_list[index].sref === 'PCB' || refs === 'PCB') {
@@ -1840,8 +1669,8 @@ function onSelectBom(item: any) {
     if (formDataTemp.smt_list[index].sref == 'SAW') {
         formData.smt_list[index].smarker = 'Wisol'
         formDataTemp.smt_list[index].smarker = 'Wisol'
-
-
+        formData.smt_list[index].spn = item.MAKTX,
+            formDataTemp.smt_list[index].spn = item.MAKTX
     }
     if (formDataTemp.smt_list[index].sref === 'CoverTape' || refs === 'CoverTape') {
 
@@ -1849,6 +1678,17 @@ function onSelectBom(item: any) {
         formData.smt_list[index].sref = 'CoverTape'
         formData.smt_list[index].sbom = item.MATNR
         formDataTemp.smt_list[index].sbom = item.MATNR
+        formData.smt_list[index].spn = item.MAKTX,
+            formDataTemp.smt_list[index].spn = item.MAKTX
+    }
+    if (formDataTemp.smt_list[index].sref === 'Solder' || refs === 'Solder') {
+
+        formDataTemp.smt_list[index].sref = 'Solder'
+        formData.smt_list[index].sref = 'Solder'
+        formData.smt_list[index].sbom = item.MATNR
+        formDataTemp.smt_list[index].sbom = item.MATNR
+        formData.smt_list[index].spn = item.MAKTX,
+            formDataTemp.smt_list[index].spn = item.MAKTX
     }
     enterIndex.value = 0
 }
@@ -1875,12 +1715,21 @@ function onSelectBomNew(item: any) {
             if (item.MATNR.startsWith("2702")) {
                 refs = 'Resistor';
             }
+            if (item.MATNR.startsWith("2703")) {
+                refs = 'Inductor';
+            }
+            if (item.MATNR.startsWith("2203")) {
+                refs = 'Capacitor';
+            }
         }
         if (parts[0] === 'SWITCH' || parts[0] === 'LNA' || parts[0] === 'COMBO') {
             refs = 'IC';
         }
         if (item.MAKTX && /cover tape/i.test(item.MAKTX)) {
             refs = 'CoverTape'
+        }
+        if (item.MAKTX && /solder/i.test(item.MAKTX)) {
+            refs = 'Solder'
         }
     }
     const markerMap: Record<string, string> = {
@@ -1929,6 +1778,7 @@ function onSelectBomNew(item: any) {
         tempSmt.value[index].ssize = ssize
         tempSmtView.value[index].spn = spn
         tempSmt.value[index].spn = spn
+        console.log(spn);
     }
     if (tempSmt.value[index].sref === 'Capacitor' || refs === 'CAP') {
         // 사이즈 추출 (쉼표 뒤 마지막 단어)
@@ -2039,10 +1889,20 @@ function onSelectBomNew(item: any) {
     if (tempSmt.value[index].sref == 'SAW') {
         tempSmtView.value[index].smarker = 'Wisol'
         tempSmt.value[index].smarker = 'Wisol'
+        tempSmt.value[index].spn = item.MAKTX
+        tempSmtView.value[index].spn = item.MAKTX
     }
     if (tempSmt.value[index].sref == 'CoverTape' || refs === 'CoverTape') {
         formDataTemp.smt_list[index].sref = 'CoverTape'
         formData.smt_list[index].sref = 'CoverTape'
+        formData.smt_list[index].sbom = item.MATNR
+        formDataTemp.smt_list[index].sbom = item.MATNR
+        formData.smt_list[index].spn = item.MAKTX
+        formDataTemp.smt_list[index].spn = item.MAKTX
+    }
+    if (tempSmt.value[index].sref == 'Solder' || refs === 'Solder') {
+        formDataTemp.smt_list[index].sref = 'Solder'
+        formData.smt_list[index].sref = 'Solder'
         formData.smt_list[index].sbom = item.MATNR
         formDataTemp.smt_list[index].sbom = item.MATNR
         formData.smt_list[index].spn = item.MAKTX
@@ -2096,9 +1956,13 @@ function changeSrows(event: 'u' | 'd', deleteIndex?: number) {
 
 async function saveChildren() {
     await mappingData();
-    // console.log(formData.requirement_remark);
-    console.log(formDataTemp)
     const result = postSaveChildren(formData, imagesetSD.value, imagesetMI.value, imagesetMD.value, deleteImage.value);
+    const sheetId = route.params.sheetId as '';
+    console.log(sheetId)
+    const sheet = await getOds(sheetId);
+    await mappingTempM(sheet)
+    tempSmt.value = []
+    tempSmtView.value = []
 }
 
 const mappingData = () => {
@@ -2156,7 +2020,8 @@ const mappingData = () => {
     formData.ap_dicing_w = formDataTemp.ap_dicing_w
     formData.ap_dicing_t = formDataTemp.ap_dicing_t
     formData.ap_dicing_remark = formDataTemp.ap_dicing_remark
-    //list 매핑
+    formData.msl_level = formDataTemp.msl_level
+    //list 매핑 , 초기화 해줘야됌
     formData.smt_list = [...formDataTemp.smt_list, ...tempSmt.value];
     formData.position_list = [...formDataTemp.position_list];
 }
@@ -2190,6 +2055,19 @@ function handleEnterCellsize(state: string) {
         if (raw.length === 6) {
             const left = digitsOnly.substring(0, 3);   // "055"
             const right = digitsOnly.substring(3, 6);  // "005"
+
+            const leftFormatted = `${left[0]}.${left.substring(1)}`;   // "0.55"
+            const rightFormatted = `${right[0]}.${right.substring(1)}`; // "0.05"
+
+            const result = `${leftFormatted} ± ${rightFormatted}`;
+
+            formDataTemp.cellsize_t = result
+            formData.cellsize_t = result
+
+        }
+        else if (raw.length === 7) {
+            const left = digitsOnly.substring(0, 4);   // "055"
+            const right = digitsOnly.substring(4, 7);  // "005"
 
             const leftFormatted = `${left[0]}.${left.substring(1)}`;   // "0.55"
             const rightFormatted = `${right[0]}.${right.substring(1)}`; // "0.05"

@@ -1,5 +1,5 @@
 <template>
-    <div class="modal-overlay">
+    <div class="modal-overlay" @keyup.esc="$emit('close')" tabindex="0" ref="modalContainer">
         <div class="modal">
             <h3>원자재 선택</h3>
             <table class="custom-top-table">
@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from 'vue';
 defineProps<{
     items: any[];
 }>();
@@ -30,6 +31,15 @@ function selectItem(item: any) {
     emit('select', item);
     emit('close');
 }
+
+const modalContainer = ref(null); 
+
+onMounted(() => {
+  // 모달이 화면에 나타난 후 포커스를 줍니다.
+  modalContainer.value.focus();
+});
+ 
+
 </script>
 
 <style scoped>
