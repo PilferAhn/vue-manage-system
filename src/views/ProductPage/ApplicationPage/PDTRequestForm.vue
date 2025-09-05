@@ -6,6 +6,7 @@
     label-width="100"
   >
     <div class="container">
+      <div class="inline-fields">
       <selectOption
         v-model="applicationForm.testType"
         label="테스트 유형"
@@ -13,9 +14,27 @@
         placeholder="테스트 유형을 입력해주세요."
         :options="testOptions"
         :disable="applicationFormBoolean.testType"
-        class="form-item"
+        class="flex-item form-item"
       ></selectOption>
 
+      <selectOption
+        v-model="applicationForm.vswr"
+        label="vswr"
+        prop="vswr"
+        placeholder="vswr을 입력하세요."
+        :options="vswrOptions"
+        class="flex-item"
+      ></selectOption>
+      
+      <inputText
+        v-model="applicationForm.phase"
+        label="Phase조건"
+        prop="purpose"
+        placeholder="의뢰목적을 입력하세요"
+        class="flex-item"
+      ></inputText>
+      </div>
+      
       <div class="inline-fields">
         <selectOption
           v-model="applicationForm.signalType"
@@ -293,12 +312,14 @@ import {
   usePDTRequestFormBoolean,
   submitForm,
   testOptions,
+  vswrOptions,
   resetForm,
   saveForm,
   loadForm,
   signalList,
   watchSignalType,
   watchTestType, // Ensure to import the function
+  watchVswr,
   watchCustomerCompany,
   packageTypeList,
   waferTypeList,
@@ -349,6 +370,7 @@ onMounted(() => {
     bandwidthList
   );
   watchTestType(applicationForm, applicationFormBoolean); // Call watchTestType here
+  watchVswr(applicationForm);
   watchCustomerCompany(applicationForm, applicationFormBoolean);
   setBandwidthOptions(applicationForm, applicationFormBoolean, bandwidthList);
   watchBand(applicationForm, applicationFormBoolean);

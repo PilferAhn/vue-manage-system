@@ -37,6 +37,8 @@ export const testOptions = [
   "SMARTERMICRO FUSE",
 ];
 
+export const vswrOptions = ["1:1", "1:4", "1:6"];
+
 export const signalList = [
   "CW",
   "CW Duty 50%",
@@ -111,6 +113,8 @@ function convertInterfaceToDict(application: PDTRequestFormType) {
     wafer_type: application.waferType,
     package_type: application.packageType,
     test_type: application.testType,
+    vswr: application.vswr,
+    phase: application.phase,
     target_position: application.targetPosition,
     detail: application.detail,
     data: application.samples.map((item) => convertKeysToPEP8(item)),
@@ -306,6 +310,8 @@ export interface PDTRequestFormType {
   packageType: string;
 
   testType: string;
+  vswr: string;
+  phase: string;
   targetPosition: string;
 
   link: string;
@@ -348,6 +354,8 @@ export function usePDTRequestForm() {
     packageType: "",
 
     testType: "",
+    vswr: "",
+    phase: "",
     targetPosition: "",
 
     link: "",
@@ -391,6 +399,8 @@ export function usePDTRequestForm2() {
     dateOfCreate: "",
 
     waferType: "",
+    vswr: "",
+    phase: "",
     packageType: "",
 
     testType: "",
@@ -690,6 +700,19 @@ export function watchSampleRequestType(type: string) {
     () => type,
     (newVal: string) => {}
   );
+}
+
+export function watchVswr(applicationForm) {
+  watch(
+    () => applicationForm.value.vswr,
+    (newVal) => {
+      // 값이 없으면 기본값 세팅
+      if (!newVal) {
+        applicationForm.value.vswr = "1:1"
+      }
+    },
+    { immediate: true } // 처음 마운트될 때도 한 번 실행
+  )
 }
 
 export function watchPosition(applicationForm: any) {
