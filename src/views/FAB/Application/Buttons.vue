@@ -65,7 +65,7 @@ const props = defineProps<{
   applicationType: string;
 }>();
 
-const excludeList = ["admin", "w220112", "w2180511", "w223051"] 
+const excludeList = ["admin", "w220112", "w2180511", "w223051", "w2220606"]; 
 
 // Submit 함수
 const submitForm = async (type: string) => {
