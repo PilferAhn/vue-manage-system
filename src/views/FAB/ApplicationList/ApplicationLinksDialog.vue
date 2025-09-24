@@ -109,7 +109,8 @@ watch(
         {
           name: "Fab Card 작성",
           type: "fabcard",
-          status: tempFabRequest.value.isFabCardCreated === false,
+          status: !tempFabRequest.value.isFabCardCreated,
+          // status: tempFabRequest.value?.isFabCardCreated === false,
         },
         {
           name: "TEG 측정 의뢰서",
@@ -132,7 +133,7 @@ watch(
 
         const statusp = await getCheckSap(props.fabApplication.productName);
         const isStatusTrue = statusp === 'true';
-        console.log("statusp:", statusp, "->", isStatusTrue);
+        // console.log("statusp:", statusp, "->", isStatusTrue);
         list.splice(2, 0, {
           name: "CSP 조립 의뢰서",
           type: "csp",

@@ -26,7 +26,8 @@
           </el-select>
         </el-form-item>
         <el-button type="success" @click="updateApplicationStatus(uuid.toString(), applicationForm.requestNumber, applicationForm.status)">업데이트</el-button>
-      </div>
+      </div container>
+      <div class="inline-fields">
       <selectOption
         v-model="applicationForm.testType"
         label="테스트 유형"
@@ -34,8 +35,25 @@
         placeholder="테스트 유형을 입력해주세요."
         :options="testOptions"
         :disable="applicationFormBoolean.testType"
-        class="form-item"
+        class="flex-item form-item"
       ></selectOption>
+       <selectOption
+        v-model="applicationForm.vswr"
+        label="vswr"
+        prop="vswr"
+        placeholder="vswr을 입력하세요."
+        :options="vswrOptions"
+        class="flex-item"
+      ></selectOption>
+      
+      <inputText
+        v-model="applicationForm.phase"
+        label="Phase조건"
+        prop="purpose"
+        placeholder="의뢰목적을 입력하세요"
+        class="flex-item"
+      ></inputText>
+      </div>
 
       <div class="inline-fields">
         <selectOption
@@ -321,6 +339,7 @@ import {
   usePDTRequestForm,
   usePDTRequestFormBoolean,
   testOptions,
+  vswrOptions,
   resetForm,
   saveForm,
   updateNote,
@@ -473,6 +492,8 @@ const fetchApplicationDetail = async () => {
     applicationForm.value.detail = response.data.detail;
 
     applicationForm.value.testType = response.data.test_type;
+    applicationForm.value.vswr = response.data.vswr;
+    applicationForm.value.phase = response.data.phase;
     applicationForm.value.targetPosition =
       response.data.target_position.toUpperCase();
 

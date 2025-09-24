@@ -18,7 +18,7 @@ export interface ModuleFiles {
 export interface ModuleMeasurementApp {
   id?: number;
   productName?: string;
-  quantity?: number;
+  quantity?: string;
   requester?: string;
   requesterId?: string;
   smtHistory?: string;

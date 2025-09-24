@@ -1,6 +1,8 @@
 <template>
   <div>
-
+    <div class="notice-banner">
+      📢 정확한 정보는 반드시 WHC Vinh 프로(한국어통역)에게 문의해 주십시오.
+    </div>
     <!-- Table -->
     <el-table
       :data="stockItems"
@@ -223,4 +225,17 @@ function handleCancelEditNote() {
   background-color: hsl(0, 42%, 90%) !important; /* Ensure the background changes */
   color: hsl(0, 68%, 12%) !important;  
 }
+
+.notice-banner {
+  margin-bottom: 16px;
+  padding: 12px;
+  background-color: #e0f2fe; /* 파란 배경 */
+  color: #075985; /* 진한 파랑 글씨 */
+  font-weight: bold;
+  border: 1px solid #38bdf8;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
 </style>

@@ -70,6 +70,9 @@ export const applicationRules: FormRules = {
       trigger: "change",
     },
   ],
+  vswr: [
+      { required: true, message: "vswr을 입력해주세요", trigger: "blur" },
+  ],
   targetPosition: [
     { required: true, message: "Target Position 선택.", trigger: "blur" },
   ],

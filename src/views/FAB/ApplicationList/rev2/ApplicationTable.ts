@@ -78,6 +78,9 @@ export async function getFabAppForReview(
 
   try {
     // getApplicationList를 호출하고 결과를 기다림
+    const year = new Date().getFullYear();
+    const wanted_fab_start_date_start = `${year}-01-01T00:00:00`;
+    const wanted_fab_start_date_end   = `${year + 1}-01-01T00:00:00`;
     let para = {
       users: true,
       wafer: true,
@@ -85,9 +88,10 @@ export async function getFabAppForReview(
       hs_type: true,
       idt_layers: true,
       week_numbers: weekNumber,
+      wanted_fab_start_date_start,
+      wanted_fab_start_date_end,
       order_by: "created_date",
     };
-
     if (
       !["w2150108", "admin"].includes(userId) &&
       getRole() !== "group leader"

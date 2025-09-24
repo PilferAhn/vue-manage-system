@@ -13,39 +13,30 @@
               placeholder="ex) XMN5CTV@1A"
             />
           </el-col>
-          <el-col :span="12">
-            <OptionNumber
+          <!-- <el-col :span="12"> -->
+            <!-- <OptionNumber
               v-model="props.application.quantity"
-
-
               label="Quantity"
               prop="quantity"
               :disable="false"
               :placeholder="''"
               :options="quantityList"              
-            />
-          </el-col>
+            /> -->
+          <!-- </el-col> -->
+           <el-col :span="12">
+              <el-form-item label="Quantity" prop="quantity">
+                <el-input
+                  v-model.number="props.application.quantity"
+                  placeholder="수량을 입력하세요"
+                />
+              </el-form-item>
+            </el-col>
         </el-row>
 
         <el-row :gutter="20">
           <el-col :span="6">
-            <!-- <el-form-item label="Requester" prop="requester">
-              <el-input v-model="props.application.user.userName"></el-input>
-            </el-form-item> -->
-            <!-- <inputText
-              v-model="props.application.user.userName"
-              label="Requester Name"
-              prop="requester"
-              placeholder="ex) XMN5CTV@1A"
-            /> -->
           </el-col>
           <el-col :span="6">
-            <!-- <inputText
-              v-model="props.application.user.id"
-              label="Requester ID"
-              prop="requesterId"
-              placeholder="ex) XMN5CTV@1A"
-            /> -->
           </el-col>
           <el-col :span="12">
             <el-form-item label="측정 SPL">

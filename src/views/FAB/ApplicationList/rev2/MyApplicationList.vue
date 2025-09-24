@@ -157,7 +157,7 @@ onMounted(async () => {
       order_dir: "desc",
     };
 
-    if (getUserId() !== "admin") {
+    if (getUserId() !== "admin" && getUserId() !== "w2220606") {
       option["observer_id"] = getUserId();
     }
     else{
