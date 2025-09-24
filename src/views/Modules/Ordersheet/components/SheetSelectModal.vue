@@ -1,14 +1,11 @@
 <template>
     <div class="modal-overlay" @keyup.esc="$emit('close')" tabindex="0" ref="modalContainer">
         <div class="modal">
-            <h3>원자재 선택</h3>
+            <h3>기준 SHEET 선택</h3>
             <table class="custom-top-table">
                 <tr v-for="(item, i) in items" :key="i" @click="selectItem(item)" class="modal-item ">
                     <td class="ccell">
-                        {{ item.MATNR }}
-                    </td>
-                    <td class="ccell">
-                        {{ item.MAKTX }}
+                        {{ item.sheet_name }}
                     </td>
 
                 </tr>

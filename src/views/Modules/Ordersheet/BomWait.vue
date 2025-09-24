@@ -131,15 +131,18 @@ const handleClickConfirm = async (wtid: number) => {
 }
 const postBom = async (wtid: number) => {
     const list = await getBomWaitById(wtid)
-    const result = await SendModuleBoms(list, wtid)
-    const data =result.map((r: any) => r.ModuleBomWaitTable)
-    moduleBomTable.value = data
+    const formatlist = list.map((r: any) => r.ModuleBomWait)
+    const result = await SendModuleBoms(formatlist, wtid)
+    // const data =result.map((r: any) => r.ModuleBomWaitTable)
+    // moduleBomTable.value = data
+
+
 }
 const deleteBom = async (wtid: number) => {
     const result = await delBom(wtid)
     console.log(result)
     const data = result.map((r: any) => r.ModuleBomWaitTable)
-    console.log("check",data)
+    console.log("check", data)
     moduleBomTable.value = data
 }
 

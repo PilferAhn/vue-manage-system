@@ -21,7 +21,7 @@ export async function getOds(sheetId: string) {
     const response = await axios.get(
       "/ordersheet/get-data?sheetId=" + sheetId
     )
-    console.log(response.data)
+    // console.log(response.data)
     return response.data;
   } catch (err) {
     console.error("There was an error with the submission", err);
@@ -52,7 +52,7 @@ export async function getSheetsByLevel(modelCode: string, level: string) {
       "/ordersheet/get-sheet-by-lv?modelCode=" + modelCode + "&level=" + level
     )
     if (response.data && response.data.length > 0) {
-      console.log(response.data);
+      // console.log(response.data);
       return response.data
     } else {
       return []  // 또는 null, 또는 에러 throw 등
@@ -79,7 +79,7 @@ export async function createSheet(modelCode: string, level: string) {
       "/wpms/getCode/" + modelCode
     )
     if (response.data) {
-      console.log(response.data);
+      // console.log(response.data);
       const rs = response.data;
       if (rs) {
         data.full_model_name = rs.fullModelName;
@@ -88,7 +88,6 @@ export async function createSheet(modelCode: string, level: string) {
         data.assy_purpose_shipment = rs.assyPurposeShipment;
         data.saw_type = rs.sawType
       }
-      console.log(data);
       const sheet = await axios.post(
         '/ordersheet/createSheet', data
       )
@@ -190,7 +189,7 @@ export async function createBom(modelCode: string, level: string) {
 export async function getBomList(sheetId: string) {
   try {
     const response = await axios.get('/ordersheet/getBomList?sheetId=' + sheetId)
-    console.log(response.data)
+
     return response.data
   } catch (err) {
     console.error("There was an error with the submission", err);
@@ -279,7 +278,7 @@ export async function getPcbCode(modelcode: string) {
 
 export async function saveBomList(list: BomList[]) {
   try {
-    console.log("asd", list);
+
     const response = axios.post('/ordersheet/saveBomList', list)
     alert("save")
   } catch (error) {
@@ -292,7 +291,7 @@ export async function saveBomList(list: BomList[]) {
 export async function getPcbSheet(sheetId: string) {
   try {
     const response = await axios.get('/ordersheet/pcb/?sheetId=' + sheetId)
-    console.log(response.data)
+
     return response.data
   } catch (error) {
     console.error("", error);
@@ -325,7 +324,7 @@ export async function savePcb(formdata: PcbInterface, imagesetPCB: File[], delet
     }
   }
   try {
-    console.log(formDataToSend)
+
     await axios.post('/ordersheet/savePcb', formDataToSend, {
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -346,7 +345,7 @@ export async function getModuleCodeRev(modelCode: string) {
       code: modelCode
     }
     const result = await axios.post('/api/rawmaterials', req)
-    console.log("reuslt", result.data)
+
     return result.data
   } catch (error) {
     console.error("There was an error with the submission", error);
@@ -358,7 +357,7 @@ export async function getModuleCodeRev(modelCode: string) {
 export async function getSawType(modelCode: string, level: string) {
   try {
     const result = await axios.get('/ordersheet/getsawtype?modelCode=' + modelCode + "&level=" + level)
-    console.log("saw==>", result.data);
+
   } catch (error) {
     console.error("There was an error with the submission", error);
     throw error;
@@ -381,7 +380,7 @@ export async function postModuleSize(data) {
       mthickness: data.mthickness,
       mbaseqty: data.mbaseqty
     }
-    console.log(req)
+
     const result = await axios.post('/ordersheet/postmodulesize', req)
     return result.data;
   } catch (error) {
@@ -398,7 +397,7 @@ export async function postModuleSolder(data) {
       mcarrier: data.mcarrier,
       msolder: data.msolder
     }
-    console.log(req)
+
     const result = await axios.post('/ordersheet/postmodulesolder', req)
     return result.data;
   } catch (error) {
@@ -423,7 +422,7 @@ export async function postModuleMeterial(data) {
       mbomrequest: data.mbomrequest,
       msap: data.msap
     }
-    console.log(req)
+
     const result = await axios.post('/ordersheet/postmodulemeterial', req)
     return result.data;
   } catch (error) {
@@ -451,15 +450,47 @@ export async function getOdsBom(modelCode: string, level: string) {
   }
 }
 
-export async function saveBomWait(req: BomModule[], table: BomModuleTable) {
+export async function saveBomWait(req: BomModule[], table: BomModuleTable, sheetData: any, size: string) {
   try {
     const body = {
       table: table,
       details: req
     };
     const result = await axios.post('/ordersheet/saveBomWait', body);
-    alert("saved")
+    if (result.status === 200) {
+      const mname = sheetData.model_name;
+      const saw_type = sheetData.saw_type;
+      const mthickness = sheetData.cellsize_t;
+      for (const item of req) {
+        if (item.sref === 'Epoxy') {
+          if (!item.comoponent_quantity || item.comoponent_quantity === '0000') {
+            const str = `/sqty ${mname},${saw_type},${size},${mthickness},`;
+
+            try {
+              // axios.post()를 사용하여 메시지 보내기
+              // API가 요구하는 형식에 맞춰 데이터 객체를 구성해야 합니다.
+              const data = {
+                chatid: "19:51d7e8b09e0e4c18bdda1c5fc3ea2957@thread.v2",
+                content: str,
+                Message: "<div>" + str + "</div>"
+              }
+              alert("sended")
+              await axios.post('/api/teams', data);
+
+              console.log(`Message sent successfully for item: ${item.sref}`);
+            } catch (error) {
+              console.error(`Failed to send message for item: ${item.sref}`, error);
+            }
+          }
+        }
+      }
+
+
+
+
+    }
     return result.data;
+
   } catch (error) {
     console.error("There was an error with the submission", error);
     alert("There was an error with the submission")
@@ -500,9 +531,10 @@ export async function postConfirm(index: number, username: string) {
 
 export async function SendModuleBoms(list: BomModule[], wtid: number) {
   try {
-    const result = await axios.post('/api/SendModuleBoms', list)
-    const response = await axios.get('/ordersheet/postbom?wtid=' + wtid)
-    return result.data;
+
+    // const result = await axios.post('/api/SendModuleBoms', list)
+    // const response = await axios.get('/ordersheet/postbom?wtid=' + wtid)
+    // return result.data;
   } catch (error) {
     console.error("There was an error with the submission", error);
     throw error;
@@ -513,7 +545,7 @@ export async function SendModuleBoms(list: BomModule[], wtid: number) {
 export async function delBom(wtid: number) {
   try {
     const result = await axios.get('/ordersheet/delbom?wtid=' + wtid)
-    console.log(result.data);
+
     return result.data;
   } catch (error) {
     console.error("There was an error with the submission", error);
@@ -528,5 +560,72 @@ export async function excelDownload(modelCode: string, level: string) {
   } catch (error) {
     console.error("There was an error with the submission", error);
     throw error;
+  }
+}
+export async function findSheetName(modelCode: string, level: string) {
+  try {
+    const result = await axios.get('/ordersheet/find-sheetname?modelCode=' + modelCode + "&level=" + level)
+
+    return result.data;
+  } catch (error) {
+    console.error("There was an error with the submission", error);
+    throw error;
+  }
+}
+
+export async function getQtyByPnSheetId(spn: string, sheetId: string) {
+  try {
+    const result = await axios.get('/ordersheet/getQtyByPnSheetId', {
+      params: {
+        spn: spn,
+        sheetId: sheetId
+      }
+    });
+    return result.data;
+  } catch (err) {
+    console.error("There was an error with the submission", err);
+    throw err;
+  }
+}
+
+export async function qtyRequest(sheet) {
+  try {
+
+    // const result = await axios.post('/api/SendModuleBoms', )
+    // return result.data;
+  } catch (error) {
+    console.error("There was an error with the submission", error);
+    throw error;
+  }
+}
+
+export async function getEpoxyBomQty(mname: string, saw_type: string, msize: string, mthickness: string, sheetId: string) {
+  const data = {
+    mname: mname,
+    saw_type: saw_type,
+    msize: msize,
+    mthickness: mthickness,
+    sheetId: sheetId
+  }
+  try {
+    const result = await axios.post('/ordersheet/getEpoxyBomQty', data);
+
+    return result.data;
+  } catch (err) {
+    console.error("There was an error with the submission", err);
+    throw err;
+  }
+}
+export async function getCCSQty(ssize: string) {
+  try {
+    const result = await axios.get('/ordersheet/getCCSQty', {
+      params: {
+        ssize: ssize
+      }
+    });
+    return result.data;
+  } catch (err) {
+    console.error("There was an error with the submission", err);
+    throw err;
   }
 }

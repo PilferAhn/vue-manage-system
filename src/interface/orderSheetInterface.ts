@@ -168,5 +168,9 @@ export interface BomModuleTable {
     cuser: string,
     comfirmyn: string,
     status: string,
-    radte: string
+    radte: string,
+    sheet_id: string,
+    msize: string,
+    mthickness: string,
+    saw_type: string
 }

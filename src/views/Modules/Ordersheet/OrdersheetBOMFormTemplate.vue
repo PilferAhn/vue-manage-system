@@ -163,8 +163,14 @@ export default {};
                                         {{
                                             item.moq }} </td>
                                     <td contenteditable="true"
-                                        @input="e => bomListTemp[index].remark = (e.target as HTMLElement).innerText">
+                                        @input="e => bomListTemp[index].remark = (e.target as HTMLElement).innerText"
+                                        @keydown.enter.prevent="handleEnterQty(index)"
+                                        v-if="bomListTemp[index].sref !== 'Epoxy' && bomListTemp[index].sref !== 'CoverTape'
+                                            && bomListTemp[index].sref !== 'CarrierTape' && bomListTemp[index].sref !== 'Solder'">
                                         {{ item.remark }} </td>
+                                    <td v-else>
+                                        {{ item.remark }}
+                                    </td>
                                 </tr>
 
                             </tbody>
@@ -205,7 +211,6 @@ export default {};
                         <td class="bcell" style="background-color: #ffff00;">
                             P/N
                         </td>
-
                         <td class="bcell" style="background-color: #ffff00;">
                             등록
                         </td>
@@ -235,13 +240,17 @@ export default {};
 
     </el-form>
     <BomSelectModal v-if="showBomPopup" :items="bomOptions" @select="onSelectBom" @close="showBomPopup = false" />
+    <SheetSelectModal v-if="showSheetPopup" :items="sheetOptions" @select="onSelectSheet"
+        @close="showSheetPopup = false" />
+
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted, watch, computed, nextTick, reactive, Ref } from "vue";
-import { getBomList, getMenu, saveBomList, getBomCode, getModuleCodeRev, getSawType, getOdsBom, saveBomWait } from '../../../utils/orderShiitUtils';
+import { getBomList, getMenu, saveBomList, getBomCode, getModuleCodeRev, getSawType, getOdsBom, saveBomWait, findSheetName, getQtyByPnSheetId, getEpoxyBomQty, getCCSQty } from '../../../utils/orderShiitUtils';
 import { el } from "element-plus/es/locale";
 import CustomSelect from './components/CustomSelect.vue';
+import SheetSelectModal from './components/SheetSelectModal.vue';
 
 import type {
     BomList,
@@ -278,9 +287,11 @@ const checkedIds = ref([]);
 
 
 const showBomPopup = ref(false);
-
+const showSheetPopup = ref(false);
+const sheetOptions = ref<any[]>([]);
 const bomOptions = ref<any[]>([]);
 const enterIndex = ref<number>(0);
+const enterSheetIndex = ref<number>(0);
 const selectedBom = ref<any | null>(null);
 
 const bomSearchResult = ref<BomMeterial[]>([]);
@@ -302,20 +313,26 @@ function addMeterial(index: number) {
     const emaker = row.smarker
     const moq = row.moq
     const epp = row.moving_avgp
-
+    const uid = localStorage.getItem("ms_username")
+    if (epn == null || epn == '' || eref == null || eref == '' || esize == null || esize == '' || emaker == null || emaker == '') {
+        alert("x");
+    }
 
     if (eref === 'PCB') {
         const sc1 = 'pcb_module';
         const ssStr = String(epn || "").trim();
 
         const [d1, d2] = ssStr.toUpperCase().split('_REV');
+        if (d1 == null || d1 == '' || d2 == null || d2 == '') {
+            alert(`PN 값 형식 오류 : 필수값 누락 'EX: SFMxxxxx001_REV1.0'`)
+            return;
+        }
         const pn = d1.trim();
         const ss = esize
         const desc1 = d2.trim();
         const mk = 'S (SMST AKM)';
         const rv = moq;
         const pp = epp;
-
         // 값 확인용 로그 
         console.log("ss:", ssStr);
         console.log("d1:", d1);
@@ -326,9 +343,7 @@ function addMeterial(index: number) {
         console.log("rv:", rv);
         console.log("pp:", pp);
         // const link = `http://10.20.10.128/sapmaterialsetup.html?source=fromRF&sc1=${encodeURIComponent(sc1)}&ss=${encodeURIComponent(ssStr)}&pn=${encodeURIComponent(pn)}&mk=${encodeURIComponent(mk)}&rv=${encodeURIComponent(rv)}&pp=${encodeURIComponent(pp)}&desc1=${encodeURIComponent(desc1)}`;
-        const link = `http://localhost:3000?source=fromRF&sc1=${encodeURIComponent(sc1)}&ss=${encodeURIComponent(ss)}&pn=${encodeURIComponent(pn)}&mk=${encodeURIComponent(mk)}&rv=${encodeURIComponent(rv)}&pp=${encodeURIComponent(pp)}&desc1=${encodeURIComponent(desc1)}&i1=${encodeURIComponent(desc1)}&i2=${encodeURIComponent(desc1)}`;
-
-        window.open(link, '_blank');
+        const link = `http://10.20.10.128/sapmaterialsetup.html?source=fromRF&sc1=${encodeURIComponent(sc1)}&sc2=${encodeURIComponent(sc1)}&ss=${encodeURIComponent(ss)}&pn=${encodeURIComponent(pn)}&mk=${encodeURIComponent(mk)}&rv=${encodeURIComponent(rv)}&pp=${encodeURIComponent(pp)}&desc1=${encodeURIComponent(desc1)}&i1=${encodeURIComponent(desc1)}&i2=${encodeURIComponent(desc1)}&uid=${encodeURIComponent(uid)}`;
     }
 
 
@@ -380,18 +395,66 @@ async function saveChildren() {
     saveBomList(bomList.value)
 }
 
+async function postBomFilter(blist, sheetData, size) {
+    let ccsq = null;
+    const hasCCSItems = blist.some(b => ['CoverTape', 'CarrierTape', 'Solder'].includes(b.sref));
+    if (hasCCSItems) {
+        try {
+            const result = await getCCSQty(size);
+            console.log(result)
+            if (result) {
+                ccsq = result;
+            } else {
+                ccsq = {};
+            }
+        } catch (err) {
+            console.error("Failed to get CCS Qty", err);
+            return;
+        }
+    }
+    for (const b of blist) {
+        if (!b.remark || b.remark === '0000' || b.remark === '') {
+            if (b.sref === 'Epoxy') {
+                const mname = sheetData.model_name;
+                const saw_type = sheetData.saw_type;
+                const mthickness = sheetData.cellsize_t;
+
+                const result = await getEpoxyBomQty(mname, saw_type, size, mthickness, sheetData.sheet_id);
+                if (result && result.mbomrequest) {
+                    b.remark = result.mbomrequest;
+                }
+            } else if (ccsq && (b.sref === 'CoverTape' || b.sref === 'CarrierTape' || b.sref === 'Solder')) {
+                if (b.sref === 'CoverTape' && ccsq.mcover) {
+                    b.remark = ccsq.mcover;
+                } else if (b.sref === 'CarrierTape' && ccsq.mcarrier) {
+                    b.remark = ccsq.mcarrier;
+                } else if (b.sref === 'Solder' && ccsq.msolder) {
+                    b.remark = ccsq.msolder;
+                }
+            }
+        }
+    }
+    console.log("blist", blist)
+    return blist
+}
+
 async function postBom() {
-    const blist = bomList.value.filter(item => item.bomcheck === "true");
-    if (blist.length === 0) {
+    const nblist = bomList.value.filter(item => item.bomcheck === "true");
+    if (nblist.length === 0) {
         alert("봄 선택 x");
         return;
     }
-
+    const pcbItem = bomList.value.find(item => item.sref === 'PCB');
+    let size = null;
+    if (pcbItem) {
+        // 항목이 존재하면 ssize 값을 가져옵니다.
+        size = pcbItem.ssize;
+    }
     const modelCode = bomList.value.length > 0 ? bomList.value[0].model_code : null;
     const level = bomList.value.length > 0 ? bomList.value[0].level : null;
     let username = ''
-    const sheetData = await getOdsBom(modelCode, level)
-
+    const sheetData = await getOdsBom(modelCode, level);
+    const blist = await postBomFilter(nblist, sheetData, size)
     if (!sheetData) {
         alert("x1 sheet 없음")
         return;
@@ -405,15 +468,11 @@ async function postBom() {
     // const sawType = await getSawType(modelCode, level)
     if (Array.isArray(enrolledCodes) && enrolledCodes.length > 0) {
         const lastCode = enrolledCodes[0].matnr
-
         const parts = lastCode.split(modelCode);
         // parts = ["RDM", "00004"]
-
         const prefix = parts[0] + modelCode; // "RDMD5T0"
         const numberPart = parts[1];         // "00004"
-
         const nextNum = String(parseInt(numberPart, 10) + 1).padStart(numberPart.length, "0");
-
         const nextCode = prefix + nextNum;
         fullCode = nextCode
         finalCode = rep + 'F0' + nextNum;
@@ -422,7 +481,6 @@ async function postBom() {
         fullCode = `${req}0001`
     }
     const bomreq: BomModule[] = [];
-
     const a: BomModule = {
         material_numbering: fullCode,
         desc: `MODULE : ${modelCode}`,
@@ -435,7 +493,6 @@ async function postBom() {
         saw_type: sheetData.saw_type,
         module_type: sheetData.module_type,
         sref: '',
-
     }
     const b: BomModule = {
         material_numbering: finalCode,
@@ -449,7 +506,6 @@ async function postBom() {
         saw_type: '',
         module_type: '',
         sref: '',
-
     }
     // 이건 첫번쨰 레쓴
     bomreq.push(a);
@@ -459,15 +515,14 @@ async function postBom() {
     let finalbin = 10
     const tempA = [];
     const tempB = [];
+
     for (let i = 0; i < blist.length; i++) {
-        console.log(blist[i])
         const ref = blist[i].sref;
         const pn = blist[i].spn;
         const qty = blist[i].remark;
         const bom = blist[i].sbom;
         if (ref === 'CoverTape' || ref === 'CarrierTape' || ref === 'Epoxy') {
             finalbin += 10; // 10씩 증가
-
             const c: BomModule = {
                 material_numbering: finalCode,
                 desc: `ASSY MODULE FINAL : ${modelCode}`,
@@ -480,7 +535,6 @@ async function postBom() {
                 saw_type: '',
                 module_type: '',
                 sref: ref,
-
             };
             tempA.push(c);
         }
@@ -523,6 +577,9 @@ async function postBom() {
     }
     bomreq.push(...tempA);
     bomreq.push(...tempB);
+
+    const sheetId = route.params.sheetId as '';
+    const st = sheetData.saw_type == 'BDMP' ? "BDMP" : "wlp"
     const table = {
         model_code: modelCode,
         level: level,
@@ -532,16 +589,41 @@ async function postBom() {
         cuser: '',
         comfirmyn: '',
         status: '',
-        radte: ''
+        radte: '',
+        sheet_id: sheetId,
+        msize: size,
+        mthickness: sheetData.cellsize_t,
+        saw_type: st
     }
     console.log("result -==>", bomreq);
-    saveBomWait(bomreq, table);
+    console.log(sheetData);
+    // console.log(size)
+    if (!size) {
+        alert("Can't find size")
+        return
+    }
+    if (!sheetData.cellsize_t) {
+        alert("Can't find cellsize_t")
+        return
+    }
+    saveBomWait(bomreq, table, sheetData, size);
 }
 
 async function mappingData() {
     bomList.value = [...bomListTemp.value];
 }
 
+async function onSelectSheet(item: any) {
+    console.log("선택된 BOM old:", item);
+    const index = enterSheetIndex.value
+    const spn = bomListTemp.value[index].spn
+    console.log(spn, bomListTemp.value[index])
+    const result = await getQtyByPnSheetId(spn, item.sheet_id)
+    console.log(result);
+    const qty = result.length
+    bomListTemp.value[index].remark = qty.toString() + '000'
+    bomList.value[index].remark = qty.toString() + '000'
+}
 
 function onSelectBom(item: any) {
     console.log("선택된 BOM old:", item);
@@ -654,7 +736,6 @@ function onSelectBom(item: any) {
         bomListTemp.value[index].ssize = ssize
         bomList.value[index].spn = spn
         bomListTemp.value[index].spn = spn
-
     }
     if (bomListTemp.value[index].sref === 'PCB' || refs === 'PCB') {
         const mk = item.MATNR ? item.MATNR[item.MATNR.length - 1] : "";
@@ -714,7 +795,6 @@ async function handleEnterKey(state: string, index: number) {
     console.log(state, index);
 
     if (state === 'default') {
-
         const smt = bomListTemp.value[index];
         const request: SmtItem = {
             sheet_id: '123123123',
@@ -729,11 +809,9 @@ async function handleEnterKey(state: string, index: number) {
             sy: '',
             smt_id: 0,
         };
-
         if (smt.sref === 'SAW') {
             // request.svalue = formDataTemp.saw_type;
         }
-
         const response = await getBomCode(request);
         console.log(response);
         bomOptions.value = response;
@@ -741,6 +819,18 @@ async function handleEnterKey(state: string, index: number) {
         enterIndex.value = index;
         return;
     }
+}
+async function handleEnterQty(index: number) {
+    const modelCode = bomListTemp.value[index].model_code
+    const level = bomListTemp.value[index].level
+    const refs = bomListTemp.value[index].sref
+    if (refs == 'Solder' || refs == 'CoverTape' || refs == 'CarrierTape' || refs == 'Epoxy') {
+        return;
+    }
+    const response = await findSheetName(modelCode, level)
+    sheetOptions.value = response
+    showSheetPopup.value = true
+    enterSheetIndex.value = index
 }
 
 
@@ -775,7 +865,7 @@ onMounted(async () => {
     bomList.value = result
     bomListTemp.value = result
 
-    noneBomList.value = result.filter(item => !item.sbom || item.sbom == '');
+    noneBomList.value = result.filter(item => !item.sbom || item.sbom == '' || item.sbom == null || item.sbom.length < 4);
     isLoading.value = true
     console.log(noneBomList.value)
 });

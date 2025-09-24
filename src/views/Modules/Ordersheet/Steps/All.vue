@@ -1539,6 +1539,9 @@ function onSelectBom(item: any) {
         if (item.MAKTX && /solder/i.test(item.MAKTX)) {
             refs = 'Solder'
         }
+        if (item.MAKTX && /epoxy/i.test(item.MAKTX) || item.MAKTX && /film/i.test(item.MAKTX)) {
+            refs = 'Epoxy'
+        }
 
     }
     if (formDataTemp.smt_list[index].sref === 'Inductor' || refs === 'Inductor') {
@@ -1613,13 +1616,13 @@ function onSelectBom(item: any) {
         const parts = maktx.split(",");
         const ssize = parts.length > 0 ? parts[0].split(";")[1]?.trim() || "" : "";
         const svalue = parts.length > 1 ? parts[1].trim() : "";
-        console.log(ssize, svalue);
+        console.log(ssize, maktx);
         formDataTemp.smt_list[index].sref = 'PCB'
         formData.smt_list[index].sref = 'PCB'
         formDataTemp.smt_list[index].smarker = markerName
         formData.smt_list[index].smarker = markerName
-        formData.smt_list[index].spn = svalue
-        formDataTemp.smt_list[index].spn = svalue
+        formData.smt_list[index].spn = maktx
+        formDataTemp.smt_list[index].spn = maktx
         if ((!formDataTemp.cellsize_l || !formDataTemp.cellsize_w) && ssize) {
             let s = String(ssize);
             if (s.length >= 4) {   // 최소 4자리 이상일 때만 파싱
@@ -1663,8 +1666,8 @@ function onSelectBom(item: any) {
         formDataTemp.smt_list[index].ssize = ssize
         formData.smt_list[index].smarker = markerName
         formDataTemp.smt_list[index].smarker = markerName
-        formDataTemp.smt_list[index].spn = spn
-        formData.smt_list[index].spn = spn
+        formDataTemp.smt_list[index].spn = maktx
+        formData.smt_list[index].spn = maktx
     }
     if (formDataTemp.smt_list[index].sref == 'SAW') {
         formData.smt_list[index].smarker = 'Wisol'
@@ -1685,6 +1688,15 @@ function onSelectBom(item: any) {
 
         formDataTemp.smt_list[index].sref = 'Solder'
         formData.smt_list[index].sref = 'Solder'
+        formData.smt_list[index].sbom = item.MATNR
+        formDataTemp.smt_list[index].sbom = item.MATNR
+        formData.smt_list[index].spn = item.MAKTX,
+            formDataTemp.smt_list[index].spn = item.MAKTX
+    }
+    if (formDataTemp.smt_list[index].sref === 'Epoxy' || refs === 'Epoxy') {
+
+        formDataTemp.smt_list[index].sref = 'Epoxy'
+        formData.smt_list[index].sref = 'Epoxy'
         formData.smt_list[index].sbom = item.MATNR
         formDataTemp.smt_list[index].sbom = item.MATNR
         formData.smt_list[index].spn = item.MAKTX,
@@ -1731,6 +1743,10 @@ function onSelectBomNew(item: any) {
         if (item.MAKTX && /solder/i.test(item.MAKTX)) {
             refs = 'Solder'
         }
+        if (item.MAKTX && /epoxy/i.test(item.MAKTX) || item.MAKTX && /film/i.test(item.MAKTX)) {
+            refs = 'Epoxy'
+        }
+
     }
     const markerMap: Record<string, string> = {
         S: "AKM",
@@ -1837,8 +1853,8 @@ function onSelectBomNew(item: any) {
         tempSmtView.value[index].sref = 'PCB'
         tempSmt.value[index].smarker = markerName
         tempSmtView.value[index].smarker = markerName
-        tempSmtView.value[index].spn = svalue
-        tempSmt.value[index].spn = svalue
+        tempSmtView.value[index].spn = maktx
+        tempSmt.value[index].spn = maktx
         if ((formDataTemp.cellsize_l === '' || formDataTemp.cellsize_w === '') && ssize) {
             let s = String(ssize);
 
@@ -1883,8 +1899,8 @@ function onSelectBomNew(item: any) {
         tempSmt.value[index].ssize = ssize
         tempSmtView.value[index].smarker = markerName
         tempSmt.value[index].smarker = markerName
-        tempSmt.value[index].spn = spn
-        tempSmtView.value[index].spn = spn
+        tempSmt.value[index].spn = maktx
+        tempSmtView.value[index].spn = maktx
     }
     if (tempSmt.value[index].sref == 'SAW') {
         tempSmtView.value[index].smarker = 'Wisol'
@@ -1893,20 +1909,36 @@ function onSelectBomNew(item: any) {
         tempSmtView.value[index].spn = item.MAKTX
     }
     if (tempSmt.value[index].sref == 'CoverTape' || refs === 'CoverTape') {
-        formDataTemp.smt_list[index].sref = 'CoverTape'
-        formData.smt_list[index].sref = 'CoverTape'
-        formData.smt_list[index].sbom = item.MATNR
-        formDataTemp.smt_list[index].sbom = item.MATNR
-        formData.smt_list[index].spn = item.MAKTX
-        formDataTemp.smt_list[index].spn = item.MAKTX
+        tempSmtView.value[index].sref = 'CoverTape'
+        tempSmt.value[index].sref = 'CoverTape'
+        tempSmt.value[index].sbom = item.MATNR
+        tempSmtView.value[index].sbom = item.MATNR
+        tempSmt.value[index].spn = item.MAKTX
+        tempSmtView.value[index].spn = item.MAKTX
+    }
+    if (tempSmt.value[index].sref == 'CarrierTape' || refs === 'CarrierTape') {
+        tempSmtView.value[index].sref = 'CarrierTape'
+        tempSmt.value[index].sref = 'CarrierTape'
+        tempSmt.value[index].sbom = item.MATNR
+        tempSmtView.value[index].sbom = item.MATNR
+        tempSmt.value[index].spn = item.MAKTX
+        tempSmtView.value[index].spn = item.MAKTX
     }
     if (tempSmt.value[index].sref == 'Solder' || refs === 'Solder') {
-        formDataTemp.smt_list[index].sref = 'Solder'
-        formData.smt_list[index].sref = 'Solder'
-        formData.smt_list[index].sbom = item.MATNR
-        formDataTemp.smt_list[index].sbom = item.MATNR
-        formData.smt_list[index].spn = item.MAKTX
-        formDataTemp.smt_list[index].spn = item.MAKTX
+        tempSmtView.value[index].sref = 'Solder'
+        tempSmt.value[index].sref = 'Solder'
+        tempSmt.value[index].sbom = item.MATNR
+        tempSmtView.value[index].sbom = item.MATNR
+        tempSmt.value[index].spn = maktx
+        tempSmtView.value[index].spn = maktx
+    }
+    if (tempSmt.value[index].sref == 'Epoxy' || refs === 'Epoxy') {
+        tempSmtView.value[index].sref = 'Epoxy'
+        tempSmt.value[index].sref = 'Epoxy'
+        tempSmt.value[index].sbom = item.MATNR
+        tempSmtView.value[index].sbom = item.MATNR
+        tempSmt.value[index].spn = maktx
+        tempSmtView.value[index].spn = maktx
     }
     enterIndex.value = 0
 }
@@ -2050,34 +2082,19 @@ function getCarrierBomCode(statec: string, index: number) {
 function handleEnterCellsize(state: string) {
 
     if (state === 't') {
-        const raw = formDataTemp.cellsize_t.replace(/\s+/g, ''); // 모든 공백 제거
-        const digitsOnly = raw.replace(/\D/g, '');
-        if (raw.length === 6) {
-            const left = digitsOnly.substring(0, 3);   // "055"
-            const right = digitsOnly.substring(3, 6);  // "005"
+        const raw = formDataTemp.cellsize_t.trim()
+        // const digitsOnly = raw.replace(/\D/g, '');
+        const val = raw.split(' ')
+        const left = val[0]
+        const right = val[1]
 
-            const leftFormatted = `${left[0]}.${left.substring(1)}`;   // "0.55"
-            const rightFormatted = `${right[0]}.${right.substring(1)}`; // "0.05"
+        const leftFormatted = `${left[0]}.${left.substring(1)}`;   // "0.55"
+        const rightFormatted = `${right[0]}.${right.substring(1)}`; // "0.05"
 
-            const result = `${leftFormatted} ± ${rightFormatted}`;
+        const result = `${leftFormatted} ± ${rightFormatted}`;
+        formDataTemp.cellsize_t = result
+        formData.cellsize_t = result
 
-            formDataTemp.cellsize_t = result
-            formData.cellsize_t = result
-
-        }
-        else if (raw.length === 7) {
-            const left = digitsOnly.substring(0, 4);   // "055"
-            const right = digitsOnly.substring(4, 7);  // "005"
-
-            const leftFormatted = `${left[0]}.${left.substring(1)}`;   // "0.55"
-            const rightFormatted = `${right[0]}.${right.substring(1)}`; // "0.05"
-
-            const result = `${leftFormatted} ± ${rightFormatted}`;
-
-            formDataTemp.cellsize_t = result
-            formData.cellsize_t = result
-
-        }
     } else if (state === 'l') {
         const raw = formDataTemp.cellsize_l.replace(/\s+/g, ''); // 모든 공백 제거
         const digitsOnly = raw.replace(/\D/g, '');
