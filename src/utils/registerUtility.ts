@@ -18,5 +18,7 @@ export const departmentList = [
     "모듈개발2그룹",
     "MRD그룹",
     "개발기획팀",
+    "WJC/R&D Team",
+    "WHC개발",
     "기타"
 ]

@@ -549,6 +549,7 @@ watch(
   () => props.fabApplication.isDv2,
   (newVal) => {
     if (newVal) {
+      props.fabApplication.quantity = 4;
       if (props.fabApplication.note === "") {
         props.fabApplication.note = "DV2 LOT";
       } else {
