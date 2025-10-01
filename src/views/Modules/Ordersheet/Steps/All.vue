@@ -941,60 +941,75 @@
                         Diagram
                     </td>
                     <td colspan="20">
-                        <div class="drop-zone" @click="triggerFileSelect('fileInputSD')" @drop.prevent="onDropSD"
-                            style="min-height: 300px;" @dragover.prevent>
-                            <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
-                            <div v-for="(img, index) in existingSD" :key="'existing-' + index"
-                                style="position: relative; display: inline-block; margin: 10px;">
-                                <img :src="img.url" style="max-width:200px;" />
+                        <div style="display: flex;">
+                            <div class="drop-zone" @click="triggerFileSelect('fileInputSD')" @drop.prevent="onDropSD"
+                                style="min-height: 300px;width: 100%; flex:2" @dragover.prevent>
+                                <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
+                                <div v-for="(img, index) in existingSD" :key="'existing-' + index"
+                                    style="position: relative; display: inline-block; margin: 10px;">
+                                    <img :src="img.url" style="max-width:200px;" />
 
-                                <button @click.stop="removeExistingImageSD(index)"
-                                    style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-                                    ❌
-                                </button>
+                                    <button @click.stop="removeExistingImageSD(index)"
+                                        style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                                        ❌
+                                    </button>
+                                </div>
+                                <div v-for="(file, index) in imagesetSD" :key="index"
+                                    style="position: relative; display: inline-block; margin: 10px;">
+                                    <img :src="getObjectURL(file)" alt="업로드된 이미지"
+                                        style="max-width: 200px; max-height: 300px;" />
+                                    <button @click.stop="removeImageSD(index)"
+                                        style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                                        ❌
+                                    </button>
+                                </div>
+                                <input ref="fileInputSD" type="file" accept="image/*" style="display:none"
+                                    @change="handleFilesChangeSD" multiple />
                             </div>
-                            <div v-for="(file, index) in imagesetSD" :key="index"
-                                style="position: relative; display: inline-block; margin: 10px;">
-                                <img :src="getObjectURL(file)" alt="업로드된 이미지"
-                                    style="max-width: 200px; max-height: 300px;" />
-                                <button @click.stop="removeImageSD(index)"
-                                    style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-                                    ❌
-                                </button>
+                            <div style="width: 100%; border:1px solid black; flex:1" contenteditable="true"
+                                @paste.prevent="handlePaste('SD', $event)">
+                                <!-- {{ formData.el_EVB_setup_port }} -->
                             </div>
-                            <input ref="fileInputSD" type="file" accept="image/*" style="display:none"
-                                @change="handleFilesChangeSD" multiple />
                         </div>
+
                     </td>
                     <td colspan="3" class="ccell">
                         Marking <br />
                         Information
                     </td>
                     <td colspan="16">
-                        <div class="drop-zone" @click="triggerFileSelect('fileInputMI')" @drop.prevent="onDropMI"
-                            style="min-height: 300px;" @dragover.prevent>
-                            <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
-                            <div v-for="(img, index) in existingMI" :key="'existing-' + index"
-                                style="position: relative; display: inline-block; margin: 10px;">
-                                <img :src="img.url" style="max-width:200px;" />
 
-                                <button @click.stop="removeExistingImageMI(index)"
-                                    style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-                                    ❌
-                                </button>
+                        <div style="display: flex;">
+                            <div class="drop-zone" @click="triggerFileSelect('fileInputMI')" @drop.prevent="onDropMI"
+                                style="min-height: 300px; flex:2" @dragover.prevent>
+                                <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
+                                <div v-for="(img, index) in existingMI" :key="'existing-' + index"
+                                    style="position: relative; display: inline-block; margin: 10px;">
+                                    <img :src="img.url" style="max-width:200px;" />
+
+                                    <button @click.stop="removeExistingImageMI(index)"
+                                        style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                                        ❌
+                                    </button>
+                                </div>
+                                <div v-for="(file, index) in imagesetMI" :key="index"
+                                    style="position: relative; display: inline-block; margin: 10px;">
+                                    <img :src="getObjectURL(file)" alt="업로드된 이미지"
+                                        style="max-width: 200px; max-height: 300px;" />
+                                    <button @click.stop="removeImageMI(index)"
+                                        style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                                        ❌
+                                    </button>
+                                </div>
+                                <input ref="fileInputMI" type="file" accept="image/*"
+                                    style="display:none; min-height: 300px;" @change="handleFilesChangeMI" multiple />
                             </div>
-                            <div v-for="(file, index) in imagesetMI" :key="index"
-                                style="position: relative; display: inline-block; margin: 10px;">
-                                <img :src="getObjectURL(file)" alt="업로드된 이미지"
-                                    style="max-width: 200px; max-height: 300px;" />
-                                <button @click.stop="removeImageMI(index)"
-                                    style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-                                    ❌
-                                </button>
+                            <div style="width: 100%; border:1px solid black; flex:1" contenteditable="true"
+                                @paste.prevent="handlePaste('MI', $event)">
+                                <!-- {{ formData.el_EVB_setup_port }} -->
                             </div>
-                            <input ref="fileInputMI" type="file" accept="image/*"
-                                style="display:none; min-height: 300px;" @change="handleFilesChangeMI" multiple />
                         </div>
+
                     </td>
                 </tr>
             </tbody>
@@ -1145,30 +1160,37 @@
                         {{ formData.ap_marking_item }}
                     </td>
                     <td colspan="12">
-                        <div class="drop-zone" @click="triggerFileSelect('fileInputMD')" @drop.prevent="onDropMD"
-                            style="min-height: 75px;" @dragover.prevent>
-                            <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
-                            <div v-for="(img, index) in existingMD" :key="'existing-' + index"
-                                style="position: relative; display: inline-block; margin: 10px;">
-                                <img :src="img.url" style="max-width:200px;" />
+                        <div style="display: flex;">
+                            <div class="drop-zone" @click="triggerFileSelect('fileInputMD')" @drop.prevent="onDropMD"
+                                style="min-height: 75px; flex:2" @dragover.prevent>
+                                <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
+                                <div v-for="(img, index) in existingMD" :key="'existing-' + index"
+                                    style="position: relative; display: inline-block; margin: 10px;">
+                                    <img :src="img.url" style="max-width:200px;" />
 
-                                <button @click.stop="removeExistingImageMD(index)"
-                                    style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-                                    ❌
-                                </button>
+                                    <button @click.stop="removeExistingImageMD(index)"
+                                        style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                                        ❌
+                                    </button>
+                                </div>
+                                <div v-for="(file, index) in imagesetMD" :key="index"
+                                    style="position: relative; display: inline-block; margin: 10px;">
+                                    <img :src="getObjectURL(file)" alt="업로드된 이미지"
+                                        style="max-width: 200px; max-height:  75px;" />
+                                    <button @click.stop="removeImageMD(index)"
+                                        style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                                        ❌
+                                    </button>
+                                </div>
+                                <input ref="fileInputMD" type="file" accept="image/*"
+                                    style="display:none; min-height:  75px;" @change="handleFilesChangeMD" multiple />
                             </div>
-                            <div v-for="(file, index) in imagesetMD" :key="index"
-                                style="position: relative; display: inline-block; margin: 10px;">
-                                <img :src="getObjectURL(file)" alt="업로드된 이미지"
-                                    style="max-width: 200px; max-height:  75px;" />
-                                <button @click.stop="removeImageMD(index)"
-                                    style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-                                    ❌
-                                </button>
+                            <div style="width: 100%; border:1px solid black; flex:1" contenteditable="true"
+                                @paste.prevent="handlePaste('MD', $event)">
+                                <!-- {{ formData.el_EVB_setup_port }} -->
                             </div>
-                            <input ref="fileInputMD" type="file" accept="image/*"
-                                style="display:none; min-height:  75px;" @change="handleFilesChangeMD" multiple />
                         </div>
+
 
 
                     </td>
@@ -2184,6 +2206,7 @@ onMounted(async () => {
     isLoading.value = true
 });
 
+
 function pcbAdd(code: string, index: number) {
     if (!code) {
         return
@@ -2196,7 +2219,40 @@ function pcbAdd(code: string, index: number) {
     return code
 }
 
-
+const handlePaste = (state: string, e: ClipboardEvent) => {
+    // 1. 클립보드 아이템들을 가져옵니다.
+    // console.log(e)
+    // return
+    const items = e.clipboardData.items;
+    let isImageFound = false;
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.kind === 'file' && item.type.startsWith('image/')) {
+            isImageFound = true; // 이미지를 찾았음!
+            const file = item.getAsFile();
+            if (state === 'SD') {
+                imagesetSD.value.push(file);
+                return
+            }
+            if (state === 'MI') {
+                imagesetMI.value.push(file);
+                return
+            }
+            if (state === 'MD') {
+                imagesetMD.value.push(file);
+                return
+            }
+            // const reader = new FileReader();
+            // reader.onload = (event) => {
+            //   const imageUrl = event.target.result;
+            //   const imgTag = `<img src="${imageUrl}" style="max-width: 100%;">`;
+            //   document.execCommand('insertHTML', false, imgTag);
+            // };
+            // reader.readAsDataURL(file);
+            break;
+        }
+    }
+}
 </script>
 
 <style scoped>

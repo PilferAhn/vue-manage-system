@@ -172,21 +172,19 @@
                 </tr>
 
                 <tr>
-                  <td class="hcell">
+                  <td class="hcell" style="background-color: #ff00ff;">
                     PAD Type/유형
                   </td>
-                  <td colspan="2" style=" background-color: #f0f9ff;">
-                    <el-select v-model="formData.wafer_pad_type" placeholder="선택" class="custom-select"
-                      style=" height: 100%; ">
-                      <el-option v-for="item in columnOptionsMap.wafer_pad_type.value" :key="item.value"
-                        :label="item.label" :value="item.value" />
-                    </el-select>
+                  <td colspan="2" contenteditable="true"
+                    @input="e => formDataTemp.wafer_pad_type = (e.target as HTMLElement).innerText">
+                    {{ formData.wafer_pad_type }}
                   </td>
                   <td class="hcell" style="background-color: #ff00ff;">
                     Số lượng gửi <br />
                     발송수량
                   </td>
-                  <td colspan="3">
+                  <td colspan="3" contenteditable="true"
+                    @input="e => formDataTemp.wafer_send_quantity = (e.target as HTMLElement).innerText">
                     {{ formData.wafer_send_quantity }}
                   </td>
                 </tr>
@@ -224,7 +222,7 @@
                     Chip Qty
                   </td>
                   <td colspan="3">
-                    {{ `${formData.wafer_chip_qty}*${formData.wafer_send_quantity}` }}
+                    {{ `${formData.wafer_chip_qty}*${formDataTemp.wafer_send_quantity}` }}
                   </td>
                 </tr>
 
@@ -252,15 +250,12 @@
                 </tr>
 
                 <tr>
-                  <td class="hcell">
+                  <td class="hcell" style="background-color: #ff00ff;">
                     Chât liệu <br /> 재질
                   </td>
-                  <td colspan="6" style=" background-color: #f0f9ff;">
-                    <el-select v-model="formData.pkg_meterial" placeholder="선택" class="custom-select"
-                      style=" height: 100%; ">
-                      <el-option v-for="item in columnOptionsMap.pkg_meterial.value" :key="item.value"
-                        :label="item.label" :value="item.value" />
-                    </el-select>
+                  <td colspan="6" contenteditable="true"
+                    @input="e => formDataTemp.pkg_meterial = (e.target as HTMLElement).innerText">
+                    {{ formData.pkg_meterial }}
                   </td>
 
                 </tr>
@@ -278,25 +273,19 @@
                   <td rowspan="1" class="hcell">
                     Epoxy
                   </td>
-                  <td class="hcell">
+                  <td class="hcell" style="background-color: #ff00ff;">
                     Model
                   </td>
-                  <td colspan="2" style=" background-color: #f0f9ff;">
-                    <el-select v-model="formData.epoxy_model" placeholder="선택" class="custom-select"
-                      style=" height: 100%; ">
-                      <el-option v-for="item in columnOptionsMap.epoxy_model.value" :key="item.value"
-                        :label="item.label" :value="item.value" />
-                    </el-select>
+                  <td colspan="2" contenteditable="true"
+                    @input="e => formDataTemp.epoxy_model = (e.target as HTMLElement).innerText">
+                    {{ formData.epoxy_model }}
                   </td>
-                  <td class="hcell">
+                  <td class="hcell" style="background-color: #ff00ff;">
                     Thickness
                   </td>
-                  <td colspan="3" style=" background-color: #f0f9ff;">
-                    <el-select v-model="formData.epoxy_thickness" placeholder="선택" class="custom-select"
-                      style=" height: 100%; ">
-                      <el-option v-for="item in columnOptionsMap.epoxy_thickness.value" :key="item.value"
-                        :label="item.label" :value="item.value" />
-                    </el-select>
+                  <td colspan="3" contenteditable="true"
+                    @input="e => formDataTemp.epoxy_thickness = (e.target as HTMLElement).innerText">
+                    {{ formData.epoxy_thickness }}
                   </td>
                 </tr>
 
@@ -378,35 +367,36 @@
 
                   </td>
                   <td colspan="2">
-                    <div style="display: flex;"> 
-                    <div class="drop-zone" @click="triggerFileSelect('fileInputFB1')" @drop.prevent="onDropFB1"
-                      @dragover.prevent>
-                      <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
-                      <div v-for="(img, index) in existingFB1" :key="'existing-' + index"
-                        style="position: relative; display: inline-block; margin: 10px;">
-                        <img :src="img.url" style="max-width:200px;" />
+                    <div style="display: flex;">
+                      <div class="drop-zone" @click="triggerFileSelect('fileInputFB1')" @drop.prevent="onDropFB1"
+                        @dragover.prevent>
+                        <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
+                        <div v-for="(img, index) in existingFB1" :key="'existing-' + index"
+                          style="position: relative; display: inline-block; margin: 10px;">
+                          <img :src="img.url" style="max-width:200px;" />
 
-                        <button @click.stop="removeExistingImageFB1(index)"
-                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-                          ❌
-                        </button>
+                          <button @click.stop="removeExistingImageFB1(index)"
+                            style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                            ❌
+                          </button>
+                        </div>
+                        <div v-for="(file, index) in imagesetFB1" :key="index"
+                          style="position: relative; display: inline-block; margin: 10px;">
+                          <img :src="getObjectURL(file)" alt="업로드된 이미지" style="max-width: 200px; max-height: 300px;" />
+                          <button @click.stop="removeImageFB1(index)"
+                            style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                            ❌
+                          </button>
+                        </div>
+                        <input ref="fileInputFB1" type="file" accept="image/*" style="display:none"
+                          @change="handleFilesChangeFB1" multiple />
                       </div>
-                      <div v-for="(file, index) in imagesetFB1" :key="index"
-                        style="position: relative; display: inline-block; margin: 10px;">
-                        <img :src="getObjectURL(file)" alt="업로드된 이미지" style="max-width: 200px; max-height: 300px;" />
-                        <button @click.stop="removeImageFB1(index)"
-                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-                          ❌
-                        </button>
-                      </div>
-                      <input ref="fileInputFB1" type="file" accept="image/*" style="display:none"
-                        @change="handleFilesChangeFB1" multiple />
-                    </div>
-                    <div style="width: 100%; border:1px solid black" contenteditable="true"
-                        @input="e => formDataTemp.fb_direction = (e.target as HTMLElement).innerText">
+                      <div style="width: 100%; border:1px solid black" contenteditable="true"
+                        @input="e => formDataTemp.fb_direction = (e.target as HTMLElement).innerText"
+                        @paste.prevent="handlePaste('FB1', $event)">
                         {{ formData.fb_direction }}
                       </div>
-                  </div>
+                    </div>
                   </td>
                   <!-- <td colspan="2" contenteditable="true" >
 
@@ -423,31 +413,32 @@
                   </td> -->
                   <td colspan="3">
                     <div style="display: flex;">
-                    <div class="drop-zone" @click="triggerFileSelect('fileInputFB2')" @drop.prevent="onDropFB2"
-                      @dragover.prevent>
-                      <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
-                      <div v-for="(img, index) in existingFB2" :key="'existing-' + index"
-                        style="position: relative; display: inline-block; margin: 10px;">
-                        <img :src="img.url" style="max-width:200px;" />
+                      <div class="drop-zone" @click="triggerFileSelect('fileInputFB2')" @drop.prevent="onDropFB2"
+                        @dragover.prevent>
+                        <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
+                        <div v-for="(img, index) in existingFB2" :key="'existing-' + index"
+                          style="position: relative; display: inline-block; margin: 10px;">
+                          <img :src="img.url" style="max-width:200px;" />
 
-                        <button @click.stop="removeExistingImageFB2(index)"
-                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-                          ❌
-                        </button>
+                          <button @click.stop="removeExistingImageFB2(index)"
+                            style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                            ❌
+                          </button>
+                        </div>
+                        <div v-for="(file, index) in imagesetFB2" :key="index"
+                          style="position: relative; display: inline-block; margin: 10px;">
+                          <img :src="getObjectURL(file)" alt="업로드된 이미지" style="max-width: 200px; max-height: 300px;" />
+                          <button @click.stop="removeImageFB2(index)"
+                            style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                            ❌
+                          </button>
+                        </div>
+                        <input ref="fileInputFB2" type="file" accept="image/*" style="display:none"
+                          @change="handleFilesChangeFB2" multiple />
                       </div>
-                      <div v-for="(file, index) in imagesetFB2" :key="index"
-                        style="position: relative; display: inline-block; margin: 10px;">
-                        <img :src="getObjectURL(file)" alt="업로드된 이미지" style="max-width: 200px; max-height: 300px;" />
-                        <button @click.stop="removeImageFB2(index)"
-                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-                          ❌
-                        </button>
-                      </div>
-                      <input ref="fileInputFB2" type="file" accept="image/*" style="display:none"
-                        @change="handleFilesChangeFB2" multiple />
-                    </div>
-                    <div style="width: 100%; border:1px solid black" contenteditable="true"
-                        @input="e => formDataTemp.fb_note = (e.target as HTMLElement).innerText">
+                      <div style="width: 100%; border:1px solid black" contenteditable="true"
+                        @input="e => formDataTemp.fb_note = (e.target as HTMLElement).innerText"
+                        @paste.prevent="handlePaste('FB2', $event)">
                         {{ formData.fb_note }}
                       </div>
                     </div>
@@ -460,40 +451,41 @@
                   <td class="hcell" colspan="1">
                     F/B#1
                     <br />
-                    (Numering)
+                    (Numbering)
 
                   </td>
                   <td colspan="2">
                     <div style="display: flex;">
-                       
-                    <div class="drop-zone" @click="triggerFileSelect('fileInputFB3')" @drop.prevent="onDropFB3"
-                      @dragover.prevent>
-                      <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
-                      <div v-for="(img, index) in existingFB3" :key="'existing-' + index"
-                        style="position: relative; display: inline-block; margin: 10px;">
-                        <img :src="img.url" style="max-width:200px;" />
 
-                        <button @click.stop="removeExistingImageFB3(index)"
-                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-                          ❌
-                        </button>
+                      <div class="drop-zone" @click="triggerFileSelect('fileInputFB3')" @drop.prevent="onDropFB3"
+                        @dragover.prevent>
+                        <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
+                        <div v-for="(img, index) in existingFB3" :key="'existing-' + index"
+                          style="position: relative; display: inline-block; margin: 10px;">
+                          <img :src="img.url" style="max-width:200px;" />
+
+                          <button @click.stop="removeExistingImageFB3(index)"
+                            style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                            ❌
+                          </button>
+                        </div>
+                        <div v-for="(file, index) in imagesetFB3" :key="index"
+                          style="position: relative; display: inline-block; margin: 10px;">
+                          <img :src="getObjectURL(file)" alt="업로드된 이미지" style="max-width: 200px; max-height: 300px;" />
+                          <button @click.stop="removeImageFB3(index)"
+                            style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                            ❌
+                          </button>
+                        </div>
+                        <input ref="fileInputFB3" type="file" accept="image/*" style="display:none"
+                          @change="handleFilesChangeFB3" multiple />
                       </div>
-                      <div v-for="(file, index) in imagesetFB3" :key="index"
-                        style="position: relative; display: inline-block; margin: 10px;">
-                        <img :src="getObjectURL(file)" alt="업로드된 이미지" style="max-width: 200px; max-height: 300px;" />
-                        <button @click.stop="removeImageFB3(index)"
-                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-                          ❌
-                        </button>
-                      </div>
-                      <input ref="fileInputFB3" type="file" accept="image/*" style="display:none"
-                        @change="handleFilesChangeFB3" multiple />
-                    </div>
-                    <div style="width: 100%; border:1px solid black" contenteditable="true"
-                        @input="e => formDataTemp.fb_1_numbering = (e.target as HTMLElement).innerText">
+                      <div style="width: 100%; border:1px solid black" contenteditable="true"
+                        @input="e => formDataTemp.fb_1_numbering = (e.target as HTMLElement).innerText"
+                        @paste.prevent="handlePaste('FB3', $event)">
                         {{ formData.fb_1_numbering }}
                       </div>
-                      
+
                     </div>
                   </td>
                   <td class="hcell" colspan="1">
@@ -527,7 +519,8 @@
                           @change="handleFilesChangeFB4" multiple />
                       </div>
                       <div style="width: 100%; border:1px solid black" contenteditable="true"
-                        @input="e => formDataTemp.fb_2_spl = (e.target as HTMLElement).innerText">
+                        @input="e => formDataTemp.fb_2_spl = (e.target as HTMLElement).innerText"
+                        @paste.prevent="handlePaste('FB4', $event)">
                         {{ formData.fb_2_spl }}
                       </div>
                     </div>
@@ -550,44 +543,51 @@
 
                   </td>
                   <td colspan="2">
-                    <div style="display: flex;"> 
-                    <div class="drop-zone" @click="triggerFileSelect('fileInputMK1')" @drop.prevent="onDropMK1"
-                      @dragover.prevent>
-                      <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
-                      <div v-for="(img, index) in existingMK1" :key="'existing-' + index"
-                        style="position: relative; display: inline-block; margin: 10px;">
-                        <img :src="img.url" style="max-width:200px;" />
+                    <div style="display: flex;">
+                      <div class="drop-zone" @click="triggerFileSelect('fileInputMK1')" @drop.prevent="onDropMK1"
+                        @dragover.prevent>
+                        <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
+                        <div v-for="(img, index) in existingMK1" :key="'existing-' + index"
+                          style="position: relative; display: inline-block; margin: 10px;">
+                          <img :src="img.url" style="max-width:200px;" />
 
-                        <button @click.stop="removeExistingImageMK1(index)"
-                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-                          ❌
-                        </button>
+                          <button @click.stop="removeExistingImageMK1(index)"
+                            style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                            ❌
+                          </button>
+                        </div>
+                        <div v-for="(file, index) in imagesetMK1" :key="index"
+                          style="position: relative; display: inline-block; margin: 10px;">
+                          <img :src="getObjectURL(file)" alt="업로드된 이미지" style="max-width: 200px; max-height: 300px;" />
+                          <button @click.stop="removeImageMK1(index)"
+                            style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                            ❌
+                          </button>
+                        </div>
+                        <input ref="fileInputMK1" type="file" accept="image/*" style="display:none"
+                          @change="handleFilesChangeMK1" multiple />
                       </div>
-                      <div v-for="(file, index) in imagesetMK1" :key="index"
-                        style="position: relative; display: inline-block; margin: 10px;">
-                        <img :src="getObjectURL(file)" alt="업로드된 이미지" style="max-width: 200px; max-height: 300px;" />
-                        <button @click.stop="removeImageMK1(index)"
-                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-                          ❌
-                        </button>
-                      </div>
-                      <input ref="fileInputMK1" type="file" accept="image/*" style="display:none"
-                        @change="handleFilesChangeMK1" multiple />
-                    </div>
-                    <div style="width: 100%; border:1px solid black" contenteditable="true"
-                        @input="e => formDataTemp.mk_marking = (e.target as HTMLElement).innerText">
+                      <div style="width: 100%; border:1px solid black" contenteditable="true"
+                        @input="e => formDataTemp.mk_marking = (e.target as HTMLElement).innerText"
+                        @paste.prevent="handlePaste('MK1', $event)">
                         {{ formData.mk_marking }}
                       </div>
-                       
+
                     </div>
                   </td>
                   <td class="hcell" colspan="1">
                     Mục chú ý <br />
                     주의사항
                   </td>
-                  <td colspan="3" contenteditable="true"
-                    @input="e => formDataTemp.mk_note = (e.target as HTMLElement).innerText">
-                    {{ formData.mk_note }}
+                  <td colspan="3" @input="e => formDataTemp.mk_note = (e.target as HTMLElement).innerText">
+                    <el-checkbox :label="'Marking WTC'" :true-label="'Marking WTC'" :false-label="''"
+                      v-model="formData.mk_note">
+                      Marking WTC
+                    </el-checkbox>
+                    <el-checkbox :label="'Marking WHC'" :true-label="'Marking WHC'" :false-label="''"
+                      v-model="formData.mk_note">
+                      Marking WHC
+                    </el-checkbox>
                   </td>
                 </tr>
 
@@ -634,9 +634,38 @@
                   <td class="hcell" colspan="1">
                     EVB Setup Port
                   </td>
-                  <td colspan="3" contenteditable="true"
-                    @input="e => formDataTemp.el_EVB_setup_port = (e.target as HTMLElement).innerText">
-                    {{ formData.el_EVB_setup_port }}
+                  <td colspan="3">
+                    <div style="display: flex;">
+                      <div class="drop-zone" @click="triggerFileSelect('fileInputEV1')" @drop.prevent="onDropEV1"
+                        @dragover.prevent>
+                        <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
+                        <div v-for="(img, index) in existingEV1" :key="'existing-' + index"
+                          style="position: relative; display: inline-block; margin: 10px;">
+                          <img :src="img.url" style="max-width:200px;" />
+
+                          <button @click.stop="removeExistingImageEV1(index)"
+                            style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                            ❌
+                          </button>
+                        </div>
+                        <div v-for="(file, index) in imagesetEV1" :key="index"
+                          style="position: relative; display: inline-block; margin: 10px;">
+                          <img :src="getObjectURL(file)" alt="업로드된 이미지" style="max-width: 200px; max-height: 300px;" />
+                          <button @click.stop="removeImageEV1(index)"
+                            style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                            ❌
+                          </button>
+                        </div>
+                        <input ref="fileInputEV1" type="file" accept="image/*" style="display:none"
+                          @change="handleFilesChangeEV1" multiple />
+                      </div>
+                      <div style="width: 100%; border:1px solid black" contenteditable="true"
+                        @input="e => formDataTemp.mk_marking = (e.target as HTMLElement).innerText"
+                        @paste.prevent="handlePaste('EV1', $event)">
+                        {{ formData.el_EVB_setup_port }}
+                      </div>
+
+                    </div>
                   </td>
 
                 </tr>
@@ -688,9 +717,9 @@
                       v-model="formData.reliability_item">
                       HTS
                     </el-checkbox>
-                    <el-checkbox :label="'HTHHS'" :true-label="'HTHHS'" :false-label="''"
+                    <el-checkbox :label="'THS'" :true-label="'THS'" :false-label="''"
                       v-model="formData.reliability_item">
-                      HTHHS
+                      THS
                     </el-checkbox>
                     <el-checkbox :label="'uHAST'" :true-label="'uHAST'" :false-label="''"
                       v-model="formData.reliability_item">
@@ -862,7 +891,7 @@ const formData = reactive<ApplicationData>({
   fb_note: "",
   fb_1_numbering: "",
   mk_marking: "",
-  form_status:""
+  form_status: ""
 })
 
 
@@ -923,7 +952,7 @@ const formDataTemp = reactive<ApplicationData>({
   fb_note: "",
   fb_1_numbering: "",
   mk_marking: "",
-  form_status:""
+  form_status: ""
 })
 const loading = ref(true);
 const application = ref<ApplicationData>();
@@ -938,11 +967,14 @@ const fileInputFB2 = ref<HTMLInputElement | null>(null);
 const fileInputFB3 = ref<HTMLInputElement | null>(null);
 const fileInputFB4 = ref<HTMLInputElement | null>(null);
 const fileInputMK1 = ref<HTMLInputElement | null>(null);
+const fileInputEV1 = ref<HTMLInputElement | null>(null);
+
 const existingFB1 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
 const existingFB2 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
 const existingFB3 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
 const existingFB4 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
 const existingMK1 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
+const existingEV1 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
 const deleteImage = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
 
 const imagesetFB1 = ref<File[]>([]);
@@ -950,6 +982,7 @@ const imagesetFB2 = ref<File[]>([]);
 const imagesetFB3 = ref<File[]>([]);
 const imagesetFB4 = ref<File[]>([]);
 const imagesetMK1 = ref<File[]>([]);
+const imagesetEV1 = ref<File[]>([]);
 
 const selectedLots = ref<string[]>([]);
 
@@ -990,7 +1023,9 @@ function handleFilesChangeFB4(e: Event) {
 function handleFilesChangeMK1(e: Event) {
   onFilesChange(e, imagesetMK1);
 }
-
+function handleFilesChangeEV1(e: Event) {
+  onFilesChange(e, imagesetEV1);
+}
 function removeImageFB1(index: number) {
   imagesetFB1.value.splice(index, 1);
 }
@@ -1002,6 +1037,8 @@ function removeImageFB2(index: number) {
   imagesetFB4.value.splice(index, 1);
 } function removeImageMK1(index: number) {
   imagesetMK1.value.splice(index, 1);
+} function removeImageEV1(index: number) {
+  imagesetEV1.value.splice(index, 1);
 }
 function removeExistingImageFB1(index: number) {
   const target = existingFB1.value[index];
@@ -1038,7 +1075,13 @@ function removeExistingImageMK1(index: number) {
     existingMK1.value.splice(index, 1);
   }
 }
-
+function removeExistingImageEV1(index: number) {
+  const target = existingEV1.value[index];
+  if (target) {
+    deleteImage.value.push(target);
+    existingEV1.value.splice(index, 1);
+  }
+}
 
 
 function getObjectURL(file: File): string {
@@ -1047,12 +1090,14 @@ function getObjectURL(file: File): string {
 
 
 // 파일 선택창 열기
-function triggerFileSelect(target: 'fileInputFB1' | 'fileInputFB2' | 'fileInputFB3' | 'fileInputFB4' | 'fileInputMK1') {
+function triggerFileSelect(target: 'fileInputFB1' | 'fileInputFB2' | 'fileInputFB3' | 'fileInputFB4' | 'fileInputMK1' | 'fileInputEV1') {
   if (target === 'fileInputFB1') fileInputFB1.value?.click();
   if (target === 'fileInputFB2') fileInputFB2.value?.click();
   if (target === 'fileInputFB3') fileInputFB3.value?.click();
   if (target === 'fileInputFB4') fileInputFB4.value?.click();
   if (target === 'fileInputMK1') fileInputMK1.value?.click();
+  if (target === 'fileInputEV1') fileInputEV1.value?.click();
+
 }
 
 function onFilesChange(event: Event, imageset: Ref<File[]>) {
@@ -1082,7 +1127,7 @@ function handleSubmitButtton() {
   mappingTemp()
   console.log("saving..")
   formData.form_status = "완료"
-  handleSubmitTempForm(formData, imagesetFB1.value, imagesetFB2.value, imagesetFB3.value, imagesetFB4.value, imagesetMK1.value, deleteImage.value);
+  handleSubmitTempForm(formData, imagesetFB1.value, imagesetFB2.value, imagesetFB3.value, imagesetFB4.value, imagesetMK1.value, imagesetEV1.value, deleteImage.value);
 }
 
 function handleTempSave() {
@@ -1092,9 +1137,9 @@ function handleTempSave() {
   }
   mappingTemp()
   console.log("saving..")
-  
+
   formData.form_status = "임시저장"
-  handleSubmitTempForm(formData, imagesetFB1.value, imagesetFB2.value, imagesetFB3.value, imagesetFB4.value, imagesetMK1.value, deleteImage.value);
+  handleSubmitTempForm(formData, imagesetFB1.value, imagesetFB2.value, imagesetFB3.value, imagesetFB4.value, imagesetMK1.value, imagesetEV1.value, deleteImage.value);
 }
 
 function mappingTemp() {
@@ -1104,7 +1149,7 @@ function mappingTemp() {
   formData.pkg_size = formDataTemp.pkg_size
   formData.pkg_note = formDataTemp.pkg_note
   formData.fb_2_spl = formDataTemp.fb_2_spl
-  formData.fb_1_numbering= formDataTemp.fb_1_numbering
+  formData.fb_1_numbering = formDataTemp.fb_1_numbering
   formData.fb_direction = formDataTemp.fb_direction
   formData.fb_note = formDataTemp.fb_note
   formData.mk_marking = formDataTemp.mk_marking
@@ -1185,6 +1230,20 @@ function onDropMK1(event: DragEvent) {
     }
   }
 }
+
+function onDropEV1(event: DragEvent) {
+  const files = event.dataTransfer?.files;
+  if (!files) return;
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    if (file.type.startsWith("image/")) {
+      imagesetEV1.value.push(file);
+    } else {
+      alert("이미지 파일만 업로드할 수 있습니다.");
+    }
+  }
+}
 const wafer_lot_no_opt = computed(() =>
   Array.from(
     new Set(
@@ -1216,7 +1275,7 @@ onMounted(async () => {
   loading.value = false;
   // formData.default_requireName = username.value;
   formData.default_requireDate = today.value;
-  console.log("del",formData)
+  console.log("del", formData)
 
 
   type ColumnKey = keyof typeof columnOptionsMap;
@@ -1335,6 +1394,7 @@ async function handleEnter(value) {
   formDataTemp.fb_note = formData.fb_note
   formDataTemp.fb_1_numbering = formData.fb_1_numbering
   formDataTemp.mk_marking = formData.mk_marking
+  formDataTemp.wafer_send_quantity = req.wafer_send_quantity
 
   // image seting
   if (req.image_List && req.image_List.length > 0) {
@@ -1349,6 +1409,8 @@ async function handleEnter(value) {
         existingFB4.value.push(item);
       } else if (item.cell_name === 'MK1') {
         existingMK1.value.push(item);
+      } else if (item.cell_name === 'EV1') {
+        existingEV1.value.push(item);
       }
     });
   }
@@ -1376,7 +1438,62 @@ async function handleEnter(value) {
   // formData.pkg_erp_code = req[0].fpkgcode
   // formData.bb_ballsize = ''
 }
- 
+const handlePaste = (state: string, e: ClipboardEvent) => {
+  // 1. 클립보드 아이템들을 가져옵니다.
+  // console.log(e)
+  // return
+  const items = e.clipboardData.items;
+  let isImageFound = false;
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    if (item.kind === 'file' && item.type.startsWith('image/')) {
+      isImageFound = true; // 이미지를 찾았음!
+      const file = item.getAsFile();
+      if (state === 'FB1') {
+        imagesetFB1.value.push(file);
+        return
+      }
+      if (state === 'FB2') {
+        imagesetFB2.value.push(file);
+        return
+      }
+      if (state === 'FB3') {
+        imagesetFB3.value.push(file);
+        return
+      }
+      if (state === 'FB4') {
+        imagesetFB4.value.push(file);
+        return
+      }
+      if (state === 'MK1') {
+        imagesetMK1.value.push(file);
+        return
+      }
+      if (state === 'EV1') {
+        imagesetEV1.value.push(file);
+        return
+      }
+      // const reader = new FileReader();
+      // reader.onload = (event) => {
+      //   const imageUrl = event.target.result;
+      //   const imgTag = `<img src="${imageUrl}" style="max-width: 100%;">`;
+      //   document.execCommand('insertHTML', false, imgTag);
+      // };
+      // reader.readAsDataURL(file);
+      break;
+    }
+  }
+
+  // 6. 만약 순회 후에도 이미지를 찾지 못했다면, 기존의 텍스트 처리 로직을 실행합니다.
+  if (!isImageFound) {
+    const text = e.clipboardData.getData('text/plain');
+    document.execCommand('insertText', false, text);
+  }
+
+  // Vue 데이터 모델을 업데이트하는 로직은 그대로 유지할 수 있습니다.
+  const content = e.target.innerHTML;
+  console.log('최종 붙여넣기 후 내용:', content);
+};
 </script>
 
 <script lang="ts">
