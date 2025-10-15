@@ -120,7 +120,7 @@
 
                 <!-- MERERIAL System -->
                 <tr>
-                  <td colspan="1" rowspan="11" class="hcell">Vật liệu
+                  <td colspan="1" rowspan="9" class="hcell">Vật liệu
                     <br />
                     자재
                   </td>
@@ -197,13 +197,13 @@
                   <td colspan="2">
                     {{ formData.system_mes_wafer }}
                   </td>
-                  <td class="hcell">
+                  <td class="hcell" style="background-color: #ff00ff;">
                     Wafer Mark
                   </td>
-                  <td colspan="3" contenteditable="true"
-                    @input="e => formDataTemp.wafer_mark = (e.target as HTMLElement).innerText">
-                    {{ formData.wafer_mark }}
+                  <td colspan="3">
+                    {{ formDataTemp.wafer_mark }}
                   </td>
+
                 </tr>
                 <tr>
                   <td class="hcell" style="background-color: #ff00ff;">
@@ -211,12 +211,9 @@
                   </td>
                   <td colspan="2">
                     <el-checkbox-group v-model="selectedLots" size="small">
-                      <el-checkbox v-for="(lot, index) in wafer_lot_no_opt" :key="index" :label="lot" border />
+                      <el-checkbox v-for="(lot, index) in lotsData" :key="index" :label="lot" border />
                     </el-checkbox-group>
-
                   </td>
-
-
 
                   <td class="hcell" style="background-color: #ff00ff;">
                     Chip Qty
@@ -231,15 +228,40 @@
 
 
                 <tr>
-                  <td rowspan="3" class="hcell">
+                  <td rowspan="2" class="hcell">
                     PKG
                   </td>
                   <td class="hcell">
                     PKG <br /> Số hàng * Số cột
                   </td>
-                  <td colspan="2" contenteditable="true"
-                    @input="e => formDataTemp.pkg_size = (e.target as HTMLElement).innerText">
-                    {{ formData.pkg_size }}
+                  <td colspan="2">
+                    <!-- {{ formData.pkg_size }} -->
+                    <div>
+                      <div v-for="(img, index) in existingSS1" :key="'existing-' + index"
+                        style="position: relative; display: inline-block; margin: 10px;">
+
+                        <button @click.stop="removeExistingImageSS1(index)"
+                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                          ❌
+                        </button>
+                      </div>
+                      <div v-for="(file, index) in filesetSS1" :key="index"
+                        style="position: relative; display: inline-block; margin: 10px;">
+                        <span>{{ file.name }}</span>
+                        <button @click.stop="removeImageSS1(index)"
+                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                          ❌
+                        </button>
+                      </div>
+                      <div class="drop-zone" @click="triggerFileSelect('fileInputSS1')" @drop.prevent="onDropSS1"
+                        @dragover.prevent>
+                        <p>파일을 드래그하거나 클릭해서 업로드하세요</p>
+
+                        <input ref="fileInputSS1" type="file" style="display:none" @change="handleFilesChangeSS1"
+                          multiple />
+                      </div>
+
+                    </div>
                   </td>
                   <td class="hcell" style="background-color: #ff00ff;">
                     ERP Code
@@ -249,7 +271,7 @@
                   </td>
                 </tr>
 
-                <tr>
+                <!-- <tr>
                   <td class="hcell" style="background-color: #ff00ff;">
                     Chât liệu <br /> 재질
                   </td>
@@ -258,7 +280,7 @@
                     {{ formData.pkg_meterial }}
                   </td>
 
-                </tr>
+                </tr> -->
                 <tr>
 
                   <td class="hcell">
@@ -269,7 +291,7 @@
                     {{ formData.pkg_note }}
                   </td>
                 </tr>
-                <tr>
+                <!-- <tr>
                   <td rowspan="1" class="hcell">
                     Epoxy
                   </td>
@@ -287,7 +309,7 @@
                     @input="e => formDataTemp.epoxy_thickness = (e.target as HTMLElement).innerText">
                     {{ formData.epoxy_thickness }}
                   </td>
-                </tr>
+                </tr> -->
 
 
 
@@ -341,12 +363,28 @@
                     D/C
                   </td>
                   <td class="hcell" colspan="1">
-                    Phân loại chất liệu
+                    Phân loại chất liệu<br />
+                    / 날 두께
                   </td>
-                  <td colspan="6" style=" background-color: #f0f9ff;">
+                  <td colspan="1" style=" background-color: #f0f9ff;">
                     <el-select v-model="formData.dc_meterial" placeholder="선택" class="custom-select"
                       style=" height: 100%; ">
                       <el-option v-for="item in columnOptionsMap.dc_meterial.value" :key="item.value"
+                        :label="item.label" :value="item.value" />
+                    </el-select>
+                  </td>
+                  <td colspan="1" style=" background-color: #f0f9ff;" contenteditable="true"
+                    @input="e => formDataTemp.dc_blade_thickness = (e.target as HTMLElement).innerText">
+                    {{ formData.dc_blade_thickness }}
+                  </td>
+                  <td class="hcell" colspan="1">
+                    DicingLine<br />
+                    Thickness
+                  </td>
+                  <td colspan="3" style=" background-color: #f0f9ff;">
+                    <el-select v-model="formData.dc_thickness" placeholder="선택" class="custom-select"
+                      style=" height: 100%; ">
+                      <el-option v-for="item in columnOptionsMap.dc_thickness.value" :key="item.value"
                         :label="item.label" :value="item.value" />
                     </el-select>
                   </td>
@@ -693,46 +731,12 @@
                   <td class="hcell" colspan="1">
                     Item /항목
                   </td>
-                  <td colspan="6" @input="e => formData.reliability_item = (e.target as HTMLElement).innerText">
-                    <el-checkbox :label="'PV'" :true-label="'PV'" :false-label="''" v-model="formData.reliability_item">
-                      PV
-                    </el-checkbox>
-                    <el-checkbox :label="'PRA'" :true-label="'PRA'" :false-label="''"
-                      v-model="formData.reliability_item">
-                      PRA
-                    </el-checkbox>
-                    <el-checkbox :label="'PCCB'" :true-label="'PCCB'" :false-label="''"
-                      v-model="formData.reliability_item">
-                      PCCB
-                    </el-checkbox>
-                    <el-checkbox :label="'Pre_Condition'" :true-label="'Pre_Condition'" :false-label="''"
-                      v-model="formData.reliability_item">
-                      Pre.Condition
-                    </el-checkbox>
-                    <el-checkbox :label="'LTS'" :true-label="'LTS'" :false-label="''"
-                      v-model="formData.reliability_item">
-                      LTS
-                    </el-checkbox>
-                    <el-checkbox :label="'HTS'" :true-label="'HTS'" :false-label="''"
-                      v-model="formData.reliability_item">
-                      HTS
-                    </el-checkbox>
-                    <el-checkbox :label="'THS'" :true-label="'THS'" :false-label="''"
-                      v-model="formData.reliability_item">
-                      THS
-                    </el-checkbox>
-                    <el-checkbox :label="'uHAST'" :true-label="'uHAST'" :false-label="''"
-                      v-model="formData.reliability_item">
-                      uHAST
-                    </el-checkbox>
-                    <el-checkbox :label="'Dorp'" :true-label="'Dorp'" :false-label="''"
-                      v-model="formData.reliability_item">
-                      Dorp
-                    </el-checkbox>
-
+                  <td colspan="6">
+                    <el-checkbox-group v-model="dotincay" size="small">
+                      <el-checkbox v-for="item in columnOptionsMap.reliability_items.value" :key="item.value"
+                        :label="item.label" />
+                    </el-checkbox-group>
                   </td>
-
-
                 </tr>
                 <tr>
                   <td class="hcell">
@@ -753,7 +757,105 @@
                     </el-checkbox>
                   </td>
                 </tr>
+                <tr>
+                  <td class="hcell" rowspan="3">
+                    첨부파일
+                  </td>
+                  <td class="hcell" colspan="2">
+                    MWA(개발)
+                  </td>
+                  <td colspan="6">
+                    <div>
+                      <div v-for="(img, index) in existingMWA1" :key="'existing-' + index"
+                        style="position: relative; display: inline-block; margin: 10px;">
+                        <button @click.stop="removeExistingImageMWA1(index)"
+                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                          ❌
+                        </button>
+                      </div>
+                      <div v-for="(file, index) in filesetMWA1" :key="index"
+                        style="position: relative; display: inline-block; margin: 10px;">
+                        <span>{{ file.name }}</span>
+                        <button @click.stop="removeImageMWA1(index)"
+                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                          ❌
+                        </button>
+                      </div>
+                      <div class="drop-zone" @click="triggerFileSelect('fileInputMWA1')" @drop.prevent="onDropMWA1"
+                        @dragover.prevent>
+                        <p>파일을 드래그하거나 클릭해서 업로드하세요</p>
+                        <input ref="fileInputMWA1" type="file" style="display:none" @change="handleFilesChangeMWA1"
+                          multiple />
+                      </div>
 
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="hcell" colspan="2">
+                    PKG MAP
+                  </td>
+                  <td colspan="6">
+                    <div>
+                      <div v-for="(img, index) in existingMWA1" :key="'existing-' + index"
+                        style="position: relative; display: inline-block; margin: 10px;">
+                        <button @click.stop="removeExistingImagePMAP1(index)"
+                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                          ❌
+                        </button>
+                      </div>
+                      <div v-for="(file, index) in filesetPMAP1" :key="index"
+                        style="position: relative; display: inline-block; margin: 10px;">
+                        <span>{{ file.name }}</span>
+                        <button @click.stop="removeImagePMAP1(index)"
+                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                          ❌
+                        </button>
+                      </div>
+                      <div class="drop-zone" @click="triggerFileSelect('fileInputPMAP1')" @drop.prevent="onDropPMAP1"
+                        @dragover.prevent>
+                        <p>파일을 드래그하거나 클릭해서 업로드하세요</p>
+                        <input ref="fileInputPMAP1" type="file" style="display:none" @change="handleFilesChangePMAP1"
+                          multiple />
+                      </div>
+
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="hcell" colspan="2">
+                    WAFER MAP
+                  </td>
+                  <td colspan="6">
+                    <div>
+                      <div v-for="(img, index) in existingWMAP1" :key="'existing-' + index"
+                        style="position: relative; display: inline-block; margin: 10px;">
+                        <button @click.stop="removeExistingImageWMAP1(index)"
+                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                          ❌
+                        </button>
+                      </div>
+                      <div v-for="(file, index) in filesetWMAP1" :key="index"
+                        style="position: relative; display: inline-block; margin: 10px;">
+                        <span>{{ file.name }}</span>
+                        <button @click.stop="removeImageWMAP1(index)"
+                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                          ❌
+                        </button>
+                      </div>
+                      <div class="drop-zone" @click="triggerFileSelect('fileInputWMAP1')" @drop.prevent="onDropWMAP1"
+                        @dragover.prevent>
+                        <p>파일을 드래그하거나 클릭해서 업로드하세요</p>
+                        <input ref="fileInputWMAP1" type="file" style="display:none" @change="handleFilesChangeWMAP1"
+                          multiple />
+                      </div>
+
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+
+                </tr>
               </tbody>
             </table>
             <div>
@@ -822,9 +924,10 @@ import inputText from "../../Common/InputText.vue";
 import type {
   ApplicationData,
 } from "../../../interface/cspRequestFormInterface";
-import { handleGetDataByModelCode, dataValidation, handleSubmitForm, getColumnData, handleSubmitTempForm } from '../../../utils/cspRequestFormUtill'
+import { handleGetDataByModelCode, dataValidation, handleSubmitForm, getColumnData, handleSubmitTempForm, getLotNo } from '../../../utils/cspRequestFormUtill'
 
 import { cspRequestRules } from "./CspRequestRules";
+import { convertKeysToCamelCase } from "../../../utils/key-converter";
 
 const props = defineProps<{
   applicationData: ApplicationData;
@@ -874,6 +977,8 @@ const formData = reactive<ApplicationData>({
   bg_afterthickness: '',
 
   dc_meterial: '',
+  dc_blade_thickness: '',
+  dc_thickness: '',
   mk_note: "",
 
   pd_dicing_line_size: "",
@@ -935,6 +1040,8 @@ const formDataTemp = reactive<ApplicationData>({
   bg_afterthickness: '',
 
   dc_meterial: '',
+  dc_thickness: '',
+  dc_blade_thickness: '',
   mk_note: "",
 
   pd_dicing_line_size: "",
@@ -968,6 +1075,12 @@ const fileInputFB3 = ref<HTMLInputElement | null>(null);
 const fileInputFB4 = ref<HTMLInputElement | null>(null);
 const fileInputMK1 = ref<HTMLInputElement | null>(null);
 const fileInputEV1 = ref<HTMLInputElement | null>(null);
+const fileInputSS1 = ref<HTMLInputElement | null>(null);
+const fileInputMWA1 = ref<HTMLInputElement | null>(null);
+const fileInputPMAP1 = ref<HTMLInputElement | null>(null);
+const fileInputWMAP1 = ref<HTMLInputElement | null>(null);
+
+
 
 const existingFB1 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
 const existingFB2 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
@@ -975,6 +1088,13 @@ const existingFB3 = ref<{ url: string; file_index: string; cell_name: string }[]
 const existingFB4 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
 const existingMK1 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
 const existingEV1 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
+const existingSS1 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
+const existingMWA1 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
+const existingPMAP1 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
+const existingWMAP1 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
+
+
+
 const deleteImage = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
 
 const imagesetFB1 = ref<File[]>([]);
@@ -983,8 +1103,16 @@ const imagesetFB3 = ref<File[]>([]);
 const imagesetFB4 = ref<File[]>([]);
 const imagesetMK1 = ref<File[]>([]);
 const imagesetEV1 = ref<File[]>([]);
+const filesetSS1 = ref<File[]>([]);
+const filesetMWA1 = ref<File[]>([]);
+const filesetPMAP1 = ref<File[]>([]);
+const filesetWMAP1 = ref<File[]>([]);
+
 
 const selectedLots = ref<string[]>([]);
+const lotsData = ref<string[]>([]);
+const dotincay = ref<string[]>([])
+
 
 interface OptionItem {
   value: string
@@ -999,9 +1127,11 @@ const columnOptionsMap: Record<string, Ref<OptionItem[]>> = {
   bg_thickness: ref([]),
   bg_afterthickness: ref([]),
   dc_meterial: ref([]),
+  dc_thickness: ref([]),
   default_productSize: ref([]),
   pd_dicing_line_size: ref([]),
-  wafer_pad_type: ref([])
+  wafer_pad_type: ref([]),
+  reliability_items: ref([])
 }
 
 const imageUrl = ref<string | null>(null);
@@ -1026,6 +1156,18 @@ function handleFilesChangeMK1(e: Event) {
 function handleFilesChangeEV1(e: Event) {
   onFilesChange(e, imagesetEV1);
 }
+function handleFilesChangeSS1(e: Event) {
+  onFilesChange(e, filesetSS1);
+}
+function handleFilesChangeMWA1(e: Event) {
+  onFilesChange(e, filesetMWA1);
+}
+function handleFilesChangePMAP1(e: Event) {
+  onFilesChange(e, filesetPMAP1);
+}
+function handleFilesChangeWMAP1(e: Event) {
+  onFilesChange(e, filesetWMAP1);
+}
 function removeImageFB1(index: number) {
   imagesetFB1.value.splice(index, 1);
 }
@@ -1039,6 +1181,14 @@ function removeImageFB2(index: number) {
   imagesetMK1.value.splice(index, 1);
 } function removeImageEV1(index: number) {
   imagesetEV1.value.splice(index, 1);
+} function removeImageSS1(index: number) {
+  filesetSS1.value.splice(index, 1);
+} function removeImageMWA1(index: number) {
+  filesetMWA1.value.splice(index, 1);
+} function removeImagePMAP1(index: number) {
+  filesetPMAP1.value.splice(index, 1);
+} function removeImageWMAP1(index: number) {
+  filesetWMAP1.value.splice(index, 1);
 }
 function removeExistingImageFB1(index: number) {
   const target = existingFB1.value[index];
@@ -1082,6 +1232,35 @@ function removeExistingImageEV1(index: number) {
     existingEV1.value.splice(index, 1);
   }
 }
+function removeExistingImageSS1(index: number) {
+  const target = existingSS1.value[index];
+  if (target) {
+    deleteImage.value.push(target);
+    existingSS1.value.splice(index, 1);
+  }
+}
+function removeExistingImageMWA1(index: number) {
+  const target = existingMWA1.value[index];
+  if (target) {
+    deleteImage.value.push(target);
+    existingMWA1.value.splice(index, 1);
+  }
+}
+function removeExistingImagePMAP1(index: number) {
+  const target = existingPMAP1.value[index];
+  if (target) {
+    deleteImage.value.push(target);
+    existingPMAP1.value.splice(index, 1);
+  }
+}
+
+function removeExistingImageWMAP1(index: number) {
+  const target = existingWMAP1.value[index];
+  if (target) {
+    deleteImage.value.push(target);
+    existingWMAP1.value.splice(index, 1);
+  }
+}
 
 
 function getObjectURL(file: File): string {
@@ -1090,14 +1269,18 @@ function getObjectURL(file: File): string {
 
 
 // 파일 선택창 열기
-function triggerFileSelect(target: 'fileInputFB1' | 'fileInputFB2' | 'fileInputFB3' | 'fileInputFB4' | 'fileInputMK1' | 'fileInputEV1') {
+function triggerFileSelect(target: 'fileInputFB1' | 'fileInputFB2' | 'fileInputFB3' | 'fileInputFB4' | 'fileInputMK1' | 'fileInputEV1' | 'fileInputSS1'
+  | 'fileInputMWA1' | 'fileInputPMAP1' | 'fileInputWMAP1') {
   if (target === 'fileInputFB1') fileInputFB1.value?.click();
   if (target === 'fileInputFB2') fileInputFB2.value?.click();
   if (target === 'fileInputFB3') fileInputFB3.value?.click();
   if (target === 'fileInputFB4') fileInputFB4.value?.click();
   if (target === 'fileInputMK1') fileInputMK1.value?.click();
   if (target === 'fileInputEV1') fileInputEV1.value?.click();
-
+  if (target === 'fileInputSS1') fileInputSS1.value?.click();
+  if (target === 'fileInputMWA1') fileInputMWA1.value?.click();
+  if (target === 'fileInputPMAP1') fileInputPMAP1.value?.click();
+  if (target === 'fileInputWMAP1') fileInputWMAP1.value?.click();
 }
 
 function onFilesChange(event: Event, imageset: Ref<File[]>) {
@@ -1114,6 +1297,9 @@ function onFilesChange(event: Event, imageset: Ref<File[]>) {
       if (file.type.startsWith('image/')) {
         imageset.value.push(file); // 🔥 여기서 진짜 파일을 저장해야 함
       }
+      else {
+        imageset.value.push(file);
+      }
     }
   }
 }
@@ -1127,7 +1313,8 @@ function handleSubmitButtton() {
   mappingTemp()
   console.log("saving..")
   formData.form_status = "완료"
-  handleSubmitTempForm(formData, imagesetFB1.value, imagesetFB2.value, imagesetFB3.value, imagesetFB4.value, imagesetMK1.value, imagesetEV1.value, deleteImage.value);
+  handleSubmitTempForm(formData, imagesetFB1.value, imagesetFB2.value, imagesetFB3.value, imagesetFB4.value, imagesetMK1.value, imagesetEV1.value,
+    filesetSS1.value, filesetMWA1.value, filesetPMAP1.value, filesetWMAP1.value, deleteImage.value);
 }
 
 function handleTempSave() {
@@ -1139,13 +1326,15 @@ function handleTempSave() {
   console.log("saving..")
 
   formData.form_status = "임시저장"
-  handleSubmitTempForm(formData, imagesetFB1.value, imagesetFB2.value, imagesetFB3.value, imagesetFB4.value, imagesetMK1.value, imagesetEV1.value, deleteImage.value);
+  handleSubmitTempForm(formData, imagesetFB1.value, imagesetFB2.value, imagesetFB3.value, imagesetFB4.value, imagesetMK1.value, imagesetEV1.value,
+    filesetSS1.value, filesetMWA1.value, filesetPMAP1.value, filesetWMAP1.value, deleteImage.value);
 }
 
 function mappingTemp() {
   formData.default_requireAmount = formDataTemp.default_requireAmount
   formData.default_pkgRequirement = formDataTemp.default_pkgRequirement
   formData.wafer_mark = formDataTemp.wafer_mark
+  formData.wafer_lot_no = formDataTemp.wafer_lot_no
   formData.pkg_size = formDataTemp.pkg_size
   formData.pkg_note = formDataTemp.pkg_note
   formData.fb_2_spl = formDataTemp.fb_2_spl
@@ -1153,11 +1342,13 @@ function mappingTemp() {
   formData.fb_direction = formDataTemp.fb_direction
   formData.fb_note = formDataTemp.fb_note
   formData.mk_marking = formDataTemp.mk_marking
-  formData.mk_note = formDataTemp.mk_note
+  // formData.mk_note = formDataTemp.mk_note
   formData.pd_note = formDataTemp.pd_note
   formData.el_link_method = formDataTemp.el_link_method
   formData.el_EVB_setup_port = formDataTemp.el_EVB_setup_port
   formData.analysis_fa_item = formDataTemp.analysis_fa_item
+  formData.reliability_item = formDataTemp.reliability_item
+  formData.dc_blade_thickness = formDataTemp.dc_blade_thickness
 }
 
 
@@ -1244,23 +1435,53 @@ function onDropEV1(event: DragEvent) {
     }
   }
 }
-const wafer_lot_no_opt = computed(() =>
-  Array.from(
-    new Set(
-      formData.wafer_lot_no
-        .split(',')
-        .map(item => item.trim())
-        .filter(item => item)
-    )
-  )
-)
+
+function onDropSS1(event: DragEvent) {
+  const files = event.dataTransfer?.files;
+  if (!files) return;
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    filesetSS1.value.push(file);
+  }
+}
+
+function onDropMWA1(event: DragEvent) {
+  const files = event.dataTransfer?.files;
+  if (!files) return;
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    filesetMWA1.value.push(file);
+  }
+}
+
+function onDropPMAP1(event: DragEvent) {
+  const files = event.dataTransfer?.files;
+  if (!files) return;
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    filesetPMAP1.value.push(file);
+  }
+}
+function onDropWMAP1(event: DragEvent) {
+  const files = event.dataTransfer?.files;
+  if (!files) return;
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    filesetWMAP1.value.push(file);
+  }
+}
+
+
 
 onMounted(async () => {
   const product_name = route.params.productName as string
   await handleEnter(product_name)
 
   const columnlist = await getColumnData();
-
 
   application.value = props.applicationData;
   username.value = localStorage.getItem('ms_username') || 'Guest';
@@ -1282,7 +1503,6 @@ onMounted(async () => {
 
   for (const key in columnOptionsMap) {
     const columnKey = key as ColumnKey;
-
     columnOptionsMap[columnKey].value = columnlist
       .filter(item => item.column_name === columnKey)
       .map(item => ({
@@ -1297,14 +1517,14 @@ async function handleEnter(value) {
   // const value = modelCell.value?.innerText.trim() || "";
   // const username = ref(localStorage.getItem('ms_username'));
   const req = await handleGetDataByModelCode(value);
-  console.log(req.image_List);
+  const lotids = await getLotNo(value);
+  lotsData.value = lotids;
   if (req.default_modelName === 'false') {
     alert(value + " NOT FOUND");
     return;
   }
 
-  // 여기서 필요한 처리 수행 (예: 저장, API 호출 등)
-
+  // 여기서 필요한 처리 수행 (예: 저장, API 호출 등) 
 
   formData.default_modelName = req.default_modelName;
   formData.default_requireName = req.default_requireName;
@@ -1327,17 +1547,25 @@ async function handleEnter(value) {
   formData.wafer_pad_type = req.wafer_pad_type;
   formData.wafer_send_quantity = req.wafer_send_quantity;
   formData.wafer_mes_code = req.wafer_mes_code;
+
+  // lot id 로 Wafer lot selectlot에넣ㄱ시
+  if (req.wafer_lot_no) {
+    selectedLots.value = req.wafer_lot_no.split(",").filter(item => item.trim() !== '');
+  }
   formData.wafer_mark = req.wafer_mark;
   formData.wafer_lot_no = req.wafer_lot_no;
+
   formData.wafer_chip_qty = req.wafer_chip_qty;
 
   formData.pkg_size = req.pkg_size;
   formData.pkg_erp_code = req.pkg_erp_code;
   formData.pkg_meterial = req.pkg_meterial;
   formData.pkg_note = req.pkg_note;
+  formData.dc_thickness = req.dc_thickness;
 
   formData.epoxy_model = req.epoxy_model;
   formData.epoxy_thickness = req.epoxy_thickness;
+  formData.dc_blade_thickness = req.dc_blade_thickness;
 
   formData.bb_ballsize = req.bb_ballsize;
 
@@ -1350,6 +1578,9 @@ async function handleEnter(value) {
   formData.el_link_method = req.el_link_method;
   formData.el_EVB_setup_port = req.el_EVB_setup_port;
   formData.analysis_fa_item = req.analysis_fa_item;
+  if (req.reliability_item) {
+    dotincay.value = req.reliability_item.split(",");
+  }
   formData.reliability_item = req.reliability_item;
   formData.others_cer_check = req.others_cer_check;
   formData.fb_2_spl = req.fb_2_spl;
@@ -1395,6 +1626,8 @@ async function handleEnter(value) {
   formDataTemp.fb_1_numbering = formData.fb_1_numbering
   formDataTemp.mk_marking = formData.mk_marking
   formDataTemp.wafer_send_quantity = req.wafer_send_quantity
+  formDataTemp.dc_thickness = req.dc_thickness
+  formDataTemp.dc_blade_thickness = req.dc_blade_thickness
 
   // image seting
   if (req.image_List && req.image_List.length > 0) {
@@ -1414,7 +1647,6 @@ async function handleEnter(value) {
       }
     });
   }
-
 
   // Object.assign(resultReq, req[0])
   // console.log(req[0]);
@@ -1494,6 +1726,25 @@ const handlePaste = (state: string, e: ClipboardEvent) => {
   const content = e.target.innerHTML;
   console.log('최종 붙여넣기 후 내용:', content);
 };
+watch(selectedLots, (newValue) => {
+  if (newValue.length > 0) {
+    formDataTemp.wafer_lot_no = newValue.join(',');
+    formDataTemp.wafer_mark = newValue
+      .map(v => v.split('/')[1])
+      .join(', ');
+  } else {
+    formDataTemp.wafer_lot_no = '';
+    formDataTemp.wafer_mark = '';
+  }
+});
+watch(dotincay, (newValue) => {
+  if (newValue.length > 0) {
+    formDataTemp.reliability_item = newValue
+      .join(',');
+  } else {
+    formDataTemp.wafer_mark = '';
+  }
+});
 </script>
 
 <script lang="ts">

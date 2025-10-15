@@ -3,6 +3,15 @@
   <el-form :model="applicationData" :rules="rules" label-position="top" label-width="100px" ref="applicationForm">
 
     <div class="container" v-if="!loading">
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <el-card>
+            <div style="text-align: right;">
+
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
 
       <el-row :gutter="20">
         <el-col :span="24">
@@ -29,14 +38,14 @@
 
               <tbody>
                 <tr>
-                  <td colspan="1" class="hcell">Model<br />기종명</td>
+                  <td colspan="1" class="hcell" style="background-color: #ff00ff;">Model<br />기종명</td>
                   <td colspan="2">
                     {{ `${formData.default_modelName}` }}
                   </td>
 
-                  <td colspan="1" class="hcell">Người yêu cầu<br />의뢰인</td>
+                  <td colspan="1" class="hcell" style="background-color: #ff00ff;">Người yêu cầu<br />의뢰인</td>
                   <td colspan="1"> {{ formData.default_requireName }} </td>
-                  <td colspan="1" class="hcell">Ngày yêu cầu<br />의뢰날짜</td>
+                  <td colspan="1" class="hcell" style="background-color: #ff00ff;">Ngày yêu cầu<br />의뢰날짜</td>
                   <td colspan="3"> {{ formData.default_requireDate }}</td>
                 </tr>
                 <tr>
@@ -52,19 +61,18 @@
                   <td colspan="1" class="hcell">Yêu cầu packing
                     <br />포장요구사항
                   </td>
-                  <td colspan="5">
-                    {{ formData.default_pkgRequirement }}
+                  <td colspan="5">{{ formData.default_pkgRequirement }}
                   </td>
 
                 </tr>
                 <tr>
                   <td colspan="1" class="hcell">Product Size</td>
-                  <td colspan="2">
+                  <td colspan="2" style="background-color: #f0f9ff;">
                     {{ `${formData.default_productSize}` }}
 
                   </td>
 
-                  <td colspan="1" class="hcell">mục đích test<br />
+                  <td colspan="1" class="hcell" style="background-color: #ff00ff;">mục đích test<br />
                     실험목적</td>
                   <td colspan="5">
                     {{ `${formData.default_purpose}` }}
@@ -80,16 +88,16 @@
           <el-card>
             <table class="custom-table">
               <colgroup>
-                <col style="width: 11%;" />
+                <col style="width: 8%;" />
+                <col style="width: 6%;" />
+                <col style="width: 8%;" />6
                 <col style="width: 10%;" />
-                <col style="width: 10%;" />
-                <col style="width: 10%;" />
-                <col style="width: 19%;" />
+                <col style="width: 24%;" />
 
+                <col style="width: 8%;" />
                 <col style="width: 10%;" />
                 <col style="width: 10%;" />
-                <col style="width: 10%;" />
-                <col style="width: 10%;" />
+                <col style="width: 15%;" />
               </colgroup>
 
               <tbody>
@@ -105,36 +113,36 @@
 
                 <!-- MERERIAL System -->
                 <tr>
-                  <td colspan="1" rowspan="11" class="hcell">Vật liệu
+                  <td colspan="1" rowspan="9" class="hcell">Vật liệu
                     <br />
                     자재
                   </td>
                   <td colspan="1" rowspan="3" class="hcell">System <br /> 시스템</td>
-                  <td colspan="1" rowspan="3" class="hcell">ERP BOM</td>
-                  <td colspan="1">WAFER</td>
+                  <td colspan="1" rowspan="3" class="hcell" style="background-color: #ff00ff;">ERP BOM</td>
+                  <td colspan="1" style="background-color: #ff00ff;">WAFER</td>
                   <td colspan="1">{{ `${formData.system_erp_wafer} &nbsp` }}</td>
-                  <td colspan="1" rowspan="3" class="hcell">MES CODE
+                  <td colspan="1" rowspan="3" class="hcell" style="background-color: #ff00ff;">MES CODE
                   </td>
-                  <td colspan="1">
+                  <td colspan="1" style="background-color: #ff00ff;">
                     WAFER
                   </td>
                   <td colspan="2">{{ `${formData.system_mes_wafer} &nbsp` }}</td>
                 </tr>
                 <tr>
-                  <td colspan="1">PKG/PCB</td>
+                  <td colspan="1" style="background-color: #ff00ff;">PKG/PCB</td>
 
                   <td colspan="1">
                     {{ `${formData.system_erp_pkg} &nbsp` }}
                   </td>
-                  <td colspan="1">PKG/PCB</td>
+                  <td colspan="1" style="background-color: #ff00ff;">PKG/PCB</td>
                   <td colspan="2">
                     {{ `${formData.system_mes_pkg}&nbsp` }}
                   </td>
                 </tr>
                 <tr>
-                  <td colspan="1">EPOXY</td>
+                  <td colspan="1" style="background-color: #ff00ff;">EPOXY</td>
                   <td colspan="1">{{ `${formData.system_erp_epoxy}&nbsp` }}</td>
-                  <td colspan="1">EPOXY</td>
+                  <td colspan="1" style="background-color: #ff00ff;">EPOXY</td>
                   <td colspan="2">{{ `${formData.system_mes_epoxy}&nbsp` }}</td>
                 </tr>
                 <!-- MERERIAL Wafer -->
@@ -142,13 +150,13 @@
                   <td rowspan="4" class="hcell">
                     Wafer
                   </td>
-                  <td class="hcell">
+                  <td class="hcell" style="background-color: #ff00ff;">
                     Chip size
                   </td>
                   <td colspan="2">
                     {{ formData.wafer_chip_size }}
                   </td>
-                  <td class="hcell">
+                  <td class="hcell" style="background-color: #ff00ff;">
                     Wafer Thickness
                   </td>
                   <td colspan="3">
@@ -157,47 +165,45 @@
                 </tr>
 
                 <tr>
-                  <td class="hcell">
+                  <td class="hcell" style="background-color: #ff00ff;">
                     PAD Type/유형
                   </td>
-                  <td colspan="2">
-                    {{ formData.wafer_pad_type }}
-
+                  <td colspan="2">{{ formData.wafer_pad_type }}
                   </td>
-                  <td class="hcell">
+                  <td class="hcell" style="background-color: #ff00ff;">
                     Số lượng gửi <br />
                     발송수량
                   </td>
-                  <td colspan="3">
-                    {{ formData.wafer_send_quantity }}
+                  <td colspan="3">{{ formData.wafer_send_quantity }}
                   </td>
                 </tr>
 
                 <tr>
-                  <td class="hcell">
+                  <td class="hcell" style="background-color: #ff00ff;">
                     MES Code
                   </td>
 
                   <td colspan="2">
                     {{ formData.system_mes_wafer }}
                   </td>
-                  <td class="hcell">
+                  <td class="hcell" style="background-color: #ff00ff;">
                     Wafer Mark
                   </td>
                   <td colspan="3">
                     {{ formData.wafer_mark }}
                   </td>
+
                 </tr>
                 <tr>
-                  <td class="hcell">
+                  <td class="hcell" style="background-color: #ff00ff;">
                     Wafer LOT NO
                   </td>
                   <td colspan="2">
+
                     {{ formData.wafer_lot_no }}
                   </td>
 
-
-                  <td class="hcell">
+                  <td class="hcell" style="background-color: #ff00ff;">
                     Chip Qty
                   </td>
                   <td colspan="3">
@@ -210,16 +216,23 @@
 
 
                 <tr>
-                  <td rowspan="3" class="hcell">
+                  <td rowspan="2" class="hcell">
                     PKG
                   </td>
                   <td class="hcell">
                     PKG <br /> Số hàng * Số cột
                   </td>
                   <td colspan="2">
-                    {{ formData.pkg_size }}
+                    <!-- {{ formData.pkg_size }} -->
+
+                    <div v-for="(file, index) in filesetSS1" :key="index"
+                      style="position: relative; display: inline-block; margin: 10px;">
+                      <div @click="downloadFile(file)" style="cursor:pointer;">{{ file.file_name }}</div>
+
+                    </div>
+
                   </td>
-                  <td class="hcell">
+                  <td class="hcell" style="background-color: #ff00ff;">
                     ERP Code
                   </td>
                   <td colspan="3">
@@ -227,42 +240,43 @@
                   </td>
                 </tr>
 
-                <tr>
-                  <td class="hcell">
+                <!-- <tr>
+                  <td class="hcell" style="background-color: #ff00ff;">
                     Chât liệu <br /> 재질
                   </td>
-                  <td colspan="6">
+                  <td colspan="6" contenteditable="true"
+                    @input="e => formDataTemp.pkg_meterial = (e.target as HTMLElement).innerText">
                     {{ formData.pkg_meterial }}
                   </td>
 
-                </tr>
+                </tr> -->
                 <tr>
 
                   <td class="hcell">
                     Mục chú ý <br />주의사항
                   </td>
-                  <td colspan="6">
-                    {{ formData.pkg_note }}
+                  <td colspan="6">{{ formData.pkg_note }}
                   </td>
                 </tr>
-                <tr>
+                <!-- <tr>
                   <td rowspan="1" class="hcell">
                     Epoxy
                   </td>
-                  <td class="hcell">
+                  <td class="hcell" style="background-color: #ff00ff;">
                     Model
                   </td>
-                  <td colspan="2">
+                  <td colspan="2" contenteditable="true"
+                    @input="e => formDataTemp.epoxy_model = (e.target as HTMLElement).innerText">
                     {{ formData.epoxy_model }}
-
                   </td>
-                  <td class="hcell">
+                  <td class="hcell" style="background-color: #ff00ff;">
                     Thickness
                   </td>
-                  <td colspan="3">
+                  <td colspan="3" contenteditable="true"
+                    @input="e => formDataTemp.epoxy_thickness = (e.target as HTMLElement).innerText">
                     {{ formData.epoxy_thickness }}
                   </td>
-                </tr>
+                </tr> -->
 
 
 
@@ -275,7 +289,7 @@
                   <td class="hcell" colspan="1">
                     B/B
                   </td>
-                  <td class="hcell" colspan="1">
+                  <td class="hcell" colspan="1" style="background-color: #ff00ff;">
                     BALL SIZE
                   </td>
                   <td colspan="6">
@@ -291,17 +305,15 @@
                     Thickness <br />
                     B/G 를 하는것만 작성
                   </td>
-                  <td colspan="2">
+                  <td colspan="2" style=" background-color: #f0f9ff;">
                     {{ formData.bg_thickness }}
-
                   </td>
                   <td class="hcell" colspan="1">
                     Độ dày sau B/G <br />
                     B/G후두께
                   </td>
-                  <td colspan="3">
+                  <td colspan="3" style=" background-color: #f0f9ff;">
                     {{ formData.bg_afterthickness }}
-
                   </td>
                 </tr>
                 <tr>
@@ -310,10 +322,21 @@
                     D/C
                   </td>
                   <td class="hcell" colspan="1">
-                    Phân loại chất liệu
+                    Phân loại chất liệu<br />
+                    / 날 두께
                   </td>
-                  <td colspan="6">
+                  <td colspan="1" style=" background-color: #f0f9ff;">
                     {{ formData.dc_meterial }}
+                  </td>
+                  <td colspan="1" style=" background-color: #f0f9ff;">
+                    {{ formData.dc_blade_thickness }}
+                  </td>
+                  <td class="hcell" colspan="1">
+                    DicingLine<br />
+                    Thickness
+                  </td>
+                  <td colspan="3" style=" background-color: #f0f9ff;">
+                    {{ formData.dc_thickness }}
 
                   </td>
 
@@ -330,18 +353,24 @@
                     <span>
                       （photo size：4cm*?cm）
                     </span>
-
                   </td>
                   <td colspan="2">
-                    <div v-for="(img, index) in existingFB1" :key="'existing-' + index"
-                      style="position: relative; display: inline-block; margin: 10px;">
-                      <img 
-                      :src="img.url"style="max-width:200px;" />
-                    </div>
-                    <div style="width: 100%; border:1px solid black">
+                    <div style="display: flex;">
+
+                      <div v-for="(img, index) in existingFB1" :key="'existing-' + index"
+                        style="position: relative; display: inline-block; margin: 10px;">
+                        <img :src="img.url" style="max-width:200px;" />
+                      </div>
+                      <div style="width: 100%; border:1px solid black"></div>
                       {{ formData.fb_direction }}
                     </div>
+
                   </td>
+                  <!-- <td colspan="2" contenteditable="true" >
+
+                  </td> -->
+
+
 
                   <td class="hcell" colspan="1">
                     Mục chú ý <br />
@@ -351,32 +380,37 @@
                     img
                   </td> -->
                   <td colspan="3">
-                    <div v-for="(img, index) in existingFB2" :key="'existing-' + index"
-                      style="position: relative; display: inline-block; margin: 10px;">
-                      <img :src="img.url" style="max-width:200px;" />
-                    </div>
-                    <div style="width: 100%; border:1px solid black">
-                      {{ formData.fb_note }}
+                    <div style="display: flex;">
+                      <div v-for="(img, index) in existingFB2" :key="'existing-' + index"
+                        style="position: relative; display: inline-block; margin: 10px;">
+                        <img :src="img.url" style="max-width:200px;" />
+                      </div>
+                      <div style="width: 100%; border:1px solid black">
+                        {{ formData.fb_note }}
+                      </div>
                     </div>
                   </td>
                 </tr>
 
                 <tr>
-
-
                   <td class="hcell" colspan="1">
                     F/B#1
                     <br />
-                    (Numering)
+                    (Numbering)
 
                   </td>
                   <td colspan="2">
-                    <div v-for="(img, index) in existingFB3" :key="'existing-' + index"
-                      style="position: relative; display: inline-block; margin: 10px;">
-                      <img :src="img.url" style="max-width:200px;" />
-                    </div>
-                    <div style="width: 100%; border:1px solid black">
-                      {{ formData.fb_1_numbering }}
+                    <div style="display: flex;">
+                      <div v-for="(img, index) in existingFB3" :key="'existing-' + index"
+                        style="position: relative; display: inline-block; margin: 10px;">
+                        <img :src="img.url" style="max-width:200px;" />
+
+                      </div>
+
+                      <div style="width: 100%; border:1px solid black">
+                        {{ formData.fb_1_numbering }}
+                      </div>
+
                     </div>
                   </td>
                   <td class="hcell" colspan="1">
@@ -386,17 +420,24 @@
                   </td>
                   <td colspan="3">
                     <div style="display: flex;">
+
+
                       <div v-for="(img, index) in existingFB4" :key="'existing-' + index"
                         style="position: relative; display: inline-block; margin: 10px;">
                         <img :src="img.url" style="max-width:200px;" />
+
+
                       </div>
+
+
                       <div style="width: 100%; border:1px solid black">
                         {{ formData.fb_2_spl }}
                       </div>
                     </div>
+
+
                   </td>
                 </tr>
-
 
                 <tr>
                   <td class="hcell" colspan="1">
@@ -411,12 +452,15 @@
 
                   </td>
                   <td colspan="2">
-                    <div v-for="(img, index) in existingMK1" :key="'existing-' + index"
-                      style="position: relative; display: inline-block; margin: 10px;">
-                      <img :src="img.url" style="max-width:200px;" />
-                    </div>
-                    <div style="width: 100%; border:1px solid black">
-                      {{ formData.mk_marking }}
+                    <div style="display: flex;">
+                      <div v-for="(img, index) in existingMK1" :key="'existing-' + index"
+                        style="position: relative; display: inline-block; margin: 10px;">
+                        <img :src="img.url" style="max-width:200px;" />
+
+                      </div>
+                      <div style="width: 100%; border:1px solid black">
+                        {{ formData.mk_marking }}
+                      </div>
                     </div>
                   </td>
                   <td class="hcell" colspan="1">
@@ -424,7 +468,14 @@
                     주의사항
                   </td>
                   <td colspan="3">
-                    {{ formData.mk_note }}
+                    <el-checkbox :label="'Marking WTC'" :true-label="'Marking WTC'" :false-label="''"
+                      v-model="formData.mk_note" style="cursor: default; pointer-events: none;">
+                      Marking WTC
+                    </el-checkbox>
+                    <el-checkbox :label="'Marking WHC'" :true-label="'Marking WHC'" :false-label="''"
+                      v-model="formData.mk_note" style="cursor: default; pointer-events: none;">
+                      Marking WHC
+                    </el-checkbox>
                   </td>
                 </tr>
 
@@ -436,7 +487,7 @@
                     Dicing Line Size
 
                   </td>
-                  <td colspan="2">
+                  <td colspan="2" style=" background-color: #f0f9ff;">
                     {{ formData.pd_dicing_line_size }}
                   </td>
 
@@ -459,14 +510,22 @@
                     Cách liên kết JIG<br />
                     연결방식
                   </td>
-                  <td colspan="2">
-                    {{ formData.el_link_method }}
+                  <td colspan="2">{{ formData.el_link_method }}
                   </td>
                   <td class="hcell" colspan="1">
                     EVB Setup Port
                   </td>
                   <td colspan="3">
-                    {{ formData.el_EVB_setup_port }}
+                    <div style="display: flex;">
+                      <div v-for="(img, index) in existingEV1" :key="'existing-' + index"
+                        style="position: relative; display: inline-block; margin: 10px;">
+                        <img :src="img.url" style="max-width:200px;" />
+                      </div>
+                      <div style="width: 100%; border:1px solid black">
+                        {{ formData.el_EVB_setup_port }}
+                      </div>
+
+                    </div>
                   </td>
 
                 </tr>
@@ -479,8 +538,7 @@
                   <td class="hcell" colspan="1">
                     Item /항목
                   </td>
-                  <td colspan="6">
-                    {{ formData.analysis_fa_item }}
+                  <td colspan="6">{{ formData.analysis_fa_item }}
                   </td>
 
 
@@ -493,68 +551,15 @@
                   <td class="hcell" colspan="1">
                     Item /항목
                   </td>
+                  <!-- <td colspan="6">
+                    {{ formData.reliability_item }}
+                  </td> -->
                   <td colspan="6">
-                    <el-checkbox :label="'PV'" :true-label="'PV'" :false-label="''" v-model="formData.reliability_item"
-                      :disabled="true" :class="{ 'highlighted-checkbox': formData.reliability_item.includes('PV') }">
-                      PV
-                    </el-checkbox>
-
-                    <el-checkbox :label="'PRA'" :true-label="'PRA'" :false-label="''"
-                      v-model="formData.reliability_item" :disabled="true"
-                      :class="{ 'highlighted-checkbox': formData.reliability_item.includes('PRA') }">
-                      PRA
-                    </el-checkbox>
-
-                    <el-checkbox :label="'PCCB'" :true-label="'PCCB'" :false-label="''"
-                      v-model="formData.reliability_item" :disabled="true"
-                      :class="{ 'highlighted-checkbox': formData.reliability_item.includes('PCCB') }">
-                      PCCB
-                    </el-checkbox>
-
-                    <el-checkbox :label="'Pre_Condition'" :true-label="'Pre_Condition'" :false-label="''"
-                      v-model="formData.reliability_item" :disabled="true"
-                      :class="{ 'highlighted-checkbox': formData.reliability_item.includes('Pre_Condition') }">
-                      Pre.Condition
-                    </el-checkbox>
-
-                    <el-checkbox :label="'LTS'" :true-label="'LTS'" :false-label="''"
-                      v-model="formData.reliability_item" :disabled="true"
-                      :class="{ 'highlighted-checkbox': formData.reliability_item.includes('LTS') }">
-                      LTS
-                    </el-checkbox>
-
-                    <el-checkbox :label="'HTS'" :true-label="'HTS'" :false-label="''"
-                      v-model="formData.reliability_item" :disabled="true"
-                      :class="{ 'highlighted-checkbox': formData.reliability_item.includes('HTS') }">
-                      HTS
-                    </el-checkbox>
-
-                    <el-checkbox :label="'HTHHS'" :true-label="'HTHHS'" :false-label="''"
-                      v-model="formData.reliability_item" :disabled="true"
-                      :class="{ 'highlighted-checkbox': formData.reliability_item.includes('HTHHS') }">
-                      HTHHS
-                    </el-checkbox>
-
-                    <el-checkbox :label="'uHAST'" :true-label="'uHAST'" :false-label="''"
-                      v-model="formData.reliability_item" :disabled="true"
-                      :class="{ 'highlighted-checkbox': formData.reliability_item.includes('uHAST') }">
-                      uHAST
-                    </el-checkbox>
-
-                    <el-checkbox :label="'Dorp'" :true-label="'Dorp'" :false-label="''"
-                      v-model="formData.reliability_item" :disabled="true"
-                      :class="{ 'highlighted-checkbox': formData.reliability_item.includes('Dorp') }">
-                      Dorp
-                    </el-checkbox>
-                    <el-checkbox :label="''" :true-label="''" :false-label="''"
-                      v-model="formData.reliability_item" :disabled="true"
-                      :class="{ 'highlighted-checkbox': formData.reliability_item.includes('') }">
-                      -
-                    </el-checkbox>
+                    <el-checkbox-group v-model="dotincay" size="small" class="readonly-checkbox">
+                      <el-checkbox v-for="item in columnOptionsMap.reliability_items.value" :key="item.value"
+                        style="cursor: default; pointer-events: none;" :label="item.label" />
+                    </el-checkbox-group>
                   </td>
-
-
-
                 </tr>
                 <tr>
                   <td class="hcell">
@@ -566,33 +571,109 @@
                     Did you check CER 0-2?
                   </td>
                   <td colspan="6">
-
-
                     <el-checkbox :label="'YES'" :true-label="'YES'" :false-label="''"
-                      v-model="formData.others_cer_check" :disabled="true"
-                      :class="{ 'highlighted-checkbox': formData.others_cer_check.includes('YES') }">
+                      v-model="formData.others_cer_check" style="cursor: default; pointer-events: none;">
                       YES
                     </el-checkbox>
                     <el-checkbox :label="'NO'" :true-label="'NO'" :false-label="''" v-model="formData.others_cer_check"
-                      :disabled="true" :class="{ 'highlighted-checkbox': formData.others_cer_check.includes('NO') }">
-
+                      style="cursor: default; pointer-events: none;">
                       NO
-                    </el-checkbox>
-                    <el-checkbox :label="'-'" :true-label="'-'" :false-label="''" v-model="formData.others_cer_check"
-                      :disabled="true" :class="{ 'highlighted-checkbox': formData.others_cer_check.includes('') }">
-
-                      -
                     </el-checkbox>
                   </td>
                 </tr>
+                <tr>
+                  <td class="hcell" rowspan="3">
+                    첨부파일
+                  </td>
+                  <td class="hcell" colspan="2">
+                    MWA(개발)
+                  </td>
+                  <td colspan="6">
+                    <div>
+                      <div v-for="(file, index) in filesetMWA1" :key="index"
+                        style="position: relative; display: inline-block; margin: 10px;">
+                        <div @click="downloadFile(file)" style="cursor:pointer;">{{ file.file_name }}</div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="hcell" colspan="2">
+                    PKG MAP
+                  </td>
+                  <td colspan="6">
+                    <div>
+                      <div v-for="(file, index) in filesetPMAP1" :key="index"
+                        style="position: relative; display: inline-block; margin: 10px;">
+                        <div @click="downloadFile(file)" style="cursor:pointer;">{{ file.file_name }}</div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="hcell" colspan="2">
+                    WAFER MAP
+                  </td>
+                  <td colspan="6">
+                    <div>
+                      <div v-for="(file, index) in filesetWMAP1" :key="index"
+                        style="position: relative; display: inline-block; margin: 10px;">
+                        <div @click="downloadFile(file)" style="cursor:pointer;">{{ file.file_name }}</div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
 
+                </tr>
               </tbody>
             </table>
+            <div>
+              <span>
+                이미지 엑셀 삽입 실사이즈
+              </span>
+            </div>
+
+            <!-- 이미지 원사이즈 출력 -->
+            <div v-for="(file, index) in existingFB1" :key="index"
+              style="position: relative; display: inline-block; margin: 10px;">
+              <div>FB 조립방향 {{ index + 1 }}</div>
+              <img :src="file.url" />
+            </div>
+            <div v-for="(file, index) in existingFB2" :key="index"
+              style="position: relative; display: inline-block; margin: 10px;">
+              <div>F/B주의사항 {{ index + 1 }}</div>
+              <img :src="file.url" />
+            </div>
+
+            <div v-for="(file, index) in existingFB3" :key="index"
+              style="position: relative; display: inline-block; margin: 10px;">
+              <div>FB#1 NUMBERING {{ index + 1 }}</div>
+              <img :src="file.url" />
+            </div>
+            <div v-for="(file, index) in existingFB4" :key="index"
+              style="position: relative; display: inline-block; margin: 10px;">
+              <div>FB#2 SPL {{ index + 1 }}</div>
+              <img :src="file.url" />
+            </div>
+            <div v-for="(file, index) in existingMK1" :key="index"
+              style="position: relative; display: inline-block; margin: 10px;">
+              <div>M/K Marking{{ index + 1 }}</div>
+              <img :src="file.url" />
+            </div>
+            <div v-for="(file, index) in existingEV1" :key="index"
+              style="position: relative; display: inline-block; margin: 10px;">
+              <div>el_EVB_setup_port{{ index + 1 }}</div>
+              <img :src="file.url" />
+            </div>
           </el-card>
         </el-col>
       </el-row>
     </div>
   </el-form>
+
+
+  <!-- </div> -->
 
 
   <!-- </div> -->
@@ -606,9 +687,10 @@ import { useRoute } from "vue-router";
 import type {
   ApplicationData,
 } from "../../../interface/cspRequestFormInterface";
-import { handleGetDataByModelCode, dataValidation, handleSubmitForm, getColumnData, handleSubmitTempForm } from '../../../utils/cspRequestFormUtill'
+import { handleGetDataByModelCode, dataValidation, handleSubmitForm, getColumnData, fileDownload } from '../../../utils/cspRequestFormUtill'
 
 import { cspRequestRules } from "./CspRequestRules";
+import { collapseItemProps } from "element-plus";
 
 const props = defineProps<{
   applicationData: ApplicationData;
@@ -658,6 +740,8 @@ const formData = reactive<ApplicationData>({
   bg_afterthickness: '',
 
   dc_meterial: '',
+  dc_blade_thickness: '',
+  dc_thickness: '',
   mk_note: "",
 
   pd_dicing_line_size: "",
@@ -678,66 +762,10 @@ const formData = reactive<ApplicationData>({
   form_status: ""
 })
 
+const selectedLots = ref<string[]>([]);
+const lotsData = ref<string[]>([]);
+const dotincay = ref<string[]>([])
 
-const formDataTemp = reactive<ApplicationData>({
-  default_modelName: '',
-  default_requireName: '',
-  default_requireDate: '',
-  default_requireAmount: '',
-  default_pkgRequirement: '',
-  default_productSize: '',
-  default_purpose: '',
-
-  system_erp_wafer: '',
-  system_erp_pkg: '',
-  system_erp_epoxy: '',
-
-  system_mes_wafer: '',
-  system_mes_pkg: '',
-  system_mes_epoxy: '',
-
-  wafer_chip_size: '',
-  wafer_thickness: '',
-  wafer_pad_type: '',
-  wafer_send_quantity: '',
-  wafer_mes_code: '',
-  wafer_mark: '',
-  wafer_lot_no: '',
-  wafer_chip_qty: '',
-
-  pkg_size: '',
-  pkg_erp_code: '',
-  pkg_meterial: '',
-  pkg_note: '',
-
-  epoxy_model: '',
-  epoxy_thickness: '',
-
-  bb_ballsize: '',
-
-  bg_thickness: '',
-  bg_afterthickness: '',
-
-  dc_meterial: '',
-  mk_note: "",
-
-  pd_dicing_line_size: "",
-  pd_note: "",
-
-  el_link_method: "",
-  el_EVB_setup_port: "",
-
-  analysis_fa_item: "",
-
-  reliability_item: "",
-  others_cer_check: "",
-  fb_2_spl: "",
-  fb_direction: "",
-  fb_note: "",
-  fb_1_numbering: "",
-  mk_marking: "",
-  form_status: ""
-})
 
 
 const loading = ref(true);
@@ -752,13 +780,39 @@ const existingFB2 = ref<{ url: string; file_index: string; cell_name: string }[]
 const existingFB3 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
 const existingFB4 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
 const existingMK1 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
+const existingEV1 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
+const filesetSS1 = ref<File[]>([]);
+const filesetMWA1 = ref<File[]>([]);
+const filesetPMAP1 = ref<File[]>([]);
+const filesetWMAP1 = ref<File[]>([]);
+
+
+interface OptionItem {
+  value: string
+  label: string
+}
+
+
+const columnOptionsMap: Record<string, Ref<OptionItem[]>> = {
+  pkg_meterial: ref([]),
+  epoxy_model: ref([]),
+  epoxy_thickness: ref([]),
+  bg_thickness: ref([]),
+  bg_afterthickness: ref([]),
+  dc_meterial: ref([]),
+  dc_thickness: ref([]),
+  default_productSize: ref([]),
+  pd_dicing_line_size: ref([]),
+  wafer_pad_type: ref([]),
+  reliability_items: ref([])
+}
 
 
 onMounted(async () => {
   const product_name = route.params.productName as string
   await handleEnter(product_name)
 
-  // const columnlist = await getColumnData();
+  const columnlist = await getColumnData();
 
 
   application.value = props.applicationData;
@@ -771,24 +825,39 @@ onMounted(async () => {
 
   today.value = `${year}-${month}-${date}`;
 
+  type ColumnKey = keyof typeof columnOptionsMap;
+  for (const key in columnOptionsMap) {
+    const columnKey = key as ColumnKey;
+    columnOptionsMap[columnKey].value = columnlist
+      .filter(item => item.column_name === columnKey)
+      .map(item => ({
+        value: item.column_value,
+        label: item.column_value
+      }));
+  }
   loading.value = false;
 });
 
+const downloadFile = (file) => {
+  fileDownload(file.img_id)
+}
 
 async function handleEnter(value) {
   // const value = modelCell.value?.innerText.trim() || "";
   // const username = ref(localStorage.getItem('ms_username'));
   const req = await handleGetDataByModelCode(value);
-  console.log(req.image_List);
+
   if (req.default_modelName === 'false') {
     alert(value + " NOT FOUND");
     return;
   }
-  console.log("request", req)
+
 
   // 여기서 필요한 처리 수행 (예: 저장, API 호출 등)
 
-
+  if (req.reliability_item) {
+    dotincay.value = req.reliability_item.split(",");
+  }
   formData.default_modelName = req.default_modelName;
   formData.default_requireName = req.default_requireName;
   formData.default_requireDate = req.default_requireDate;
@@ -861,26 +930,13 @@ async function handleEnter(value) {
   formData.wafer_thickness = req.wafer_thickness
   formData.bb_ballsize = req.bb_ballsize
   formData.default_productSize = req.default_productSize
+  formData.dc_blade_thickness = req.dc_blade_thickness
+  formData.dc_thickness = req.dc_thickness
 
-
-  formDataTemp.default_requireAmount = formData.default_requireAmount
-  formDataTemp.default_pkgRequirement = formData.default_pkgRequirement
-  formDataTemp.wafer_mark = formData.wafer_mark
-  formDataTemp.pkg_size = formData.pkg_size
-  formDataTemp.pkg_note = formData.pkg_note
-  formDataTemp.fb_2_spl = formData.fb_2_spl
-  formDataTemp.mk_note = formData.mk_note
-  formDataTemp.pd_note = formData.pd_note
-  formDataTemp.el_link_method = formData.el_link_method
-  formDataTemp.el_EVB_setup_port = formData.el_EVB_setup_port
-  formDataTemp.analysis_fa_item = formData.analysis_fa_item
-  formDataTemp.fb_direction = formData.fb_direction
-  formDataTemp.fb_note = formData.fb_note
-  formDataTemp.fb_1_numbering = formData.fb_1_numbering
-  formDataTemp.mk_marking = formData.mk_marking
 
   // image seting
   if (req.image_List && req.image_List.length > 0) {
+    console.log(req.image_List);
     req.image_List.forEach((item) => {
       if (item.cell_name === 'FB1') {
         existingFB1.value.push(item);
@@ -892,6 +948,17 @@ async function handleEnter(value) {
         existingFB4.value.push(item);
       } else if (item.cell_name === 'MK1') {
         existingMK1.value.push(item);
+      } else if (item.cell_name === 'EV1') {
+        existingEV1.value.push(item);
+      }
+      else if (item.cell_name === 'SS1') {
+        filesetSS1.value.push(item);
+      } else if (item.cell_name === 'MWA1') {
+        filesetMWA1.value.push(item);
+      } else if (item.cell_name === 'PMAP1') {
+        filesetPMAP1.value.push(item);
+      } else if (item.cell_name === 'WMAP1') {
+        filesetWMAP1.value.push(item);
       }
     });
   }
@@ -907,26 +974,3 @@ export default {};
 <style scoped>
 @import "../../../assets/style/cspRequest.css";
 </style>
-
-
-
-
-<!-- 
-  API NOTE
-    10.20.10.128
-
-    "fbasecode": "WSG42AA50T00",
-    "fpkgcode": "MG41W9A50CD",
-    "fepoxycode": "0103W00C23N",
-
-
-    "fmname": "TSG42AA5002C",
-    "fpkgpartnumber": "A5-C",
-    "fepoxypurpose": "230",
-
--->
-
-<!-- 
-  먼저 formDataTemp에 저장후 formData 로 이동 안그럼 content 모씀
-
--->

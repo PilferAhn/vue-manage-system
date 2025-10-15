@@ -46,6 +46,8 @@ export const initializeApplicationData = () => {
     bg_afterthickness: "",
 
     dc_meterial: "",
+    dc_thickness: "",
+    dc_blade_thickness: "",
     mk_note: "",
 
     pd_dicing_line_size: "",
@@ -93,7 +95,9 @@ export async function getColumnData() {
 
 
 
-export async function handleSubmitForm(formdata: ApplicationData, imagesFB1: File[], imagesFB2: File[], imagesFB3: File[], imagesFB4: File[], imagesMK1: File[], deleteImage: { url: string; file_index: string; cell_name: string }[]) {
+export async function handleSubmitForm(formdata: ApplicationData, imagesFB1: File[], imagesFB2: File[],
+  imagesFB3: File[], imagesFB4: File[], imagesMK1: File[], imagesWMA1: File[], imagesPMAP1: File[], imagesWMAP1: File[],
+  deleteImage: { url: string; file_index: string; cell_name: string }[]) {
   const formDataToSend = new FormData();
   console.log("delete image +>", deleteImage);
 
@@ -123,6 +127,15 @@ export async function handleSubmitForm(formdata: ApplicationData, imagesFB1: Fil
     formDataToSend.append('imagesetMK1', file);
   })
 
+  imagesWMA1.forEach(file => {
+    formDataToSend.append('imagesetWMA1', file);
+  })
+  imagesPMAP1.forEach(file => {
+    formDataToSend.append('imagesetPMAP1', file);
+  })
+  imagesWMAP1.forEach(file => {
+    formDataToSend.append('imagesetWMAP1', file);
+  })
 
   try {
     await axios.post('/csp/create', formDataToSend, {
@@ -138,7 +151,8 @@ export async function handleSubmitForm(formdata: ApplicationData, imagesFB1: Fil
 }
 
 
-export async function handleSubmitTempForm(formdata: ApplicationData, imagesFB1: File[], imagesFB2: File[], imagesFB3: File[], imagesFB4: File[], imagesMK1: File[], imagesEV1: File[], deleteImage: { url: string; file_index: string; cell_name: string }[]) {
+export async function handleSubmitTempForm(formdata: ApplicationData, imagesFB1: File[], imagesFB2: File[], imagesFB3: File[], imagesFB4: File[], imagesMK1: File[], imagesEV1: File[], imagesSS1: File[],
+  imagesWMA1: File[], imagesPMAP1: File[], imagesWMAP1: File[], deleteImage: { url: string; file_index: string; cell_name: string }[]) {
   const formDataToSend = new FormData();
   console.log("delete image +>", deleteImage);
 
@@ -170,7 +184,19 @@ export async function handleSubmitTempForm(formdata: ApplicationData, imagesFB1:
   imagesEV1.forEach(file => {
     formDataToSend.append('imagesetEV1', file);
   })
+  imagesSS1.forEach(file => {
+    formDataToSend.append('filesetSS1', file);
+  })
 
+  imagesWMA1.forEach(file => {
+    formDataToSend.append('imagesetWMA1', file);
+  })
+  imagesPMAP1.forEach(file => {
+    formDataToSend.append('imagesetPMAP1', file);
+  })
+  imagesWMAP1.forEach(file => {
+    formDataToSend.append('imagesetWMAP1', file);
+  })
 
 
   try {
@@ -237,6 +263,64 @@ export async function getCheckSap(modelCode: string) {
     return response.data;
   } catch (err) {
     console.error("There was an error with the submission", err);
+    throw err;
+  }
+}
+
+export async function getLotNo(modelCode: string) {
+  try {
+    const response = await axios.get(
+      "/csp/get_lot_no?modelCode=" + modelCode
+    );
+    return response.data;
+  } catch (err) {
+    console.error("There was an error with the submission", err);
+    throw err;
+  }
+}
+
+export async function fileDownload(id: number) {
+  try {
+    const response = await axios.get(
+      `/csp/fileDownload?img_id=${id}`, // 템플릿 리터럴 사용으로 변경
+      {
+        // 1. 응답 타입을 'blob'으로 설정 (가장 중요!)
+        responseType: 'blob',
+      }
+    );
+
+    // 2. 응답 헤더에서 파일 이름 가져오기
+    const contentDisposition = response.headers['content-disposition'];
+    let filename = 'unknown'; // 기본 파일 이름
+    if (contentDisposition) {
+      // "attachment; filename*=UTF-8''%ED%85%8C%EC%8A%A4%ED%8A%B8.jpg" 와 같은 형식 처리
+      const filenameMatch = contentDisposition.match(/filename\*?=(?:UTF-8'')?([^;]+)/);
+      if (filenameMatch && filenameMatch[1]) {
+        // URL 인코딩된 파일 이름 디코딩
+        filename = decodeURIComponent(filenameMatch[1].replace(/"/g, ''));
+      }
+    }
+
+    // 3. Blob 데이터로 임시 URL 생성
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+
+    // 4. 가상의 <a> 태그를 만들어 다운로드 실행
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', filename); // 여기서 파일 이름이 설정됩니다.
+    document.body.appendChild(link);
+    link.click();
+
+    // 5. 생성했던 임시 URL과 링크 제거
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+
+    // 다운로드가 성공했음을 알리기 위해 true를 반환할 수 있습니다.
+    return true;
+
+  } catch (err) {
+    console.error("파일 다운로드 중 에러가 발생했습니다.", err);
+    // 사용자에게 에러 메시지를 보여주는 로직을 추가하면 좋습니다.
     throw err;
   }
 }
