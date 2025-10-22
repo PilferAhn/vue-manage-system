@@ -143,6 +143,12 @@ export interface FabRequestForm {
   idt2MachineName?: string;
   idtProcess?: string;
   passivationId?: number;
+  chipCard?: string;
+  stockDate?: string;
+  stockYn?: string;
+  firstchipMeas?: string;
+  sinMeas?: string;
+  secondchipMeas?: string;
   bom?: Bom;
   bom2?: Bom;
   samplePurpose?: string;
