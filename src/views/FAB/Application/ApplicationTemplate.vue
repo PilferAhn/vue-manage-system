@@ -58,6 +58,10 @@ export default {
               v-model:fabApplication="props.fabApplication"
               :sawType="sawType"
             />
+            <fabP
+              v-model:fabApplication="props.fabApplication"
+              :sawType="sawType"
+            /> 
             <Seed
               v-if="sawType?.seedTypes?.length > 0"
               v-model:fabApplication="props.fabApplication"
@@ -79,6 +83,7 @@ export default {
   import Pst from "./Pst.vue";
   import Seed from "./seed/seed.vue";
   import Passivation from "./Passivation.vue";
+  import fabP from "./fabP.vue";
   import ProductName from "./ProductName.vue";
   import Buttons from "./Buttons.vue";
   import ApplicationContent from "./ApplicationContent.vue";
