@@ -184,8 +184,9 @@
                     <td colspan="4" class="ccell">
                         제출여부
                     </td>
-                    <td colspan="11">
-                        미제출
+                    <td colspan="11" contenteditable="true"
+                        @input="e => formDataTemp.assy_purpose_submit_yn = (e.target as HTMLElement).innerText">
+                        {{ formData.assy_purpose_submit_yn }}
                     </td>
                     <td colspan="4" class="ccell">
                         Request Date
@@ -1077,9 +1078,16 @@
                     <td class="ccell" rowspan="2">
                         SMT
                     </td>
-                    <td colspan="5" rowspan="2" contenteditable="true"
-                        @input="e => formDataTemp.ap_smt_flag = (e.target as HTMLElement).innerText">
-                        {{ formData.ap_smt_flag }}
+                    <td colspan="5" rowspan="2">
+                        <!-- {{ formData.ap_smt_flag }} -->
+                        <el-checkbox :label="'O'" :true-label="'O'" :false-label="''" v-model="formDataTemp.ap_smt_flag"
+                            size="small" style="margin-right: 4px; font-size:6px">
+                            O
+                        </el-checkbox>
+                        <el-checkbox :label="'X'" :true-label="'X'" :false-label="''" v-model="formDataTemp.ap_smt_flag"
+                            size="small" style="margin-right: 4px; font-size:6px">
+                            X
+                        </el-checkbox>
                     </td>
                     <td colspan="12" rowspan="2" contenteditable="true"
                         @input="e => formDataTemp.ap_smt_item = (e.target as HTMLElement).innerText">
@@ -1110,9 +1118,17 @@
                     <td class="ccell">
                         Molding
                     </td>
-                    <td colspan="5" contenteditable="true"
-                        @input="e => formDataTemp.ap_molding_flag = (e.target as HTMLElement).innerText">
-                        {{ formData.ap_molding_flag }}
+                    <td colspan="5">
+                        <el-checkbox :label="'O'" :true-label="'O'" :false-label="''"
+                            v-model="formDataTemp.ap_molding_flag" size="small"
+                            style="margin-right: 4px; font-size:6px">
+                            O
+                        </el-checkbox>
+                        <el-checkbox :label="'X'" :true-label="'X'" :false-label="''"
+                            v-model="formDataTemp.ap_molding_flag" size="small"
+                            style="margin-right: 4px; font-size:6px">
+                            X
+                        </el-checkbox>
                     </td>
                     <td colspan="12" contenteditable="true"
                         @input="e => formDataTemp.ap_molding_item = (e.target as HTMLElement).innerText">
@@ -1130,9 +1146,17 @@
                     <td class="ccell">
                         Grinding
                     </td>
-                    <td colspan="5" contenteditable="true"
-                        @input="e => formDataTemp.ap_grinding_flag = (e.target as HTMLElement).innerText">
-                        {{ formData.ap_grinding_flag }}
+                    <td colspan="5">
+                        <el-checkbox :label="'O'" :true-label="'O'" :false-label="''"
+                            v-model="formDataTemp.ap_grinding_flag" size="small"
+                            style="margin-right: 4px; font-size:6px">
+                            O
+                        </el-checkbox>
+                        <el-checkbox :label="'X'" :true-label="'X'" :false-label="''"
+                            v-model="formDataTemp.ap_grinding_flag" size="small"
+                            style="margin-right: 4px; font-size:6px">
+                            X
+                        </el-checkbox>
                     </td>
                     <td colspan="12" contenteditable="true"
                         @input="e => formDataTemp.ap_grinding_item = (e.target as HTMLElement).innerText">
@@ -1151,9 +1175,17 @@
                     <td class="ccell">
                         Marking
                     </td>
-                    <td colspan="5" contenteditable="true"
-                        @input="e => formDataTemp.ap_marking_flag = (e.target as HTMLElement).innerText">
-                        {{ formData.ap_marking_flag }}
+                    <td colspan="5">
+                        <el-checkbox :label="'O'" :true-label="'O'" :false-label="''"
+                            v-model="formDataTemp.ap_marking_flag" size="small"
+                            style="margin-right: 4px; font-size:6px">
+                            O
+                        </el-checkbox>
+                        <el-checkbox :label="'X'" :true-label="'X'" :false-label="''"
+                            v-model="formDataTemp.ap_marking_flag" size="small"
+                            style="margin-right: 4px; font-size:6px">
+                            X
+                        </el-checkbox>
                     </td>
                     <td colspan="12" contenteditable="true"
                         @input="e => formDataTemp.ap_marking_item = (e.target as HTMLElement).innerText">
@@ -1203,9 +1235,15 @@
                     <td class="ccell" rowspan="2">
                         Dicing
                     </td>
-                    <td colspan="5" rowspan="2" contenteditable="true"
-                        @input="e => formDataTemp.ap_dicing_flag = (e.target as HTMLElement).innerText">
-                        {{ formData.ap_dicing_flag }}
+                    <td colspan="5" rowspan="2">
+                        <el-checkbox :label="'O'" :true-label="'O'" :false-label="''"
+                            v-model="formDataTemp.ap_dicing_flag" size="small" style="margin-right: 4px; font-size:6px">
+                            O
+                        </el-checkbox>
+                        <el-checkbox :label="'X'" :true-label="'X'" :false-label="''"
+                            v-model="formDataTemp.ap_dicing_flag" size="small" style="margin-right: 4px; font-size:6px">
+                            X
+                        </el-checkbox>
                     </td>
                     <td colspan="12" rowspan="2" contenteditable="true"
                         @input="e => formDataTemp.ap_dicing_item = (e.target as HTMLElement).innerText">
@@ -1248,11 +1286,16 @@
 
     <BomSelectModal v-if="showBomPopup1" :items="bomOptions" @select="onSelectBomNew" @close="showBomPopup1 = false" />
 
+    <BomSelectModalIC v-if="showBomPopupIc" :items="bomOptions" @select="onSelectBom" @close="showBomPopupIc = false" />
+
+    <BomSelectModalIC v-if="showBomPopupIc1" :items="bomOptions" @select="onSelectBom"
+        @close="showBomPopupIc1 = false" />
+
 </template>
 
 <script lang="ts" setup>
 // 로직이 있다면 여기에
-import { Ref, ref, onMounted, nextTick, watchEffect } from "vue";
+import { Ref, ref, onMounted, nextTick, watchEffect, watch } from "vue";
 import type {
     ApplicationData, BomMeterial, SmtItem, ModuleMenu
 } from "../../../../interface/orderSheetInterface";
@@ -1260,6 +1303,7 @@ import { getBomCode, postSaveChildren, getMenu, getPcbCode, getOds } from '../..
 import { useRoute, useRouter } from "vue-router";
 import CustomSelect from '../components/CustomSelect.vue';
 import BomSelectModal from "../components/BomSelectModal.vue";
+import BomSelectModalIC from "../components/BomSelectModalIC.vue";
 import { setLabels } from "vue-chartjs/dist/utils";
 import Module from "module";
 import MeteiralSim from "../components/MeteiralSim.vue";
@@ -1301,6 +1345,8 @@ const bomSearchResult = ref<BomMeterial[]>([]);
 
 const showBomPopup = ref(false);
 const showBomPopup1 = ref(false);
+const showBomPopupIc = ref(false)
+const showBomPopupIc1 = ref(false)
 const showMeterialPop = ref(false);
 const bomOptions = ref<any[]>([]);
 const enterIndex = ref<number>(0);
@@ -1464,7 +1510,12 @@ async function handleEnterKey(state: string, index: number) {
         const response = await getBomCode(request);
 
         bomOptions.value = response;
-        showBomPopup1.value = true;
+        if (smt.sref === "IC") {
+            showBomPopupIc.value = true;
+        }
+        else {
+            showBomPopup.value = true;
+        }
         enterIndex.value = index;
         return;
     }
@@ -1494,7 +1545,13 @@ async function handleEnterKey(state: string, index: number) {
         // const response = await getBomCode(request);
 
         bomOptions.value = response;
-        showBomPopup.value = true;
+        if (smt.sref === "IC") {
+            showBomPopupIc.value = true;
+        }
+        else {
+            showBomPopup.value = true;
+        }
+        // showBomPopup.value = true;
         enterIndex.value = index;
         return;
     }
@@ -1531,9 +1588,14 @@ function onSelectBom(item: any) {
         D: "Radrock",
     };
     const markerMapSmd: Record<string, string> = {
-        U: "Uniohm",
         M: "Murata",
-        S: "Sunload",
+        N: "Murata",
+        H: "Murata",
+        P: "Murata",
+        L: "Sunload",
+        D: "Sunload",
+        J: "Sunload",
+        A: "Sunload",
         T: "TDK"
     };
     if (maktx) {
@@ -1860,8 +1922,6 @@ function onSelectBomNew(item: any) {
         tempSmt.value[index].ssize = ssize
         tempSmtView.value[index].spn = spn
         tempSmt.value[index].spn = spn
-
-
     }
 
     if (tempSmt.value[index].sref === 'PCB' || refs === 'PCB') {
@@ -1893,13 +1953,11 @@ function onSelectBomNew(item: any) {
                 formDataTemp.cellsize_w = wFormatted;
             }
         }
-
         tempSmtView.value[index].ssize = ssize
         tempSmt.value[index].ssize = ssize
         formDataTemp.pcb_code = svalue
         formData.pcb_code = svalue
     }
-
     if (tempSmt.value[index].sref == 'IC' || refs === 'IC') {
         const maktx = item.MAKTX || "";
         const sref = maktx.split(";")[0].trim();
@@ -2156,7 +2214,6 @@ function handleEnterCellsize(state: string) {
 onMounted(async () => {
     const menu = await getMenu()
     const pcbCodes = await getPcbCode(formData.model_name)
-    console.log(formData)
     if (formData.image_List && formData.image_List.length > 0) {
         formData.image_List.forEach((item) => {
             if (item.cell_name === 'MI') {
@@ -2218,6 +2275,31 @@ function pcbAdd(code: string, index: number) {
     }
     return code
 }
+
+
+watch(
+    // ⭐️ 소스를 배열로 묶어서 전달해야 합니다.
+    [() => formDataTemp.array_x, () => formDataTemp.array_y],
+
+    (newValues) => {
+        // ⭐️ newValues는 [array_x의 새 값, array_y의 새 값] 형태의 배열입니다.
+        const [new_x, new_y] = newValues;
+
+        // X와 Y가 모두 0보다 큰 값일 때만 계산을 수행하도록 로직을 변경합니다.
+        if (new_x > 0 && new_y > 0) {
+            const value = new_x * new_y; // newValues의 값을 사용해야 합니다.
+
+            // ⭐️ 계산된 값을 두 객체에 업데이트
+            formDataTemp.array_quantinty = value.toString();
+            formData.array_quantinty = value.toString();
+        } else {
+            // 둘 중 하나라도 0 이하라면 quantity를 0으로 초기화
+            formDataTemp.array_quantinty = '0';
+            formData.array_quantinty = '0';
+        }
+    },
+    { immediate: true } // 컴포넌트 마운트 시 한 번 실행하여 초기값 설정 (선택 사항)
+);
 
 const handlePaste = (state: string, e: ClipboardEvent) => {
     // 1. 클립보드 아이템들을 가져옵니다.

@@ -4,23 +4,41 @@ export default {};
 <template v-if="isLoading">
     <el-form label-position="top" label-width="100px" ref="applicationForm">
         <div style="display: flex;">
-            <!-- <div style="min-width: 200px;">
+            <div style="min-width: 200px;">
                 <el-row :gutter="20" style="margin-bottom: 20px;">
                     <el-col :span="24">
-                        <el-card style="min-height: 600px;">
+                        <el-card style="min-height: 600px; position:fixed">
                             <div style="height: 400px;">
-                                <div>
-                                    D5Z0
-                                </div>
-                                <div>
-                                    5차
-                                </div>
-                                <div>
-                                    -Ass'y Order Sheet
-                                </div>
-                            </div>
-                            <div style="border-bottom: 1px solid black; margin-bottom: 10px;" />
+                                <div class="folder-tree-container">
+                                    <div>
+                                        {{ formData.model_name }} - {{ formData.assy_purpose_level }}
+                                        -{{ formData.sheet_id }}
+                                    </div>
 
+                                    <div v-for="(item, index) in levels" :key="index" class="folder-item">
+                                        <div class="level-item" @click="clickLevel(item)">
+                                            <div class="folder-icon">▶</div>
+                                            <div class="item-name">{{ item }}</div>
+                                        </div>
+
+                                        <div v-if="item === selectLevel" class="sheets-list">
+                                            <div v-for="(sheetItem, sheetIndex) in sheetsList" :key="sheetIndex"
+                                                class="sheet-item">
+                                                <div style="display: flex;"
+                                                    :style="{ 'font-weight': sheetItem.sheet_id === formData.sheet_id ? 'bold' : '' }"
+                                                    @click="moveAnotherPage(sheetItem.sheet_id)">
+                                                    <div class="sheet-icon">📄</div>
+                                                    <div class="item-name">{{ sheetItem.sheet_name }}</div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- <div style="border-bottom: 1px solid black; margin-bottom: 10px;" /> -->
+                            <!-- 
                             <div>
                                 <div :style="{
                                     marginBottom: '10px',
@@ -45,12 +63,12 @@ export default {};
                                     STEP 3 - Ass'y Process
                                 </div>
 
-                            </div>
+                            </div> -->
 
                         </el-card>
                     </el-col>
                 </el-row>
-            </div> -->
+            </div>
             <!-- <div class="container" v-if="!loading"> -->
 
             <el-row :gutter="20" style="margin-bottom: 20px;">
@@ -92,7 +110,7 @@ export default {};
 
 <script lang="ts" setup>
 import { ref, onMounted, watch, computed, nextTick, reactive, Ref } from "vue";
-import { getCodeWpms, getOds, getMenu, getPcbCode } from '../../../utils/orderShiitUtils';
+import { getCodeWpms, getOds, getMenu, getPcbCode, getLevels, getSheetsByLevel } from '../../../utils/orderShiitUtils';
 import { el } from "element-plus/es/locale";
 import Step1 from "./Steps/Step1.vue";
 import Step2 from "./Steps/Step2.vue";
@@ -105,6 +123,7 @@ import type {
 
 import { useRoute, useRouter } from "vue-router";
 import ModelName from "../../TegPage/Application/ModelName.vue";
+import { Position } from "@element-plus/icons-vue/dist/types";
 
 
 
@@ -238,7 +257,10 @@ const viewSelect = ref(0);
 const prow = ref(0);
 const srow = ref(0);
 const data = ref({})
+const levels = ref([])
+const sheetsList = ref([])
 const isLoading = ref(false)
+const selectLevel = ref("")
 
 
 const router = useRouter();
@@ -251,12 +273,6 @@ function changeView(step: number) {
     viewSelect.value = step
 }
 
-function moveAnotherPage() {
-    router.push({
-        name: "OrderSheetCreate",
-        params: { sheetId: 'ASSA' },
-    });
-}
 
 function changeProw(event, deleteindex) {
     const sheetId = route.params.sheetId as '';
@@ -484,18 +500,31 @@ function mappingTempM(fq: ApplicationData) {
     formDataTemp.position_list = cloneDeep(temppositionlist);
 }
 
+const moveAnotherPage = (sheetId: string) => {
+    router.push({
+        name: "OrderSheetCreate",
+        params: { sheetId: sheetId },
+    });
+}
+
+const clickLevel = async (item) => {
+    if (item !== selectLevel) {
+        sheetsList.value = await getSheetsByLevel(formData.model_name, item)
+        selectLevel.value = item
+    }
+}
 
 
 onMounted(async () => {
     console.log('컴포넌트가 마운트될 때 딱 한 번 실행');
     // API 호출, 초기 로딩 등
     const sheetId = route.params.sheetId as '';
-    console.log(sheetId)
     const sheet = await getOds(sheetId);
-    console.log(sheet)
-    await mappingTempM(sheet)
+    levels.value = await getLevels(sheet.model_name)
+    sheetsList.value = await getSheetsByLevel(sheet.model_name, sheet.assy_purpose_level)
+    selectLevel.value = sheet.assy_purpose_level
 
-    // console.log("formData", formData)
+    await mappingTempM(sheet)
     isLoading.value = true
 });
 
@@ -504,7 +533,82 @@ onMounted(async () => {
 <style scoped>
 @import "../../../assets/style/orderSheet.css";
 </style>
+<style scoped>
+/* 전체 컨테이너 스타일 */
+.folder-tree-container {
+    font-family: Arial, sans-serif;
+    padding: 2px;
+    background-color: white;
+    /* border: 1px solid #ddd; */
+    /* border-radius: 5px; */
+}
 
+/* 폴더 아이템 스타일 */
+.folder-item {
+    cursor: pointer;
+    margin-bottom: 5px;
+    user-select: none;
+    /* 텍스트 선택 방지 */
+}
+
+/* 레벨 항목 스타일 */
+.level-item {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    background-color: #e0e0e0;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+.level-item:hover {
+    background-color: #d0d0d0;
+}
+
+.folder-icon {
+    font-size: 14px;
+    margin-right: 8px;
+    color: #4a90e2;
+    /* 아이콘 색상 */
+}
+
+/* 시트 리스트 (들여쓰기) */
+.sheets-list {
+    margin-left: 20px;
+    /* 들여쓰기 효과 */
+    border-left: 1px dotted #ccc;
+    /* 점선으로 계층 구조 표현 */
+    padding-left: 10px;
+    margin-top: 5px;
+}
+
+/* 시트 아이템 스타일 */
+.sheet-item {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    background-color: #f9f9f9;
+    border-radius: 3px;
+    margin-bottom: 3px;
+    transition: background-color 0.2s;
+}
+
+.sheet-item:hover {
+    background-color: #f0f0f0;
+}
+
+.sheet-icon {
+    font-size: 14px;
+    margin-right: 8px;
+    color: #ff9800;
+    /* 아이콘 색상 */
+}
+
+.item-name {
+    font-size: 14px;
+    color: #333;
+}
+</style>
 
 <!-- 
 9.4

@@ -629,3 +629,12 @@ export async function getCCSQty(ssize: string) {
     throw err;
   }
 }
+export async function getSMTstock() {
+  try {
+    const result = await axios.get('/OpeationMns/ScheduleSample/GetStockSampleSmtByModel?type=Stock%20By%20Model&_=1761010120516');
+    return result.data.data;
+  } catch (err) {
+    console.error("There was an error with the submission", err);
+    throw err;
+  }
+}
