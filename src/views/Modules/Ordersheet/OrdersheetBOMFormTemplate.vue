@@ -15,7 +15,24 @@ export default {};
                         </div>
                     </el-card>
                     <el-row :gutter="4">
-                        <el-col :span="19">
+                        <el-col :span="17">
+                        </el-col>
+                        <el-col :span="2">
+                            <div style="
+                               background-color: white;
+                               color: black;
+                               /* font-family: 'Courier New', monospace; */
+                               border: 4px solid white;
+                               border-radius: 65px;
+                               padding: 6px 10px;
+                               font-size: 14px;
+                               font-weight: 800;
+                               line-height: 1.4;
+                               cursor: pointer;
+                               white-space: pre-wrap;
+                             " @click="pasteBom">
+                                내용 복사
+                            </div>
                         </el-col>
                         <el-col :span="3">
                             <div style="
@@ -235,7 +252,106 @@ export default {};
 
             </table>
         </el-card>
+        <div style="visibility: hidden;">
+            <table class="custom-top-table" ref="bomTable">
+                <colgroup>
+                    <col style="width :2%;" />
+                    <col style="width :8%;" />
+                    <col style="width :14%;" />
+                    <col style="width :24%;" />
+                    <col style="width :6%;" />
+                    <col style="width :8%;" />
+                    <col style="width :8%;" />
+                    <col style="width :10%;" />
+                    <col style="width :10%;" />
+                    <col style="width :10%;" />
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td class="bcell" style="height: 50px;">
+                            No
+                        </td>
 
+
+                        <td class="bcell">
+                            Ref
+                        </td>
+                        <td class="bcell">
+                            SAP Code
+                        </td>
+                        <td class="bcell">
+                            P/N
+                        </td>
+                        <td class="bcell">
+                            Value
+                        </td>
+                        <td class="bcell">
+                            Size
+                        </td>
+                        <td class="bcell">
+                            Maker
+                        </td>
+
+                        <td class="bcell" style="line-height: 1.2;">
+                            이동평균단가<br />
+                            (화폐단위 :KRW)
+
+                        </td>
+                        <td class="bcell" style="line-height: 1.2;">
+                            MOQ <br />
+                            (구매최소수량)
+                        </td>
+                        <td class="bcell">
+                            QTY
+                        </td>
+                    </tr>
+
+                    <tr v-for="(item, index) in bomList" :key="index">
+                        <td>
+                            {{ index + 1 }}.
+                        </td>
+
+                        <td style="padding: 0px;">
+                            {{ item.sref }}
+                        </td>
+                        <td>
+                            {{ item.sbom }}
+                        </td>
+                        <td> {{ item.spn }} </td>
+                        <td>
+                            {{ item.svalue }} </td>
+                        <td>
+                            {{ item.ssize }} </td>
+                        <!-- <td style="padding: 0px;">
+                                        <CustomSelect v-model="bomListTemp[index].smarker" :options="makers" />
+                                    </td> -->
+                        <td>
+                            {{ item.smarker }}
+                        </td>
+
+                        <td contenteditable="true"
+                            @input="e => bomListTemp[index].moving_avgp = (e.target as HTMLElement).innerText">
+                            {{
+                                item.moving_avgp }} </td>
+                        <td contenteditable="true"
+                            @input="e => bomListTemp[index].moq = (e.target as HTMLElement).innerText">
+                            {{
+                                item.moq }} </td>
+                        <td contenteditable="true"
+                            @input="e => bomListTemp[index].remark = (e.target as HTMLElement).innerText"
+                            @keydown.enter.prevent="handleEnterQty(index)" v-if="bomListTemp[index].sref !== 'Epoxy' && bomListTemp[index].sref !== 'CoverTape'
+                                && bomListTemp[index].sref !== 'CarrierTape' && bomListTemp[index].sref !== 'Solder'">
+                            {{ item.remark }} </td>
+                        <td v-else>
+                            {{ item.remark }}
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+
+        </div>
         <!-- </div> -->
 
     </el-form>
@@ -285,7 +401,7 @@ const ics = ref<ModuleMenu[]>([]);
 
 const checkedIds = ref([]);
 
-
+const bomTable = ref(null);
 const showBomPopup = ref(false);
 const showSheetPopup = ref(false);
 const sheetOptions = ref<any[]>([]);
@@ -436,6 +552,60 @@ async function postBomFilter(blist, sheetData, size) {
     }
     console.log("blist", blist)
     return blist
+}
+function copyHtmlFallback(element) {
+    // 1. 복사할 HTML을 임시 컨테이너에 넣습니다.
+    const container = document.createElement('div');
+    container.style.position = 'fixed';
+    container.style.left = '-9999px';
+    container.style.top = '-9999px';
+    document.body.appendChild(container);
+
+    // 2. DOM을 복사하여 임시 컨테이너에 추가합니다.
+    // **중요**: Vue 컴포넌트 내부에서 호출할 경우, 
+    // tableElement.cloneNode(true)를 사용하여 복사합니다.
+    const clonedTable = element.cloneNode(true);
+    container.appendChild(clonedTable);
+
+    // 3. 임시 DOM을 전체 선택합니다.
+    // range와 selection 객체를 사용하여 복사할 요소를 선택합니다.
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(container); // container 전체(복사할 테이블)를 선택
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    let success = false;
+    try {
+        // 4. 복사 명령 실행! (브라우저가 선택된 HTML을 클립보드에 넣도록 유도)
+        success = document.execCommand('copy');
+    } catch (err) {
+        console.error('execCommand 복사 실패:', err);
+    }
+
+    // 5. 사용이 끝난 임시 요소와 선택 영역을 정리합니다.
+    selection.removeAllRanges();
+    document.body.removeChild(container);
+
+    return success;
+}
+async function pasteBom() {
+    const tableElement = bomTable.value; // ref를 통해 DOM 요소 접근
+
+    if (!tableElement) {
+        alert("테이블 요소(ref)를 찾을 수 없습니다.");
+        return;
+    }
+
+    // CustomSelect 컴포넌트는 실제 텍스트 값을 가지도록 처리해야 합니다.
+    // 이 처리는 Vue 템플릿 내에서 미리 완료되거나, 복사 직전에 DOM을 순회하며 처리해야 합니다.
+    // 여기서는 렌더링된 DOM이 복사 가능한 상태(즉, <CustomSelect> 대신 최종 텍스트)라고 가정합니다.
+
+    if (copyHtmlFallback(tableElement)) {
+        alert('BOM 데이터가 서식(HTML)과 함께 클립보드에 복사되었습니다! (Fallback)');
+    } else {
+        alert('서식 복사 실패. 일반 텍스트 복사만 가능합니다.');
+    }
 }
 
 async function postBom() {

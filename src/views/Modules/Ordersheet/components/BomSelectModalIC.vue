@@ -28,6 +28,9 @@
                         <th class="ccell">
                             DESC
                         </th>
+                        <th class="ccell">
+                            Total QTY
+                        </th>
                     </tr>
                     <tr>
                         <td class="ccell">
@@ -37,13 +40,20 @@
                         <td class="ccell">
                             <input class="ccell" style="width: 99%;" v-model="descFilter" placeholder="DESC 검색" />
                         </td>
+                        <td class="ccell">
+
+                        </td>
                     </tr>
                     <tr v-for="(item, i) in filteredItems" :key="i" @click="selectItem(item)" class="modal-item ">
                         <td class="ccell">
                             {{ item.MATNR }}
                         </td>
+
                         <td class="ccell" style="text-align: left;">
                             {{ item.MAKTX }}
+                        </td>
+                        <td class="ccell" style="text-align: left;">
+                            {{ item.STOCK_QTY }}
                         </td>
                     </tr>
                 </table>
@@ -58,6 +68,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue';
+import { getSMTstock } from '../../../../utils/orderShiitUtils';
 const props = defineProps<{
     items: any[];
 }>();
@@ -70,36 +81,53 @@ function selectItem(item: any) {
 }
 const bomCodeFilter = ref('');
 const descFilter = ref('');
+const AllList = ref([]);
 
 const modalContainer = ref(null);
 
-onMounted(() => {
+onMounted(async () => {
     // 모달이 화면에 나타난 후 포커스를 줍니다.
     modalContainer.value.focus();
     fullcount.value = props.items.length
-    console.log(props.items)
-    const lastCharacters = props.items.map((item) => {
-        // null이나 undefined 체크 및 문자열인지 확인합니다.
-        if (item.MATNR && typeof item.MATNR === 'string' && item.MATNR.length > 0) {
-            // slice(-1)을 사용하여 문자열의 가장 마지막 문자 1개를 가져옵니다.
-            return item.MATNR.slice(-1);
+    const data = await getSMTstock();
+    const fullList = data;
+    console.log("sibal ", props.items)
+
+
+    // 키: 5000개 리스트의 MATNR, 값: 5000개 리스트의 항목 전체
+    const materialMap = new Map();
+    fullList.forEach(item => {
+        // 5000개 리스트의 MATNR을 키로 사용
+        materialMap.set(item.MaterialCode, item);
+    });
+    const targetItems = props.items;
+    // 매칭된 정보가 추가된 새 배열을 만듭니다. (Vue 뷰에서 사용할 최종 데이터)
+    const matchedAndAugmentedItems = targetItems.map(item => {
+        const codeToFind = item.MATNR;
+        const matchingData = materialMap.get(codeToFind);
+        if (matchingData) {
+            return {
+                ...item,
+                STOCK_QTY: matchingData.ToTalQty,
+            };
+        } else {
+            return {
+                ...item,
+                STOCK_QTY: 0
+            };
         }
-        return null; // 값이 없거나 유효하지 않은 경우 null 반환
-    }).filter(char => char !== null); // null 값은 제거합니다.
+    });
 
-    // 2. Set을 사용하여 중복을 제거합니다.
-    const uniqueLastCharacters = new Set(lastCharacters);
+    // 이제 Vue 컴포넌트에서 matchedAndAugmentedItems를 v-for의 소스로 사용합니다.
+    // console.log('최종 매칭 결과:', matchedAndAugmentedItems);
+    AllList.value = matchedAndAugmentedItems
 
-    // 3. Set을 배열로 변환하여 사용합니다.
-    const uniqueLastCharactersArray = Array.from(uniqueLastCharacters);
 
-    // 결과를 콘솔에 출력합니다.
-    console.log("중복 없는 MATNR의 마지막 문자:", uniqueLastCharactersArray);
 });
 
 const filteredItems = computed(() => {
     // 필터링할 원본 리스트를 가져옵니다.
-    return props.items.filter(item => {
+    return AllList.value.filter(item => {
         const bomCode = item.MATNR ? item.MATNR.toLowerCase() : '';
         const desc = item.MAKTX ? item.MAKTX.toLowerCase() : '';
 

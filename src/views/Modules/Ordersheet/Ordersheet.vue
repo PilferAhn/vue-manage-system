@@ -93,7 +93,45 @@ export default {};
                                             <div v-for="(item, index) in levelsList" :key="index">
                                                 <el-card class="hover-card" :class="{ selected: item === curLevel }"
                                                     @click="onClickLevel(item)">
-                                                    {{ item }}
+                                                    <div style="display: flex;justify-content: space-between;">
+                                                        <div>
+                                                            {{ item }}
+                                                        </div>
+                                                        <div class="sheet-action-do"
+                                                            @click.stop="excelDownloadFile(item)">
+                                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                                viewBox="0 0 100 100" width="50" height="50">
+                                                                <title>Modern Excel Icon</title>
+                                                                <defs>
+                                                                    <linearGradient id="excelGreenGradient" x1="0%"
+                                                                        y1="0%" x2="100%" y2="100%">
+                                                                        <stop offset="0%" style="stop-color:#207245;" />
+                                                                        <stop offset="100%"
+                                                                            style="stop-color:#35ac69;" />
+                                                                    </linearGradient>
+
+                                                                    <filter id="shadow" x="-20%" y="-20%" width="140%"
+                                                                        height="140%">
+                                                                        <feDropShadow dx="2" dy="4" stdDeviation="4"
+                                                                            flood-color="#000000" flood-opacity="0.3" />
+                                                                    </filter>
+                                                                </defs>
+
+                                                                <rect x="25" y="25" width="70" height="70" rx="10"
+                                                                    ry="10" fill="url(#excelGreenGradient)"
+                                                                    filter="url(#shadow)" />
+
+                                                                <rect x="5" y="5" width="50" height="50" rx="8" ry="8"
+                                                                    fill="url(#excelGreenGradient)"
+                                                                    filter="url(#shadow)" />
+
+                                                                <text x="17" y="44" font-family="Arial, sans-serif"
+                                                                    font-size="36" font-weight="bold"
+                                                                    fill="white">X</text>
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+
                                                 </el-card>
                                             </div>
                                         </div>
@@ -177,9 +215,7 @@ export default {};
                                                 <div class="sheet-action" @click="bomClick">
                                                     📋 Bom List
                                                 </div>
-                                                <div class="sheet-action" @click="excelDownloadFile">
-                                                    📑
-                                                </div>
+
                                             </div>
                                         </el-card>
 
@@ -358,15 +394,15 @@ async function onEnter() {
 function handleSheetClick(sheet_id: string, stype: string) {
     console.log(stype, sheet_id);
     if (stype === 'sheet') {
-        // router.push({
-        //     name: "OrderSheetCreate",
-        //     params: { sheetId: sheet_id },
-        // });
-        const url = router.resolve({
+        router.push({
             name: "OrderSheetCreate",
-            params: { sheetId: sheet_id }
-        }).href;
-        window.open(url, "_blank"); // 새 탭에서 열기
+            params: { sheetId: sheet_id },
+        });
+        // const url = router.resolve({
+        //     name: "OrderSheetCreate",
+        //     params: { sheetId: sheet_id }
+        // }).href;
+        // window.open(url, "_blank"); // 새 탭에서 열기
     }
     else if (stype === 'pcb') {
         // router.push({
@@ -436,8 +472,8 @@ async function bomClick() {
     sheetsList.value = list
     message.value = 'BOM 업데이트 완료'
 }
-async function excelDownloadFile() {
-    excelDownload(fCode.value, curLevel.value)
+async function excelDownloadFile(level: string) {
+    excelDownload(fCode.value, level)
 }
 
 
@@ -585,6 +621,22 @@ watch(() => code.join(""), (newVal) => {
     background-color: #f0f9ff;
     color: #409EFF;
     transform: scale(1.05);
+}
+
+.sheet-action-do {
+    font-size: 18px;
+    font-weight: 700;
+    height: 100%;
+    /* padding: 10px 20px; */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+}
+
+.sheet-action-do:hover {
+    background-color: #f0f9ff;
+    color: #409EFF;
+    transform: scale(1.3);
 }
 
 ::-webkit-scrollbar {
