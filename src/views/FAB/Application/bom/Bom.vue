@@ -142,7 +142,7 @@
           <input-text-by-recommad
             v-model="props.bom.package"
             label=""
-            prop="packageName"
+            prop="package"
             placeholder=""
             :options="packageOptioins"
             :disable="false"
@@ -364,18 +364,18 @@ watch(
 
 const extractValues = (data: Record<string, any>, bom: Bom) => {
   // package 값 설정
-  const packageValue = data["MATNR"] || null;
+  const packageValue = data["matnr"] || null;
 
   // 정규 표현식으로 size 찾기 (ex: 1814)
-  const sizeMatch = data["MAKTX"].match(/(\d{4})/);
+  const sizeMatch = data["maktx"].match(/(\d{4})/);
   bom.pkgSize = sizeMatch ? sizeMatch[1] : null;
 
   // 정규 표현식으로 partNumber 찾기 (ex: YV-C(0.3um))
-  const partNumberMatch = data["MAKTX"].match(/,\s*([^,]+),/);
+  const partNumberMatch = data["maktx"].match(/,\s*([^,]+),/);
   bom.partNumber = partNumberMatch ? partNumberMatch[1].trim() : null;
 
   // 정규 표현식으로 shQuantity 찾기 (ex: 2,668)
-  const shQuantityMatch = data["MAKTX"].match(/(\d{1,3}(,\d{3})*)pcs/);
+  const shQuantityMatch = data["maktx"].match(/(\d{1,3}(,\d{3})*)pcs/);
   bom.shQuantity = shQuantityMatch
     ? shQuantityMatch[1].replace(/,/g, "")
     : null;
