@@ -26,7 +26,7 @@ export default {};
                                                 class="sheet-item">
                                                 <div style="display: flex;"
                                                     :style="{ 'font-weight': sheetItem.sheet_id === formData.sheet_id ? 'bold' : '' }"
-                                                    @click="moveAnotherPage(sheetItem.sheet_id)">
+                                                    @click="moveAnotherPage(sheetItem)">
                                                     <div class="sheet-icon">📄</div>
                                                     <div class="item-name">{{ sheetItem.sheet_name }}</div>
                                                 </div>
@@ -500,11 +500,25 @@ function mappingTempM(fq: ApplicationData) {
     formDataTemp.position_list = cloneDeep(temppositionlist);
 }
 
-const moveAnotherPage = (sheetId: string) => {
-    router.push({
-        name: "OrderSheetCreate",
-        params: { sheetId: sheetId },
-    });
+const moveAnotherPage = (sheet) => {
+    console.log(sheet)
+    if (sheet.stype == 'sheet') {
+        router.push({
+            name: "OrderSheetCreate",
+            params: { sheetId: sheet.sheet_id },
+        });
+    } else if (sheet.stype == 'pcb') {
+        router.push({
+            name: "OrderSheetPcbCreate",
+            params: { sheetId: sheet.sheet_id },
+        });
+    }
+    else if (sheet.stype == 'bom') {
+        router.push({
+            name: "OrderSheetBomCreate",
+            params: { sheetId: sheet.sheet_id },
+        });
+    }
 }
 
 const clickLevel = async (item) => {
