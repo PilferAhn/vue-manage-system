@@ -1288,7 +1288,7 @@
 
     <BomSelectModalIC v-if="showBomPopupIc" :items="bomOptions" @select="onSelectBom" @close="showBomPopupIc = false" />
 
-    <BomSelectModalIC v-if="showBomPopupIc1" :items="bomOptions" @select="onSelectBom"
+    <BomSelectModalIC v-if="showBomPopupIc1" :items="bomOptions" @select="onSelectBomNew"
         @close="showBomPopupIc1 = false" />
 
 </template>
@@ -1511,10 +1511,10 @@ async function handleEnterKey(state: string, index: number) {
 
         bomOptions.value = response;
         if (smt.sref === "IC") {
-            showBomPopupIc.value = true;
+            showBomPopupIc1.value = true;
         }
         else {
-            showBomPopup.value = true;
+            showBomPopup1.value = true;
         }
         enterIndex.value = index;
         return;
@@ -1880,7 +1880,7 @@ function onSelectBomNew(item: any) {
         tempSmt.value[index].spn = spn
         console.log(spn);
     }
-    if (tempSmt.value[index].sref === 'Capacitor' || refs === 'CAP') {
+    if (tempSmt.value[index].sref === 'Capacitor' || refs === 'Capacitor') {
         // 사이즈 추출 (쉼표 뒤 마지막 단어)
         const parts = maktx.split(",");
         const mk = item.MATNR ? item.MATNR[item.MATNR.length - 1] : "";
@@ -1970,7 +1970,6 @@ function onSelectBomNew(item: any) {
         const markerName = markerMapIC[mk] || "Unknown";
         tempSmtView.value[index].sbom = item.MATNR
         tempSmt.value[index].sbom = item.MATNR
-
         tempSmt.value[index].sref = refs
         tempSmtView.value[index].sref = refs
         tempSmt.value[index].svalue = sref
@@ -1981,6 +1980,8 @@ function onSelectBomNew(item: any) {
         tempSmt.value[index].smarker = markerName
         tempSmt.value[index].spn = maktx
         tempSmtView.value[index].spn = maktx
+
+
     }
     if (tempSmt.value[index].sref == 'SAW') {
         tempSmtView.value[index].smarker = 'Wisol'
