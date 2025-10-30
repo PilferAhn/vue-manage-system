@@ -3,6 +3,7 @@ import { convertKeysToCamelCase } from "../key-converter";
 import { sendGetRequest, sendPostRequestWithBody, sendPostRequestWithHeader } from "../httpProtocol";
 import { Bom } from "../../interface/fab-application-rev2";
 import { OptionInterface } from "../../interface/option";
+import { packgeList } from "../package-types";
 
 export function getPrice(bom : Bom , prices : object[] , size : string, company : string){
   console.log(size)
@@ -54,14 +55,10 @@ export async function getPackageList(): Promise<object[]> {
 
   try {
     const temp = await sendGetRequest("/api/sapinfo", "0"); // API 호출
-    // console.log(temp);
-    // console.log(typeof temp); // type -> typeof로 변경
-
     if (Array.isArray(temp)) {
       // temp가 배열인지 확인
       for (let i = 0; i < temp.length; i++) {
         const converted = convertKeysToCamelCase(temp[i]); // 키 변환 함수 호출
-
         // packageList.value.push(converted["MATNR"]); // 변환된 객체를 배열에 추가
         packageList.value.push(converted);
       }
@@ -76,12 +73,11 @@ export async function getPackageList(): Promise<object[]> {
 
 export function createPackageOptions(packageList: object[]) {
   const packageOptions = ref<OptionInterface[]>([]);
-
   for (let i = 0; i < packageList.length; i++) {
     const temp: OptionInterface = {
       key: i,
-      value: packageList[i]["MATNR"],
-      label: packageList[i]["MATNR"] + " - " + packageList[i]["MAKTX"],
+      value: packageList[i]["matnr"],
+      label: packageList[i]["matnr"] + " - " + packageList[i]["maktx"],
     };
     // const temp: OptionInterface = {
     //   key: i,

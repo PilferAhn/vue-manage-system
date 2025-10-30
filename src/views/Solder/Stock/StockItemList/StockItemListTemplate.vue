@@ -3,6 +3,12 @@
     <div class="notice-banner">
       📢 정확한 정보는 반드시 WHC Vinh 프로(한국어통역)에게 문의해 주십시오.
     </div>
+
+     <div style="display:flex; justify-content:flex-end; margin: 10px 0 6px;">
+      <el-button type="success" @click="exportExcel">
+        엑셀 다운로드
+      </el-button>
+    </div>
     <!-- Table -->
     <el-table
       :data="stockItems"
@@ -145,7 +151,7 @@ import { formatDate } from "../../../../utils/date-utils";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { getStockItem, updateStockItemNote } from "../StockItem/StockItem";
-
+import * as xlsx from "xlsx";
 
 const props = defineProps<{
   stockItems: StockItem[];
@@ -175,6 +181,81 @@ const tableRowClassName = ({
   return "";
 };
 
+function exportExcel() {
+  try {
+    // 1) 헤더 정의
+    const headers = [
+      "No",
+      "PN_FAB",
+      "PN_WHC",
+      "개발자",
+      props.operationType === "reel" ? "Reel ID" : "Assay ID",
+      "Location",
+      "Received Date",
+      "Receiver",
+      "Total",
+      "Remain",
+      "Note",
+    ];
+
+    // 2) 행 데이터 평탄화
+    const rows = props.stockItems.map((row, idx) => {
+      const firstMesMaterials = row?.stockItemLabel?.lot?.firstMesMaterials ?? [];
+      const pnFab = firstMesMaterials.map(m => m?.materialId ?? "-").filter(Boolean).join(", ");
+      const designers = firstMesMaterials.map(m => m?.designer?.userName ?? "-").filter(Boolean);
+      // 중복 제거
+      const designerUnique = Array.from(new Set(designers)).join(", ");
+
+      const pnWhc = row?.stockItemLabel?.lot?.materialId ?? "-";
+      const idLabel = row?.label ?? "-";
+      const location = row?.location ?? "-";
+      const recvDate = formatDate(row?.dateOfCreated) ?? "-";
+      const receiver = (row as any)?.receiver ?? "-";
+      const total = row?.quantity ?? 0;
+      const remain = (row?.quantity ?? 0) - (row?.assumedQuantity ?? 0);
+      const note = row?.note ?? "";
+
+      return [
+        idx + 1,       // No
+        pnFab,         // PN_FAB
+        pnWhc,         // PN_WHC
+        designerUnique,// 개발자
+        idLabel,       // Reel ID / Assay ID
+        location,      // Location
+        recvDate,      // Received Date
+        receiver,      // Receiver
+        total,         // Total
+        remain,        // Remain
+        note,          // Note
+      ];
+    });
+
+    // 3) 시트 생성
+    const sheetData = [headers, ...rows];
+    const ws = xlsx.utils.aoa_to_sheet(sheetData);
+    // (선택) 컬럼 폭 자동/고정 설정
+    const colWidths = headers.map((h, i) => {
+      const maxLen = Math.max(
+        h.length,
+        ...rows.map(r => (r[i] ? String(r[i]).length : 0))
+      );
+      return { wch: Math.min(Math.max(maxLen + 2, 10), 40) };
+    });
+    (ws as any)['!cols'] = colWidths;
+
+    // 4) 워크북 만들고 시트 추가
+    const wb = xlsx.utils.book_new();
+    xlsx.utils.book_append_sheet(wb, ws, "Stock Items");
+
+    // 5) 파일 저장
+    const yyyymmdd = new Date().toISOString().slice(0, 10);
+    const filename = `StockItems_${props.operationType}_${yyyymmdd}.xlsx`;
+    xlsx.writeFile(wb, filename);
+  } catch (e) {
+    console.error(e);
+    ElMessage.error("엑셀 내보내기 중 오류가 발생했습니다.");
+  }
+}
 
 // Editing note functionality
 interface EditingNote {
