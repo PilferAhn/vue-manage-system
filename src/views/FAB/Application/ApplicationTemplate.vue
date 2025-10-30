@@ -59,8 +59,8 @@ export default {
               :sawType="sawType"
             />
             <fabP
-              v-model:fabApplication="props.fabApplication"
-              :sawType="sawType"
+              v-model="props.fabApplication"
+              :package-id="props.fabApplication.packageId"
             /> 
             <Seed
               v-if="sawType?.seedTypes?.length > 0"
@@ -87,7 +87,7 @@ export default {
   import ProductName from "./ProductName.vue";
   import Buttons from "./Buttons.vue";
   import ApplicationContent from "./ApplicationContent.vue";
-  import type { FabRequestForm } from "./../../../interface/fab-application-rev2";
+  import type { FabRequestForm, FabprobeInformation} from "./../../../interface/fab-application-rev2";
   import PhotoSection from "./photo/photo.vue";
   import { fabRequestFormRules } from "../../../utils/rules/fab-application";
   import type { FormInstance } from "element-plus";
@@ -98,6 +98,7 @@ export default {
   
   const props = defineProps<{
     fabApplication: FabRequestForm;
+    simpleFabApp: FabprobeInformation;
     applicationType: string;
     options: SawType[];
     sawType: SawType;

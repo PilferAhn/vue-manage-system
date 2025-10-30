@@ -5,7 +5,7 @@
     <div class="kv-row">
       <div class="kv-label">Chip Card</div>
         <div class="kv-field">
-          <el-input v-model="props.fabApplication.chipCard" />
+          <el-input v-model="probeInformation.chipCard" />
         </div>
     </div>
 
@@ -13,7 +13,7 @@
       <div class="kv-label">입고일</div>
         <div class="kv-field">
           <el-date-picker
-          v-model="props.fabApplication.stockDate"
+          v-model="probeInformation.stockDate"
           type="date"
           value-format="YYYY-MM-DDT00:00:00"
           placeholder="입고일 선택"
@@ -25,7 +25,7 @@
     <div class="kv-row">
       <div class="kv-label">입고여부</div>
         <div class="kv-field">
-          <el-select v-model="props.fabApplication.stockYn" placeholder="선택">
+          <el-select v-model="probeInformation.stockYn" placeholder="선택">
             <el-option label="입고완료"   value="Y" />
             <el-option label="미입고" value="N" />
           </el-select>
@@ -35,17 +35,17 @@
     <div class="kv-row">
       <div class="kv-label">1차 Chip측정</div>
         <div class="kv-field">
-          <el-select v-model="props.fabApplication.firstchipMeas" placeholder="선택">
+          <el-select v-model="probeInformation.firstchipMeas" placeholder="선택">
             <el-option label="측정"   value="Y" />
             <el-option label="SKIP" value="N" />
           </el-select>
       </div>
     </div>
 
-    <div class="kv-row" v-if="props.fabApplication.packageId === 'WLP'">
+    <div class="kv-row" v-if="props.packageId === 'WLP'">
       <div class="kv-label">SiN 후 측정</div>
         <div class="kv-field">
-          <el-select v-model="props.fabApplication.sinMeas" placeholder="선택">
+          <el-select v-model="probeInformation.sinMeas" placeholder="선택">
             <el-option label="측정"   value="Y" />
             <el-option label="SKIP" value="N" />
         </el-select>
@@ -55,7 +55,7 @@
     <div class="kv-row">
       <div class="kv-label">2차 Chip측정</div>
         <div class="kv-field">
-          <el-select v-model="props.fabApplication.secondchipMeas" placeholder="선택">
+          <el-select v-model="probeInformation.secondchipMeas" placeholder="선택">
             <el-option label="측정"   value="Y" />
             <el-option label="SKIP" value="N" />
           </el-select>
@@ -69,11 +69,8 @@
 import { ref, watch, onMounted, computed } from "vue";
 import SelectOptionsNew2 from "../../Common/SelectOptionsNew2.vue";
 import {
-  type SawType,
-  type Layer,
+  type FabprobeInformation,
   type FabRequestForm,
-  type IdtType,
-  passivationType,
 } from "../../../interface/fab-application-rev2";
 import InputText from "../../Common/InputText.vue";
 import {
@@ -82,9 +79,10 @@ import {
 } from "../../../interface/option";
 
 const props = defineProps<{
-  fabApplication: FabRequestForm;
-  sawType: SawType;
+  packageId: String;
 }>();
+
+const probeInformation = defineModel<FabprobeInformation>()
 
 </script>
 <script lang="ts">
