@@ -226,12 +226,13 @@ const filteredItems = computed(() => {
 /* 2. 테이블 셀에 애니메이션 적용 */
 .flickering-banner {
     /* 애니메이션 이름 | 지속 시간 | 반복 횟수(무한) | 타이밍 함수 */
-    animation: flicker-animation 0.2s infinite linear;
+    /* animation: flicker-animation 0.2s infinite linear; */
 
     /* 텍스트가 잘 보이도록 설정 (선택 사항) */
     color: white;
+    background-color: black;
     font-weight: bold;
-    text-shadow: 0 0 5px black;
+    /* text-shadow: 0 0 5px black; */
 }
 
 .modal {
