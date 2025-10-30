@@ -13,6 +13,7 @@ import {
 } from "../utils/Fab/fab-application-utils";
 import { off } from "process";
 import { ActiveLot, LotStatus } from "./mes-interface";
+import { extend } from "highcharts";
 
 export interface Bump {
   size: string;
@@ -64,7 +65,17 @@ export interface PhotoProcess {
   order?: number;
 }
 
-export interface FabRequestForm {
+export interface FabprobeInformation{
+  chipCard?: string;
+  stockDate?: string;
+  stockYn?: string;
+  firstchipMeas?: string;
+  sinMeas?: string;
+  secondchipMeas?: string;
+  }
+
+
+export interface FabRequestForm extends FabprobeInformation {
   photo?: Photo;
   waferCode?: string;
   customerId?: string;
@@ -143,12 +154,7 @@ export interface FabRequestForm {
   idt2MachineName?: string;
   idtProcess?: string;
   passivationId?: number;
-  chipCard?: string;
-  stockDate?: string;
-  stockYn?: string;
-  firstchipMeas?: string;
-  sinMeas?: string;
-  secondchipMeas?: string;
+ 
   bom?: Bom;
   bom2?: Bom;
   samplePurpose?: string;
@@ -199,8 +205,8 @@ export interface FabRequestForm {
   lotStatus?: LotStatus[] | null;
   lots?: any[];
   activeLots?: ActiveLot[];
-  
 }
+
 
 export interface band {
   bandCombinationId: string;
