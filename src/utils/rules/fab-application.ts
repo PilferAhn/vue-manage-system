@@ -3,6 +3,7 @@ import type { FormRules } from "element-plus";
 // 필드 이름과 사용자 친화적 라벨 매핑
 const fieldLabels: Record<string, string> = {
   productName: "제품명",
+  packageSubTypeId: "패키지 서브타입",
   requesterId: "요청자 ID",
   designerId: "설계자 ID",
   "designer.userName": "설계자 이름",
@@ -54,6 +55,7 @@ export const numberRule = (field: string) => ({
 // 필수 항목 (문자열 필드)
 const requiredFields = [
   "productName",
+  "packageSubTypeId",
   "requesterId",
   "designerId",
   "waferType",
