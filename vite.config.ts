@@ -79,7 +79,8 @@ export default defineConfig({
 			"/static/": "http://10.29.11.57:40000",
 			"/images": "http://10.29.11.57:40000",
 			"/wpms": "http://10.20.10.202:8000",
-			"/ordersheet": "http://10.29.11.57:40000"
+			"/ordersheet": "http://10.29.11.57:40000",
+			"/idt_probe": "http://10.29.11.57:40000"
 		},
 	}
 }
