@@ -19,7 +19,7 @@ export interface LotStatus {
   txUserName: string;
   txComment: string;
   cassetteId: string;
-  slotNo: string;
+  slotNo?: string;
   deleteFlag: string;
   originalDate: string | null;
   creationDate: string;

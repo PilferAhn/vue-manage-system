@@ -89,7 +89,7 @@ import { fetchMesLotsStatusByCasseteId, fetchIdtProbeTypes, receiveIdtProbeWafer
 import { ElMessage } from 'element-plus';
 
 interface IdtProbeWaferWithSlotNo extends IdtProbeWafer {
-  slotNo: string;
+  slotNo?: string;
 }
 
 const inputId = ref('');
