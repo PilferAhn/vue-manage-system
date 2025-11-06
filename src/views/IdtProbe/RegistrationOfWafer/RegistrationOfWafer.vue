@@ -11,7 +11,7 @@
     />
 
     <!-- show current cassette id below the input when available -->
-    <div v-if="currentCassetteId" style="margin-top: 6px; color: var(--el-text-color-secondary); font-size: 12px;">
+    <div v-if="currentCassetteId" style="margin-top: 6px; color: var(--el-text-color-secondary); font-size: 15px;">
       Current cassette: <strong>{{ currentCassetteId }}</strong>
     </div>
 
