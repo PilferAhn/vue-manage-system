@@ -91,6 +91,7 @@ const currentCassetteId = ref('');
 const idtProbeWafers = ref<IdtProbeWafer[]>([]);
 const idtProbeTypes = ref<IdtProbeType[]>([]);
 
+// Handle cassette ID input change
 const changeInputId = async (newValue: string) => {    
   if (newValue && newValue.trim() !== '') {
     // Fetch MesLots status by cassette ID
@@ -127,6 +128,18 @@ onMounted(async () => {
   }
 });
 
+// Handle note change
+const handleNoteChange = async (row: IdtProbeWafer) => {
+  if (!row.status) return;
+  try {
+    const updated = await updateIdtProbeWaferNote(row.lotId, row.note);
+      Object.assign(row, updated);
+  } catch (e) {
+    ElMessage.error('Failed to update note.');
+    console.error(e);
+  }
+}
+
 // Actions
 const handleReceive = async (row: IdtProbeWafer) => {
   if (!row.probeType) return;
@@ -142,17 +155,5 @@ const handleComplete = async (row: IdtProbeWafer) => {
     Object.assign(row, updated);
   }
 }
-
-const handleNoteChange = async (row: IdtProbeWafer) => {
-  if (!row.status) return;
-  try {
-    const updated = await updateIdtProbeWaferNote(row.lotId, row.note);
-      Object.assign(row, updated);
-  } catch (e) {
-    ElMessage.error('Failed to update note.');
-    console.error(e);
-  }
-}
-
 
 </script>
