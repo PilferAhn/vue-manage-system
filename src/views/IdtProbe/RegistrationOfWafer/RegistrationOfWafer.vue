@@ -17,6 +17,7 @@
 
     <!-- table of wafers -->
     <el-table v-if="idtProbeWafers.length > 0" :data="idtProbeWafers" style="width: 100%; margin-top: 12px;" border>
+      <el-table-column prop="slotNo" label="Slot" width="60" />
       <el-table-column prop="lotId" label="Lot ID" width="120" />
       <el-table-column prop="productName" label="Product Name"/>
       <el-table-column label="Designer">
@@ -86,25 +87,38 @@ import { ref, onMounted } from 'vue';
 import type { IdtProbeWafer, IdtProbeType } from '../../../interface/idt-probe-interfaces';
 import { fetchMesLotsStatusByCasseteId, fetchIdtProbeTypes, receiveIdtProbeWafer, completeIdtProbeWafer, updateIdtProbeWaferNote } from './RegistrationOfWafer';
 import { ElMessage } from 'element-plus';
+
+interface IdtProbeWaferWithSlotNo extends IdtProbeWafer {
+  slotNo: string;
+}
+
 const inputId = ref('');
 const currentCassetteId = ref('');
-const idtProbeWafers = ref<IdtProbeWafer[]>([]);
+const idtProbeWafers = ref<IdtProbeWaferWithSlotNo[]>([]);
 const idtProbeTypes = ref<IdtProbeType[]>([]);
 
 // Handle cassette ID input change
-const changeInputId = async (newValue: string) => {    
+const changeInputId = async (newValue: string) => {
   if (newValue && newValue.trim() !== '') {
     // Fetch MesLots status by cassette ID
     const fetched = await fetchMesLotsStatusByCasseteId(newValue.trim());
 
     // Build wafers list for the table (fallback to minimal wafer when missing)
     idtProbeWafers.value = (fetched || []).map(lot => {
-      return lot.idtProbeWafer ?? ({
-        lotId: lot.lotId,
-        productName: (lot as any).materialId,
-      } as IdtProbeWafer);
-    });
+      if (lot.idtProbeWafer) {
+        return {
+          ...lot.idtProbeWafer,
+          slotNo: lot.slotNo,
+        } as IdtProbeWaferWithSlotNo;
+      } else {
 
+        return {
+          lotId: lot.lotId,
+          productName: lot.materialId,
+          slotNo: lot.slotNo,
+        } as IdtProbeWaferWithSlotNo;
+      }
+    });
 
     // If fetch returned results, remember the cassette id and clear the input
     if (idtProbeWafers.value.length > 0) {

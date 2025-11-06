@@ -29,8 +29,8 @@ export async function fetchMesLotsStatusByCasseteId(Id: string): Promise<MesLotS
     const form = new FormData()    
     form.append("cassette_id", Id)
     form.append("first_history", "true")
-   
-    
+    form.append("order_by", "slot_no")
+       
     const response = await axios.post('/mes/get_lots_by_cassette_id', form);
     const data = response.data;
     
