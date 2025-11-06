@@ -66,7 +66,7 @@
           </template>
         </template>
       </el-table-column>
-      <el-table-column label="Actions" width="100">
+      <el-table-column label="Actions" width="105">
         <template #default="{ row }">
           <template v-if="!row.status">
             <el-button type="primary" size="small" :disabled="!row.probeType" @click="handleReceive(row)">Receive</el-button>
