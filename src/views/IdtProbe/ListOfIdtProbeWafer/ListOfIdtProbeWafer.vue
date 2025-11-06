@@ -57,12 +57,17 @@ const totalItems = ref(0);
 const currentPage = ref(1);
 
 const handlePageChange = async () => {
-    idtProbeWafers.value = await fetchIdtProbeWafers(props.status, props.pageSize, currentPage.value, props.orderParams);
+    const totalItemsPromise = fetchCountIdtProbeWafers(props.status);
+    const idtProbeWafersPromise = fetchIdtProbeWafers(props.status, props.pageSize, currentPage.value, props.orderParams);
+    totalItems.value = await totalItemsPromise;
+    idtProbeWafers.value = await idtProbeWafersPromise;
 };
 
 onMounted(async () => {
-    totalItems.value = await fetchCountIdtProbeWafers(props.status);
-    idtProbeWafers.value = await fetchIdtProbeWafers(props.status, props.pageSize, currentPage.value, props.orderParams);
+    const totalItemsPromise = fetchCountIdtProbeWafers(props.status);
+    const idtProbeWafersPromise = fetchIdtProbeWafers(props.status, props.pageSize, currentPage.value, props.orderParams);
+    totalItems.value = await totalItemsPromise;
+    idtProbeWafers.value = await idtProbeWafersPromise;
 });
 </script>
 
