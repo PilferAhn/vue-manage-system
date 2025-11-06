@@ -16,6 +16,7 @@ export interface IdtProbeWafer {
     status?: IdtProbeStatus;    
     receivedDate?: string;
     completedDate?: string;
+    note?: string;
     designer?: User;
     // fabRequestForm?: FabRequestForm;
 }

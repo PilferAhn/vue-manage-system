@@ -86,6 +86,18 @@ export async function receiveIdtProbeWafer(idtProbeWafer: IdtProbeWafer): Promis
   }
 }
 
+// Update an IDT probe wafer note
+export async function updateIdtProbeWaferNote(lotId: string, note: string | null): Promise<IdtProbeWafer> {
+    const form = new FormData();
+    form.append('lot_id', lotId);
+    if (note) {
+      form.append('note', note);
+    }
+    const response = await axios.post('/idt_probe/update_idt_probe_wafer_note', form);
+    const data = response.data;
+    return convertPep8ToCamelCase2(data) as IdtProbeWafer;
+}
+
 // Complete an IDT probe wafer (assumption: backend endpoint names)
 export async function completeIdtProbeWafer(lotId: string): Promise<IdtProbeWafer | null> {
   try {

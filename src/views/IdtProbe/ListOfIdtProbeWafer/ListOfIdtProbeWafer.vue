@@ -3,30 +3,31 @@
     <div class="list-of-idt-probe-wafers">
 
         <!-- table of wafers -->
-        <el-table v-if="idtProbeWafers.length > 0" :data="idtProbeWafers" class="table" border>
+        <el-table :data="idtProbeWafers" class="table" border>
             <el-table-column prop="lotId" label="Lot ID" width="120" />
-            <el-table-column prop="productName" label="Product Name" width="200" />
-            <el-table-column label="Designer" width="120">
+            <el-table-column prop="productName" label="Product Name"  />
+            <el-table-column label="Designer">
                 <template #default="{ row }">
                     {{ row.designer?.userName ?? '-' }}
                 </template>
             </el-table-column>
-            <el-table-column prop="probeType" label="Probe Type" width="150" />
-            <el-table-column label="Status" width="140">
+            <el-table-column prop="probeType" label="Probe Type"/>
+            <el-table-column label="Status" width="120">
                 <template #default="{ row }">
                     {{ row.status ?? '-' }}
                 </template>
             </el-table-column>
-            <el-table-column label="Received" width="180">
+            <el-table-column label="Received" width="140">
                 <template #default="{ row }">
                     {{ formatDateTime(row.receivedDate) }}
                 </template>
             </el-table-column>
-            <el-table-column label="Completed" width="180">
+            <el-table-column label="Completed" width="140">
                 <template #default="{ row }">
                     {{ formatDateTime(row.completedDate) }}
                 </template>
-            </el-table-column>            
+            </el-table-column> 
+            <el-table-column prop="note" label="Note"/>
         </el-table>
         <el-pagination :hide-on-single-page="true" :total="totalItems" :page-size="props.pageSize"
             v-model:current-page="currentPage" layout="prev, pager, next" 

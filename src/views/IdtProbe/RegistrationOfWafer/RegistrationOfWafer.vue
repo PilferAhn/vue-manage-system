@@ -18,16 +18,16 @@
     <!-- table of wafers -->
     <el-table v-if="idtProbeWafers.length > 0" :data="idtProbeWafers" style="width: 100%; margin-top: 12px;" border>
       <el-table-column prop="lotId" label="Lot ID" width="120" />
-      <el-table-column prop="productName" label="Product Name" width="200" />
-      <el-table-column label="Designer" width="120">
+      <el-table-column prop="productName" label="Product Name"/>
+      <el-table-column label="Designer">
         <template #default="{ row }">
           {{ row.designer?.userName ?? '-' }}
         </template>
       </el-table-column>
-        <el-table-column label="Probe Type" width="150">
+      <el-table-column label="Probe Type">
           <template #default="{ row }">
             <template v-if="!row.status">
-              <el-select v-model="row.probeType" placeholder="Select probe type" filterable style="width: 180px;">
+              <el-select v-model="row.probeType" placeholder="Select probe type" >
                 <el-option
                   v-for="t in idtProbeTypes"
                   :key="t.probeType"
@@ -41,22 +41,32 @@
             </template>
           </template>
         </el-table-column>
-      <el-table-column label="Status" width="140">
+      <el-table-column label="Status" width="120">
         <template #default="{ row }">
           {{ row.status ?? '-' }}
         </template>
       </el-table-column>
-      <el-table-column label="Received" width="180">
+      <el-table-column label="Received" width="140">
         <template #default="{ row }">
           {{ formatDateTime(row.receivedDate) }}
         </template>
       </el-table-column>
-      <el-table-column label="Completed" width="180">
+      <el-table-column label="Completed" width="140">
         <template #default="{ row }">
           {{ formatDateTime(row.completedDate) }}
         </template>
       </el-table-column>
-      <el-table-column label="Actions" width="200" fixed="right">
+      <el-table-column label="Note">
+        <template #default="{ row }">
+          <template v-if="row.status==='completed'">
+            {{row.note}}
+          </template>
+          <template v-else>
+            <el-input v-model="row.note" placeholder="Enter note" @change="handleNoteChange(row)" />
+          </template>
+        </template>
+      </el-table-column>
+      <el-table-column label="Actions" width="100">
         <template #default="{ row }">
           <template v-if="!row.status">
             <el-button type="primary" size="small" :disabled="!row.probeType" @click="handleReceive(row)">Receive</el-button>
@@ -74,7 +84,8 @@
 import { formatDateTime } from '../../../utils/date-utils';
 import { ref, onMounted } from 'vue';
 import type { IdtProbeWafer, IdtProbeType } from '../../../interface/idt-probe-interfaces';
-import { fetchMesLotsStatusByCasseteId, fetchIdtProbeTypes, receiveIdtProbeWafer, completeIdtProbeWafer } from './RegistrationOfWafer';
+import { fetchMesLotsStatusByCasseteId, fetchIdtProbeTypes, receiveIdtProbeWafer, completeIdtProbeWafer, updateIdtProbeWaferNote } from './RegistrationOfWafer';
+import { ElMessage } from 'element-plus';
 const inputId = ref('');
 const currentCassetteId = ref('');
 const idtProbeWafers = ref<IdtProbeWafer[]>([]);
@@ -132,6 +143,16 @@ const handleComplete = async (row: IdtProbeWafer) => {
   }
 }
 
+const handleNoteChange = async (row: IdtProbeWafer) => {
+  if (!row.status) return;
+  try {
+    const updated = await updateIdtProbeWaferNote(row.lotId, row.note);
+      Object.assign(row, updated);
+  } catch (e) {
+    ElMessage.error('Failed to update note.');
+    console.error(e);
+  }
+}
 
 
 </script>
