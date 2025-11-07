@@ -1,7 +1,7 @@
 export const idtProbeBarList = {
     icon: "Calendar",
-    index: "idt-probe",
-    title: "IDT Probe",
+    index: "fab-probe",
+    title: "FAB Probe",
     permiss: "2",
     subs: [
       {
