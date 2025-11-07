@@ -3,12 +3,6 @@ export default {};
 </script>
 
 <template>
-  <!-- <div class="group-count">
-      <div v-for="(count, group) in groupCounts" :key="group" class="group-box">
-        <span>{{ group }}: {{ count }}개</span>
-      </div>
-    </div> -->
-
   <div class="table-wrapper">
     <!-- 검색어 입력 필드 -->
     <div
@@ -178,42 +172,46 @@ export default {};
         </template>
       </el-table-column>
 
-      <el-table-column label="HQ 출하 예정일" :align="'center'" width="100">
+      <el-table-column label="FAB OUT" :align="'center'" width="100">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
-            <span v-if="item['operation']['operationId'] === 'OP0E002040'">
-              {{ formatDate(adjustDate(item["moveinDate"], 3)) }}
-            </span>
+            <!-- <span v-if="item['operation']['operationId'] === 'OP0E002040'"> -->
+              <!-- {{formatDate(item['fabOutHistory']["endDate"])}} -->
+              <!-- {{ formatDate(adjustDate(item["moveinDate"], 3)) }} -->
+            <!-- </span> -->
             <span
-              v-else-if="
-                item['secondProbeHistory'] !== null &&
-                item['secondProbeHistory']['startDate'] !== null
+              v-if="item['fabOutHistory'] !== null &&
+                item['fabOutHistory']['endDate'] !== null
+                // item['secondProbeHistory'] !== null &&
+                // item['secondProbeHistory']['startDate'] !== null
               "
             >
-              {{
+              {{formatDate(item["fabOutHistory"]["endDate"])}}
+              <!-- {{
                 formatDate(
                   adjustDate(item["secondProbeHistory"]["startDate"], 3)
                 )
-              }}
+              }} -->
             </span>
-            <span
+            <!-- <span
               v-else-if="
                 item['secondProbeHistory'] !== null &&
                 item['secondProbeHistory']['endDate'] !== null
               "
-            >
-              {{
+            > -->
+              <!-- {{formatDate(item["secondProbeHistory"]["endDate"])}} -->
+              <!-- {{
                 formatDate(adjustDate(item["secondProbeHistory"]["endDate"], 3))
-              }}
-            </span>
-            <span
+              }} -->
+            <!-- </span> -->
+            <!-- <span
               v-else-if="
                 item['secondProbeHistory'] !== null &&
                 item['secondProbeHistory']['startDate'] === null
               "
             >
               SKIP
-            </span>
+            </span> -->
             <span v-else> -- </span>
             <br />
           </span>
@@ -498,7 +496,7 @@ const filteredApplicationData = computed(() => {
     if (typeof field === "string") {
       return field.toLowerCase().includes(term);
     }
-
+    
     return false;
   });
 });
@@ -563,12 +561,6 @@ const groupCounts = computed(() => {
 const modifiedFabData = ref<ModifiedFabDataInterface[]>([]);
 
 function handleExcelSubmit() {
-  //   modifiedFabData.value = [];
-  //   modifiedFabData.value = createTableData(
-  //     filteredData.value,
-  //     modifiedFabData.value
-  //   );
-  //   downloadFabPlanExcel(modifiedFabData.value);
 }
 
 // 필터 토글 함수
