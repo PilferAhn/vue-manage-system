@@ -66,7 +66,7 @@
           <div class="form-box">
             <LinveGraph
               :chartData="chartS21"
-              chartTitle="PDT"
+              :chartTitle="`PDT(${props.temperature})`"
               :reverseY="false"
               xAxisName="Frequency [Mhz]"
               yAxisName="IL[dBm]"
@@ -85,6 +85,21 @@
               v-bind:system-band-info="props.systemBandInfo"
               :target-freq="getTargetFreqArray()"
               :uuid="props.uuid"
+            />
+          </div>
+        </div>
+        
+        <div class="charts-row" v-if="hasENA">
+          <div class="form-box">
+            <LinveGraph
+              :chartData="pdtVsEnaData"
+              :chartTitle="`PDT(${props.temperature}) vs ENA`"
+              :reverseY="false"
+              xAxisName="Frequency [MHz]"
+              yAxisName="IL [dB]"
+              v-bind:system-band-info="props.systemBandInfo"
+              :target-freq="combinedTargetFreq"
+              :uuid="props.uuid"      
             />
           </div>
         </div>
@@ -134,7 +149,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, onMounted, computed } from "vue";
 import {
   getSummaryData,
   application_status,
@@ -161,10 +176,41 @@ const props = defineProps<{
 }>();
 
 const adminList = ["admin", "wh2409001"]
-// const targetFreq = ref<string[]>([]);
-// const db3Label = "𝒇 -3dB @" + props.temperature;
-
 const name = localStorage.getItem("ms_username");
+const PDT_COLOR = "#1f77b4";
+const ENA_COLOR = "#ff7f0e";
+
+const pdtVsEnaData = computed(() => {
+  const pdt = (chartS21?.value ?? []).map(ds => ({
+    ...ds,
+    backgroundColor: PDT_COLOR,
+    borderColor: PDT_COLOR,
+    label: ds.label?.startsWith("PDT-") ? ds.label : `PDT-${ds.label}`,
+  }));
+
+  const ena = (chartSPara?.value ?? []).map(ds => ({
+    ...ds,
+    backgroundColor: ENA_COLOR,
+    borderColor: ENA_COLOR,
+    label: ds.label?.startsWith("ENA-") ? ds.label : `ENA-${ds.label}`,
+  }));
+
+  return [...pdt, ...ena];
+});
+
+const hasENA = computed(() => {
+  const dsList = chartSPara?.value ?? [];
+  const isEna = dsList.some(ds =>
+    Array.isArray(ds.data) &&
+    ds.data.some(pt => pt && !Number.isNaN(pt.x) && !Number.isNaN(pt.y) && !(pt.x === 0 && pt.y === 0))
+  );
+  return isEna
+})
+
+const combinedTargetFreq = computed(() => {
+  const tf = getTargetFreqArray() ?? [];
+  return [...tf, ...tf];
+});
 
 function getSystemBand() {
   let systemBand = 0;
@@ -181,15 +227,10 @@ function getSystemBand() {
 
 const systemBand = ref(0);
 
-// onMounted(() => {
-//   systemBand.value = getSystemBand()
-// });
-
 watch(
   [() => props.systemBandInfo, () => props.targetPosition],
   () => {
     systemBand.value = getSystemBand();
-    console.log(systemBand.value)
   },
   { immediate: true }
 );

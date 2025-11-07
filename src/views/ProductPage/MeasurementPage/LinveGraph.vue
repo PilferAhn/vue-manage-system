@@ -175,7 +175,71 @@ const drawChart = () => {
         legend: {
           display: true,
           position: "top",
-        },
+          labels: {
+                    // PDT-*, ENA-* 라벨이 있으면 범례를 2개(PDT, ENA)로 묶어서 생성
+                    generateLabels: (chart) => {
+                      const ds = chart.data?.datasets || [];
+                      const isGrouped = ds.some(d =>
+                                                  typeof d.label === "string" &&
+                                                  (d.label.startsWith("PDT-") || d.label.startsWith("ENA-"))
+                                                );
+                      if (!isGrouped) {
+                      // 일반 차트는 기존 동작 유지
+                      return Chart.defaults.plugins.legend.labels.generateLabels(chart);
+                      }
+
+                      const pdtIdx = ds.findIndex(d => (d.label || "").startsWith("PDT-"));
+                      const enaIdx = ds.findIndex(d => (d.label || "").startsWith("ENA-"));
+                      const items = [];
+
+                      if (pdtIdx !== -1) {
+                        const meta = chart.getDatasetMeta(pdtIdx);
+                        items.push({
+                          text: "PDT",
+                          fillStyle: ds[pdtIdx].borderColor,
+                          strokeStyle: ds[pdtIdx].borderColor,
+                          lineWidth: 2,
+                          hidden: meta.hidden === true,
+                          datasetIndex: pdtIdx, // onClick에서 기준이 될 대표 인덱스
+                        });
+                      }
+
+                      if (enaIdx !== -1) {
+                        const meta = chart.getDatasetMeta(enaIdx);
+                        items.push({
+                          text: "ENA",
+                          fillStyle: ds[enaIdx].borderColor,
+                          strokeStyle: ds[enaIdx].borderColor,
+                          lineWidth: 2,
+                          hidden: meta.hidden === true,
+                          datasetIndex: enaIdx,
+                        });
+                      }
+                      return items;
+                    },
+                  },
+          // 범례 클릭 시 해당 그룹(PDT-*, ENA-*) 전체 show/hide
+          onClick: (evt, legendItem, legend) => {
+            const chart = legend.chart;
+            const ds = chart.data?.datasets || [];
+            const repIdx = legendItem.datasetIndex;
+            const repLabel = (ds[repIdx]?.label || "");
+          
+            const prefix = repLabel.startsWith("PDT-") ? "PDT-" : "ENA-";
+          
+            // 같은 prefix 가진 모든 dataset 메타 수집
+            const metas = ds
+              .map((d, i) => ({ i, label: d.label || "" }))
+              .filter(x => x.label.startsWith(prefix))
+              .map(x => chart.getDatasetMeta(x.i));
+          
+            // 하나라도 보이면 -> 전부 숨기기, 전부 숨겨져 있으면 -> 전부 보이기
+            const anyVisible = metas.some(m => m.hidden !== true);
+            metas.forEach(m => { m.hidden = anyVisible ? true : false; });
+          
+            chart.update();
+          },
+              },
       },
     },
   });
@@ -201,24 +265,8 @@ const toggleCustomPlugin = () => {
 };
 
 onMounted(() => {
-  // updateSpecInfoList();
-  // console.log("여기만 되는거 같은데 ")
   drawChart();
 });
-// watch(() => props.chartData, () => {
-//   drawChart();
-//   console.log("여기도 실행됨? ")
-// },{ deep: true });
-
-// watch(applicationUuid, (newValue, oldValue) => {
-//   if( newValue !== oldValue){
-//     console.log(`UUID ${oldValue} to ${newValue} has been changed`)
-//   }
-// })
-
-// watch(()=>props.uuid, () => {
-//   console.log("??"), {deep:true}
-// })
 </script>
 
 <style scoped>
