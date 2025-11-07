@@ -1,11 +1,11 @@
 import axios from "axios";
-import { IdtProbeStatus, IdtProbeWafer } from "../../../interface/idt-probe-interfaces";
+import { IdtProbeStatus, IdtProbeItem } from "../../../interface/idt-probe-interfaces";
 import { convertPep8ToCamelCase2 } from "../../../utils/key-converter";
 
-// Get count of IdtProbeWafers
-export async function fetchCountIdtProbeWafers(status: string = undefined): Promise<number> {
+// Get count of IdtProbeItems
+export async function fetchCountIdtProbeItems(status: string = undefined): Promise<number> {
     try {
-    const url = `/idt_probe/get_count_idt_probe_wafers`;
+    const url = '/idt_probe/get_count_idt_probe_items';
     if (status) {
         const form = new FormData();
         form.append('status', status);
@@ -16,22 +16,22 @@ export async function fetchCountIdtProbeWafers(status: string = undefined): Prom
         return response.data;
     }
     } catch (error) {  
-        console.error("Error fetching count of IdtProbeWafers:", error);
+        console.error("Error fetching count of IdtProbeItems:", error);
         throw error;
     }
 }
 
-// Get list of IdtProbeWafers
-export type ValidItdtProbeWaferOrderParams = {
+// Get list of IdtProbeItems
+export type ValidItdtProbeItemOrderParams = {
     orderBy: 'lot_id' | 'product_name' | 'probe_type' | 'status' | 'received_date' | 'completed_date';
     direction?: 'asc' | 'desc';
 };
-export async function fetchIdtProbeWafers(
+export async function fetchIdtProbeItems(
     status: IdtProbeStatus | undefined = undefined,
     pageSize: number = 0,
     page: number = 1,
-    orderParams: ValidItdtProbeWaferOrderParams | undefined = undefined
-    ): Promise<IdtProbeWafer[]> {
+    orderParams: ValidItdtProbeItemOrderParams | undefined = undefined
+    ): Promise<IdtProbeItem[]> {
   try {
     const form = new FormData();
     if (status) {
@@ -46,11 +46,11 @@ export async function fetchIdtProbeWafers(
         form.append("direction", orderParams.direction);
     }
 
-    const response = await axios.post('/idt_probe/get_idt_probe_wafers', form);
+    const response = await axios.post('/idt_probe/get_idt_probe_items', form);
     const data = response.data;
-    return data.map((item: Record<string, any>) => convertPep8ToCamelCase2(item) as IdtProbeWafer);
+    return data.map((item: Record<string, any>) => convertPep8ToCamelCase2(item) as IdtProbeItem);
     } catch (error) {
-        console.error("Error fetching IdtProbeWafers:", error);
+        console.error("Error fetching IdtProbeItems:", error);
         return [];
     }
 }

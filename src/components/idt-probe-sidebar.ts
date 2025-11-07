@@ -5,12 +5,12 @@ export const idtProbeBarList = {
     permiss: "2",
     subs: [
       {
-        index: "/idt-probe/register-wafer",
-        title: "Register Wafer",
+        index: "/idt-probe/register-items",
+        title: "Register Items",
         permiss: "2",
       },
       {
-        index: "/idt-probe/in-progress-wafers",
+        index: "/idt-probe/in-progress-items",
         title: "In Progress",
         permiss: "2",
       },

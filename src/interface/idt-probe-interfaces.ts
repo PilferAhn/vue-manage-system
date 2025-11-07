@@ -1,5 +1,4 @@
 // import { FabRequestForm } from './fab-application-rev2';
-import { LotStatus } from './mes-interface';
 import { User } from "./user";
 
 export type IdtProbeStatus = 'received' | 'completed';
@@ -9,18 +8,14 @@ export interface IdtProbeType {
     description?: string;
 }
 
-export interface IdtProbeWafer {
+export interface IdtProbeItem {
     lotId: string;
-    productName?: string;
     probeType?: string;
+    productName?: string;
     status?: IdtProbeStatus;    
     receivedDate?: string;
     completedDate?: string;
     note?: string;
     designer?: User;
     // fabRequestForm?: FabRequestForm;
-}
-
-export interface MesLotStatus extends LotStatus {
-    idtProbeWafer?: IdtProbeWafer;
 }

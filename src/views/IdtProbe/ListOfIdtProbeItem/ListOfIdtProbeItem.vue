@@ -1,9 +1,9 @@
 <template>
     <!-- single root wrapper to avoid Transition warning -->
-    <div class="list-of-idt-probe-wafers">
+    <div class="list-of-idt-probe-items">
 
         <!-- table of wafers -->
-        <el-table :data="idtProbeWafers" class="table" border>
+        <el-table :data="idtProbeItems" class="table" border>
             <el-table-column prop="lotId" label="Lot ID" width="120" />
             <el-table-column prop="productName" label="Product Name"  />
             <el-table-column label="Designer">
@@ -40,34 +40,34 @@
 <script setup lang="ts">
 import { formatDateTime } from '../../../utils/date-utils';
 import { ref, onMounted } from 'vue';
-import type { IdtProbeWafer, IdtProbeStatus } from '../../../interface/idt-probe-interfaces';
-import { ValidItdtProbeWaferOrderParams, fetchCountIdtProbeWafers, fetchIdtProbeWafers } from './ListOfIdtProbeWafer';
+import type { IdtProbeItem, IdtProbeStatus } from '../../../interface/idt-probe-interfaces';
+import { ValidItdtProbeItemOrderParams, fetchCountIdtProbeItems, fetchIdtProbeItems } from './ListOfIdtProbeItem';
 
 const props = withDefaults(defineProps<{
     pageSize?: number;
     status?: IdtProbeStatus | undefined;
-    orderParams?: ValidItdtProbeWaferOrderParams;
+    orderParams?: ValidItdtProbeItemOrderParams;
 }>(), {
     pageSize: 10,
     orderParams: () => { return { orderBy: 'received_date', direction: 'asc' } },
 });
 
-const idtProbeWafers = ref<IdtProbeWafer[]>([]);
+const idtProbeItems = ref<IdtProbeItem[]>([]);
 const totalItems = ref(0);
 const currentPage = ref(1);
 
 const handlePageChange = async () => {
-    const totalItemsPromise = fetchCountIdtProbeWafers(props.status);
-    const idtProbeWafersPromise = fetchIdtProbeWafers(props.status, props.pageSize, currentPage.value, props.orderParams);
+    const totalItemsPromise = fetchCountIdtProbeItems(props.status);
+    const idtProbeItemsPromise = fetchIdtProbeItems(props.status, props.pageSize, currentPage.value, props.orderParams);
     totalItems.value = await totalItemsPromise;
-    idtProbeWafers.value = await idtProbeWafersPromise;
+    idtProbeItems.value = await idtProbeItemsPromise;
 };
 
 onMounted(async () => {
-    const totalItemsPromise = fetchCountIdtProbeWafers(props.status);
-    const idtProbeWafersPromise = fetchIdtProbeWafers(props.status, props.pageSize, currentPage.value, props.orderParams);
+    const totalItemsPromise = fetchCountIdtProbeItems(props.status);
+    const idtProbeItemsPromise = fetchIdtProbeItems(props.status, props.pageSize, currentPage.value, props.orderParams);
     totalItems.value = await totalItemsPromise;
-    idtProbeWafers.value = await idtProbeWafersPromise;
+    idtProbeItems.value = await idtProbeItemsPromise;
 });
 </script>
 
