@@ -10,6 +10,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="probeType" label="Probe Type"/>
+      <el-table-column prop="iteration" label="Iter" width="50"/>
       <el-table-column prop="status" label="Status" width="120"/>
       <el-table-column label="Received" width="140">
         <template #default="{ row }">
@@ -84,7 +85,7 @@ onMounted(async () => {
 const handleNoteChange = async (row: IdtProbeItem) => {
   if (!row.status) return;
   try {
-    const updated = await updateIdtProbeItemNote(row.lotId, row.probeType, row.note);
+    const updated = await updateIdtProbeItemNote(row.lotId, row.probeType, row.iteration, row.note);
       Object.assign(row, updated);
   } catch (e) {
     ElMessage.error('Failed to update note.');
@@ -94,7 +95,7 @@ const handleNoteChange = async (row: IdtProbeItem) => {
 
 // Actions
 const handleComplete = async (row: IdtProbeItem) => {
-  const updated = await completeIdtProbeItem(row.lotId, row.probeType);
+  const updated = await completeIdtProbeItem(row.lotId, row.probeType, row.iteration);
   if (updated) {
     Object.assign(row, updated);
   }

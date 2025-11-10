@@ -12,6 +12,7 @@
                 </template>
             </el-table-column>
             <el-table-column prop="probeType" label="Probe Type"/>
+            <el-table-column prop="iteration" label="Iter" width="50"/>
             <el-table-column label="Status" width="120">
                 <template #default="{ row }">
                     {{ row.status ?? '-' }}

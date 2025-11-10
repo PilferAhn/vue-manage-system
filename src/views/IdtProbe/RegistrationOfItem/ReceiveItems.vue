@@ -16,6 +16,11 @@
               </el-select>
           </template>
         </el-table-column>
+      <el-table-column label="New Iter" width="130">
+        <template #default="{ row }">
+            <el-checkbox v-model="row.isNewIteration">New Iteration</el-checkbox>
+        </template>
+      </el-table-column>
       <el-table-column label="Note">
         <template #default="{ row }">
             <el-input v-model="row.note" placeholder="Enter note" />
@@ -44,6 +49,7 @@ interface IdtProbeWaferWithSlotNo {
   slotNo?: string;
   lotId: string;
   probeTypes: string[];
+  isNewIteration: boolean;
   productName: string;
   note?: string;
 }
@@ -61,6 +67,7 @@ onMounted(async () => {
             slotNo: lot.slotNo,
             lotId: lot.lotId,
             productName: lot.materialId,
+            isNewIteration: false,
             probeTypes: [],
             });
     }
@@ -78,7 +85,7 @@ const handleReceive = async (row: IdtProbeWaferWithSlotNo) => {
     };
 
     // Send the probe item for processing
-    const result = await receiveIdtProbeItem(idtProbeItem);
+    const result = await receiveIdtProbeItem(idtProbeItem, row.isNewIteration);
 
   }  
 }

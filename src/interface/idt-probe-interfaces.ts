@@ -11,6 +11,7 @@ export interface IdtProbeType {
 export interface IdtProbeItem {
     lotId: string;
     probeType?: string;
+    iteration?: number;
     productName?: string;
     status?: IdtProbeStatus;    
     receivedDate?: string;

@@ -61,9 +61,9 @@ export async function fetchIdtProbeTypes(): Promise<IdtProbeType[]> {
 }
 
 // Receive an IDT probe item
-export async function receiveIdtProbeItem(idtProbeItem: IdtProbeItem): Promise<IdtProbeItem | null> {
+export async function receiveIdtProbeItem(idtProbeItem: IdtProbeItem, isNewIteration: boolean): Promise<IdtProbeItem | null> {
   try {
-    const response = await axios.post('/idt_probe/create_idt_probe_item', convertKeysToPEP8(idtProbeItem));
+    const response = await axios.post(`/idt_probe/create_idt_probe_item?is_new_iteration=${isNewIteration}`,  convertKeysToPEP8(idtProbeItem));
     const data = response.data;
     ElMessage.success(`IDT probe item (lotId: ${idtProbeItem.lotId} , probeType: ${idtProbeItem.probeType}) received successfully.`);
     return convertPep8ToCamelCase2(data) as IdtProbeItem;
@@ -75,10 +75,11 @@ export async function receiveIdtProbeItem(idtProbeItem: IdtProbeItem): Promise<I
 }
 
 // Update an IDT probe item note
-export async function updateIdtProbeItemNote(lotId: string, probeType: string, note: string | null): Promise<IdtProbeItem> {
+export async function updateIdtProbeItemNote(lotId: string, probeType: string, iteration: number, note: string | null): Promise<IdtProbeItem> {
     const form = new FormData();
     form.append('lot_id', lotId);
     form.append('probe_type', probeType);
+    form.append('iteration', iteration.toString());
     if (note) {
       form.append('note', note);
     }
@@ -88,10 +89,11 @@ export async function updateIdtProbeItemNote(lotId: string, probeType: string, n
 }
 
 // Complete an IDT probe item
-export async function completeIdtProbeItem(lotId: string, probeType: string): Promise<IdtProbeItem | null> {
+export async function completeIdtProbeItem(lotId: string, probeType: string, iteration: number): Promise<IdtProbeItem | null> {
     const form = new FormData();
     form.append('lot_id', lotId);
     form.append('probe_type', probeType);
+    form.append('iteration', iteration.toString());
     form.append('status', 'completed');
     const response = await axios.post('/idt_probe/update_idt_probe_item_status', form);
     const data = response.data;
