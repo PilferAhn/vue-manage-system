@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { IdtProbeType, IdtProbeItem} from "../../../interface/idt-probe-interfaces";
+import { IdtProbeItem} from "../../../interface/idt-probe-interfaces";
 import {convertKeysToPEP8, convertPep8ToCamelCase2} from "../../../utils/key-converter"
 import {LotStatus as MesLot} from "../../../interface/mes-interface"
 import { ElMessage } from 'element-plus';
