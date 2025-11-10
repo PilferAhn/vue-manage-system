@@ -17,6 +17,7 @@ export interface IdtProbeItem {
     receivedDate?: string;
     completedDate?: string;
     note?: string;
+    priority?: string;
     designer?: User;
     // fabRequestForm?: FabRequestForm;
 }

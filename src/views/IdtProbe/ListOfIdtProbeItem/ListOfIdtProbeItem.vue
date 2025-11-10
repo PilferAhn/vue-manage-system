@@ -6,6 +6,7 @@
         <el-table :data="idtProbeItems" class="table" border @filter-change="handleFilterChange">
             <el-table-column prop="lotId" label="Lot ID" width="120" />
             <el-table-column prop="productName" label="Product Name"  />
+            <el-table-column prop="priority" label="Priority" width="80" />
             <el-table-column label="Designer">
                 <template #default="{ row }">
                     {{ row.designer?.userName ?? '-' }}
@@ -51,7 +52,7 @@ const props = withDefaults(defineProps<{
     orderParams?: ValidItdtProbeItemOrderParams;
 }>(), {
     pageSize: 10,
-    orderParams: () => { return { orderBy: 'received_date', direction: 'asc' } },
+    orderParams: () => { return { orderBy: ['received_date'], direction: 'asc' } },
 });
 
 type ColumnFilterOption = {

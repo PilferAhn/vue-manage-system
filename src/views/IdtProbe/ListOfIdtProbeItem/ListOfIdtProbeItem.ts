@@ -26,8 +26,9 @@ export async function fetchCountIdtProbeItems(status: string = undefined, filter
 }
 
 // Get list of IdtProbeItems
+type ValidOrderBy = 'lot_id' | 'product_name' | 'probe_type' | 'status' | 'received_date' | 'completed_date' | 'priority';
 export type ValidItdtProbeItemOrderParams = {
-    orderBy: 'lot_id' | 'product_name' | 'probe_type' | 'status' | 'received_date' | 'completed_date';
+    orderBy: ValidOrderBy[];
     direction?: 'asc' | 'desc';
 };
 export async function fetchIdtProbeItems(
@@ -50,7 +51,7 @@ export async function fetchIdtProbeItems(
       form.append("limit", pageSize.toString());     
     }
     if (orderParams) {
-        form.append("order_by", orderParams.orderBy);
+        form.append("order_by", orderParams.orderBy.join(","));
         form.append("direction", orderParams.direction);
     }
 

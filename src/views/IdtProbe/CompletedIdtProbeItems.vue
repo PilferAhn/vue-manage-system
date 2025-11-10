@@ -10,7 +10,7 @@ import ListOfIdtProbeItem from './ListOfIdtProbeItem/ListOfIdtProbeItem.vue';
 import { ValidItdtProbeItemOrderParams } from './ListOfIdtProbeItem/ListOfIdtProbeItem';
 
 const orderParams = ref<ValidItdtProbeItemOrderParams>({
-    orderBy: 'completed_date',
+    orderBy: ['completed_date'],
     direction: 'desc'
 });
 </script>
