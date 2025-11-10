@@ -16,9 +16,9 @@
               </el-select>
           </template>
         </el-table-column>
-      <el-table-column label="New Iter" width="130">
+      <el-table-column label="New Iter" width="80" align="center">
         <template #default="{ row }">
-            <el-checkbox v-model="row.isNewIteration">New Iteration</el-checkbox>
+            <el-checkbox v-model="row.isNewIteration"/>
         </template>
       </el-table-column>
       <el-table-column label="Note">
