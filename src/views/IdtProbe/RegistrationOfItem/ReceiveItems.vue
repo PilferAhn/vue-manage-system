@@ -37,7 +37,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import type { IdtProbeItem, IdtProbeType } from '../../../interface/idt-probe-interfaces';
-import { fetchIdtProbeTypes, receiveIdtProbeItem } from './RegistrationOfItem';
+import { receiveIdtProbeItem } from './RegistrationOfItem';
+import { fetchIdtProbeTypes } from '../../IdtProbe/IdtProbeCommon';
 import { LotStatus as MesLot } from '../../../interface/mes-interface';
 
 const props = defineProps<{

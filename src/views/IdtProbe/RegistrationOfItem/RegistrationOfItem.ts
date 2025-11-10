@@ -46,20 +46,6 @@ export async function fetchMesLotsByCassetteId(Id: string): Promise<MesLot[]> {
   }
 }
 
-// Function to fetch IdtProbeTypes
-export async function fetchIdtProbeTypes(): Promise<IdtProbeType[]> {
-  try {
-    const response = await axios.get('/idt_probe/get_idt_probe_types');
-    const data = response.data;
-
-    // Convert each item in the array to camelCase
-    return data.map((item: Record<string, any>) => convertPep8ToCamelCase2(item) as IdtProbeType);
-  } catch (error) {
-    console.error("Error fetching IdtProbeTypes:", error);
-    return [];
-  }
-}
-
 // Receive an IDT probe item
 export async function receiveIdtProbeItem(idtProbeItem: IdtProbeItem, isNewIteration: boolean): Promise<IdtProbeItem | null> {
   try {

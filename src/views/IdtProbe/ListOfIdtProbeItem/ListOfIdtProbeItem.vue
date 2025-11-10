@@ -3,7 +3,7 @@
     <div class="list-of-idt-probe-items">
 
         <!-- table of wafers -->
-        <el-table :data="idtProbeItems" class="table" border>
+        <el-table :data="idtProbeItems" class="table" border @filter-change="handleFilterChange">
             <el-table-column prop="lotId" label="Lot ID" width="120" />
             <el-table-column prop="productName" label="Product Name"  />
             <el-table-column label="Designer">
@@ -11,7 +11,7 @@
                     {{ row.designer?.userName ?? '-' }}
                 </template>
             </el-table-column>
-            <el-table-column prop="probeType" label="Probe Type"/>
+            <el-table-column prop="probeType" label="Probe Type" :filters="idtProbeTypesFilters" column-key="probeTypes"/>
             <el-table-column prop="iteration" label="Iter" width="50"/>
             <el-table-column label="Status" width="120">
                 <template #default="{ row }">
@@ -41,8 +41,9 @@
 <script setup lang="ts">
 import { formatDateTime } from '../../../utils/date-utils';
 import { ref, onMounted } from 'vue';
-import type { IdtProbeItem, IdtProbeStatus } from '../../../interface/idt-probe-interfaces';
-import { ValidItdtProbeItemOrderParams, fetchCountIdtProbeItems, fetchIdtProbeItems } from './ListOfIdtProbeItem';
+import type { IdtProbeItem, IdtProbeStatus, IdtProbeType } from '../../../interface/idt-probe-interfaces';
+import { ValidItdtProbeItemOrderParams, fetchCountIdtProbeItems, fetchIdtProbeItems, FilterIdtProbeItemBy } from './ListOfIdtProbeItem';
+import { fetchIdtProbeTypes } from '../../IdtProbe/IdtProbeCommon';
 
 const props = withDefaults(defineProps<{
     pageSize?: number;
@@ -53,22 +54,42 @@ const props = withDefaults(defineProps<{
     orderParams: () => { return { orderBy: 'received_date', direction: 'asc' } },
 });
 
+type ColumnFilterOption = {
+    text: string;
+    value: string;
+};
+
 const idtProbeItems = ref<IdtProbeItem[]>([]);
+const idtProbeTypesFilters = ref<ColumnFilterOption[]>([]);
 const totalItems = ref(0);
 const currentPage = ref(1);
+let filterBy : FilterIdtProbeItemBy = {};
 
 const handlePageChange = async () => {
-    const totalItemsPromise = fetchCountIdtProbeItems(props.status);
-    const idtProbeItemsPromise = fetchIdtProbeItems(props.status, props.pageSize, currentPage.value, props.orderParams);
+    const totalItemsPromise = fetchCountIdtProbeItems(props.status, filterBy);
+    const idtProbeItemsPromise = fetchIdtProbeItems(props.status, filterBy, props.pageSize, currentPage.value, props.orderParams);
     totalItems.value = await totalItemsPromise;
     idtProbeItems.value = await idtProbeItemsPromise;
 };
 
+const handleFilterChange = async (newFilters: FilterIdtProbeItemBy) => {
+    filterBy = newFilters;
+    handlePageChange();
+};
+
 onMounted(async () => {
-    const totalItemsPromise = fetchCountIdtProbeItems(props.status);
-    const idtProbeItemsPromise = fetchIdtProbeItems(props.status, props.pageSize, currentPage.value, props.orderParams);
-    totalItems.value = await totalItemsPromise;
-    idtProbeItems.value = await idtProbeItemsPromise;
+    const idtProbeTypesPromise = fetchIdtProbeTypes();
+
+    handlePageChange();
+        
+    const idtProbeTypes = await idtProbeTypesPromise;
+    idtProbeTypesFilters.value = idtProbeTypes.map((type: IdtProbeType) => {
+        return {
+            text: type.probeType,
+            value: type.probeType,
+        };
+    });
+    
 });
 </script>
 

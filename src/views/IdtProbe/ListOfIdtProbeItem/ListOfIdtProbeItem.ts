@@ -2,19 +2,23 @@ import axios from "axios";
 import { IdtProbeStatus, IdtProbeItem } from "../../../interface/idt-probe-interfaces";
 import { convertPep8ToCamelCase2 } from "../../../utils/key-converter";
 
+export interface FilterIdtProbeItemBy {
+    probeTypes?: string[];
+}
+
 // Get count of IdtProbeItems
-export async function fetchCountIdtProbeItems(status: string = undefined): Promise<number> {
+export async function fetchCountIdtProbeItems(status: string = undefined, filter: FilterIdtProbeItemBy = {}): Promise<number> {
     try {
-    const url = '/idt_probe/get_count_idt_probe_items';
-    if (status) {
+        const url = '/idt_probe/get_count_idt_probe_items';
         const form = new FormData();
-        form.append('status', status);
+        if (status) {
+            form.append('status', status);
+        }
+        if (filter.probeTypes && filter.probeTypes.length > 0) {
+            form.append('probe_types', filter.probeTypes.join(','));
+        }
         const response = await axios.post(url, form);
         return response.data;
-    } else {
-        const response = await axios.get(url);
-        return response.data;
-    }
     } catch (error) {  
         console.error("Error fetching count of IdtProbeItems:", error);
         throw error;
@@ -28,6 +32,7 @@ export type ValidItdtProbeItemOrderParams = {
 };
 export async function fetchIdtProbeItems(
     status: IdtProbeStatus | undefined = undefined,
+    filter: FilterIdtProbeItemBy = {},
     pageSize: number = 0,
     page: number = 1,
     orderParams: ValidItdtProbeItemOrderParams | undefined = undefined
@@ -37,6 +42,9 @@ export async function fetchIdtProbeItems(
     if (status) {
       form.append("status", status);
     }
+    if (filter.probeTypes && filter.probeTypes.length > 0) {
+            form.append('probe_types', filter.probeTypes.join(','));
+   }
     if (pageSize > 0) {
       form.append("offset", ((page - 1) * pageSize).toString());
       form.append("limit", pageSize.toString());     
