@@ -89,11 +89,13 @@ export default {};
       /> -->
       
       <el-table-column
-        label="Wafer LOT ID"
         width="110"
         :align="'center'"
         fixed="left"
       >
+        <template #header>
+           Wafer<br/>LOT ID
+        </template>
         <template #default="scope">
             
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
@@ -249,13 +251,13 @@ export default {};
         </template>
       </el-table-column>
 
-      <el-table-column  :align="'center'" width="90">
+      <el-table-column  :align="'center'" width="120">
         <template #header>
            FAB<br/>리드타임
         </template>
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
-            <span v-if="getFabLeadTime(item)">{{ getFabLeadTime(item) }}</span>
+            <span v-if="getFabLeadTime(item, scope.row.wantedFabFinishDate)" v-html="getFabLeadTime(item, scope.row.wantedFabFinishDate)"</span>
             <span v-else> -- </span>
             <br />
           </span>
@@ -675,25 +677,41 @@ function getFabTime(item: any): string | null {
   return diffDaysWithDecimal(fabIn, todayStr);
 }
 
-function getFabLeadTime(item: any): string | null {
-  // const fabIn = item?.creationDate; // FAB 투입
-  // const fabOut = item?.fabOutHistory?.endDate; // FAB OUT
+function diffDaysNumber(startStr?: string, endStr?: string): number | null {
+  if (!startStr || !endStr) return null;
+  const start = new Date(startStr);
+  const end = new Date(endStr);
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) return null;
 
-  // if (!fabIn || !fabOut) return null;
+  return (new Date(start).getTime() - new Date(end).getTime()) / (1000 * 60 * 60 * 24);
+}
 
-  // const start = new Date(fabIn);
-  // const end = new Date(fabOut);
 
-  // if (isNaN(start.getTime()) || isNaN(end.getTime())) return null;
-
-  // const diffDays = Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-
-  // if (diffDays < 0) return null;
-
-  // return `${diffDays.toFixed(1)}일`;
+function getFabLeadTime(item: any, wantedFabFinishDate?: string): string | null {
   const fabIn = item?.creationDate;
   const fabOut = item?.fabOutHistory?.endDate;
-  return diffDaysWithDecimal(fabIn, fabOut);
+  const wantedFabOutDate = wantedFabFinishDate;
+
+  if (!fabIn || !fabOut) return null;
+
+  const fabLeadTime = diffDaysWithDecimal(fabIn, fabOut);
+  if(!fabLeadTime) return null;
+  if (!wantedFabOutDate) return fabLeadTime;
+
+  const diff = diffDaysNumber(fabOut, wantedFabOutDate);
+  if (diff === null) return fabLeadTime;
+  const diffFixed = diff.toFixed(1);
+
+  let diffText = "";
+  if (diff > 0) {
+    diffText = ` (<span style="color:red;">+${diffFixed}</span>)`;
+  } else if (diff < 0) {
+    diffText = ` (<span style="color:blue;">${diffFixed}</span>)`;
+  } else {
+    diffText = "";
+  }
+
+  return `${fabLeadTime}${diffText}`;
 }
 
 function getShipLeadTime(item: any): string | null {
