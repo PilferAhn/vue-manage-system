@@ -56,7 +56,7 @@ export default {};
         :fixed="'left'"
         type="index"
         label="No"
-        width="70"
+        width="50"
         :align="'center'"
       ></el-table-column>
 
@@ -89,7 +89,7 @@ export default {};
       />
       
       <el-table-column
-        width="110"
+        width="105"
         :align="'center'"
         fixed="left"
       >
@@ -117,7 +117,7 @@ export default {};
         </template>
       </el-table-column> -->
 
-      <el-table-column label="FAB 투입일" :align="'center'" width="130">
+      <el-table-column label="FAB 투입일" :align="'center'" width="110">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             {{ formatDate(item.creationDate) }}
@@ -302,7 +302,10 @@ export default {};
         </template>
       </el-table-column>
       
-      <el-table-column label="출하 리드타임" :align="'center'" width="80">
+      <el-table-column :align="'center'" width="90">
+        <template #header>
+          출하<br/>리드타임
+        </template>
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
           <span v-if="getShipLeadTime(item)">{{ getShipLeadTime(item) }}</span>
