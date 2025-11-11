@@ -662,6 +662,7 @@ const groupCounts = computed(() => {
 const modifiedFabData = ref<ModifiedFabDataInterface[]>([]);
 
 const customHolidays = ref<string[]>([
+  // '2025-09-18'
   // '2024-12-25','2025-01-01', ...
 ]);
 
@@ -675,28 +676,52 @@ function workingDaysFloat(
 ): number | null {
   const toDate = (v?: string | Date | null) => {
     if (!v) return null;
-    const d = v instanceof Date ? v : new Date(v);
+    if (v instanceof Date) return isNaN(v.getTime()) ? null : v;
+    let s = String(v).trim();
+
+    // 이미 타임존이 있으면 그대로 신뢰 (Z, +09:00, -04:00 등)
+    if (/[zZ]$/.test(s) || /[+\-]\d{2}:\d{2}$/.test(s)) {
+      const d = new Date(s);
+      return isNaN(d.getTime()) ? null : d;
+    }
+    // 날짜만 있으면 자정 보정
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+      s += 'T00:00:00';
+    } else {
+      // 공백 → T 로 ISO 정규화 (Safari 대응)
+      s = s.replace(' ', 'T');
+    }
+    // KST 가정
+    const withTz = `${s}+09:00`;
+    const d = new Date(withTz);
     return isNaN(d.getTime()) ? null : d;
   };
-  const dayStart = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
-  const nextDayStart = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1, 0, 0, 0, 0);
-  const addDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+
+  const dayStart = (d: Date) =>
+    new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
+  const nextDayStart = (d: Date) =>
+    new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1, 0, 0, 0, 0);
+  const addDays = (d: Date, n: number) =>
+    new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
   const toYMD = (d: Date) => {
     const m = `${d.getMonth() + 1}`.padStart(2, '0');
     const day = `${d.getDate()}`.padStart(2, '0');
     return `${d.getFullYear()}-${m}-${day}`;
   };
-  const isWeekend = (d: Date) => (d.getDay() === 0 || d.getDay() === 6); // 일/토
+  const isWeekend = (d: Date) => d.getDay() === 0 || d.getDay() === 6; // 일/토
 
   let s = toDate(startVal);
   let e = toDate(endVal);
   if (!s || !e) return null;
 
-  // 방향 보정(거꾸로면 음수 반환)
+  // 역순이면 음수 부호로
   let sign = 1;
-  if (s > e) { [s, e] = [e, s]; sign = -1; }
+  if (s > e) {
+    [s, e] = [e, s];
+    sign = -1;
+  }
 
-  const HOL = new Set(extraHolidays.map(x => x.trim()));
+  const HOL = new Set(extraHolidays.map((x) => x.trim()));
   const msPerHour = 1000 * 60 * 60;
   let cursor = dayStart(s);
   const endDay = dayStart(e);
@@ -704,8 +729,12 @@ function workingDaysFloat(
 
   while (cursor <= endDay) {
     if (!(isWeekend(cursor) || HOL.has(toYMD(cursor)))) {
-      const segStart = new Date(Math.max(dayStart(cursor).getTime(), s.getTime()));
-      const segEnd   = new Date(Math.min(nextDayStart(cursor).getTime(), e.getTime()));
+      const segStart = new Date(
+        Math.max(dayStart(cursor).getTime(), s.getTime())
+      );
+      const segEnd = new Date(
+        Math.min(nextDayStart(cursor).getTime(), e.getTime())
+      );
       const hours = Math.max(0, (segEnd.getTime() - segStart.getTime()) / msPerHour);
       workHours += hours;
     }
@@ -715,10 +744,7 @@ function workingDaysFloat(
 }
 
 function getFabTime(item: any): string | null {
-  // const today = new Date();
-  // const todayStr = today.toISOString().slice(0, 10);
   const fabIn = item?.creationDate;
-  // return diffDaysWithDecimal(fabIn, todayStr);
   return getWorkingDays(workingDaysFloat(fabIn, new Date(), customHolidays.value));
 }
 
@@ -754,46 +780,103 @@ function getFabLeadTime(item: any, wantedFabFinishDate?: string): string | null 
   }`;
 }
 
+
+// function traceWorkingDaysFloat(
+//   startVal?: string | Date,
+//   endVal?: string | Date,
+//   extraHolidays: string[] = []
+// ) {
+//   //  REPLACE: 이 함수 내부의 toDate를 위와 동일한 것으로 교체
+//   const toDate = (v?: string | Date | null) => {
+//     if (!v) return null;
+//     if (v instanceof Date) return isNaN(v.getTime()) ? null : v;
+
+//     let s = String(v).trim();
+//     if (/[zZ]$/.test(s) || /[+\-]\d{2}:\d{2}$/.test(s)) {
+//       const d = new Date(s);
+//       return isNaN(d.getTime()) ? null : d;
+//     }
+//     if (/^\d{4}-\d{2}-\d{2}$/.test(s)) s += 'T00:00:00';
+//     else s = s.replace(' ', 'T');
+
+//     const withTz = `${s}+09:00`;
+//     const d = new Date(withTz);
+//     return isNaN(d.getTime()) ? null : d;
+//   };
+
+//   const dayStart = (d: Date) =>
+//     new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
+//   const nextDayStart = (d: Date) =>
+//     new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1, 0, 0, 0, 0);
+//   const addDays = (d: Date, n: number) =>
+//     new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+//   const toYMD = (d: Date) => {
+//     const m = `${d.getMonth() + 1}`.padStart(2, '0');
+//     const day = `${d.getDate()}`.padStart(2, '0');
+//     return `${d.getFullYear()}-${m}-${day}`;
+//   };
+//   const isWeekend = (d: Date) => d.getDay() === 0 || d.getDay() === 6;
+
+//   let s = toDate(startVal);
+//   let e = toDate(endVal);
+//   if (!s || !e) return { totalDays: null, rows: [] };
+
+//   let sign = 1;
+//   if (s > e) {
+//     [s, e] = [e, s];
+//     sign = -1;
+//   }
+
+//   const HOL = new Set(extraHolidays.map((x) => x.trim()));
+//   const msPerHour = 1000 * 60 * 60;
+
+//   let cursor = dayStart(s);
+//   const endDay = dayStart(e);
+//   let workHours = 0;
+//   const rows: any[] = [];
+
+//   while (cursor <= endDay) {
+//     const ymd = toYMD(cursor);
+//     const weekend = isWeekend(cursor);
+//     const holiday = HOL.has(ymd);
+
+//     const segStart = new Date(Math.max(dayStart(cursor).getTime(), s.getTime()));
+//     const segEnd = new Date(Math.min(nextDayStart(cursor).getTime(), e.getTime()));
+//     const hours = Math.max(0, (segEnd.getTime() - segStart.getTime()) / msPerHour);
+
+//     if (!(weekend || holiday)) workHours += hours;
+
+//     rows.push({
+//       ymd,
+//       weekend,
+//       holiday,
+//       segStart: segStart.toISOString(),
+//       segEnd: segEnd.toISOString(),
+//       hoursAdded: !(weekend || holiday) ? hours : 0,
+//     });
+
+//     cursor = addDays(cursor, 1);
+//   }
+
+//   return { totalDays: sign * (workHours / 24), rows };
+// }
+
 function getShipLeadTime(item: any): string | null {
   const fabOut = item?.fabOutHistory?.endDate;
   const isTransit = item?.operation?.name === "Transit 공정";
   const shipIn = isTransit ? item?.moveinDate : null;
+  if (!fabOut || !shipIn) return null;
   return getWorkingDays(workingDaysFloat(fabOut, shipIn, customHolidays.value));
+
+//   const fabOut = "2025-10-30T17:00:00";          // 실제 FAB OUT
+// const transit = "2025-11-05T09:27:00";         // Transit move-in
+// const hol = customHolidays.value;              // 네가 넣는 휴무일 리스트
+
+// const t = traceWorkingDaysFloat(fabOut, transit, hol);
+// console.table(t.rows);
+// console.log("TOTAL:", t.totalDays);
+// return null;;
 }
-
-// function getFabLeadTime(item: any, wantedFabFinishDate?: string): string | null {
-//   const fabIn = item?.creationDate;
-//   const fabOut = item?.fabOutHistory?.endDate;
-//   const wantedFabOutDate = wantedFabFinishDate;
-
-//   if (!fabIn || !fabOut) return null;
-
-//   const fabLeadTime = diffDaysWithDecimal(fabIn, fabOut);
-//   if(!fabLeadTime) return null;
-//   if (!wantedFabOutDate) return fabLeadTime;
-
-//   const diff = diffDaysNumber(fabOut, wantedFabOutDate);
-//   if (diff === null) return fabLeadTime;
-//   const diffFixed = diff.toFixed(1);
-
-//   let diffText = "";
-//   if (diff > 0) {
-//     diffText = ` (<span style="color:red;">+${diffFixed}</span>)`;
-//   } else if (diff < 0) {
-//     diffText = ` (<span style="color:blue;">${diffFixed}</span>)`;
-//   } else {
-//     diffText = "";
-//   }
-
-//   return `${fabLeadTime}${diffText}`;
-// }
-
-
-// function getShipLeadTime(item: any): string | null {
-//   const fabOut = item?.fabOutHistory?.endDate;
-//   const hqShip = item?.operation?.name === "Transit 공정" ? item?.moveinDate : null;
-//   return diffDaysWithDecimal(fabOut, hqShip);
-// }
 
 function handleExcelSubmit() {
 }
