@@ -79,14 +79,14 @@ export default {};
           {{ scope.row.requester.userName }}
         </template>
       </el-table-column>
-
-      <!-- <el-table-column
+      
+      <el-table-column
         :fixed="'left'"
-        prop="productName"
+        prop="priorityId"
         label="Priority"
-        width="140"
+        width="80"
         :align="'center'"
-      /> -->
+      />
       
       <el-table-column
         width="110"
