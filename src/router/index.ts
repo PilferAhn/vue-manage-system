@@ -9,6 +9,7 @@ import { pdtRouteIndexList } from "./pdt-router";
 import { dv2RouteIndexList } from "./dv2-router";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
+import { idtProbeRouteIndexList } from "./idt-probe-router";
 
 const routes: RouteRecordRaw[] = [
   {
@@ -876,6 +877,7 @@ const routes: RouteRecordRaw[] = [
             /* webpackChunkName: "table" */ "../views/Mdr/General/ApplicationList/MyApplicationList.vue"
           ),
       },
+      ...idtProbeRouteIndexList,
       ...fabRouteIndexList,
       ...whcRouteIndexList,
       ...dv2RouteIndexList,
