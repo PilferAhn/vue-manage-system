@@ -931,7 +931,10 @@ function buildExcelRows(source: any[]): any[] {
         ? `${st?.operation?.name ?? ""} ${formatDateTime(st?.moveinDate)}`
         : `${st?.fabOutHistory?.operation?.name ?? ""} ${formatDate(st?.fabOutHistory?.endDate)}`;
 
-      const fabProgressLabel = getWorkingDays(workingDaysFloat(fabIn, new Date(), customHolidays.value));
+      const fabProgressLabel =
+          st?.fabOutHistory == null
+          ? getWorkingDays(workingDaysFloat(fabIn, new Date(), customHolidays.value))
+          : "";
       const fabLeadHtml = getFabLeadTime({ fabOutHistory: st?.fabOutHistory, creationDate: fabIn }, wantedFabFinishDate);
       const fabLeadLabel = stripHtml(fabLeadHtml);
 
