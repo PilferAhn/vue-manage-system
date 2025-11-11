@@ -519,6 +519,9 @@ export default {};
     <el-button type="warning" @click="toggleLateFilter" class="buttun-section">
       {{ isDealyFab ? "원래 데이터 보기" : "지연 과제 보기" }}
     </el-button>
+    <el-button type="warning" @click="toggleDVFilter" class="buttun-section">
+      {{ isDVonly ? "Cancel DV" : "DV only" }}
+    </el-button>
     <el-button type="primary" @click="handleExcelSubmit" class="buttun-section">
       개발 샘플 진행 상황 EXCEL
     </el-button>
@@ -558,6 +561,7 @@ const searchTerm = ref("");
 const searchCategory = ref("productName"); // 기본 검색 기준을 "Lot ID"로 설정
 const isRunningFab = ref(true);
 const isDealyFab = ref(false);
+const isDVonly = ref(false);
 // Clear the search input
 function handleClear() {
   searchTerm.value = ""; // Reset search term
@@ -610,6 +614,11 @@ const filteredData = computed(() => {
     tempApp.value = getLateFabRev2(tempApp.value);
   } else {
     tempApp.value = tempApp.value;
+  }
+
+  if (isDVonly.value) {
+    // Filter by first character 'D' in productName
+    tempApp.value = tempApp.value.filter((item) => item.productName.charAt(0) === 'D');
   }
 
   if (isFiltered.value) {
@@ -758,6 +767,11 @@ const toggleFilter = () => {
 const toggleLateFilter = () => {
   isDealyFab.value = !isDealyFab.value;
 };
+
+const toggleDVFilter = () => {
+  isDVonly.value = !isDVonly.value;
+};
+
 </script>
 
 <style lang="scss" scoped>
