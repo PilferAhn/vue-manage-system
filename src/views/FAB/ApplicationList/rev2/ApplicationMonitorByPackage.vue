@@ -513,9 +513,9 @@ export default {};
       ></DialogTemplate> -->
   </div>
 
-  <el-button type="primary" @click="toggleFilter" class="buttun-section">
+  <!-- <el-button type="primary" @click="toggleFilter" class="buttun-section">
       {{ isFiltered ? "원래 데이터 보기" : "중화 69 과제 보기" }}
-    </el-button>
+    </el-button> -->
     <el-button type="warning" @click="toggleLateFilter" class="buttun-section">
       {{ isDealyFab ? "원래 데이터 보기" : "지연 과제 보기" }}
     </el-button>

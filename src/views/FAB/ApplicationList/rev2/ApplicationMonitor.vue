@@ -7,7 +7,7 @@
       <el-tab-pane :label="wlpLabel" name="wlp">
         <ApplicationMonitorByPackage :fabApp="wlpApps" :teg-app="tegApp" :isWlp="true" />
       </el-tab-pane>
-      <el-tab-pane :label="'ETC'" name="etc">
+      <el-tab-pane :label="'개발전달'" name="etc">
         <ApplicationMonitorByPackage :fabApp="etcApps" :teg-app="tegApp" />
       </el-tab-pane>
     </el-tabs>
@@ -82,14 +82,14 @@ onMounted(async () => {
 
     // apps.forEach((app) => app.createMesInfo())
 
-    Object.assign(cspApps, getAppByPackageType(apps, ["CSP"], ["WHC", "WTC", "개발전달"]));
+    Object.assign(cspApps, getAppByPackageType(apps, ["CSP"], ["WHC"]));
     Object.assign(
       wlpApps,
-      getAppByPackageType(apps, ["WLP", "BDMP"], ["WHC", "WTC"])
+      getAppByPackageType(apps, ["WLP", "BDMP"], ["WHC"])
     );
     Object.assign(
       etcApps,
-      getAppByPackageType(apps, ["WLP", "BDMP"], ["개발전달"])
+      getAppByPackageType(apps, ["CSP", "WLP", "BDMP"], ["개발전달"])
     );
 
     console.log("Fetched app count:", apps.length);
