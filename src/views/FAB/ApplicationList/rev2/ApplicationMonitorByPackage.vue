@@ -105,21 +105,6 @@ export default {};
         </template>
       </el-table-column>
 
-      <el-table-column
-        label="Wafer ID"
-        width="100"
-        :align="'center'"
-        fixed="left"
-      >
-        <template #default="scope">
-            
-          <span v-for="(item, index) in scope.row.lotStatus" :key="index">
-            {{ item.waferId }}
-            <br />
-          </span>
-        </template>
-      </el-table-column>
-
       <!-- <el-table-column
         sortable
         prop="wantedFabStartDate"
@@ -475,9 +460,19 @@ export default {};
             </span>
           </template>
         </el-table-column>
-        
+      </el-table-column>
 
-
+       <el-table-column
+        label="Wafer ID"
+        width="100"
+        :align="'center'"
+      >
+        <template #default="scope">
+          <span v-for="(item, index) in scope.row.lotStatus" :key="index">
+            {{ item.waferId }}
+            <br />
+          </span>
+        </template>
       </el-table-column>
 
       
