@@ -56,6 +56,7 @@ onMounted(async () => {
       is_pending: false,
       is_active: true,
       order_by: "created_date",
+      order_dir: 'desc'
     };
 
     if (getUserId() !== "admin" && getRole() !== "group leader") {

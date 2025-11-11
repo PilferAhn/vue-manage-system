@@ -3,12 +3,6 @@ export default {};
 </script>
 
 <template>
-  <!-- <div class="group-count">
-      <div v-for="(count, group) in groupCounts" :key="group" class="group-box">
-        <span>{{ group }}: {{ count }}개</span>
-      </div>
-    </div> -->
-
   <div class="table-wrapper">
     <!-- 검색어 입력 필드 -->
     <div
@@ -86,12 +80,22 @@ export default {};
         </template>
       </el-table-column>
 
+      <!-- <el-table-column
+        :fixed="'left'"
+        prop="productName"
+        label="Priority"
+        width="140"
+        :align="'center'"
+      /> -->
+      
       <el-table-column
-        label="Wafer LOT ID"
         width="110"
         :align="'center'"
         fixed="left"
       >
+        <template #header>
+           Wafer<br/>LOT ID
+        </template>
         <template #default="scope">
             
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
@@ -116,7 +120,7 @@ export default {};
         </template>
       </el-table-column>
 
-      <el-table-column
+      <!-- <el-table-column
         sortable
         prop="wantedFabStartDate"
         label="FAB 투입 계획일"
@@ -126,7 +130,8 @@ export default {};
         <template #default="scope">
           {{ formatDate(scope.row.wantedFabStartDate) }}
         </template>
-      </el-table-column>
+      </el-table-column> -->
+
       <el-table-column label="FAB 투입일" :align="'center'" width="130">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
@@ -136,7 +141,7 @@ export default {};
         </template>
       </el-table-column>
 
-      <el-table-column label="FAB Out 계획일" width="105" :align="'center'">
+      <el-table-column label="FAB OUT 계획일" width="105" :align="'center'">
         <template #default="scope">
           <span>
             {{ formatDate(scope.row.wantedFabFinishDate) }}
@@ -150,8 +155,9 @@ export default {};
         width="320"
       >
         <template #default="scope">
-          <span
+          <span 
             v-for="(item, index) in scope.row.lotStatus"
+
             :key="index"
             :style="
               testFabOutAlarm(item.operation.operationId, item.moveinDate)
@@ -159,14 +165,22 @@ export default {};
                 : ''
             "
           >
+          <span
+              v-if="item['fabOutHistory'] == null"
+            >
             {{ item["operation"]["name"] }}
             {{ formatDateTime(item.moveinDate) }}
             <!-- {{ item.operation.operationId }} -->
+            
+          </span>
+          <span v-else>  
+            {{ item["fabOutHistory"]["operation"]["name"] }}
+            {{formatDate(item["fabOutHistory"]["endDate"])}} </span>
             <br />
           </span>
         </template>
       </el-table-column>
-      <el-table-column
+      <!-- <el-table-column
         label="TEG 완료시간"
         width="200"
         prop="tegFinishedDate"
@@ -176,50 +190,121 @@ export default {};
           {{ scope.row.measType }} <br />
           {{ scope.row.tegFinishedDate }}
         </template>
-      </el-table-column>
+      </el-table-column> -->
 
-      <el-table-column label="HQ 출하 예정일" :align="'center'" width="100">
+      <el-table-column label="FAB OUT" :align="'center'" width="100">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
-            <span v-if="item['operation']['operationId'] === 'OP0E002040'">
-              {{ formatDate(adjustDate(item["moveinDate"], 3)) }}
-            </span>
+            <!-- <span v-if="item['operation']['operationId'] === 'OP0E002040'"> -->
+              <!-- {{formatDate(item['fabOutHistory']["endDate"])}} -->
+              <!-- {{ formatDate(adjustDate(item["moveinDate"], 3)) }} -->
+            <!-- </span> -->
             <span
-              v-else-if="
-                item['secondProbeHistory'] !== null &&
-                item['secondProbeHistory']['startDate'] !== null
+              v-if="item['fabOutHistory'] !== null &&
+                item['fabOutHistory']['endDate'] !== null
+                // item['secondProbeHistory'] !== null &&
+                // item['secondProbeHistory']['startDate'] !== null
               "
             >
-              {{
+              {{formatDate(item["fabOutHistory"]["endDate"])}}
+              <!-- {{
                 formatDate(
                   adjustDate(item["secondProbeHistory"]["startDate"], 3)
                 )
-              }}
+              }} -->
             </span>
-            <span
+            <!-- <span
               v-else-if="
                 item['secondProbeHistory'] !== null &&
                 item['secondProbeHistory']['endDate'] !== null
               "
-            >
-              {{
+            > -->
+              <!-- {{formatDate(item["secondProbeHistory"]["endDate"])}} -->
+              <!-- {{
                 formatDate(adjustDate(item["secondProbeHistory"]["endDate"], 3))
-              }}
-            </span>
-            <span
+              }} -->
+            <!-- </span> -->
+            <!-- <span
               v-else-if="
                 item['secondProbeHistory'] !== null &&
                 item['secondProbeHistory']['startDate'] === null
               "
             >
               SKIP
-            </span>
+            </span> -->
             <span v-else> -- </span>
             <br />
           </span>
         </template>
       </el-table-column>
-    
+
+      <el-table-column  :align="'center'" width="90">
+        <template #header>
+           FAB<br/>진행일
+        </template>
+        <template #default="scope">
+          <span v-for="(item, index) in scope.row.lotStatus" :key="index">
+            <span v-if="item['fabOutHistory'] == null">{{ getFabTime(item) }}</span>
+            <span v-else> -- </span>
+            <br />
+          </span>
+        </template>
+      </el-table-column>
+
+      <el-table-column  :align="'center'" width="120">
+        <template #header>
+           FAB<br/>리드타임
+        </template>
+        <template #default="scope">
+          <span v-for="(item, index) in scope.row.lotStatus" :key="index">
+            <span v-if="getFabLeadTime(item, scope.row.wantedFabFinishDate)" v-html="getFabLeadTime(item, scope.row.wantedFabFinishDate)"</span>
+            <span v-else> -- </span>
+            <br />
+          </span>
+        </template>
+      </el-table-column>
+
+      <el-table-column
+        label="출하 현위치(투입시간)"
+        :align="'center'"
+        width="250"
+      >
+        <template #default="scope">
+          <span 
+            v-for="(item, index) in scope.row.lotStatus"
+
+            :key="index"
+            :style="
+              testFabOutAlarm(item.operation.operationId, item.moveinDate)
+                ? 'color: red;'
+                : ''
+            "
+          >
+          <span
+              v-if="item['fabOutHistory'] !== null"
+            >
+            {{ item["operation"]["name"] }}
+            {{ formatDateTime(item.moveinDate) }}
+            <!-- {{ item.operation.operationId }} -->
+            
+          </span>
+          <span v-else> -- </span>
+            <br />
+          </span>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column
+        label="TEG 완료시간"
+        width="200"
+        prop="tegFinishedDate"
+        :align="'center'"
+      >
+        <template #default="scope">
+          {{ scope.row.measType }} <br />
+          {{ scope.row.tegFinishedDate }}
+        </template>
+      </el-table-column> -->
+
       <el-table-column label="HQ 출하" :align="'center'" width="100">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
@@ -229,6 +314,16 @@ export default {};
             <span v-else> -- </span>
             <br />
           </span>
+        </template>
+      </el-table-column>
+      
+      <el-table-column label="출하 리드타임" :align="'center'" width="80">
+        <template #default="scope">
+          <span v-for="(item, index) in scope.row.lotStatus" :key="index">
+          <span v-if="getShipLeadTime(item)">{{ getShipLeadTime(item) }}</span>
+          <span v-else> -- </span>
+          <br />
+        </span>
         </template>
       </el-table-column>
 
@@ -245,9 +340,6 @@ export default {};
             <br />
           </span>
         </template>
-      </el-table-column>
-
-      <el-table-column label="Assy In 예정일" :align="'center'" width="105">
       </el-table-column>
 
       <el-table-column label="Assy In" :align="'center'" width="110">
@@ -394,7 +486,7 @@ export default {};
         width="150"
         :align="'center'"
       ></el-table-column>
-      <el-table-column
+      <!-- <el-table-column
         label="주차"
         width="70"
         prop="weekNumber"
@@ -405,7 +497,7 @@ export default {};
         width="120"
         prop="destination"
         :align="'center'"
-      ></el-table-column>
+      ></el-table-column> -->
       <!-- <el-table-column
           fixed="right"
           label="Action"
@@ -498,7 +590,7 @@ const filteredApplicationData = computed(() => {
     if (typeof field === "string") {
       return field.toLowerCase().includes(term);
     }
-
+    
     return false;
   });
 });
@@ -562,13 +654,105 @@ const groupCounts = computed(() => {
 
 const modifiedFabData = ref<ModifiedFabDataInterface[]>([]);
 
+function getFabTime(item: any): string | null {
+  // const fabIn = item?.creationDate; // FAB 투입
+  // const fabOut = item?.fabOutHistory?.endDate; // FAB OUT
+
+  // if (!fabIn || !fabOut) return null;
+
+  // const start = new Date(fabIn);
+  // const end = new Date(fabOut);
+
+  // if (isNaN(start.getTime()) || isNaN(end.getTime())) return null;
+
+  // const diffDays = Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+
+  // if (diffDays < 0) return null;
+
+  // return `${diffDays.toFixed(1)}일`;
+  const today = new Date();
+  const todayStr = today.toISOString().slice(0, 10);
+  const fabIn = item?.creationDate;
+  // const fabOut = new Date(today);
+  return diffDaysWithDecimal(fabIn, todayStr);
+}
+
+function diffDaysNumber(startStr?: string, endStr?: string): number | null {
+  if (!startStr || !endStr) return null;
+  const start = new Date(startStr);
+  const end = new Date(endStr);
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) return null;
+
+  return (new Date(start).getTime() - new Date(end).getTime()) / (1000 * 60 * 60 * 24);
+}
+
+
+function getFabLeadTime(item: any, wantedFabFinishDate?: string): string | null {
+  const fabIn = item?.creationDate;
+  const fabOut = item?.fabOutHistory?.endDate;
+  const wantedFabOutDate = wantedFabFinishDate;
+
+  if (!fabIn || !fabOut) return null;
+
+  const fabLeadTime = diffDaysWithDecimal(fabIn, fabOut);
+  if(!fabLeadTime) return null;
+  if (!wantedFabOutDate) return fabLeadTime;
+
+  const diff = diffDaysNumber(fabOut, wantedFabOutDate);
+  if (diff === null) return fabLeadTime;
+  const diffFixed = diff.toFixed(1);
+
+  let diffText = "";
+  if (diff > 0) {
+    diffText = ` (<span style="color:red;">+${diffFixed}</span>)`;
+  } else if (diff < 0) {
+    diffText = ` (<span style="color:blue;">${diffFixed}</span>)`;
+  } else {
+    diffText = "";
+  }
+
+  return `${fabLeadTime}${diffText}`;
+}
+
+function getShipLeadTime(item: any): string | null {
+  // const fabOut = item?.fabOutHistory?.endDate;
+  // const hqShip = item?.operation?.name === "Transit 공정" ? item?.moveinDate : null;
+  
+  // console.log('fabout, hqShip', fabOut, hqShip)
+  // if (!fabOut || !hqShip) return null;
+
+  // const start = new Date(fabOut);
+  // const end = new Date(hqShip);
+
+  // if (isNaN(start.getTime()) || isNaN(end.getTime())) return null;
+
+  // const diffDays = Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+
+  // // 음수면 이상치 → 표시 안함
+  // if (diffDays < 0) return null;
+
+  // return `${diffDays.toFixed(1)}일`;
+  const fabOut = item?.fabOutHistory?.endDate;
+  const hqShip = item?.operation?.name === "Transit 공정" ? item?.moveinDate : null;
+  return diffDaysWithDecimal(fabOut, hqShip);
+}
+
 function handleExcelSubmit() {
-  //   modifiedFabData.value = [];
-  //   modifiedFabData.value = createTableData(
-  //     filteredData.value,
-  //     modifiedFabData.value
-  //   );
-  //   downloadFabPlanExcel(modifiedFabData.value);
+}
+
+function diffDaysWithDecimal(startStr?: string, endStr?: string): string | null {
+  if (!startStr || !endStr) return null;
+
+  const start = new Date(startStr);
+  const end = new Date(endStr);
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) return null;
+
+  const diffMs = end.getTime() - start.getTime();
+  const diffDays = diffMs / (1000 * 60 * 60 * 24); // **시간까지 포함한 정확한 일수**
+
+  if (diffDays < 0) return null;
+
+  return `${diffDays.toFixed(1)}일`; // 소수점 1자리
 }
 
 // 필터 토글 함수

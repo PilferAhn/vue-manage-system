@@ -36,15 +36,6 @@ export const checkFileExtension = (fileName) => {
   return extension.startsWith("s") && extension.endsWith("p");
 };
 
-const checkSnPNumber = (fileName) => {
-  // 파일 확장자 가져오기
-  const extension = fileName.split(".").pop().toLowerCase();
-  // 일단은 s 2 p 만 가능.
-  return extension.toLowerCase() === "s2p";
-};
-
-
-
 export const handleFileSelect = (sample: SampleInformation) => {
   // File selection logic
   const fileInput = document.createElement("input");
@@ -59,13 +50,6 @@ export const handleFileSelect = (sample: SampleInformation) => {
       ElMessage.error("S parameter 파일만 선택할 수 있습니다.");
       return;
     }
-
-    // if (!checkSnPNumber(selectedFile.name)) {
-    //   ElMessage.error(
-    //     "현재 버전에서는 S2P 형식만 지원됩니다. S parameter 파일을 S2P형식으로 변환 후 사용해주세요."
-    //   );
-    //   return;
-    // }
 
     if (selectedFile) {
       // Use FileReader to read the file content

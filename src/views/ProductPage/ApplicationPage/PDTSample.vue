@@ -84,28 +84,6 @@
         class="seventy-percent-width"
       >
       </el-table-column>
-      <!-- <el-table-column label="상태">
-        <template #default="{ row, $index }">
-          <el-col>
-            <el-select v-model="row.status" placeholder="상태 선택">
-              <el-option label="투입 대기" value="waiting"></el-option>
-              <el-option label="측정 완료" value="finished"></el-option>
-              <el-option label="측정 진행중" value="in progress"></el-option>
-            </el-select>
-          </el-col>
-        </template>
-      </el-table-column> -->
-      <!-- <el-table-column label="Action">
-        <template #default="{ row, $index }">
-          <el-button
-            type="success"
-            @click="
-              handleSampleStatus(row.sampleNumber, row.sampleUuid, row.status)
-            "
-            >업데이트</el-button
-          >
-        </template>
-      </el-table-column> -->
     </el-table>
   </div>
 </template>
