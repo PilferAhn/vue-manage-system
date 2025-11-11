@@ -242,7 +242,7 @@ export default {};
         </template>
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
-            <span v-if="getFabLeadTime(item, scope.row.wantedFabFinishDate)" v-html="getFabLeadTime(item, scope.row.wantedFabFinishDate)"</span>
+            <span v-if="getFabLeadTime(item, scope.row.wantedFabFinishDate)" v-html="getFabLeadTime(item, scope.row.wantedFabFinishDate)"></span>
             <span v-else> -- </span>
             <br />
           </span>
@@ -661,27 +661,65 @@ const groupCounts = computed(() => {
 
 const modifiedFabData = ref<ModifiedFabDataInterface[]>([]);
 
+const customHolidays = ref<string[]>([
+  // '2024-12-25','2025-01-01', ...
+]);
+
+const getWorkingDays = (n: number | null, digits = 1) =>
+  n == null ? null : `${n.toFixed(digits)}일`;
+
+function workingDaysFloat(
+  startVal?: string | Date,
+  endVal?: string | Date,
+  extraHolidays: string[] = []
+): number | null {
+  const toDate = (v?: string | Date | null) => {
+    if (!v) return null;
+    const d = v instanceof Date ? v : new Date(v);
+    return isNaN(d.getTime()) ? null : d;
+  };
+  const dayStart = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
+  const nextDayStart = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1, 0, 0, 0, 0);
+  const addDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+  const toYMD = (d: Date) => {
+    const m = `${d.getMonth() + 1}`.padStart(2, '0');
+    const day = `${d.getDate()}`.padStart(2, '0');
+    return `${d.getFullYear()}-${m}-${day}`;
+  };
+  const isWeekend = (d: Date) => (d.getDay() === 0 || d.getDay() === 6); // 일/토
+
+  let s = toDate(startVal);
+  let e = toDate(endVal);
+  if (!s || !e) return null;
+
+  // 방향 보정(거꾸로면 음수 반환)
+  let sign = 1;
+  if (s > e) { [s, e] = [e, s]; sign = -1; }
+
+  const HOL = new Set(extraHolidays.map(x => x.trim()));
+  const msPerHour = 1000 * 60 * 60;
+  let cursor = dayStart(s);
+  const endDay = dayStart(e);
+  let workHours = 0;
+
+  while (cursor <= endDay) {
+    if (!(isWeekend(cursor) || HOL.has(toYMD(cursor)))) {
+      const segStart = new Date(Math.max(dayStart(cursor).getTime(), s.getTime()));
+      const segEnd   = new Date(Math.min(nextDayStart(cursor).getTime(), e.getTime()));
+      const hours = Math.max(0, (segEnd.getTime() - segStart.getTime()) / msPerHour);
+      workHours += hours;
+    }
+    cursor = addDays(cursor, 1);
+  }
+  return sign * (workHours / 24);
+}
+
 function getFabTime(item: any): string | null {
-  // const fabIn = item?.creationDate; // FAB 투입
-  // const fabOut = item?.fabOutHistory?.endDate; // FAB OUT
-
-  // if (!fabIn || !fabOut) return null;
-
-  // const start = new Date(fabIn);
-  // const end = new Date(fabOut);
-
-  // if (isNaN(start.getTime()) || isNaN(end.getTime())) return null;
-
-  // const diffDays = Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-
-  // if (diffDays < 0) return null;
-
-  // return `${diffDays.toFixed(1)}일`;
-  const today = new Date();
-  const todayStr = today.toISOString().slice(0, 10);
+  // const today = new Date();
+  // const todayStr = today.toISOString().slice(0, 10);
   const fabIn = item?.creationDate;
-  // const fabOut = new Date(today);
-  return diffDaysWithDecimal(fabIn, todayStr);
+  // return diffDaysWithDecimal(fabIn, todayStr);
+  return getWorkingDays(workingDaysFloat(fabIn, new Date(), customHolidays.value));
 }
 
 function diffDaysNumber(startStr?: string, endStr?: string): number | null {
@@ -693,56 +731,69 @@ function diffDaysNumber(startStr?: string, endStr?: string): number | null {
   return (new Date(start).getTime() - new Date(end).getTime()) / (1000 * 60 * 60 * 24);
 }
 
-
 function getFabLeadTime(item: any, wantedFabFinishDate?: string): string | null {
   const fabIn = item?.creationDate;
   const fabOut = item?.fabOutHistory?.endDate;
-  const wantedFabOutDate = wantedFabFinishDate;
-
   if (!fabIn || !fabOut) return null;
 
-  const fabLeadTime = diffDaysWithDecimal(fabIn, fabOut);
-  if(!fabLeadTime) return null;
-  if (!wantedFabOutDate) return fabLeadTime;
+  const lead = workingDaysFloat(fabIn, fabOut, customHolidays.value);
+  if (lead == null) return null;
 
-  const diff = diffDaysNumber(fabOut, wantedFabOutDate);
-  if (diff === null) return fabLeadTime;
-  const diffFixed = diff.toFixed(1);
+  if (!wantedFabFinishDate) return getWorkingDays(lead);
 
-  let diffText = "";
-  if (diff > 0) {
-    diffText = ` (<span style="color:red;">+${diffFixed}</span>)`;
-  } else if (diff < 0) {
-    diffText = ` (<span style="color:blue;">${diffFixed}</span>)`;
-  } else {
-    diffText = "";
-  }
+  const delta = workingDaysFloat(wantedFabFinishDate, fabOut, customHolidays.value);
+  if (delta == null || Math.abs(delta) < 1e-9) return getWorkingDays(lead);
 
-  return `${fabLeadTime}${diffText}`;
+  const base = getWorkingDays(lead);
+  const diffTxt = `${delta > 0 ? '+' : ''}${delta.toFixed(1)}`;
+
+  return `${base} ${
+    delta > 0
+      ? `<span style="color:red;">(${diffTxt})</span>`
+      : `<span style="color:blue;">(${diffTxt})</span>`
+  }`;
 }
 
 function getShipLeadTime(item: any): string | null {
-  // const fabOut = item?.fabOutHistory?.endDate;
-  // const hqShip = item?.operation?.name === "Transit 공정" ? item?.moveinDate : null;
-  
-  // console.log('fabout, hqShip', fabOut, hqShip)
-  // if (!fabOut || !hqShip) return null;
-
-  // const start = new Date(fabOut);
-  // const end = new Date(hqShip);
-
-  // if (isNaN(start.getTime()) || isNaN(end.getTime())) return null;
-
-  // const diffDays = Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-
-  // // 음수면 이상치 → 표시 안함
-  // if (diffDays < 0) return null;
-
-  // return `${diffDays.toFixed(1)}일`;
   const fabOut = item?.fabOutHistory?.endDate;
-  const hqShip = item?.operation?.name === "Transit 공정" ? item?.moveinDate : null;
-  return diffDaysWithDecimal(fabOut, hqShip);
+  const isTransit = item?.operation?.name === "Transit 공정";
+  const shipIn = isTransit ? item?.moveinDate : null;
+  return getWorkingDays(workingDaysFloat(fabOut, shipIn, customHolidays.value));
 }
+
+// function getFabLeadTime(item: any, wantedFabFinishDate?: string): string | null {
+//   const fabIn = item?.creationDate;
+//   const fabOut = item?.fabOutHistory?.endDate;
+//   const wantedFabOutDate = wantedFabFinishDate;
+
+//   if (!fabIn || !fabOut) return null;
+
+//   const fabLeadTime = diffDaysWithDecimal(fabIn, fabOut);
+//   if(!fabLeadTime) return null;
+//   if (!wantedFabOutDate) return fabLeadTime;
+
+//   const diff = diffDaysNumber(fabOut, wantedFabOutDate);
+//   if (diff === null) return fabLeadTime;
+//   const diffFixed = diff.toFixed(1);
+
+//   let diffText = "";
+//   if (diff > 0) {
+//     diffText = ` (<span style="color:red;">+${diffFixed}</span>)`;
+//   } else if (diff < 0) {
+//     diffText = ` (<span style="color:blue;">${diffFixed}</span>)`;
+//   } else {
+//     diffText = "";
+//   }
+
+//   return `${fabLeadTime}${diffText}`;
+// }
+
+
+// function getShipLeadTime(item: any): string | null {
+//   const fabOut = item?.fabOutHistory?.endDate;
+//   const hqShip = item?.operation?.name === "Transit 공정" ? item?.moveinDate : null;
+//   return diffDaysWithDecimal(fabOut, hqShip);
+// }
 
 function handleExcelSubmit() {
 }
