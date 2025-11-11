@@ -89,7 +89,7 @@ export default {};
       />
       
       <el-table-column
-        width="105"
+        width="110"
         :align="'center'"
         fixed="left"
       >
@@ -536,23 +536,20 @@ import type { FabRequest } from "../../../../interface/fab-application-rev2";
 import type { TegApplication } from "../../../../interface/Teg/teg";
 import {
   formatDate,
-  adjustDate,
   formatDateTime,
 } from "../../../../utils/date-utils";
 import { cn69ModelNames } from "../../SampleStatus/Cn69List";
 import type { ModifiedFabDataInterface } from "../../../../interface/fab";
 import {
-  getRunningFabReqeust,
   getRunningFabReqeustRev2,
 } from "../../../../utils/Fab/fab-application-utils";
 import {
-  createTableData,
-  getLateFab,
   testFabOutAlarm,
-  downloadFabPlanExcel,
   getLateFabRev2,
 } from "../ApplicationList";
 import { onMounted, watch } from "vue";
+import * as xlsx from "xlsx";
+
 const props = defineProps<{
   fabApp: FabRequest[];
   tegApp: TegApplication[];
@@ -878,23 +875,182 @@ function getShipLeadTime(item: any): string | null {
 // return null;;
 }
 
+const EXCEL_HEADERS = [
+  "P/N",
+  "개발자",
+  "의뢰자",
+  "우선순위",
+  "Wafer LOT ID",
+  "FAB 투입일",
+  "FAB OUT 계획일",
+  "FAB 현위치(투입시간)",
+  "FAB OUT",
+  "FAB 진행일",
+  "FAB 리드타임",
+  "출하 현위치(투입시간)",
+  "HQ 출하",
+  "출하 리드타임",
+  "WHC 도착",
+  "Assy In",
+  "WHC 현위치(투입시간)",
+  "Wafer ID",
+];
+
+// ⬇️ HTML 섞인 텍스트 정리 (리드타임 diff는 색상 span이 있어서 제거)
+function stripHtml(s?: string | null) {
+  if (!s) return "";
+  return s.replace(/<[^>]*>/g, "").trim();
+}
+
+// ⬇️ "x.x일" 같은 표시를 숫자(업무일)로만 뽑고 싶을 때
+function parseBizDays(label?: string | null): number | null {
+  if (!label) return null;
+  const m = label.match(/-?\d+(\.\d+)?/);
+  return m ? Number(m[0]) : null;
+}
+
+// ⬇️ 데이터 → 엑셀용 JSON 로우로 변환
+function buildExcelRows(source: any[]): any[] {
+  const rows: any[] = [];
+
+  source.forEach((app) => {
+    const pn = app.productName ?? "";
+    const designer = app?.designer?.userName ?? "";
+    const requester = app?.requester?.userName ?? "";
+    const priority = app?.priorityId ?? "";
+    const wantedFabFinishDate = app?.wantedFabFinishDate ?? null;
+
+    (app?.lotStatus ?? []).forEach((st: any) => {
+      const lotId = st?.lotId ?? "";
+      const waferId = st?.waferId ?? "";
+      const fabIn = st?.creationDate ?? null;
+      const fabOut = st?.fabOutHistory?.endDate ?? null;
+
+      // ✅ 기존 화면 로직 복제
+      const fabWhere = st?.fabOutHistory == null
+        ? `${st?.operation?.name ?? ""} ${formatDateTime(st?.moveinDate)}`
+        : `${st?.fabOutHistory?.operation?.name ?? ""} ${formatDate(st?.fabOutHistory?.endDate)}`;
+
+      const fabProgressLabel = getWorkingDays(workingDaysFloat(fabIn, new Date(), customHolidays.value));
+      const fabLeadHtml = getFabLeadTime({ fabOutHistory: st?.fabOutHistory, creationDate: fabIn }, wantedFabFinishDate);
+      const fabLeadLabel = stripHtml(fabLeadHtml);
+
+      const isTransit = st?.operation?.name === "Transit 공정";
+      const hqShip = isTransit ? st?.moveinDate : null;
+      const shipLeadLabel = getWorkingDays(workingDaysFloat(fabOut, hqShip, customHolidays.value));
+
+      // ⬇⬇⬇ 추가: 출하/WHC 현위치 텍스트
+      const shipWhere = buildShipWhere(st);
+      const whcWhere = buildWhcWhere(st, /* isWlp= */ false /* 필요시 props.isWlp 주입 */);
+      // ⬆⬆⬆
+
+      const whcArrive =
+        st?.hanoiCsp?.creationDate ??
+        st?.hanoiWlp?.creationDate ?? null;
+      const assyIn = st?.hanoiCsp?.moveinDate ?? null;
+
+      rows.push({
+        "P/N": pn,
+        "개발자": designer,
+        "의뢰자": requester,
+        "우선순위": priority,
+        "Wafer LOT ID": lotId,
+        "FAB 투입일": fabIn ? formatDate(fabIn) : "",
+        "FAB OUT 계획일": wantedFabFinishDate ? formatDate(wantedFabFinishDate) : "",
+        "FAB 현위치(투입시간)": fabWhere || "",
+        "FAB OUT": fabOut ? formatDate(fabOut) : "",
+        "FAB 진행일": fabProgressLabel ?? "",
+        "FAB 리드타임": fabLeadLabel ?? "",
+        "출하 현위치(투입시간)": shipWhere,
+        "HQ 출하": hqShip ? formatDate(hqShip) : "",
+        "출하 리드타임": shipLeadLabel ?? "",
+        "WHC 도착": whcArrive ? formatDate(whcArrive) : "",
+        "Assy In": assyIn ? formatDate(assyIn) : "",
+        "WHC 현위치(투입시간)": whcWhere,
+        "Wafer ID": waferId ?? "",
+      });
+    });
+  });
+
+  return rows;
+}
+
+function buildShipWhere(st: any): string {
+  if (st?.fabOutHistory == null) return ""; // 화면도 이 경우 '--'
+  const op = st?.operation?.name ?? "";
+  const ts = st?.moveinDate ? formatDateTime(st.moveinDate) : "";
+  return [op, ts].filter(Boolean).join(" ");
+}
+
+// WHC 현위치: 화면은 WLP/비-WLP로 분기해서 가장 "현재 공정"의 name/투입시간/lotId를 보여줌.
+// 엑셀에서는 가장 '깊이 있는' 노드를 찾아 1줄 요약으로 넣자.
+function buildWhcWhere(st: any, isWlp?: boolean): string {
+  // WLP 모드
+  if (isWlp) {
+    const w = st?.hanoiWlp;
+    if (!w) return "";
+    const op = w?.operation?.name ?? "";
+    const ts = w?.moveinDate ? formatDateTime(w.moveinDate) : "";
+    const lot = w?.lotId ?? "";
+    return [op, ts, lot].filter(Boolean).join(" ");
+  }
+
+  // CSP 체인: hanoiCsp -> child -> child -> ...
+  let node = st?.hanoiCsp;
+  if (!node) return "";
+
+  // 가장 깊은 child까지 내려가기
+  let cur = node;
+  while (cur?.child) cur = cur.child;
+
+  const op = cur?.operation?.name ?? "";
+  const ts = cur?.moveinDate ? formatDateTime(cur.moveinDate) : "";
+  const lot = cur?.lotId ?? "";
+  return [op, ts, lot].filter(Boolean).join(" ");
+}
+
 function handleExcelSubmit() {
+  try {
+    // 1) 현재 테이블에 보이는 데이터 사용
+    const data = filteredApplicationData.value ?? [];
+
+    // 2) JSON rows 생성
+    const rows = buildExcelRows(data);
+
+    // 3) 시트/북 생성
+    const ws = xlsx.utils.json_to_sheet(rows, { header: EXCEL_HEADERS });
+
+    // 4) 컬럼 너비 자동/고정 (원하면 더 키우기)
+    const colWidths = EXCEL_HEADERS.map((h) => {
+      const maxLen = Math.max(
+        h.length,
+        ...rows.map((r) => String(r[h] ?? "").length)
+      );
+      return { wch: Math.min(Math.max(12, maxLen + 2), 40) }; // 12~40 사이
+    });
+    (ws as any)["!cols"] = colWidths;
+
+    const wb = xlsx.utils.book_new();
+    xlsx.utils.book_append_sheet(wb, ws, "개발 샘플 진행");
+
+    // 5) 파일명(타임스탬프)
+    const ts = new Date();
+    const yyyy = ts.getFullYear();
+    const mm = String(ts.getMonth() + 1).padStart(2, "0");
+    const dd = String(ts.getDate()).padStart(2, "0");
+    const hh = String(ts.getHours()).padStart(2, "0");
+    const mi = String(ts.getMinutes()).padStart(2, "0");
+    const fn = `개발샘플_진행상황_${yyyy}${mm}${dd}_${hh}${mi}.xlsx`;
+
+    // 6) 다운로드
+    xlsx.writeFile(wb, fn);
+  } catch (err) {
+    console.error("Excel export failed:", err);
+  }
 }
 
-function diffDaysWithDecimal(startStr?: string, endStr?: string): string | null {
-  if (!startStr || !endStr) return null;
 
-  const start = new Date(startStr);
-  const end = new Date(endStr);
-  if (isNaN(start.getTime()) || isNaN(end.getTime())) return null;
 
-  const diffMs = end.getTime() - start.getTime();
-  const diffDays = diffMs / (1000 * 60 * 60 * 24); // **시간까지 포함한 정확한 일수**
-
-  if (diffDays < 0) return null;
-
-  return `${diffDays.toFixed(1)}일`; // 소수점 1자리
-}
 
 // 필터 토글 함수
 const toggleFilter = () => {
