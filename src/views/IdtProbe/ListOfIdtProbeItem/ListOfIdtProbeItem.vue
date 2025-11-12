@@ -4,6 +4,7 @@
 
         <!-- table of wafers -->
         <el-table :data="idtProbeItems" class="table" border @filter-change="handleFilterChange">
+            <el-table-column type="index" :index="indexMethod" label="No" width="50" :align="'center'"/>
             <el-table-column prop="lotId" label="Lot ID" width="120" />
             <el-table-column prop="productName" label="Product Name"  />
             <el-table-column prop="priority" label="Priority" width="80" />
@@ -66,10 +67,16 @@ const totalItems = ref(0);
 const currentPage = ref(1);
 let filterBy : FilterIdtProbeItemBy = {};
 
+// Items indexed
+const indexMethod = (index: number) => {
+    return (props.pageSize! * (currentPage.value - 1)) + index + 1;
+};
+
 const handlePageChange = async () => {
     const totalItemsPromise = fetchCountIdtProbeItems(props.status, filterBy);
     const idtProbeItemsPromise = fetchIdtProbeItems(props.status, filterBy, props.pageSize, currentPage.value, props.orderParams);
     totalItems.value = await totalItemsPromise;
+    console.log('totalItemsPromise:', totalItemsPromise);
     idtProbeItems.value = await idtProbeItemsPromise;
 };
 
