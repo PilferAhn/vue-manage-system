@@ -76,7 +76,6 @@ const handlePageChange = async () => {
     const totalItemsPromise = fetchCountIdtProbeItems(props.status, filterBy);
     const idtProbeItemsPromise = fetchIdtProbeItems(props.status, filterBy, props.pageSize, currentPage.value, props.orderParams);
     totalItems.value = await totalItemsPromise;
-    console.log('totalItemsPromise:', totalItemsPromise);
     idtProbeItems.value = await idtProbeItemsPromise;
 };
 
