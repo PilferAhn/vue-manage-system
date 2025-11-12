@@ -85,3 +85,15 @@ export async function completeIdtProbeItem(lotId: string, probeType: string, ite
     const data = response.data;
     return convertPep8ToCamelCase2(data) as IdtProbeItem;
 }
+
+// Cancel an IDT probe item
+export async function cancelIdtProbeItem(lotId: string, probeType: string, iteration: number): Promise<IdtProbeItem | null> {
+    const form = new FormData();
+    form.append('lot_id', lotId);
+    form.append('probe_type', probeType);
+    form.append('iteration', iteration.toString());
+    form.append('status', 'canceled');
+    const response = await axios.post('/idt_probe/update_idt_probe_item_status', form);
+    const data = response.data;
+    return convertPep8ToCamelCase2(data) as IdtProbeItem;
+}

@@ -36,4 +36,16 @@ export const idtProbeRouteIndexList: RouteRecordRaw[] = [
       import(
         /* webpackChunkName: "table" */ "../views/IdtProbe/CompletedIdtProbeItems.vue"
       ),
+  },
+  {
+    path: "/idt-probe/canceled-list",
+    name: "IdtProbeCanceledItems",
+    meta: {
+      title: "Canceled Items",
+      permiss: "11",
+    },
+    component: () =>
+      import(
+        /* webpackChunkName: "table" */ "../views/IdtProbe/CanceledIdtProbeItems.vue"
+      ),
   }];

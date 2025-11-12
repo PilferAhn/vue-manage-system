@@ -1,7 +1,7 @@
 // import { FabRequestForm } from './fab-application-rev2';
 import { User } from "./user";
 
-export type IdtProbeStatus = 'received' | 'completed';
+export type IdtProbeStatus = 'received' | 'completed' | 'canceled';
 
 export interface IdtProbeType {
     probeType: string;

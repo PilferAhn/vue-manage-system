@@ -19,5 +19,10 @@ export const idtProbeBarList = {
         title: "Completed",
         permiss: "2",
       },
+      {
+        index: "/idt-probe/canceled-list",
+        title: "Canceled",
+        permiss: "2",
+      },
     ],
   }

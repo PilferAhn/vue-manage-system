@@ -32,10 +32,11 @@
           </template>
         </template>
       </el-table-column>
-      <el-table-column label="Actions" width="105">
+      <el-table-column label="Actions" width="180">
         <template #default="{ row }">
           <template v-if="row.status === 'received'">
             <el-button type="success" size="small" @click="handleComplete(row)">Complete</el-button>
+            <el-button type="danger" size="small" @click="handleCancel(row)">Cancel</el-button>
           </template>
         </template>
       </el-table-column>
@@ -46,7 +47,7 @@
 import { formatDateTime } from '../../../utils/date-utils';
 import { ref, onMounted } from 'vue';
 import type { IdtProbeItem } from '../../../interface/idt-probe-interfaces';
-import { completeIdtProbeItem, updateIdtProbeItemNote, fetchIdtProbeItemsByLotId } from './RegistrationOfItem';
+import { completeIdtProbeItem, cancelIdtProbeItem, updateIdtProbeItemNote, fetchIdtProbeItemsByLotId } from './RegistrationOfItem';
 import { ElMessage } from 'element-plus';
 import { LotStatus as MesLot } from '../../../interface/mes-interface';
 
@@ -96,6 +97,13 @@ const handleNoteChange = async (row: IdtProbeItem) => {
 // Actions
 const handleComplete = async (row: IdtProbeItem) => {
   const updated = await completeIdtProbeItem(row.lotId, row.probeType, row.iteration);
+  if (updated) {
+    Object.assign(row, updated);
+  }
+}
+
+const handleCancel = async (row: IdtProbeItem) => {
+  const updated = await cancelIdtProbeItem(row.lotId, row.probeType, row.iteration);
   if (updated) {
     Object.assign(row, updated);
   }
