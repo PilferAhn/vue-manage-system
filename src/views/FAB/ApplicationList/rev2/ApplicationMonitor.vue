@@ -40,13 +40,21 @@ const tegApp = ref<TegApplication[]>([]);
 
 onMounted(async () => {
   const today = getTodayDate();             
-  const diff =  (()=>{
+  const fabStartDate =  (()=>{
     const d = new Date(`${today}T00:00:00`);
     d.setDate(d.getDate() - 180);
     const y = d.getFullYear();
     const m = String(d.getMonth()+1).padStart(2,'0');
     const dd = String(d.getDate()).padStart(2,'0');
     return `${y}-${m}-${dd}`;               // "YYYY-MM-DD"
+  })();
+  const fabEndDate = (() => {
+    const d = new Date(`${today}T00:00:00`);
+    d.setMonth(d.getMonth() + 1);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${dd}`; // "YYYY-MM-DD"
   })();
   const start = performance.now(); // 시작 시간 (ms)
 
@@ -67,8 +75,8 @@ onMounted(async () => {
       is_active: true,
       order_by: "wanted_fab_start_date",
       order_dir: 'desc',
-      wanted_fab_start_date_start: `${diff}T00:00:00`,
-      wanted_fab_start_date_end: `${today}T23:59:59`,
+      wanted_fab_start_date_start: `${fabStartDate}T00:00:00`,
+      wanted_fab_start_date_end: `${fabEndDate}T23:59:59`,
     };
 
     if (getUserId() !== "admin" && getRole() !== "group leader") {
