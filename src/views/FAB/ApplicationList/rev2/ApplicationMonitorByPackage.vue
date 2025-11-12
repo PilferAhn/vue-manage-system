@@ -549,7 +549,8 @@ import {
 } from "../ApplicationList";
 import { onMounted, watch } from "vue";
 import * as xlsx from "xlsx";
-
+import ExcelJS from "exceljs";
+import {saveAs} from "file-saver";
 const props = defineProps<{
   fabApp: FabRequest[];
   tegApp: TegApplication[];
@@ -1012,31 +1013,75 @@ function buildWhcWhere(st: any, isWlp?: boolean): string {
   return [op, ts, lot].filter(Boolean).join(" ");
 }
 
-function handleExcelSubmit() {
+async function handleExcelSubmit() {
   try {
-    // 1) 현재 테이블에 보이는 데이터 사용
     const data = filteredApplicationData.value ?? [];
-
-    // 2) JSON rows 생성
     const rows = buildExcelRows(data);
+    const headers = EXCEL_HEADERS;
 
-    // 3) 시트/북 생성
-    const ws = xlsx.utils.json_to_sheet(rows, { header: EXCEL_HEADERS });
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet("개발 샘플 진행", {
+      views: [{ state: "frozen", ySplit: 1 }]  // 헤더 고정
+    });
 
-    // 4) 컬럼 너비 자동/고정 (원하면 더 키우기)
-    const colWidths = EXCEL_HEADERS.map((h) => {
+    ws.addRow(headers);
+
+    rows.forEach((r) => {
+      ws.addRow(headers.map(h => r[h] ?? ""));
+    });
+
+   //컬럼 폭 자동 비슷하게(최소 12, 최대 40)
+   headers.forEach((h, i) => {
       const maxLen = Math.max(
         h.length,
-        ...rows.map((r) => String(r[h] ?? "").length)
+        ...rows.map(r => String(r[h] ?? "").length)
       );
-      return { wch: Math.min(Math.max(12, maxLen + 2), 40) }; // 12~40 사이
+      ws.getColumn(i + 1).width = Math.min(Math.max(12, maxLen + 2), 40);
     });
-    (ws as any)["!cols"] = colWidths;
 
-    const wb = xlsx.utils.book_new();
-    xlsx.utils.book_append_sheet(wb, ws, "개발 샘플 진행");
 
-    // 5) 파일명(타임스탬프)
+    const headerFill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF2F5597" } }; // #2F5597
+    const headerFont = { bold: true, color: { argb: "FFFFFFFF" } };
+    const headerAlignment = { vertical: "middle", horizontal: "center", wrapText: true };
+    const borderThin = {
+      top: { style: "thin", color: { argb: "FF000000" } },
+      left: { style: "thin", color: { argb: "FF000000" } },
+      bottom: { style: "thin", color: { argb: "FF000000" } },
+      right: { style: "thin", color: { argb: "FF000000" } },
+    };
+
+    const headerRow = ws.getRow(1);
+    headerRow.height = 22;
+    headerRow.eachCell((cell) => {
+      cell.fill = headerFill;
+      cell.font = headerFont;
+      cell.alignment = headerAlignment;
+      cell.border = borderThin;
+    });
+
+    for (let r = 2; r <= ws.rowCount; r++) {
+      const row = ws.getRow(r);
+      row.height = 18; // (엑셀의 자동높이는 완전 자동이 아님. wrapText용 기본값)
+      row.eachCell((cell) => {
+        cell.border = borderThin;
+        cell.alignment = { vertical: "top", horizontal: "left", wrapText: true };
+      });
+    }
+
+    ws.autoFilter = {
+      from: { row: 1, column: 1 },
+      to:   { row: 1, column: headers.length },
+    };
+    // const headerFill = { patternType: "solid", fgColor: { rgb: "4F81BD" } }; // 짙은 파랑
+    // for (let C = range.s.c; C <= range.e.c; ++C) {
+    //   const addr = XLSX.utils.encode_cell({ r: 0, c: C }); // 1행(0-index)
+    //   if (!ws[addr]) continue;
+    //   ws[addr].s = ws[addr].s || {};
+    //   ws[addr].s.fill = headerFill;
+    //   ws[addr].s.font = { bold: true, color: { rgb: "FFFFFF" } };
+    //   ws[addr].s.alignment = { horizontal: "center", vertical: "center" };
+    // }
+
     const ts = new Date();
     const yyyy = ts.getFullYear();
     const mm = String(ts.getMonth() + 1).padStart(2, "0");
@@ -1046,7 +1091,8 @@ function handleExcelSubmit() {
     const fn = `개발샘플_진행상황_${yyyy}${mm}${dd}_${hh}${mi}.xlsx`;
 
     // 6) 다운로드
-    xlsx.writeFile(wb, fn);
+     const buffer = await wb.xlsx.writeBuffer();
+    saveAs(new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }), fn);
   } catch (err) {
     console.error("Excel export failed:", err);
   }
