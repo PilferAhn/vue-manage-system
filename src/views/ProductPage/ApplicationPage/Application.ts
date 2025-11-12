@@ -244,7 +244,7 @@ export interface PDTRequestFormBooleanType {
 
 export function usePDTRequestFormBoolean() {
   const form = ref<PDTRequestFormBooleanType>({
-    customerCompany: true,
+    customerCompany: false,
     specTemperature: true,
     specPower: true,
     isSpecEdit: true,
