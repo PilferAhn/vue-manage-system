@@ -468,6 +468,7 @@ export function submitForm(application: PDTRequestFormType) {
 }
 
 export function saveForm(applicationForm: any) {
+  // console.log('applicationForm', applicationForm.value)
   localStorage.setItem("pdtRequestForm", JSON.stringify(applicationForm.value));
 }
 
@@ -615,9 +616,9 @@ export function setBandwidthOptions(
           bandwidthList.value = ["1.4Mhz"];
         }
       } else if (applicationForm.value.testType === "AMR") {
-        bandwidthList.value = ["5Mhz"];
+        bandwidthList.value = ["5Mhz", "20Mhz"];
       } else if (
-        ["Life", "Max Fuse", "Step Stress", "SMARTERMICRO FUSE"].includes(
+        ["Life", "Max Fuse", "Step", "SMARTERMICRO FUSE"].includes(
           applicationForm.value.testType
         )
       ) {
@@ -626,7 +627,12 @@ export function setBandwidthOptions(
         applicationForm.value.bandwidth = "None";
         bandwidthList.value = ["None"];
       }
-    }
+
+      if (bandwidthList.value.length === 1) {
+        applicationForm.value.bandwidth = bandwidthList.value[0];
+      }
+
+    },
   );
 }
 
@@ -638,26 +644,9 @@ export function watchDuplexMode(
     () => applicationForm.value.duplexMode,
     (newVal: string, oldVal: string) => {
       if (newVal === "TDD") {
-        applicationFormBoolean.duty = false;
+        applicationFormBoolean.value.duty = false;
       } else {
-        applicationFormBoolean.duty = true;
-        applicationForm.duty = "";
-      }
-    }
-  );
-}
-
-export function watchTemperature(
-  applicationForm: any,
-  applicationFormBoolean: any
-) {
-  watch(
-    () => applicationForm.value.watchTemperature,
-    (newVal: string, oldVal: string) => {
-      if (newVal === "TDD") {
-        applicationFormBoolean.duty = false;
-      } else {
-        applicationFormBoolean.duty = true;
+        applicationFormBoolean.value.duty = true;
         applicationForm.duty = "";
       }
     }
