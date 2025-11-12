@@ -55,7 +55,7 @@ onMounted(async () => {
       lot_status: true,
       is_pending: false,
       is_active: true,
-      order_by: "created_date",
+      order_by: "wanted_fab_start_date",
       order_dir: 'desc'
     };
 
