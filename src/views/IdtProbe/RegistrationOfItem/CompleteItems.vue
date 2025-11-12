@@ -48,7 +48,7 @@ import { formatDateTime } from '../../../utils/date-utils';
 import { ref, onMounted } from 'vue';
 import type { IdtProbeItem } from '../../../interface/idt-probe-interfaces';
 import { completeIdtProbeItem, cancelIdtProbeItem, updateIdtProbeItemNote, fetchIdtProbeItemsByLotId } from './RegistrationOfItem';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { LotStatus as MesLot } from '../../../interface/mes-interface';
 
 interface IdtProbeItemsWithSlotNo extends IdtProbeItem {
@@ -103,10 +103,26 @@ const handleComplete = async (row: IdtProbeItem) => {
 }
 
 const handleCancel = async (row: IdtProbeItem) => {
-  const updated = await cancelIdtProbeItem(row.lotId, row.probeType, row.iteration);
-  if (updated) {
-    Object.assign(row, updated);
-  }
+  // Ask for confirmation
+  ElMessageBox.confirm(
+    'Are you sure you want to cancel this FAB Probe item?',
+    'Confirm Cancellation',
+    {
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+      type: 'warning',
+    }
+  ).then(async () => {
+    // User confirmed cancellation
+    const updated = await cancelIdtProbeItem(row.lotId, row.probeType, row.iteration);
+
+    if (updated) {
+      Object.assign(row, updated);
+    }
+    
+  }, () => {
+    // Rejected
+  });
 }
 
 </script>
