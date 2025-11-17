@@ -468,8 +468,25 @@ export function submitForm(application: PDTRequestFormType) {
 }
 
 export function saveForm(applicationForm: any) {
-  // console.log('applicationForm', applicationForm.value)
-  localStorage.setItem("pdtRequestForm", JSON.stringify(applicationForm.value));
+  const raw = (applicationForm as any).value ?? applicationForm;
+
+    // 깊은 복사해서 reactive 떼어내기
+    const cloned = JSON.parse(JSON.stringify(raw));
+
+    // 🔹 samples 안에 있는 큰 필드들만 제거 (localStorage에는 안 넣음)
+    if (Array.isArray(cloned.samples)) {
+      cloned.samples = cloned.samples.map((s: any) => {
+        const {
+          fileContent,   // sNp 원본 텍스트 (여기만 제거)
+          // reducedContent,  // 혹시 나중에 따로 쓴다면 이것도 제거 가능
+          ...rest
+        } = s;
+        return rest;
+      });
+    }
+
+  console.log('applicationForm', applicationForm.value)
+  localStorage.setItem("pdtRequestForm", JSON.stringify(cloned));
 }
 
 export function loadForm(applicationForm: any) {

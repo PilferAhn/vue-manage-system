@@ -74,8 +74,12 @@
             size="default"
             type="primary"
             @click="handleFileSelect(row)"
-            >파일 선택</el-button
-          >
+            :disabled="!isPortReady(row)"
+            >파일 선택</el-button>
+          <span v-if="!isPortReady(row)" style="margin-left:8px;color:#999">
+           Port를 입력해주세요.
+          </span>
+        
         </template>
       </el-table-column>
       <el-table-column
@@ -91,13 +95,19 @@
 <script lang="ts" setup>
 import { defineProps, defineEmits } from "vue";
 import type { SampleInformation } from "./Application";
-import { handleFileSelect, updateSampleStatus } from "./PDTSample";
+import { handleFileSelect, updateSampleStatus, isPortReady } from "./PDTSample";
 
 const props = defineProps<{
   samples: SampleInformation[];
 }>();
 
 const emits = defineEmits(["update:samples"]);
+
+// function isPortReady(row: SampleInformation) {
+//   const sIn = (row.sInput ?? "").toString().trim();
+//   const sOut = (row.sOutput ?? "").toString().trim();
+//   return sIn.length > 0 && sOut.length > 0;
+// }
 
 function updateSample(index: number, key: keyof SampleInformation, value: any) {
   const updatedSamples = [...props.samples];
