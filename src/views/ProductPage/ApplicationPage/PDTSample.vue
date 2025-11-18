@@ -8,7 +8,7 @@
       <el-table-column
         prop="sampleNumber"
         label="Sample Number"
-        class="seventy-percent-width"
+        width="150"
       >
         <template #default="{ row, $index }">
           <el-input v-model="row.sampleNumber"></el-input>
@@ -17,7 +17,7 @@
       <el-table-column
         prop="defaultFreq"
         label="System (A)"
-        class="seventy-percent-width"
+        width="120"
       >
         <template #default="{ row, $index }">
           <el-input
@@ -30,7 +30,7 @@
       <el-table-column
         prop="offset"
         label="ΔFreq (B)"
-        class="seventy-percent-width"
+        width="120"
       >
         <template #default="{ row, $index }">
           <el-input
@@ -40,12 +40,12 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="Input Freq (A + B)" class="seventy-percent-width">
+      <el-table-column label="Input Freq (A + B)" width="160">
         <template #default="{ row, $index }">
           <span> {{ Number(row.defaultFreq) + Number(row.offset) }} </span>
         </template>
       </el-table-column>
-      <el-table-column label="수정" class="seventy-percent-width">
+      <el-table-column label="수정" width="80">
         <template #default="{ row, $index }">
           <el-switch
             v-model="row.useDefaultFreq"
@@ -54,7 +54,7 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="Port" class="wide-column">
+      <el-table-column label="Port" width="120">
         <template #default="{ row, $index }">
           <el-input
             v-model="row.sOutput"
@@ -68,7 +68,7 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="SPL SnP 파일" class="seventy-percent-width">
+      <el-table-column label="SPL SnP 파일" width="150">
         <template #default="{ row, $index }">
           <el-button
             size="default"
@@ -77,7 +77,7 @@
             :disabled="!isPortReady(row)"
             >파일 선택</el-button>
           <span v-if="!isPortReady(row)" style="margin-left:8px;color:#999">
-           Port를 입력해주세요.
+            Port를 입력해주세요.
           </span>
         
         </template>
@@ -156,8 +156,20 @@ const tableRowClassName = ({ row }: { row: SampleInformation }) => {
   width: 40%;
 }
 
+.fifty-percent-width {
+  width: 50%;
+}
+
+.sixty-percent-width {
+  width: 60%;
+}
+
 .seventy-percent-width {
   width: 70%;
+}
+
+.eighty-percent-width {
+  width: 80%;
 }
 
 .wide-column {
