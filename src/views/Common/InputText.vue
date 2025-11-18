@@ -5,6 +5,7 @@
       @input="updateValue"
       :placeholder="placeholder"
       :disabled="props.disable"
+      :maxlength="maxlength"
     />
   </el-form-item>
 </template>
@@ -20,6 +21,7 @@ const props = defineProps({
   rules: Array,
   placeholder: String,
   disable: Boolean,
+  maxlength: Number,
 });
 
 const emit = defineEmits(["update:modelValue"]);

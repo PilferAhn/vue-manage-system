@@ -10,7 +10,8 @@
               v-model="props.application.productName"
               label="Model Name"
               prop="productName"
-              placeholder="ex) XMN5CTV@1A"
+              placeholder="ex) SFMD7R0E101"
+              :maxlength="11"
             />
           </el-col>
           <!-- <el-col :span="12"> -->
