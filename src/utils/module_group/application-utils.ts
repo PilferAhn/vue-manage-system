@@ -59,20 +59,23 @@ export function initApplication2() {
 
   const application = reactive<ModuleMeasurementApp>({
     id: null,
+    requester: userName,
+    requesterId: userId,
+    designer: "",
     productName: "",
     quantity: 0,
-    requester: userId,
-    requesterId: userName,
+    quantityDetail: "",
     smtHistory: null,
     mold: "",
     deliveryMethod: null,
+    deliveryPerson: "Nguyen Thi Luan",
     dateOfDeliveryDate: null,
     dateOfExpectedFinished: null,
     wantedFinishedDate: null,
-    lotId: null,
     referenceChar: null,
-    needTcf: false,
     tcfTemperature: null,
+    measurementManager: "",
+    completionDueDate: null,
     naApp: null,
     nfApp: null,
     measurer: "",
@@ -141,6 +144,17 @@ export function createMoldOptions() {
   ]);
 
   return moldOptions.value;
+}
+
+export function createPurposeOptions() {
+  const purposeOptions = ref<OptionInterface[]>([
+    { key:0, label: "특성 평가", value: "forEvaluation" },
+    { key:1, label: "고객사 제출용", value: "forCustomer" },
+    { key:2, label: "특성 평가 (Tunning)", value: "forTunning" },
+    { key:3, label: "기타 목적", value: "others" },
+  ]);
+  
+  return purposeOptions.value;
 }
 
 const appendFileGroup = async (

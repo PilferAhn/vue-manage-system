@@ -17,27 +17,27 @@ export interface ModuleFiles {
 
 export interface ModuleMeasurementApp {
   id?: number;
-  productName?: string;
-  quantity?: string;
   requester?: string;
   requesterId?: string;
+  designer?: string;
+  productName?: string;
+  quantity?: string;
+  purpose?: string;
+  quantityDetail?: string;
   smtHistory?: string;
-  mold?: string;
-  wantedFinishedDate?: string;
-  lotId?: string;
+  deliveryPerson?: string;
   deliveryMethod?: string;
+  mold?: string;
+  tcfTemperature?: string;
+  measurementManager?: string
+  completionDueDate?: string
   dateOfDeliveryDate?: string;
   dateOfExpectedFinished?: string;
-  referenceChar?: string;
-  needTcf?: boolean;
-  tcfTemperature?: string;
+  
   naApp?: NaApplication;
   nfApp?: NfApplication;
-  measurer?: string;
-  measurerId?: string;
-  estFinishedDate?: string;
   dateOfCreated?: string;
-  purpose?: string;
+  
   applicationStatus?: string;
   isNa?: boolean;
   isNf?: boolean;

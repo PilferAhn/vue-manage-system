@@ -2,8 +2,8 @@
   <div class="container" v-if="props.application.isNf">
     <el-divider content-position="center">측정 정보 (NF)</el-divider>
     <el-row :gutter="20">
-      <el-col :span="12">
-        <el-form-item  
+      <!-- <el-col :span="12"> -->
+        <!-- <el-form-item  
           v-if="props.application.nfApp" 
           label="De-embedding 방식"
         >
@@ -11,8 +11,8 @@
             <el-option :value="'Offset Value'" label="Offset Value"></el-option>
             <el-option :value="'Offset Table'" label="Offset Table"></el-option>
           </el-select>
-        </el-form-item>
-      </el-col>
+        </el-form-item> -->
+      <!-- </el-col> -->
       <el-col :span="12">
         <el-form-item label="Capture">
           <el-select v-model="props.application.nfApp.capture">

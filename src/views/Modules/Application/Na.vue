@@ -29,8 +29,9 @@ export default {};
       <el-col :span="12">
         <el-form-item label="측정 방식">
           <el-select v-model="props.application.naApp.measMethod">
-            <el-option :value="'JIG'" label="JIG"></el-option>
-            <el-option :value="'SOLDER'" label="SOLDER"></el-option>
+            <el-option :value="'jig'" label="JIG"></el-option>
+            <el-option :value="'solder'" label="SOLDER"></el-option>
+            <el-option :value="'solderWithTuning'" label="SOLDER + Tunning"></el-option>
           </el-select>
         </el-form-item>
       </el-col>
