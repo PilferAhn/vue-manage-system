@@ -86,8 +86,8 @@ export async function handleFileSelect(row: SampleInformation) {
   // Port 검증
   const outPort = Number((row.sOutput ?? "").toString().trim());
   const inPort  = Number((row.sInput  ?? "").toString().trim());
-  if (![1,2,3].includes(outPort) || ![1,2,3].includes(inPort)) {
-    ElMessage.warning("Port를 1~3 사이 정수로 입력해주세요.");
+  if (![1,2,3,4,5].includes(outPort) || ![1,2,3,4,5].includes(inPort)) {
+    ElMessage.warning("Port를 1~5 사이 정수로 입력해주세요.");
     return;
   }
 
