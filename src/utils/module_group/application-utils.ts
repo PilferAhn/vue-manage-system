@@ -17,40 +17,36 @@ import axios from "axios";
 import type { UploadFile } from "element-plus";
 import { formatDateTime } from "../date-utils";
 
-export function initApplication() {
-  const application = reactive<ModuleMeasurementApp>({
-    productName: "",
-    quantity: 0,
-    requester: "",
-    requesterId: "",
-    smtHistory: "",
-    mold: "",
-    deliveryMethod: null,
-    dateOfDeliveryDate: null,
-    wantedFinishedDate: "",
-    lotId: null,
-    referenceChar: null,
-    needTcf: true,
-    tcfTemperature: null,
-    naApp: null,
-    nfApp: null,
-    measurer: "",
-    estFinishedDate: "",
-    isNa: false,
-    isNf: false,
-    referenceFile: null,
-    evbAssembleManual: null,
+// export function initApplication() {
+//   const application = reactive<ModuleMeasurementApp>({
+//     productName: "",
+//     quantity: 0,
+//     requester: "",
+//     requesterId: "",
+//     smtHistory: "",
+//     mold: "",
+//     deliveryMethod: null,
+//     dateOfDeliveryDate: null,
+//     tcfTemperature: null,
+//     naApp: null,
+//     nfApp: null,
+//     measurer: "",
+//     estFinishedDate: "",
+//     isNa: false,
+//     isNf: false,
+//     referenceFile: null,
+//     evbAssembleManual: null,
 
-    user: { userName: "", id: "" },
-  });
+//     user: { userName: "", id: "" },
+//   });
 
-  application.user.userName = getUserName();
-  application.user.id = getUserId();
+//   application.user.userName = getUserName();
+//   application.user.id = getUserId();
 
-  return {
-    application,
-  };
-}
+//   return {
+//     application,
+//   };
+// }
 
 export function initApplication2() {
 
@@ -72,7 +68,6 @@ export function initApplication2() {
     dateOfDeliveryDate: null,
     dateOfExpectedFinished: null,
     wantedFinishedDate: null,
-    referenceChar: null,
     tcfTemperature: null,
     measurementManager: "",
     completionDueDate: null,
@@ -113,8 +108,8 @@ export function initNa() {
 
 export function initNf() {
   const nf = ref<NfApplication>({
-    deMethod: "",
     capture: null,
+    nfParameterMdf:null,
     isRealMatching: true,
     matchingFile: null,
     note: "",
@@ -165,7 +160,7 @@ const appendFileGroup = async (
 ) => {
   //ORIGINAL 배포시 수정
   // const url = "http://10.29.11.59:8002/module/upload_files";
-
+  console.log('Appending files:', fileList, 'of type:', file_type, 'to app ID:', app_id);
   //TEST용
   const url = "/module/upload_files";
 
@@ -201,11 +196,28 @@ export const sendingFiles = async (
   file_objs: ModuleFiles
 ) => {
   
+  //NA
   if (app.naApp?.id && file_objs.stateFileList?.length > 0) {
     await appendFileGroup(
       app.naApp.stateFile,
       file_objs.stateFileList,
       "state",
+      app.naApp.id
+    );
+  }
+  if (app.naApp?.id && file_objs.naRffeFileList?.length > 0) {
+    await appendFileGroup(
+      app.naApp.naRffeFile,
+      file_objs.naRffeFileList,
+      "na_rffe",
+      app.naApp.id
+    );
+  }
+  if (app.naApp?.id && file_objs.naConfigFileList?.length > 0) {
+    await appendFileGroup(
+      app.naApp.naConfigFile,
+      file_objs.naConfigFileList,
+      "na_config",
       app.naApp.id
     );
   }
@@ -217,6 +229,18 @@ export const sendingFiles = async (
       app.naApp.id
     );
   }
+  if (app.id && file_objs.xmlFileList?.length > 0) {
+    await appendFileGroup(app.xmlFile, file_objs.xmlFileList, "xml", app.id);
+  }
+  if (app.naApp?.id && file_objs.naReferenceFileList?.length > 0) {
+    
+    await appendFileGroup(
+      app.naApp.naReferenceFile,
+      file_objs.naReferenceFileList,
+      "na_reference",
+      app.naApp.id
+    );
+  }
   if (app.naApp?.id && file_objs.naSpecialFileList?.length > 0) {
     await appendFileGroup(
       app.naApp.naSpecialFile,
@@ -224,20 +248,31 @@ export const sendingFiles = async (
       "na_special",
       app.naApp.id
     );
-  }
-  if (app.nfApp?.id && file_objs.offsetFileList?.length > 0) {
+  } 
+  
+  //NF
+  if (app.nfApp?.id && file_objs.nfRffeFileList?.length > 0) {
     await appendFileGroup(
-      app.nfApp.offsetFile,
-      file_objs.offsetFileList,
-      "offset",
+      app.nfApp.nfRffeFile,
+      file_objs.nfRffeFileList,
+      "nf_rffe",
       app.nfApp.id
     );
   }
-  if (app.nfApp?.id && file_objs.matchingFileList?.length > 0) {
+  if (app.nfApp?.id && file_objs.nfConfigFileList?.length > 0) {
     await appendFileGroup(
-      app.nfApp.matchingFile,
-      file_objs.matchingFileList,
-      "matching",
+      app.nfApp.nfConfigFile,
+      file_objs.nfConfigFileList,
+      "nf_config",
+      app.nfApp.id
+    );
+  }
+  if (app.nfApp?.id && file_objs.nfReferenceFileList?.length > 0) {
+    
+    await appendFileGroup(
+      app.nfApp.nfReferenceFile,
+      file_objs.nfReferenceFileList,
+      "nf_reference",
       app.nfApp.id
     );
   }
@@ -249,13 +284,12 @@ export const sendingFiles = async (
       app.nfApp.id
     );
   }
-  if (app.id && file_objs.referenceFileList?.length > 0) {
-    
+  if (app.nfApp?.id && file_objs.matchingFileList?.length > 0) {
     await appendFileGroup(
-      app.referenceFile,
-      file_objs.referenceFileList,
-      "reference",
-      app.id
+      app.nfApp.matchingFile,
+      file_objs.matchingFileList,
+      "matching",
+      app.nfApp.id
     );
   }
 
@@ -265,28 +299,6 @@ export const sendingFiles = async (
       app.evbAssembleManual,
       file_objs.evbAssembleFileList,
       "evb_assemble",
-      app.id
-    );
-  }
-
-  if (app.id && file_objs.xmlFileList?.length > 0) {
-    await appendFileGroup(app.xmlFile, file_objs.xmlFileList, "xml", app.id);
-  }
-
-  if (app.id && file_objs.configFileList?.length > 0) {
-    await appendFileGroup(
-      app.configFile,
-      file_objs.configFileList,
-      "config",
-      app.id
-    );
-  }
-
-  if (app.id && file_objs.rffeFileList?.length > 0) {
-    await appendFileGroup(
-      app.rffeFile,
-      file_objs.rffeFileList,
-      "RFFE",
       app.id
     );
   }
@@ -392,22 +404,32 @@ export const checkFiles = (
   application: ModuleMeasurementApp,
   fileObjs: ModuleFiles
 ) => {
-  const fileName = ref<String>("");
+  let missingFile = "";
 
-  if (fileObjs.configFileList?.length == 0) {
-    fileName.value = "Config File";
-  } 
-  else if(application.naApp !== null && application.naApp?.na === "rohde" && fileObjs.xmlFileList?.length == 0){
-    fileName.value = "XML File";
+  // ========== NA (필수) ==========
+  if (application.isNa && application.naApp) {
+    if (fileObjs.stateFileList.length === 0) missingFile = "State File";
+    else if (fileObjs.naRffeFileList.length === 0) missingFile = "NA RFFE File";
+    else if (fileObjs.naConfigFileList.length === 0) missingFile = "NA Config File";
+    else if (application.naApp.na === "rohde" && fileObjs.xmlFileList.length === 0)
+      missingFile = "XML File (Rohde 사용 시 필수)";
   }
-  // else if (application.naApp !== null && fileObjs.stateFileList?.length == 0) {
-  //   fileName.value = "State File";
-  // }
 
-  if (fileName.value !== "") {
+  // ========== NF (필수) ==========
+  if (application.isNf && application.nfApp && !missingFile) {
+    if (fileObjs.nfRffeFileList.length === 0) missingFile = "NF RFFE File";
+    else if (fileObjs.nfConfigFileList.length === 0) missingFile = "NF Config File";
+    else if (fileObjs.nfReferenceFileList.length === 0)
+      missingFile = "NF Reference 특성 File";
+    else if (fileObjs.nfSpecialFileList.length === 0)
+      missingFile = "NF Image File";
+  }
+  
+
+  if (missingFile) {
     ElNotification({
-      title: "Error",
-      message: fileName.value + "는 필수 입력 항목입니다.",
+      title: "필수 파일 누락",
+      message: `${missingFile} 은(는) 필수입니다.`,
       type: "error",
       duration: 3000, // 3초 후 자동 닫힘
       position: "top-right",

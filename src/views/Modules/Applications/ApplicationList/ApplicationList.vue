@@ -17,7 +17,7 @@
         </template>
       </el-table-column> -->
       <el-table-column
-        label="조립차수"
+        label="조립차수(Order Sheet)"
         prop="smtHistory"
         :align="'center'"
       ></el-table-column>
