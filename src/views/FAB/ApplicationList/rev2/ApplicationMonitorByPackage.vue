@@ -627,20 +627,20 @@ const filteredData = computed(() => {
   }
 
   if (isTransitedOnly.value) {
-    // Filter applications that have at least one lotStatus.operatioId 'TRANSIT'
-    tempApp.value = tempApp.value.filter((item) =>
-      item.lotStatus.some((lot) => lot.operation.operationId === 'TRANSIT')
-    );
-
-    // Keep only the lotStatus entries that start with 'Transit'
-    tempApp.value = tempApp.value.map((item) => {
+    // Keep only the lotStatus.operationId 'TRANSIT'
+    const filteredTransited = tempApp.value.map((item) => {
       return {
         ...item,
         lotStatus: item.lotStatus.filter((lot) =>
-          lot.operation.name.startsWith('Transit')
+          lot.operation.operationId === 'TRANSIT'
         ),
       };
     });
+
+    // Filter applications that have length > 0 in lotStatus
+    tempApp.value = filteredTransited.filter((item) =>
+      item.lotStatus.length > 0
+    );
   }
 
   if (isFiltered.value) {
