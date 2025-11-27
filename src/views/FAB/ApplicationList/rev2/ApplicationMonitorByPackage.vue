@@ -525,6 +525,9 @@ export default {};
     <el-button type="warning" @click="toggleDVFilter" class="buttun-section">
       {{ isDVonly ? "Cancel DV" : "DV only" }}
     </el-button>
+    <el-button type="warning" @click="toggleTransitedFilter" class="buttun-section">
+      {{ isTransitedOnly ? "전체 보기" : "출하완료 보기" }}
+    </el-button>
     <el-button type="primary" @click="handleExcelSubmit" class="buttun-section">
       개발 샘플 진행 상황 EXCEL
     </el-button>
@@ -563,6 +566,7 @@ const searchCategory = ref("productName"); // 기본 검색 기준을 "Lot ID"�
 const isRunningFab = ref(true);
 const isDealyFab = ref(false);
 const isDVonly = ref(false);
+const isTransitedOnly = ref(false);
 // Clear the search input
 function handleClear() {
   searchTerm.value = ""; // Reset search term
@@ -620,6 +624,23 @@ const filteredData = computed(() => {
   if (isDVonly.value) {
     // Filter by first character 'D' in productName
     tempApp.value = tempApp.value.filter((item) => item.productName.charAt(0) === 'D');
+  }
+
+  if (isTransitedOnly.value) {
+    // Filter applications that have at least one lotStatus.operatioId 'TRANSIT'
+    tempApp.value = tempApp.value.filter((item) =>
+      item.lotStatus.some((lot) => lot.operation.operationId === 'TRANSIT')
+    );
+
+    // Keep only the lotStatus entries that start with 'Transit'
+    tempApp.value = tempApp.value.map((item) => {
+      return {
+        ...item,
+        lotStatus: item.lotStatus.filter((lot) =>
+          lot.operation.name.startsWith('Transit')
+        ),
+      };
+    });
   }
 
   if (isFiltered.value) {
@@ -1112,6 +1133,10 @@ const toggleLateFilter = () => {
 
 const toggleDVFilter = () => {
   isDVonly.value = !isDVonly.value;
+};
+
+const toggleTransitedFilter = () => {
+  isTransitedOnly.value = !isTransitedOnly.value;
 };
 
 </script>
