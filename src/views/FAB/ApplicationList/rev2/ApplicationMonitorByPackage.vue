@@ -552,7 +552,7 @@ import {
 } from "../ApplicationList";
 import { onMounted, watch } from "vue";
 import * as xlsx from "xlsx";
-import ExcelJS from "exceljs";
+import ExcelJS, { Alignment, Borders, FillPattern } from "exceljs";
 import {saveAs} from "file-saver";
 const props = defineProps<{
   fabApp: FabRequest[];
@@ -1061,10 +1061,10 @@ async function handleExcelSubmit() {
     });
 
 
-    const headerFill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF2F5597" } }; // #2F5597
+    const headerFill: FillPattern = { type: "pattern", pattern: "solid", fgColor: { argb: "FF2F5597" } }; // #2F5597
     const headerFont = { bold: true, color: { argb: "FFFFFFFF" } };
-    const headerAlignment = { vertical: "middle", horizontal: "center", wrapText: true };
-    const borderThin = {
+    const headerAlignment: Partial<Alignment>  = { vertical: "middle", horizontal: "center", wrapText: true };
+    const borderThin: Partial<Borders> = {
       top: { style: "thin", color: { argb: "FF000000" } },
       left: { style: "thin", color: { argb: "FF000000" } },
       bottom: { style: "thin", color: { argb: "FF000000" } },
