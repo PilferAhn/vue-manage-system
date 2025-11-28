@@ -568,10 +568,12 @@ const handleExcelDownload = async () => {
     // -----------------------
     const fileNameBase = app.productName || "NA_NF_측정의뢰서";
     const buffer = await workbook.xlsx.writeBuffer();
+    const today = new Date();
+    const date = today.toISOString().split('T')[0].replace(/-/g, '');
     const blob = new Blob([buffer], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
-    saveAs(blob, `${fileNameBase}_의뢰서.xlsx`);
+    saveAs(blob, `${fileNameBase}_의뢰서_${date}.xlsx`);
   } catch (err) {
     console.error(err);
     ElNotification({
