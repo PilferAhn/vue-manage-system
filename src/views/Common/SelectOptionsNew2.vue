@@ -104,7 +104,6 @@ watch(
 watch(
   [internalValue, internalOthers],
   ([sel, others]) => {
-    console.log('DEBUG >> sel:', sel, 'othersValue:', props.othersValue, 'enableOthers:', props.enableOthers);
     if (!props.enableOthers) {
       emit("update:modelValue", sel ?? "");
       return;

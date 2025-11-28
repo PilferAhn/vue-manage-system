@@ -108,7 +108,6 @@
               <el-date-picker
                 v-model="props.application.dateOfDeliveryDate"
                 placeholder="Click date"
-                :disabled-date="disableBeforeToday"
               >
               </el-date-picker>
             </el-form-item>
@@ -279,9 +278,17 @@ const orderSheetLevels = ref<string[]>([]);
 const orderSheetModelCode = ref("");
 
 watch(
+  () => props.fileObjList,
+  (newApp) => {
+    console.log("fileObjList changed:", newApp);
+  },
+  { deep: true }
+);
+
+watch(
   () => props.application,
   (newApp) => {
-    console.log("Application changed:", newApp);
+    // console.log("Application changed:", newApp);
   },
   { deep: true }
 );

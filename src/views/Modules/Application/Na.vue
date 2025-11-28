@@ -90,7 +90,7 @@ export default {};
         >
           <el-icon class="el-icon--upload"><upload-filled /></el-icon>
           <div class="el-upload__text">
-            <em>S2P 파일 선택</em>
+            <em>De-embedding 파일 선택</em>
           </div>
         </el-upload>
       </el-col>
@@ -291,17 +291,17 @@ const handleConfigFileRemove: UploadProps["onRemove"] = () => {
   props.fileObjList.naConfigFileList = []
 };
 
-//XML 파일 선택 핸들러 
-const handleXmlFileChange = (
-  file: UploadFile,
-  filesList: UploadFile[]
-) => {
-  props.fileObjList.xmlFileList = [...filesList];
-};
-//XML 파일 삭제 핸들러
-const handleXmlFileRemove: UploadProps["onRemove"] = () => {
-  props.fileObjList.xmlFileList = []
-};
+// //XML 파일 선택 핸들러 
+// const handleXmlFileChange = (
+//   file: UploadFile,
+//   filesList: UploadFile[]
+// ) => {
+//   props.fileObjList.xmlFileList = [...filesList];
+// };
+// //XML 파일 삭제 핸들러
+// const handleXmlFileRemove: UploadProps["onRemove"] = () => {
+//   props.fileObjList.xmlFileList = []
+// };
 
 //Reference 파일 선택 핸들러 
 const handleReferenceFileChange = (

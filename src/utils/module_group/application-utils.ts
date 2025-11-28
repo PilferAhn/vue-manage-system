@@ -182,9 +182,12 @@ const appendFileGroup = async (
         "Content-Type": "multipart/form-data",
       },
     });
-
-    const tempFiles = convertPep8ToCamelCase2(response.data);
-    if (files) return response.data;
+    
+    const uploaded  = convertPep8ToCamelCase2(response.data);
+     if (files) {
+      files.splice(0, files.length, ...uploaded);
+    }
+    if (files) return uploaded;
   } catch (error) {
     console.error("❌ 업로드 실패", error);
     throw error;
