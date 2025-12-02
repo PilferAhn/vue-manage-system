@@ -31,7 +31,7 @@
                 v-model="props.application.productName"
                 label="Model Name"
                 prop="productName"
-                placeholder="ex) SFMD7R0E101"
+                placeholder="ex) SFMD7R0E101(11자리)"
                 :maxlength="11"
               />
             </el-col>
@@ -149,9 +149,9 @@
             />
           </el-col>
           <el-col :span="12">
-            <LongInputText2
+            <input-text
               v-model="props.application.deliveryMethod"
-              label="샘플 전달 방법"
+              label="EVB조립 메뉴얼"
               prop="deliveryMethod"
               :disable="false"
               placeholder=""
@@ -171,7 +171,7 @@
               :need-bold="false"
             />
           </el-col>
-          <el-col :span="12">
+          <el-col :span="6">
             <el-form-item prop="completionDueDate" label="완료 예정일(측정자 작성)">
               <el-date-picker
                 v-model="props.application.completionDueDate"
@@ -179,6 +179,16 @@
                 value-format="YYYY-MM-DD HH:mm"
                 placeholder="Click date"
                 :disabled-date="disableBeforeToday"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item prop="finishedDate" label="완료일(측정자 작성)">
+              <el-date-picker
+                v-model="props.application.finishedDate"
+                type="date"
+                value-format="YYYY-MM-DD HH:mm"
+                placeholder="Click date"
               />
             </el-form-item>
           </el-col>

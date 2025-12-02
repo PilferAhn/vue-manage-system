@@ -42,11 +42,11 @@ export interface ModuleMeasurementApp {
   deliveryMethod?: string;
   mold?: string;
   tcfTemperature?: string;
-  measurementManager?: string
-  completionDueDate?: string
+  measurementManager?: string;
+  completionDueDate?: string;
   dateOfDeliveryDate?: string;
   dateOfExpectedFinished?: string;
-  
+  finishedDate?: string;
   naApp?: NaApplication;
   nfApp?: NfApplication;
   dateOfCreated?: string;
