@@ -44,15 +44,39 @@ import { ElNotification } from "element-plus";
 import { useRouter } from "vue-router";
 import ExcelJS from "exceljs";
 import {saveAs} from "file-saver";
+import type { FormInstance } from "element-plus";
 
 const router = useRouter();
 const props = defineProps<{
   application: ModuleMeasurementApp;
   applicationType: string;
   fileObjList: ModuleFiles;
+  formRef?: FormInstance | null;
 }>();
 
 const handleButtons = async (buttonType: string) => {
+  if (buttonType === "create" || buttonType === "update") {
+    if (!props.formRef) {
+      console.warn("formRef가 없습니다. 폼 검증을 건너뜁니다.");
+    } else {
+      const valid = await props.formRef
+        .validate()
+        .then(() => true)
+        .catch(() => false);
+
+      if (!valid) {
+        ElNotification({
+          title: "검증 실패",
+          message: "필수 입력값을 확인해주세요.",
+          type: "error",
+          duration: 3000,
+          position: "top-right",
+        });
+        return; // ❌ 여기서 바로 종료 → submit / 파일체크 X
+      }
+    }
+  }
+
   if (buttonType === "create" && props.application.id === null) {
     if (checkFiles(props.application, props.fileObjList)) {
       

@@ -19,6 +19,7 @@
         :application="props.application"
         :application-type="props.applicationType"
         :file-obj-list="fileObjList"
+        :form-ref="formRef"
       />
     </div>
   </el-form>
