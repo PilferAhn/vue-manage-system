@@ -34,19 +34,16 @@ import { ref, onMounted, onUnmounted } from "vue";
 import ApplicationByStatus from "./ApplicationByStatus.vue";
 
 const activeTabName = ref("reserved");
-
-onMounted(() => {
   const reloadOnBack = () => {
     window.location.reload();
   };
-
+onMounted(() => {
   window.addEventListener("popstate", reloadOnBack);
+});
 
-  // 페이지를 벗어날 때 이벤트 리스너 제거
-  onUnmounted(() => {
+onUnmounted(() => {
     window.removeEventListener("popstate", reloadOnBack);
   });
-});
 </script>
 
 <style>
