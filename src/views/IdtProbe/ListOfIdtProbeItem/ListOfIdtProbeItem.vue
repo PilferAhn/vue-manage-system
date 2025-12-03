@@ -75,19 +75,19 @@ const indexMethod = (index: number) => {
 const handlePageChange = async () => {
     const totalItemsPromise = fetchCountIdtProbeItems(props.status, filterBy);
     const idtProbeItemsPromise = fetchIdtProbeItems(props.status, filterBy, props.pageSize, currentPage.value, props.orderParams);
-    totalItems.value = await totalItemsPromise;
-    idtProbeItems.value = await idtProbeItemsPromise;
+
+    [totalItems.value, idtProbeItems.value] = await Promise.all([totalItemsPromise, idtProbeItemsPromise]);
 };
 
 const handleFilterChange = async (newFilters: FilterIdtProbeItemBy) => {
     filterBy = newFilters;
-    handlePageChange();
+    await handlePageChange();
 };
 
 onMounted(async () => {
     const idtProbeTypesPromise = fetchIdtProbeTypes();
 
-    handlePageChange();
+    const handlePageChangePromise = handlePageChange();
         
     const idtProbeTypes = await idtProbeTypesPromise;
     idtProbeTypesFilters.value = idtProbeTypes.map((type: IdtProbeType) => {
@@ -96,7 +96,8 @@ onMounted(async () => {
             value: type.probeType,
         };
     });
-    
+
+    await handlePageChangePromise;
 });
 </script>
 
