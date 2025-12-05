@@ -188,7 +188,7 @@ export default {};
         :file-list="props.fileObjList.naReferenceFileList"
       >
         <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-        <div class="el-upload__text">Reference 특성 파일 선택</div>
+        <div class="el-upload__text">Reference 특성 파일 선택(NA)</div>
       </el-upload>
     </el-col>
     <file-table :app-file="props.application.naApp?.naSpecialFile" file_type="na_special"></file-table>

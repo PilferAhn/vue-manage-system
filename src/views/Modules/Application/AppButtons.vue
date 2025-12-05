@@ -140,6 +140,19 @@ const handleButtons = async (buttonType: string) => {
   }
 };
 
+// yyyy-MM-dd 문자열로 변환 (타임존 영향 X)
+function getFormatDateForExcel(value?: string | Date | null): string {
+  if (!value) return "";
+
+  const d = typeof value === "string" ? new Date(value) : value;
+
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+
+  return `${y}-${m}-${day}`; // 예: "2025-12-06"
+}
+
 const handleExcelDownload = async () => {
   try {
     const app = props.application;
@@ -209,11 +222,12 @@ const handleExcelDownload = async () => {
     const insertImageBelow = async (
       file: { uId: string; ext: string },
       row: number,
-      folder: string
+      section: "na_special" | "nf_special"
     ) => {
       if (!file) return row;
 
       try {
+        const folder = section === "na_special" ? "na_special" : "nf_special";
         // 백엔드/정적 경로 구조에 맞게 수정 필요
         const response = await fetch(`/static/${folder}/${file.uId}.${file.ext}`);
         const blob = await response.blob();
@@ -232,14 +246,14 @@ const handleExcelDownload = async () => {
         // 이미지 들어갈 공간만큼 행 삽입
         sheet.spliceRows(row + 1, 0, ...Array(rowHeight).fill([]));
        
-        if (app.isNa) {
+        if (section === "na_special") {
           // NA 이미지 (B ~ C 영역)
           sheet.mergeCells(`B${row + 1}:C${row + rowHeight}`);
           sheet.addImage(imageId, {
             tl: { col: 1, row: row }, // B열(=index 1)
             ext: { width: imageWidth, height: imageHeight },
           });
-        } else if(app.isNf) {
+        } else{
           // NF 이미지 (D ~ G 영역)
           sheet.mergeCells(`D${row + 1}:G${row + rowHeight}`);
           sheet.addImage(imageId, {
@@ -255,8 +269,8 @@ const handleExcelDownload = async () => {
     };
 
     // 열 너비 (대략 의뢰서 느낌으로)
-    sheet.getColumn("B").width = 25;
-    sheet.getColumn("C").width = 45;
+    sheet.getColumn("B").width = 30;
+    sheet.getColumn("C").width = 50;
     sheet.getColumn("D").width = 25;
     sheet.getColumn("E").width = 15;
     sheet.getColumn("F").width = 20;
@@ -385,7 +399,8 @@ const handleExcelDownload = async () => {
       fill: labelFill,
       wrap: true,
     });
-    setCell("E6", new Date(app.dateOfDeliveryDate).toISOString().split('T')[0], {
+
+    setCell("E6", getFormatDateForExcel(app.dateOfDeliveryDate), {
       align: center,
       borderAll: true,
     });
@@ -428,7 +443,7 @@ const handleExcelDownload = async () => {
       }
     );
     sheet.mergeCells("E7:G7");
-    setCell("E7", new Date(app.dateOfExpectedFinished).toISOString().split('T')[0], {
+    setCell("E7", getFormatDateForExcel(app.dateOfExpectedFinished), {
       align: center,
       borderAll: true,
     });
@@ -486,7 +501,7 @@ const handleExcelDownload = async () => {
       wrap: true,
     });
     sheet.mergeCells("E9:G9");
-    setCell("E9", new Date(app.completionDueDate).toISOString().split('T')[0], {
+    setCell("E9", getFormatDateForExcel(app.completionDueDate), {
       align: center,
       borderAll: true,
     });
@@ -535,7 +550,7 @@ const handleExcelDownload = async () => {
       // Row 17: NA 이미지 헤더 추가
       // -----------------------
       sheet.mergeCells("B17:C17");
-      setCell("B17", "이미지 FILE", {
+      setCell("B17", "NA 이미지 FILE", {
         bold: true,
         align: center,
         borderAll: true,
@@ -543,11 +558,11 @@ const handleExcelDownload = async () => {
         fontSize: 16,
         wrap: true,
       });
-      if (app.isNa && app.naApp?.naSpecialFile?.length) {
-      for (const file of app.naApp.naSpecialFile) {
-        imageRow = await insertImageBelow(file, imageRow, "na_special");
-      }
-    }
+      // if (app.isNa && app.naApp?.naSpecialFile?.length) {
+        // for (const file of app.naApp.naSpecialFile) {
+        //   imageRow = await insertImageBelow(file, imageRow, "na_special");
+        // }
+      // }
     }
 
     if (app.isNf) {
@@ -570,7 +585,7 @@ const handleExcelDownload = async () => {
       // Row 17: NF 이미지 헤더 추가
       // -----------------------
       sheet.mergeCells("D17:G17");
-      setCell("B17", "이미지 FILE", {
+      setCell("D17", "NF 이미지 FILE", {
         bold: true,
         align: center,
         borderAll: true,
@@ -578,14 +593,105 @@ const handleExcelDownload = async () => {
         fontSize: 16,
         wrap: true,
       });
-      if (app.isNf && app.nfApp?.nfSpecialFile?.length) {
-      for (const file of app.nfApp.nfSpecialFile) {
-        imageRow = await insertImageBelow(file, imageRow, "nf_special");
+      // if (app.isNf && app.nfApp?.nfSpecialFile?.length) {
+      //   for (const file of app.nfApp.nfSpecialFile) {
+      //     imageRow = await insertImageBelow(file, imageRow, "nf_special");
+      //   }
+      // }
+    }
+
+    // ---- 이미지 영역 설정 ----
+    const IMAGE_HEADER_ROW = 17;           // "NA 이미지 FILE", "NF 이미지 FILE"이 있는 행
+    const IMAGE_START_ROW = IMAGE_HEADER_ROW + 1;
+      
+    const imageHeight = 240;
+    const imageWidth = 640;
+    const pxPerRow = 20;
+    const imageRows = Math.ceil(imageHeight / pxPerRow);
+    const gapRows = 1;                     // 이미지 사이 여유 줄
+      
+    const naFiles = app.isNa ? app.naApp?.naSpecialFile ?? [] : [];
+    const nfFiles = app.isNf ? app.nfApp?.nfSpecialFile ?? [] : [];
+      
+    const maxImages = Math.max(naFiles.length, nfFiles.length);
+      
+    if (maxImages > 0) {
+      const totalRows = maxImages * (imageRows + gapRows);
+      // 이미지용 영역 통째로 확보
+      sheet.spliceRows(
+        IMAGE_START_ROW,
+        0,
+        ...Array(totalRows).fill([])
+      );
+        
+      // --- NA 이미지 (B~C) ---
+      for (let i = 0; i < naFiles.length; i++) {
+        const file = naFiles[i];
+        const blockStart = IMAGE_START_ROW + i * (imageRows + gapRows);
+        const mergeStartRow = blockStart;
+        const mergeEndRow = blockStart + imageRows - 1;
+      
+        // 병합 범위
+        sheet.mergeCells(`B${mergeStartRow}:C${mergeEndRow}`);
+      
+        try {
+          const response = await fetch(`/static/na_special/${file.uId}.${file.ext}`);
+          const blob = await response.blob();
+          const buffer = await blob.arrayBuffer();
+        
+          const imageId = workbook.addImage({
+            buffer,
+            extension: file.ext,
+          });
+        
+          sheet.addImage(imageId, {
+            tl: { col: 1, row: mergeStartRow - 1 },  // B열
+            ext: { width: imageWidth, height: imageHeight },
+          });
+        } catch (e) {
+          console.error("NA 이미지 삽입 실패", e);
+        }
+      }
+    
+      // --- NF 이미지 (D~G) ---
+      for (let i = 0; i < nfFiles.length; i++) {
+        const file = nfFiles[i];
+        const blockStart = IMAGE_START_ROW + i * (imageRows + gapRows);
+        const mergeStartRow = blockStart;
+        const mergeEndRow = blockStart + imageRows - 1;
+      
+        sheet.mergeCells(`D${mergeStartRow}:G${mergeEndRow}`);
+      
+        try {
+          const response = await fetch(`/static/nf_special/${file.uId}.${file.ext}`);
+          const blob = await response.blob();
+          const buffer = await blob.arrayBuffer();
+        
+          const imageId = workbook.addImage({
+            buffer,
+            extension: file.ext,
+          });
+        
+          sheet.addImage(imageId, {
+            tl: { col: 3, row: mergeStartRow - 1 },  // D열
+            ext: { width: imageWidth, height: imageHeight },
+          });
+        } catch (e) {
+          console.error("NF 이미지 삽입 실패", e);
+        }
       }
     }
-    }
 
-
+    sheet.eachRow((row) => {
+      row.eachCell((cell) => {
+        const prevAlign = cell.alignment || {};
+        cell.alignment = {
+          ...prevAlign,
+          horizontal: "center", // 가로 가운데
+          vertical: "middle",   // 세로 가운데
+        };
+      });
+    });
 
     // -----------------------
     // 파일로 내보내기

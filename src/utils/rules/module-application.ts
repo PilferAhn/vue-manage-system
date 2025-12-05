@@ -13,7 +13,7 @@ const validateProductNameLength = (
   // 공백 제외
   const len = value.replace(/\s+/g, "").length;
   if (len !== 11) {
-    return callback(new Error("Model Nmae은 정확히 11자리여야 합니다."));
+    return callback(new Error("Model Name은 정확히 11자리여야 합니다."));
   }
   return callback();
 };
