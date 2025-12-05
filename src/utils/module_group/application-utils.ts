@@ -422,10 +422,6 @@ export const checkFiles = (
   if (application.isNf && application.nfApp && !missingFile) {
     if (fileObjs.nfRffeFileList.length === 0) missingFile = "NF RFFE File";
     else if (fileObjs.nfConfigFileList.length === 0) missingFile = "NF Config File";
-    else if (fileObjs.nfReferenceFileList.length === 0)
-      missingFile = "NF Reference 특성 File";
-    else if (fileObjs.nfSpecialFileList.length === 0)
-      missingFile = "NF Image File";
   }
   
 
