@@ -302,7 +302,7 @@ const handlePageChange = (page: number) => {
 
 const getStatus = (app: ModuleMeasurementApp): StatusKey => {
   if (app.finishedDate) return "finished";
-  if (app.dateOfExpectedFinished) return "in_progress";
+  if (app.completionDueDate) return "in_progress";
   return "waiting";
 };
 
@@ -310,6 +310,7 @@ const filteredList = computed(() => {
   const statusFiltered = appList.filter(
     (app) => getStatus(app) === activeTabName.value
   );
+  
   const term = query.search_term?.trim().toLowerCase();
   if (!term) return statusFiltered;
 
