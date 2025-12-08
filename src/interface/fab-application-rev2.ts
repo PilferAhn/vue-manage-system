@@ -28,11 +28,11 @@ export interface Epoxy {
 }
 
 export interface BomCode {
-  MATNR?: string;
-  MAKTX?: string;
-  MEINS?: string;
-  UMREN?: string;
-  DISPO?: string;
+  matnr?: string;
+  maktx?: string;
+  meins?: string;
+  umren?: string;
+  dispo?: string;
 }
 
 export interface Bom {
