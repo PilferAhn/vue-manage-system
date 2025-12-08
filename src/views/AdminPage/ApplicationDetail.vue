@@ -50,7 +50,7 @@
         v-model="applicationForm.phase"
         label="Phase조건"
         prop="purpose"
-        placeholder="의뢰목적을 입력하세요"
+        placeholder="Phase step을 입력해주세요"
         class="flex-item"
       ></inputText>
       </div>

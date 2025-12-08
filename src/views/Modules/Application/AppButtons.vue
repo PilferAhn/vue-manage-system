@@ -44,15 +44,39 @@ import { ElNotification } from "element-plus";
 import { useRouter } from "vue-router";
 import ExcelJS from "exceljs";
 import {saveAs} from "file-saver";
+import type { FormInstance } from "element-plus";
 
 const router = useRouter();
 const props = defineProps<{
   application: ModuleMeasurementApp;
   applicationType: string;
   fileObjList: ModuleFiles;
+  formRef?: FormInstance | null;
 }>();
 
 const handleButtons = async (buttonType: string) => {
+  if (buttonType === "create" || buttonType === "update") {
+    if (!props.formRef) {
+      console.warn("formRef가 없습니다. 폼 검증을 건너뜁니다.");
+    } else {
+      const valid = await props.formRef
+        .validate()
+        .then(() => true)
+        .catch(() => false);
+
+      if (!valid) {
+        ElNotification({
+          title: "검증 실패",
+          message: "필수 입력값을 확인해주세요.",
+          type: "error",
+          duration: 3000,
+          position: "top-right",
+        });
+        return; // ❌ 여기서 바로 종료 → submit / 파일체크 X
+      }
+    }
+  }
+
   if (buttonType === "create" && props.application.id === null) {
     if (checkFiles(props.application, props.fileObjList)) {
       
@@ -116,154 +140,584 @@ const handleButtons = async (buttonType: string) => {
   }
 };
 
+// yyyy-MM-dd 문자열로 변환 (타임존 영향 X)
+function getFormatDateForExcel(value?: string | Date | null): string {
+  if (!value) return "";
+
+  const d = typeof value === "string" ? new Date(value) : value;
+
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+
+  return `${y}-${m}-${day}`; // 예: "2025-12-06"
+}
 
 const handleExcelDownload = async () => {
-  const app = props.application;
-  const workbook = new ExcelJS.Workbook();
-  const sheet = workbook.addWorksheet("의뢰서");
+  try {
+    const app = props.application;
 
-  sheet.columns = Array.from({ length: 10 }, (_, i) => ({ width: i < 6 ? 20 : 2 }));
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet("NA, NF 측정 의뢰서");
 
-  const applyBorder = (cell) => {
-    cell.border = {
-      top: { style: 'thin' },
-      left: { style: 'thin' },
-      bottom: { style: 'thin' },
-      right: { style: 'thin' },
+    // 공통 테두리 스타일
+    const border = {
+      top: { style: "thin" },
+      left: { style: "thin" },
+      right: { style: "thin" },
+      bottom: { style: "thin" },
     };
-  };
 
-  const writeSectionHeader = (row, text, color = 'FFFFFF00') => {
-    sheet.mergeCells(`B${row}:E${row}`);
-    const cell = sheet.getCell(`B${row}`);
-    cell.value = text;
-    cell.font = { name: '맑은 고딕', size: 14, bold: true };
-    cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
-    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: color } };
-    sheet.getRow(row).height = 40;
-    applyBorder(cell);
-  };
+    const headerFill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "FFFFFF00" }, // 연한 노랑 계열
+    };
+    const naHeaderFill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "FFD9EAD3" }, // 연한 녹색 계열
+    };
+    const labelFill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "FFFFE4C4" }, // 살구색
+    };
 
-  const writeFieldRow = (row, leftLabel, leftValue, rightLabel, rightValue) => {
-    const cells = [
-      ['B', leftLabel], ['C', leftValue],
-      ['D', rightLabel], ['E', rightValue]
-    ];
-    cells.forEach(([col, val]) => {
-      const cell = sheet.getCell(`${col}${row}`);
-      cell.value = val;
-      cell.font = { name: '맑은 고딕', size: 10, bold: col === 'B' || col === 'D' };
-      cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
-      if (col === 'B' || col === 'D') {
-        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFE4C4' } };
+    const center = { vertical: "middle", horizontal: "center" } as const;
+    const left = { vertical: "middle", horizontal: "left" } as const;
+
+    // 헬퍼: 셀 값+스타일 세팅
+    const setCell = (
+      addr: string,
+      value: any,
+      opts: {
+        bold?: boolean;
+        align?: typeof center | typeof left;
+        fill?: any;
+        borderAll?: boolean;
+        fontSize?: number;
+        wrap?: boolean;
+      } = {}
+    ) => {
+      const cell = sheet.getCell(addr);
+      cell.value = value ?? "";
+      if (opts.bold) {
+        cell.font = { ...(cell.font || {}), bold: true, size: opts.fontSize || 11 };
+      } else if (opts.fontSize) {
+        cell.font = { ...(cell.font || {}), size: opts.fontSize };
       }
-      applyBorder(cell);
+      if (opts.align) cell.alignment = { ...(cell.alignment || {}), ...opts.align };
+      if (opts.fill) cell.fill = opts.fill;
+      if (opts.borderAll) cell.border = border;
+      if (opts.wrap) {
+        cell.alignment = {
+          ...(cell.alignment || {}),
+          wrapText: true,
+        };
+      }
+      return cell;
+    };
+
+    const insertImageBelow = async (
+      file: { uId: string; ext: string },
+      row: number,
+      section: "na_special" | "nf_special"
+    ) => {
+      if (!file) return row;
+
+      try {
+        const folder = section === "na_special" ? "na_special" : "nf_special";
+        // 백엔드/정적 경로 구조에 맞게 수정 필요
+        const response = await fetch(`/static/${folder}/${file.uId}.${file.ext}`);
+        const blob = await response.blob();
+        const buffer = await blob.arrayBuffer();
+
+        const imageId = workbook.addImage({
+          buffer,
+          extension: file.ext,
+        });
+
+        const imageHeight = 240;
+        const imageWidth = 560;
+        const pxPerRow = 20;
+        const rowHeight = Math.ceil(imageHeight / pxPerRow);
+
+        // 이미지 들어갈 공간만큼 행 삽입
+        sheet.spliceRows(row + 1, 0, ...Array(rowHeight).fill([]));
+       
+        if (section === "na_special") {
+          // NA 이미지 (B ~ C 영역)
+          sheet.mergeCells(`B${row + 1}:C${row + rowHeight}`);
+          sheet.addImage(imageId, {
+            tl: { col: 1, row: row }, // B열(=index 1)
+            ext: { width: imageWidth, height: imageHeight },
+          });
+        } else{
+          // NF 이미지 (D ~ G 영역)
+          sheet.mergeCells(`D${row + 1}:G${row + rowHeight}`);
+          sheet.addImage(imageId, {
+            tl: { col: 3, row: row }, // D열(=index 3)
+            ext: { width: imageWidth, height: imageHeight },
+          });
+        }
+        return row + rowHeight + 1;
+      } catch (e) {
+        console.error("이미지 삽입 실패", e);
+        return row;
+      }
+    };
+
+    // 열 너비 (대략 의뢰서 느낌으로)
+    sheet.getColumn("B").width = 30;
+    sheet.getColumn("C").width = 50;
+    sheet.getColumn("D").width = 25;
+    sheet.getColumn("E").width = 15;
+    sheet.getColumn("F").width = 20;
+    sheet.getColumn("G").width = 20;
+
+    // -----------------------
+    // Row 2: 상단 타이틀
+    // -----------------------
+    sheet.mergeCells("B2:G2");
+    setCell("B2", "측정 정보\nTHÔNG TIN ĐO", {
+      bold: true,
+      align: center,
+      borderAll: true,
+      fill: headerFill,
+      fontSize: 20,
+      wrap: true,
     });
-  };
+    sheet.getRow(2).height = 24;
 
-  const writeMergedRow = (row, label, value) => {
-    sheet.mergeCells(`C${row}:E${row}`);
-    const cellL = sheet.getCell(`B${row}`);
-    const cellV = sheet.getCell(`C${row}`);
-    cellL.value = label;
-    cellV.value = value;
+    // -----------------------
+    // Row 3: 의뢰인 / 개발자
+    // -----------------------
+    setCell("B3", "의뢰인\nNgười yêu cầu", {
+      bold: true,
+      align: center,
+      borderAll: true,
+      fill: labelFill,
+      wrap: true,
+    });
+    setCell("C3", app.requester, {
+      align: left,
+      borderAll: true,
+    });
 
-    cellL.font = { name: '맑은 고딕', size: 10, bold: true };
-    cellL.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
-    cellL.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFE4C4' } };
-    applyBorder(cellL);
+    setCell("D3", "개발자\nNhà phát triển", {
+      bold: true,
+      align: center,
+      borderAll: true,
+      fill: labelFill,
+      wrap: true,
+    });
+    sheet.mergeCells("E3:G3");
+    setCell("E3", app.designer, {
+      align: left,
+      borderAll: true,
+    });
 
-    cellV.font = { name: '맑은 고딕', size: 10 };
-    cellV.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
-    applyBorder(cellV);
-  };
+    // -----------------------
+    // Row 4: 기종명 / 수량
+    // -----------------------
+    setCell("B4", "기종명\nTên model", {
+      bold: true,
+      align: center,
+      borderAll: true,
+      fill: labelFill,
+      wrap: true,
+    });
+    setCell("C4", app.productName, {
+      align: left,
+      borderAll: true,
+    });
 
-  const insertImageBelow = async (file, row, folder) => {
-    if (!file) return row;
-    try {
-      const response = await fetch(`/static/${folder}/${file.uId}.${file.ext}`);
-      const blob = await response.blob();
-      const buffer = await blob.arrayBuffer();
-      const imageId = workbook.addImage({ buffer, extension: file.ext });
+    setCell("D4", "수량 (Total)\nSố lượng", {
+      bold: true,
+      align: center,
+      borderAll: true,
+      fill: labelFill,
+      wrap: true,
+    });
+    sheet.mergeCells("E4:G4");
+    setCell("E4", app.quantity, {
+      align: left,
+      borderAll: true,
+    });
 
-      const imageHeight = 240, imageWidth = 640;
-      const pxPerRow = 20;
-      const rowHeight = Math.ceil(imageHeight / pxPerRow);
+    // -----------------------
+    // Row 5: 의뢰 목적 / 세부 수량
+    // -----------------------
+    setCell("B5", "의뢰 목적\nMục đích yêu cầu", {
+      bold: true,
+      align: center,
+      borderAll: true,
+      fill: labelFill,
+      wrap: true,
+    });
+    setCell("C5", app.purpose, {
+      align: left,
+      borderAll: true,
+      wrap: true,
+    });
 
-      sheet.spliceRows(row + 1, 0, ...Array(rowHeight).fill([]));
-      sheet.mergeCells(`B${row + 1}:E${row + rowHeight}`);
-      sheet.addImage(imageId, {
-        tl: { col: 1, row: row },
-        ext: { width: imageWidth, height: imageHeight }
+    setCell("D5", "세부 수량\nSố lượng chi tiết", {
+      bold: true,
+      align: center,
+      borderAll: true,
+      fill: labelFill,
+      wrap: true,
+    });
+    sheet.mergeCells("E5:G5");
+    setCell("E5", app.quantityDetail, {
+      align: left,
+      borderAll: true,
+      wrap: true,
+    });
+
+    // -----------------------
+    // Row 6: 조립 차수 / 자재 전달 일자 / 전달자
+    // -----------------------
+    setCell("B6", "조립 차수(Ordersheet)", {
+      bold: true,
+      align: center,
+      borderAll: true,
+      fill: labelFill,
+      wrap: true,
+    });
+    setCell("C6", app.smtHistory, {
+      align: left,
+      borderAll: true,
+      wrap: true,
+    });
+
+    setCell("D6", "자재 전달 일자\nNgày gửi NVL", {
+      bold: true,
+      align: center,
+      borderAll: true,
+      fill: labelFill,
+      wrap: true,
+    });
+
+    setCell("E6", getFormatDateForExcel(app.dateOfDeliveryDate), {
+      align: center,
+      borderAll: true,
+    });
+
+    setCell("F6", "전달자\nNgười gửi", {
+      bold: true,
+      align: center,
+      borderAll: true,
+      fill: labelFill,
+      wrap: true,
+    });
+    setCell("G6", app.deliveryPerson, {
+      align: center,
+      borderAll: true,
+    });
+
+    // -----------------------
+    // Row 7: Mold 여부 / 완료 요청 일자
+    // -----------------------
+    setCell("B7", "Mold 여부\nCó Mold", {
+      bold: true,
+      align: center,
+      borderAll: true,
+      fill: labelFill,
+    });
+    setCell("C7", app.mold, {
+      align: left,
+      borderAll: true,
+    });
+
+    setCell(
+      "D7",
+      "완료 요청 일자\nNgày yêu cầu hoàn thành",
+      {
+        bold: true,
+        align: center,
+        borderAll: true,
+        fill: labelFill,
+        wrap: true,
+      }
+    );
+    sheet.mergeCells("E7:G7");
+    setCell("E7", getFormatDateForExcel(app.dateOfExpectedFinished), {
+      align: center,
+      borderAll: true,
+    });
+
+    // -----------------------
+    // Row 8: TCF 측정 / 샘플 전달 방법
+    // -----------------------
+    setCell("B8", "TCF 측정\nĐo TCF", {
+      bold: true,
+      align: center,
+      borderAll: true,
+      fill: labelFill,
+      wrap: true,
+    });
+    setCell("C8", app.tcfTemperature, {
+      align: left,
+      borderAll: true,
+      wrap: true,
+    });
+
+    setCell("D8", "샘플 전달 방법\nPhương pháp gửi mẫu", {
+      bold: true,
+      align: center,
+      borderAll: true,
+      fill: labelFill,
+      wrap: true,
+    });
+    sheet.mergeCells("E8:G8");
+    setCell("E8", app.deliveryMethod, {
+      align: left,
+      borderAll: true,
+      wrap: true,
+    });
+
+    // -----------------------
+    // Row 9: 측정 담당자 / 완료 예정일
+    // -----------------------
+    setCell("B9", "측정 담당자\nNgười phụ trách đo", {
+      bold: true,
+      align: center,
+      borderAll: true,
+      fill: labelFill,
+      wrap: true,
+    });
+    setCell("C9", app.measurementManager, {
+      align: left,
+      borderAll: true,
+    });
+
+    setCell("D9", "완료 예정일\nNgày dự kiến hoàn thành", {
+      bold: true,
+      align: center,
+      borderAll: true,
+      fill: labelFill,
+      wrap: true,
+    });
+    sheet.mergeCells("E9:G9");
+    setCell("E9", getFormatDateForExcel(app.completionDueDate), {
+      align: center,
+      borderAll: true,
+    });
+
+    // -----------------------
+    // Row 10: NA, NF 헤더 추가
+    // -----------------------
+    sheet.mergeCells("B10:C10");
+    setCell("B10", "측정 정보 (NA)\nTHÔNG TIN NA", {
+      bold: true,
+      align: center,
+      borderAll: true,
+      fill: naHeaderFill,
+      fontSize: 16,
+      wrap: true,
+    });
+    sheet.mergeCells("D10:G10");
+    setCell("D10", "측정 정보 (NF)\nTHÔNG TIN NF", {
+      bold: true,
+      align: center,
+      borderAll: true,
+      fill: naHeaderFill,
+      fontSize: 16,
+      wrap: true,
+    });
+
+    // -----------------------
+    // Row 11부터 NA, NF 항목 추가
+    // -----------------------
+    // NA 항목
+    let imageRow = 18;
+    if (app.isNa) {
+      setCell("B11", "NA 선택\nLựa chọn NA", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
+      setCell("C11", app.naApp?.na ?? "", { align: left, borderAll: true });
+      setCell("B12", "De-embedding 방식\nPhương thức De-embedding", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
+      setCell("C12", app.naApp?.deMethod ?? "", { align: left, borderAll: true });
+      setCell("B13", "Port Extension Loss\nMất Port Extension", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
+      setCell("C13", app.naApp?.portExtensionLoss ? "ON" : "OFF", { align: left, borderAll: true });
+      setCell("B14", "측정 방식\nPhương thức đo", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
+      setCell("C14", app.naApp?.measMethod ?? "", { align: left, borderAll: true });
+      setCell("B15", "S-Parameter 형식\nHình thức SPARA", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
+      setCell("C15", app.naApp?.sParaType === "true" ? "Ideal Matching 포함" : "Ideal Matching 미포함", { align: left, borderAll: true });
+      setCell("B16", "특이사항\nLưu ý", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
+      setCell("C16", app.naApp?.note ?? "", { align: left, borderAll: true, wrap: true });
+      // -----------------------
+      // Row 17: NA 이미지 헤더 추가
+      // -----------------------
+      sheet.mergeCells("B17:C17");
+      setCell("B17", "NA 이미지 FILE", {
+        bold: true,
+        align: center,
+        borderAll: true,
+        fill: naHeaderFill,
+        fontSize: 16,
+        wrap: true,
       });
-
-      return row + rowHeight + 1;
-    } catch (e) {
-      console.error("이미지 삽입 실패", e);
-      return row;
+      // if (app.isNa && app.naApp?.naSpecialFile?.length) {
+        // for (const file of app.naApp.naSpecialFile) {
+        //   imageRow = await insertImageBelow(file, imageRow, "na_special");
+        // }
+      // }
     }
-  };
 
-  const fields = [
-    ['Model Name\nTên model', app.productName, 'Quantity\nSố lượng', app.quantity],
-    ['의뢰 목적\nMục đích yêu cầu', app.purpose, '조립차수\nLần lắp ráp', app.smtHistory || ''],
-    ['자재 전달 일자\nNgày gửi NVL', app.dateOfDeliveryDate?.substring(0, 10) || '', '완료 요청 일자\nNgày yêu cầu hoàn thành', app.dateOfExpectedFinished?.substring(0, 10) || ''],
-    ['LOT ID', app.lotId || '', 'Mold', app.mold],
-    ['샘플 전달방법\nCách giao mẫu', app.deliveryMethod, '작성자\nNgười viết', app.user?.userName || ''],
-    ['생성일\nNgày tạo', app.dateOfCreated?.substring(0, 10) || '', '', ''],
-    ['TCF 측정 유무\nCó đo TCF không', app.needTcf ? 'O' : 'X', 'TCF 측정 온도\nNhiệt độ đo TCF', app.tcfTemperature || '']
-  ];
+    if (app.isNf) {
+      // -----------------------
+      // NF 관련 항목
+      // -----------------------
+      setCell("D11", "Capture", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
+      sheet.mergeCells("E11:G11");
+      setCell("E11", app.nfApp?.capture ? "O" : "X", { align: left, borderAll: true });
+      setCell("D12", "NF-Parameter (MDF) 전달\nTruyền NF-Parameter (MDF)", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
+      sheet.mergeCells("E12:G12");
+      setCell("E12", app.nfApp?.nfParameterMdf ? "O" : "X", { align: left, borderAll: true });
+      setCell("D13", "Matching(Real)\nSự khớp (Thực tế)", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
+      sheet.mergeCells("E13:G13");
+      setCell("E13", app.nfApp?.isRealMatching ? "O" : "X", { align: left, borderAll: true });
+      setCell("D14", "특이사항\nLưu ý", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
+      sheet.mergeCells("E14:G14");
+      setCell("E14", app.nfApp?.note ?? "", { align: left, borderAll: true, wrap: true });
+      // -----------------------
+      // Row 17: NF 이미지 헤더 추가
+      // -----------------------
+      sheet.mergeCells("D17:G17");
+      setCell("D17", "NF 이미지 FILE", {
+        bold: true,
+        align: center,
+        borderAll: true,
+        fill: naHeaderFill,
+        fontSize: 16,
+        wrap: true,
+      });
+      // if (app.isNf && app.nfApp?.nfSpecialFile?.length) {
+      //   for (const file of app.nfApp.nfSpecialFile) {
+      //     imageRow = await insertImageBelow(file, imageRow, "nf_special");
+      //   }
+      // }
+    }
 
-  let row = 2;
-  writeSectionHeader(row++, '기본 정보\nTHÔNG TIN CƠ BẢN');
-  for (let i = 0; i < fields.length; i++) {
-    const [l1 = '', v1 = '', l2 = '', v2 = ''] = fields[i] || [];
-    writeFieldRow(row++, l1, v1, l2, v2);
-  }
-
-  if (app.isNa && app.naApp?.na) {
-  writeSectionHeader(row++, 'NA 정보\nTHÔNG TIN NA', 'FFD9EAD3');
-    writeMergedRow(row++, 'NA 종류\nLoại NA', app.naApp?.na || '');
-    writeFieldRow(row++, '측정 방식\nPhương pháp đo', app.naApp?.measMethod || '', 'De-Embedding 방식\nPhương pháp de-embedding', app.naApp?.deMethod || '');
-    writeFieldRow(row++, 'Port Extension Loss', app.naApp?.portExtensionLoss ? 'ON' : 'OFF', 'S-Parameter Type', app.naApp?.sParaType == 'true' ? 'Ideal Matching 포함' : 'Ideal Matching 미포함');
-    writeMergedRow(row++, 'NA 특이사항\nLưu ý về NA', app.naApp?.note || '');
-    // if (app.naApp?.naSpecialFile?.length > 0) {
-    //   row = await insertImageBelow(app.naApp.naSpecialFile[0], row, 'na_special');
-    // }
-    if (app.naApp?.naSpecialFile?.length > 0) {
-      for (const file of app.naApp.naSpecialFile) {
-        row = await insertImageBelow(file, row, 'na_special');
+    // ---- 이미지 영역 설정 ----
+    const IMAGE_HEADER_ROW = 17;           // "NA 이미지 FILE", "NF 이미지 FILE"이 있는 행
+    const IMAGE_START_ROW = IMAGE_HEADER_ROW + 1;
+      
+    const imageHeight = 240;
+    const imageWidth = 640;
+    const pxPerRow = 20;
+    const imageRows = Math.ceil(imageHeight / pxPerRow);
+    const gapRows = 1;                     // 이미지 사이 여유 줄
+      
+    const naFiles = app.isNa ? app.naApp?.naSpecialFile ?? [] : [];
+    const nfFiles = app.isNf ? app.nfApp?.nfSpecialFile ?? [] : [];
+      
+    const maxImages = Math.max(naFiles.length, nfFiles.length);
+      
+    if (maxImages > 0) {
+      const totalRows = maxImages * (imageRows + gapRows);
+      // 이미지용 영역 통째로 확보
+      sheet.spliceRows(
+        IMAGE_START_ROW,
+        0,
+        ...Array(totalRows).fill([])
+      );
+        
+      // --- NA 이미지 (B~C) ---
+      for (let i = 0; i < naFiles.length; i++) {
+        const file = naFiles[i];
+        const blockStart = IMAGE_START_ROW + i * (imageRows + gapRows);
+        const mergeStartRow = blockStart;
+        const mergeEndRow = blockStart + imageRows - 1;
+      
+        // 병합 범위
+        sheet.mergeCells(`B${mergeStartRow}:C${mergeEndRow}`);
+      
+        try {
+          const response = await fetch(`/static/na_special/${file.uId}.${file.ext}`);
+          const blob = await response.blob();
+          const buffer = await blob.arrayBuffer();
+        
+          const imageId = workbook.addImage({
+            buffer,
+            extension: file.ext,
+          });
+        
+          sheet.addImage(imageId, {
+            tl: { col: 1, row: mergeStartRow - 1 },  // B열
+            ext: { width: imageWidth, height: imageHeight },
+          });
+        } catch (e) {
+          console.error("NA 이미지 삽입 실패", e);
         }
       }
-  }
-
-  if (app.isNf) {
-  writeSectionHeader(row++, 'NF 정보\nTHÔNG TIN NF', 'FFD9EAD3');
-    writeFieldRow(row++, 'NF De-embedding 방식', app.nfApp?.deMethod || '', 'NF Real Matching 여부', app.nfApp?.isRealMatching ? 'O' : 'X');
-    writeMergedRow(row++, 'NF 특이사항\nLưu ý về NF', app.nfApp?.note || '');
-    // if (app.nfApp?.nfSpecialFile?.length > 0) {
-    //   row = await insertImageBelow(app.nfApp.nfSpecialFile[0], row, 'nf_special');
-    // }
-    if (app.nfApp?.nfSpecialFile?.length > 0) {
-      for (const file of app.nfApp.nfSpecialFile) {
-        row = await insertImageBelow(file, row, 'nf_special');
-          }
+    
+      // --- NF 이미지 (D~G) ---
+      for (let i = 0; i < nfFiles.length; i++) {
+        const file = nfFiles[i];
+        const blockStart = IMAGE_START_ROW + i * (imageRows + gapRows);
+        const mergeStartRow = blockStart;
+        const mergeEndRow = blockStart + imageRows - 1;
+      
+        sheet.mergeCells(`D${mergeStartRow}:G${mergeEndRow}`);
+      
+        try {
+          const response = await fetch(`/static/nf_special/${file.uId}.${file.ext}`);
+          const blob = await response.blob();
+          const buffer = await blob.arrayBuffer();
+        
+          const imageId = workbook.addImage({
+            buffer,
+            extension: file.ext,
+          });
+        
+          sheet.addImage(imageId, {
+            tl: { col: 3, row: mergeStartRow - 1 },  // D열
+            ext: { width: imageWidth, height: imageHeight },
+          });
+        } catch (e) {
+          console.error("NF 이미지 삽입 실패", e);
+        }
       }
+    }
+
+    sheet.eachRow((row) => {
+      row.eachCell((cell) => {
+        const prevAlign = cell.alignment || {};
+        cell.alignment = {
+          ...prevAlign,
+          horizontal: "center", // 가로 가운데
+          vertical: "middle",   // 세로 가운데
+        };
+      });
+    });
+
+    // -----------------------
+    // 파일로 내보내기
+    // -----------------------
+    const fileNameBase = app.productName || "NA_NF_측정의뢰서";
+    const buffer = await workbook.xlsx.writeBuffer();
+    const today = new Date();
+    const date = today.toISOString().split('T')[0].replace(/-/g, '');
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    saveAs(blob, `${fileNameBase}_의뢰서_${date}.xlsx`);
+  } catch (err) {
+    console.error(err);
+    ElNotification({
+      title: "오류",
+      message: "엑셀 다운로드 중 오류가 발생했습니다.",
+      type: "error",
+      duration: 3000,
+      position: "top-right",
+    });
   }
-
-  for (let i = 6; i <= 50; i++) sheet.getColumn(i).hidden = true;
-  for (let i = row + 1; i <= 100; i++) sheet.getRow(i).hidden = true;
-
-  sheet.pageSetup = {
-    margins: { left: 0.25, right: 0.25, top: 0.5, bottom: 0.5, header: 0.1, footer: 0.1 },
-    orientation: 'portrait',
-    paperSize: 9
-  };
-
-  const buffer = await workbook.xlsx.writeBuffer();
-  saveAs(new Blob([buffer]), `의뢰서_${app.productName || '무기종명'}.xlsx`);
 };
 
+
+// 기존
 // const handleExcelDownload = async () => {
 //   const app = props.application;
 //   const workbook = new ExcelJS.Workbook();
@@ -281,13 +735,13 @@ const handleExcelDownload = async () => {
 //   };
 
 //   const writeSectionHeader = (row, text, color = 'FFFFFF00') => {
-//     sheet.mergeCells(`B${row}:G${row}`);
+//     sheet.mergeCells(`B${row}:E${row}`);
 //     const cell = sheet.getCell(`B${row}`);
 //     cell.value = text;
 //     cell.font = { name: '맑은 고딕', size: 14, bold: true };
 //     cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
-//     sheet.getRow(row).height = 40;
 //     cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: color } };
+//     sheet.getRow(row).height = 40;
 //     applyBorder(cell);
 //   };
 
@@ -296,7 +750,6 @@ const handleExcelDownload = async () => {
 //       ['B', leftLabel], ['C', leftValue],
 //       ['D', rightLabel], ['E', rightValue]
 //     ];
-
 //     cells.forEach(([col, val]) => {
 //       const cell = sheet.getCell(`${col}${row}`);
 //       cell.value = val;
@@ -309,43 +762,47 @@ const handleExcelDownload = async () => {
 //     });
 //   };
 
-//   const insertMultipleImagesBelow = async (fileList, row, folder) => {
-//     if (!Array.isArray(fileList) || fileList.length === 0) return row;
+//   const writeMergedRow = (row, label, value) => {
+//     sheet.mergeCells(`C${row}:E${row}`);
+//     const cellL = sheet.getCell(`B${row}`);
+//     const cellV = sheet.getCell(`C${row}`);
+//     cellL.value = label;
+//     cellV.value = value;
 
-//     const imageHeight = 240, imageWidth = 320;
-//     const pxPerRow = 20;
-//     const rowHeight = Math.ceil(imageHeight / pxPerRow);
+//     cellL.font = { name: '맑은 고딕', size: 10, bold: true };
+//     cellL.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+//     cellL.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFE4C4' } };
+//     applyBorder(cellL);
 
-//     const buffers = await Promise.all(
-//       fileList.map(async (file) => {
-//         try {
-//           const response = await fetch(`http://10.29.9.48:40000/static/${folder}/${file.uId}.${file.ext}`);
-//           const blob = await response.blob();
-//           const buffer = await blob.arrayBuffer();
-//           return { buffer, ext: file.ext };
-//         } catch (e) {
-//           console.error(`이미지 다운로드 실패 (${file.uId})`, e);
-//           return null;
-//         }
-//       })
-//     );
+//     cellV.font = { name: '맑은 고딕', size: 10 };
+//     cellV.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+//     applyBorder(cellV);
+//   };
 
-//     const validBuffers = buffers.filter(Boolean);
-//     const count = validBuffers.length;
-//     if (count === 0) return row;
+//   const insertImageBelow = async (file, row, folder) => {
+//     if (!file) return row;
+//     try {
+//       const response = await fetch(`/static/${folder}/${file.uId}.${file.ext}`);
+//       const blob = await response.blob();
+//       const buffer = await blob.arrayBuffer();
+//       const imageId = workbook.addImage({ buffer, extension: file.ext });
 
-//     sheet.spliceRows(row + 1, 0, ...Array(rowHeight).fill([]));
+//       const imageHeight = 240, imageWidth = 640;
+//       const pxPerRow = 20;
+//       const rowHeight = Math.ceil(imageHeight / pxPerRow);
 
-//     validBuffers.forEach((img, i) => {
-//       const imageId = workbook.addImage({ buffer: img.buffer, extension: img.ext });
-//       const offsetCol = 1 + i * 2;
+//       sheet.spliceRows(row + 1, 0, ...Array(rowHeight).fill([]));
+//       sheet.mergeCells(`B${row + 1}:E${row + rowHeight}`);
 //       sheet.addImage(imageId, {
-//         tl: { col: offsetCol, row: row },
+//         tl: { col: 1, row: row },
 //         ext: { width: imageWidth, height: imageHeight }
 //       });
-//     });
 
-//     return row + rowHeight + 1;
+//       return row + rowHeight + 1;
+//     } catch (e) {
+//       console.error("이미지 삽입 실패", e);
+//       return row;
+//     }
 //   };
 
 //   const fields = [
@@ -355,47 +812,44 @@ const handleExcelDownload = async () => {
 //     ['LOT ID', app.lotId || '', 'Mold', app.mold],
 //     ['샘플 전달방법\nCách giao mẫu', app.deliveryMethod, '작성자\nNgười viết', app.user?.userName || ''],
 //     ['생성일\nNgày tạo', app.dateOfCreated?.substring(0, 10) || '', '', ''],
-
-//     ['TCF 측정 유무\nCó đo TCF không', app.needTcf ? 'O' : 'X', 'TCF 측정 온도\nNhiệt độ đo TCF', app.tcfTemperature || ''],
-
-//     ['NA 사용 여부\nSử dụng NA', app.isNa ? 'O' : 'X', 'NA 종류\nLoại NA', app.naApp?.na || ''],
-//     ['측정 방식\nPhương pháp đo', app.naApp?.measMethod || '', 'De-Embedding 방식\nPhương pháp de-embedding', app.naApp?.deMethod || ''],
-//     ['Port Extension Loss', app.naApp?.portExtensionLoss ? 'ON' : 'OFF', 'S-Parameter Type', app.naApp?.sParaType || ''],
-//     ['NA 특이사항\nLưu ý về NA', app.naApp?.note || '', '', ''],
-
-//     ['NF 사용 여부\nSử dụng NF', app.isNf ? 'O' : 'X', 'NF De-embedding 방식', app.nfApp?.deMethod || ''],
-//     ['NF Real Matching 여부', app.nfApp?.isRealMatching ? 'O' : 'X', 'NF 특이사항\nLưu ý về NF', app.nfApp?.note || '']
+//     ['TCF 측정 유무\nCó đo TCF không', app.needTcf ? 'O' : 'X', 'TCF 측정 온도\nNhiệt độ đo TCF', app.tcfTemperature || '']
 //   ];
 
 //   let row = 2;
 //   writeSectionHeader(row++, '기본 정보\nTHÔNG TIN CƠ BẢN');
-//   for (let i = 0; i < 6; i++) {
+//   for (let i = 0; i < fields.length; i++) {
 //     const [l1 = '', v1 = '', l2 = '', v2 = ''] = fields[i] || [];
 //     writeFieldRow(row++, l1, v1, l2, v2);
 //   }
 
-//   writeSectionHeader(row++, 'TCF 정보\nTHÔNG TIN TCF', 'FFD9EAD3');
-//   {
-//     const [l1 = '', v1 = '', l2 = '', v2 = ''] = fields[6] || [];
-//     writeFieldRow(row++, l1, v1, l2, v2);
-//   }
-
+//   if (app.isNa && app.naApp?.na) {
 //   writeSectionHeader(row++, 'NA 정보\nTHÔNG TIN NA', 'FFD9EAD3');
-//   for (let i = 7; i <= 10; i++) {
-//     const [l1 = '', v1 = '', l2 = '', v2 = ''] = fields[i] || [];
-//     writeFieldRow(row++, l1, v1, l2, v2);
-//   }
-//   if (app.naApp?.naSpecialFile?.length > 0) {
-//     row = await insertMultipleImagesBelow(app.naApp.naSpecialFile, row, "na_special");
+//     writeMergedRow(row++, 'NA 종류\nLoại NA', app.naApp?.na || '');
+//     writeFieldRow(row++, '측정 방식\nPhương pháp đo', app.naApp?.measMethod || '', 'De-Embedding 방식\nPhương pháp de-embedding', app.naApp?.deMethod || '');
+//     writeFieldRow(row++, 'Port Extension Loss', app.naApp?.portExtensionLoss ? 'ON' : 'OFF', 'S-Parameter Type', app.naApp?.sParaType == 'true' ? 'Ideal Matching 포함' : 'Ideal Matching 미포함');
+//     writeMergedRow(row++, 'NA 특이사항\nLưu ý về NA', app.naApp?.note || '');
+//     // if (app.naApp?.naSpecialFile?.length > 0) {
+//     //   row = await insertImageBelow(app.naApp.naSpecialFile[0], row, 'na_special');
+//     // }
+//     if (app.naApp?.naSpecialFile?.length > 0) {
+//       for (const file of app.naApp.naSpecialFile) {
+//         row = await insertImageBelow(file, row, 'na_special');
+//         }
+//       }
 //   }
 
+//   if (app.isNf) {
 //   writeSectionHeader(row++, 'NF 정보\nTHÔNG TIN NF', 'FFD9EAD3');
-//   for (let i = 11; i < fields.length; i++) {
-//     const [l1 = '', v1 = '', l2 = '', v2 = ''] = fields[i] || [];
-//     writeFieldRow(row++, l1, v1, l2, v2);
-//   }
-//   if (app.nfApp?.nfSpecialFile?.length > 0) {
-//     row = await insertMultipleImagesBelow(app.nfApp.nfSpecialFile, row, "nf_special");
+//     writeFieldRow(row++, 'NF De-embedding 방식', app.nfApp?.deMethod || '', 'NF Real Matching 여부', app.nfApp?.isRealMatching ? 'O' : 'X');
+//     writeMergedRow(row++, 'NF 특이사항\nLưu ý về NF', app.nfApp?.note || '');
+//     // if (app.nfApp?.nfSpecialFile?.length > 0) {
+//     //   row = await insertImageBelow(app.nfApp.nfSpecialFile[0], row, 'nf_special');
+//     // }
+//     if (app.nfApp?.nfSpecialFile?.length > 0) {
+//       for (const file of app.nfApp.nfSpecialFile) {
+//         row = await insertImageBelow(file, row, 'nf_special');
+//           }
+//       }
 //   }
 
 //   for (let i = 6; i <= 50; i++) sheet.getColumn(i).hidden = true;
@@ -408,8 +862,10 @@ const handleExcelDownload = async () => {
 //   };
 
 //   const buffer = await workbook.xlsx.writeBuffer();
-//   saveAs(new Blob([buffer]), `의뢰서_${app.productName || "무기종명"}.xlsx`);
+//   saveAs(new Blob([buffer]), `의뢰서_${app.productName || '무기종명'}.xlsx`);
 // };
+
+
 
 </script>
 

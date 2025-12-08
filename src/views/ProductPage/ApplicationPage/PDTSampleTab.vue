@@ -142,8 +142,12 @@
                     size="default"
                     type="primary"
                     @click="handdleTarget(sample, index)"
+                    :disabled="!isPortReady(sample)"
                     >파일 선택</el-button
                   >
+                  <span v-if="!isPortReady(sample)" style="margin-left:8px;color:#999">
+                  Port를 입력해주세요.
+                  </span>
                 </el-form-item>
 
                 <el-form-item
@@ -175,7 +179,8 @@
 import { ref, watch, nextTick } from "vue";
 import { SampleInformation } from "./Application";
 import sampleGraph from "./SampleGraph.vue";
-import { calculateOffset, handleFileSelect } from "./PDTSampleTab";
+import { calculateOffset, handleFileSelect, } from "./PDTSampleTab";
+import { isPortReady } from "./PDTSample";
 import { Chart } from "chart.js"; // Chart.js를 가져옵니다.
 
 const props = defineProps<{

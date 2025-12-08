@@ -336,6 +336,7 @@ export async function receiveDestinationList(): Promise<OptionInterface[]> {
   );
 
   for (let i = 0; i < data.length; i++) {
+    if (data[i].destination_id === "WTC") continue;
     const temp = convertKeysToCamelCase(data[i]);
     destinationList.value.push({
       key: i,
@@ -688,9 +689,6 @@ export async function partialUpdateForm(application: FabRequestForm) : Promise<F
 
     const app = convertKeysToPEP8(application); 
       const response = await axios.post(url, app);
-      // console.log(response.data);
-      // console.log(convertPep8ToCamelCase2(response.data));
-      
 
       // 성공 알림
       ElNotification({
@@ -987,7 +985,6 @@ export function getRunningFabReqeust(applicationList: FabApplicationForm[]) {
 
   // 모든 Fab Application 을 읽고
   for (let i = 0; i < applicationList.length; i++) {
-    // console.log(`Application Number ${i}`)
     // 그중에 Lot Status 가 1개 이상이고.
     if (applicationList[i].lotStatus.length > 0) {
       // lot status 에서 데이터를 찾아오는데 !

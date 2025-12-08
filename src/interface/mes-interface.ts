@@ -5,6 +5,25 @@ interface Operation {
   name: string;
 }
 
+export interface LotHistory {
+ 
+    lotId           : string    
+    historySeq?      : number
+    
+    siteId?          : string | null    
+    operationId?     : string | null
+
+    materialId?      : string | null
+  
+    deleteFlag?      : string | null
+
+    creationDate? : string | null
+    startDate? : string | null
+    endDate?   : string | null
+
+    operation?    : Operation | null
+    }
+
 // LotData 인터페이스 정의
 export interface LotStatus {
   lotId: string;
@@ -19,6 +38,7 @@ export interface LotStatus {
   txUserName: string;
   txComment: string;
   cassetteId: string;
+  slotNo?: string;
   deleteFlag: string;
   originalDate: string | null;
   creationDate: string;
@@ -29,10 +49,11 @@ export interface LotStatus {
   moveOutDate: string | null;
   startDate: string | null;
   operation: Operation;
-  history: any[];
-  prevHistory: any | null;
-  firstHistory: any | null;
-  secondProbeHistory: any | null;
+  history: LotHistory[];
+  prevHistory: LotHistory | null;
+  firstHistory: LotHistory | null;
+  secondProbeHistory: LotHistory | null;
+  fabOutHistory: LotHistory | null;
   hanoiCsp: LotStatus | null;
   child: LotStatus | null;
 }

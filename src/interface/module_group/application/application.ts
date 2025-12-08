@@ -2,50 +2,60 @@ import { User } from "../../user";
 import type { UploadFile } from "element-plus";
 
 export interface ModuleFiles {
-  referenceFileList: UploadFile[];
-  evbAssembleFileList: UploadFile[];
+  //공통
+  
+  //NA 파일
   stateFileList: UploadFile[];
-  matchingFileList: UploadFile[];
-  configFileList: UploadFile[];
-  rffeFileList: UploadFile[];
-  xmlFileList: UploadFile[];  
-  s2pFileList: UploadFile[];
+  naRffeFileList: UploadFile[];
+  naConfigFileList: UploadFile[];
+  xmlFileList: UploadFile[];
+  naReferenceFileList: UploadFile[];
   naSpecialFileList: UploadFile[];
+  //NF 파일
+  nfRffeFileList: UploadFile[];
+  nfConfigFileList: UploadFile[];
+  nfReferenceFileList: UploadFile[];
   nfSpecialFileList: UploadFile[];
-  offsetFileList: UploadFile[];
+
+
+  evbAssembleFileList: UploadFile[];
+  matchingFileList: UploadFile[];
+  s2pFileList: UploadFile[];
+
+  // configFileList: UploadFile[];
+  // rffeFileList: UploadFile[];
+  // referenceFileList: UploadFile[];
+  // offsetFileList: UploadFile[];
 }
 
 export interface ModuleMeasurementApp {
   id?: number;
-  productName?: string;
-  quantity?: string;
   requester?: string;
   requesterId?: string;
+  designer?: string;
+  productName?: string;
+  quantity?: string;
+  purpose?: string;
+  quantityDetail?: string;
   smtHistory?: string;
-  mold?: string;
-  wantedFinishedDate?: string;
-  lotId?: string;
+  deliveryPerson?: string;
   deliveryMethod?: string;
+  mold?: string;
+  tcfTemperature?: string;
+  measurementManager?: string;
+  completionDueDate?: string;
   dateOfDeliveryDate?: string;
   dateOfExpectedFinished?: string;
-  referenceChar?: string;
-  needTcf?: boolean;
-  tcfTemperature?: string;
+  finishedDate?: string;
   naApp?: NaApplication;
   nfApp?: NfApplication;
-  measurer?: string;
-  measurerId?: string;
-  estFinishedDate?: string;
   dateOfCreated?: string;
-  purpose?: string;
+  
   applicationStatus?: string;
   isNa?: boolean;
   isNf?: boolean;
-  referenceFile?: ApplicationFile[];
   evbAssembleManual?: ApplicationFile[];
-  configFile?: ApplicationFile[];
   xmlFile?: ApplicationFile[];
-  rffeFile? : ApplicationFile[];
   user?: User;
 }
 
@@ -65,7 +75,10 @@ export interface NaApplication {
   sParaType?: string;
   note?: string;
   stateFile?: ApplicationFile[];
+  naRffeFile?: ApplicationFile[];
+  naConfigFile?: ApplicationFile[];
   s2pFile?: ApplicationFile[];
+  naReferenceFile?: ApplicationFile[];
   naSpecialFile?: ApplicationFile[];
 }
 
@@ -73,9 +86,13 @@ export interface NfApplication {
   id?: number;
   deMethod?: string;
   capture?: boolean;
+  nfParameterMdf: string;
   isRealMatching?: boolean;
+  nfRffeFile?: ApplicationFile[];
+  nfConfigFile?: ApplicationFile[];
   matchingFile?: ApplicationFile[];
   note?: string;
+  nfReferenceFile?: ApplicationFile[];
   nfSpecialFile?: ApplicationFile[];
-  offsetFile?: ApplicationFile[];
+  // offsetFile?: ApplicationFile[];
 }

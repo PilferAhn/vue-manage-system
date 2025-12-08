@@ -464,12 +464,10 @@ watch(
     if (newVal.length >= 10) {
       let isFound = false;
       const tempname = newVal.slice(0, 10);
-
       for (let i = 0; i < bomCodeList.value.length; i++) {
-        if (bomCodeList.value[i].MATNR.slice(0, 10) === tempname) {
+        if (bomCodeList.value[i].matnr?.slice(0, 10) === tempname) {
           const tempBomCode =
-            bomCodeList.value[i].MAKTX.split(":")[1]?.replace(/\s+/g, "") || "";
-
+            bomCodeList.value[i].maktx?.split(":")[1]?.replace(/\s+/g, "") || "";
           if (tempBomCode !== props.fabApplication.bomMainCode) {
             props.fabApplication.bomMainCode = tempBomCode
             isFound = true;
@@ -551,9 +549,9 @@ watch(
     if (newVal) {
       props.fabApplication.quantity = 4;
       if (props.fabApplication.note === "") {
-        props.fabApplication.note = "DV2 LOT";
+        props.fabApplication.note = "DV2 LOT Main";
       } else {
-        props.fabApplication.note += " DV2 LOT";
+        props.fabApplication.note += " DV2 LOT Main";
       }
     }
   }

@@ -30,7 +30,7 @@
         v-model="applicationForm.phase"
         label="Phase조건"
         prop="purpose"
-        placeholder="의뢰목적을 입력하세요"
+        placeholder="Phase step을 입력해주세요"
         class="flex-item"
       ></inputText>
       </div>
@@ -306,7 +306,7 @@ import selectNumberOption from "../../Common/SelectNumberOption.vue";
 import pdtSample from "./PDTSample.vue";
 import pdtSampleTab from "./PDTSampleTab.vue";
 import { applicationRules, createApplicationRules } from "./ApplicationRules";
-
+import {ElMessage} from "element-plus";
 import {
   usePDTRequestForm,
   usePDTRequestFormBoolean,
@@ -391,8 +391,32 @@ watch(
 
 function handleSubmitDetail() {}
 
+function isValidSnpFile(fileName?: string | null): boolean {
+  if (!fileName) return false;
+
+  const base = fileName.split(/[\\/]/).pop() || "";
+  // 확장자: .s1p, .s2p, .s3p ... (대소문자 무시)
+  return /\.s\d+p$/i.test(base.trim());
+}
+
+function validateSparaFiles(): { ok: true } | { ok: false; message: string } {
+  const samples = applicationForm.value?.samples ?? [];
+  for (const s of samples) {
+    const sampleNumber = s?.sampleNumber ?? "";         // 표기용
+    const fileName = s?.sParaFileName ?? null;          // 검사 대상
+    if (!isValidSnpFile(fileName)) {
+      return { ok: false, message: `${sampleNumber || "해당 샘플"} 의 SnP 파일을 선택해주세요` };
+    }
+  }
+  return { ok: true };
+}
+
 function handleSubmit() {
-  // console.log(applicationForm.value.samples);
+  const snpCheck = validateSparaFiles();
+  if (!snpCheck.ok) {
+    ElMessage.warning(snpCheck.message);
+    return;
+  }
 
   formRef.value.validate((valid: boolean) => {
     if (valid) {

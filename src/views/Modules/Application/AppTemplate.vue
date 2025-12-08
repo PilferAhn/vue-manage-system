@@ -19,6 +19,7 @@
         :application="props.application"
         :application-type="props.applicationType"
         :file-obj-list="fileObjList"
+        :form-ref="formRef"
       />
     </div>
   </el-form>
@@ -38,17 +39,23 @@ const props = defineProps<{
 }>();
 
 const fileObjList = ref<ModuleFiles>({
-  referenceFileList : [],
-  evbAssembleFileList : [],
+  //NA
   stateFileList : [],
-  matchingFileList : [],
-  configFileList : [],
-  rffeFileList : [],
+  naRffeFileList: [],
+  naConfigFileList: [],
+  
   xmlFileList : [],
-  s2pFileList: [],
+  naReferenceFileList : [],
   naSpecialFileList: [],
-  nfSpecialFileList: [], 
-  offsetFileList: [],
+  //NF
+  nfRffeFileList: [],
+  nfReferenceFileList : [],
+  nfConfigFileList: [],
+  nfSpecialFileList: [],
+
+  evbAssembleFileList : [],
+  matchingFileList : [],
+  s2pFileList: [],
 })
 
 const formRef = ref<FormInstance>();

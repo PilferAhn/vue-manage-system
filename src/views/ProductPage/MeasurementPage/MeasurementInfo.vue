@@ -14,10 +14,12 @@
     </el-tab-pane>
     <el-tab-pane name="summary" label="Summary">
       <MeasurementSummary
+        v-if="applicationForm.temperature"
+        :key="uuid + '-' + applicationForm.temperature" 
         :uuid="uuid"
         :systemBandInfo="systemBandInfo"
         :targetPosition = "applicationForm.targetPosition"
-        :temperature="'85'"
+        :temperature="applicationForm.temperature"
       ></MeasurementSummary>
     </el-tab-pane>
   </el-tabs>

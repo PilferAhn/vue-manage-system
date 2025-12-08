@@ -1,86 +1,333 @@
 <template>
   <div>
-    <el-table :data="appList">
-      <el-table-column
-        type="index"
-        label="No"
-        :align="'center'"
-      ></el-table-column>
-      <el-table-column
-        label="기종명"
-        prop="productName"
-        :align="'center'"
-      ></el-table-column>
-      <!-- <el-table-column label="의뢰자 / 담당자" :align="'center'">
-        <template #default="scope">
-          {{ scope.row.requester / scope.row.measurer }}
-        </template>
-      </el-table-column> -->
-      <el-table-column
-        label="조립차수"
-        prop="smtHistory"
-        :align="'center'"
-      ></el-table-column>
-      <el-table-column label="자제 전달 일자" :align="'center'">
-        <template #default="scope">
-          {{ formatDate(scope.row.dateOfDeliveryDate) }}
-        </template>
-      </el-table-column>
-      <el-table-column label="완료 요청 일자" :align="'center'">
-        <template #default="scope">
-          {{ formatDate(scope.row.dateOfExpectedFinished) }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="Mold"
-        prop="mold"
-        :align="'center'"
-      ></el-table-column>
-      <el-table-column
-        label="목적"
-        prop="purpose"
-        :align="'center'"
-      ></el-table-column>
-      <!-- <el-table-column
-        label="Status"
-        prop="applicationStatus"
-        :align="'center'"
-      ></el-table-column> -->
-      <el-table-column label="생성일" prop="dateOfCreated" :align="'center'">
-        <template #default="scope">
-          {{ formatDate(scope.row.dateOfCreated) }}
-        </template></el-table-column
+     <el-tabs v-model="activeTabName" type="border-card">
+        <el-tab-pane
+        v-for="tab in tabs"
+        :key="tab.name"
+        :label="tab.label"
+        :name="tab.name"
       >
-      <el-table-column label="Action" :align="'center'">
-        <template #default="scope">
-          <div class =  "action-buttons">
-          <el-button type="success" @click="handleButtons(scope.row)"
-            >자세히</el-button
-          >
-          <!-- <el-button type="primary" @click="exportToExcel(scope.row)" style="margin-left: 8px;">
-             Excel   
-      </el-button> -->
-    </div>
-        </template>
-      </el-table-column>
-    </el-table>
+        <div class="tab-content">
+          <!-- 🔍 검색 박스 -->
+          <div class="search-box">
+            <el-input
+              v-model="query.search_term"
+              placeholder="기종명 검색"
+              class="search-input mr10"
+              clearable
+            />
+            <el-button type="primary" @click="handleSearch">검색</el-button>
+          </div>
+
+          <!-- 📋 상태 + 검색으로 필터된 리스트 -->
+          <el-table :data="pagedList">
+            <el-table-column
+              type="index"
+              label="No"
+              :align="'center'"
+            />
+            <el-table-column
+              label="기종명"
+              prop="productName"
+              :align="'center'"
+            />
+            <el-table-column
+              label="조립차수(Order Sheet)"
+              prop="smtHistory"
+              :align="'center'"
+            />
+            <el-table-column label="자재 전달 일자" :align="'center'">
+              <template #default="scope">
+                {{ formatDate(scope.row.dateOfDeliveryDate) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="완료 요청 일자" :align="'center'">
+              <template #default="scope">
+                {{ formatDate(scope.row.dateOfExpectedFinished) }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="Mold"
+              prop="mold"
+              :align="'center'"
+            />
+            <el-table-column
+              label="목적"
+              prop="purpose"
+              :align="'center'"
+            />
+            <el-table-column label="생성일" :align="'center'">
+              <template #default="scope">
+                {{ formatDate(scope.row.dateOfCreated) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="Action" :align="'center'">
+              <template #default="scope">
+                <div class="action-buttons">
+                  <el-button type="success" @click="handleButtons(scope.row)">
+                    자세히
+                  </el-button>
+                </div>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div class="pagination-box">
+            <el-pagination
+              background
+              layout="prev, pager, next, total"
+              :page-size="pageSize"
+              :current-page="currentPage"
+              :total="filteredList.length"
+              @current-change="handlePageChange"
+            />
+          </div>
+        </div>
+      </el-tab-pane>
+      <!-- <el-tab-pane label="대기" name="waiting" >
+        <div class="tab-content">
+          <el-table :data="waitingList">
+            <el-table-column
+              type="index"
+              label="No"
+              :align="'center'"
+            ></el-table-column>
+            <el-table-column
+              label="기종명"
+              prop="productName"
+              :align="'center'"
+            ></el-table-column>
+            <el-table-column
+              label="조립차수(Order Sheet)"
+              prop="smtHistory"
+              :align="'center'"
+            ></el-table-column>
+            <el-table-column label="자제 전달 일자" :align="'center'">
+              <template #default="scope">
+                {{ formatDate(scope.row.dateOfDeliveryDate) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="완료 요청 일자" :align="'center'">
+              <template #default="scope">
+                {{ formatDate(scope.row.dateOfExpectedFinished) }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="Mold"
+              prop="mold"
+              :align="'center'"
+            ></el-table-column>
+            <el-table-column
+              label="목적"
+              prop="purpose"
+              :align="'center'"
+            ></el-table-column>
+            <el-table-column label="생성일" prop="dateOfCreated" :align="'center'">
+              <template #default="scope">
+                {{ formatDate(scope.row.dateOfCreated) }}
+              </template></el-table-column
+            >
+            <el-table-column label="Action" :align="'center'">
+              <template #default="scope">
+                <div class =  "action-buttons">
+                  <el-button type="success" @click="handleButtons(scope.row)"
+                   >자세히</el-button
+                  >
+                  </div>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </el-tab-pane>
+        
+      <el-tab-pane label="진행중" name="in_progress">
+        <div class="tab-content">
+          <el-table :data="inProgressList">
+            <el-table-column
+              type="index"
+              label="No"
+              :align="'center'"
+            ></el-table-column>
+            <el-table-column
+              label="기종명"
+              prop="productName"
+              :align="'center'"
+            ></el-table-column>
+            <el-table-column
+              label="조립차수(Order Sheet)"
+              prop="smtHistory"
+              :align="'center'"
+            ></el-table-column>
+            <el-table-column label="자제 전달 일자" :align="'center'">
+              <template #default="scope">
+                {{ formatDate(scope.row.dateOfDeliveryDate) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="완료 요청 일자" :align="'center'">
+              <template #default="scope">
+                {{ formatDate(scope.row.dateOfExpectedFinished) }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="Mold"
+              prop="mold"
+              :align="'center'"
+            ></el-table-column>
+            <el-table-column
+              label="목적"
+              prop="purpose"
+              :align="'center'"
+            ></el-table-column>
+            <el-table-column label="생성일" prop="dateOfCreated" :align="'center'">
+              <template #default="scope">
+                {{ formatDate(scope.row.dateOfCreated) }}
+              </template></el-table-column
+            >
+            <el-table-column label="Action" :align="'center'">
+              <template #default="scope">
+                <div class =  "action-buttons">
+                  <el-button type="success" @click="handleButtons(scope.row)"
+                   >자세히</el-button
+                  >
+                  </div>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </el-tab-pane>
+        
+      <el-tab-pane label="완료" name="finished">
+        <div class="tab-content">
+          <el-table :data="finishedList">
+            <el-table-column
+              type="index"
+              label="No"
+              :align="'center'"
+            ></el-table-column>
+            <el-table-column
+              label="기종명"
+              prop="productName"
+              :align="'center'"
+            ></el-table-column>
+            <el-table-column
+              label="조립차수(Order Sheet)"
+              prop="smtHistory"
+              :align="'center'"
+            ></el-table-column>
+            <el-table-column label="자제 전달 일자" :align="'center'">
+              <template #default="scope">
+                {{ formatDate(scope.row.dateOfDeliveryDate) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="완료 요청 일자" :align="'center'">
+              <template #default="scope">
+                {{ formatDate(scope.row.dateOfExpectedFinished) }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="Mold"
+              prop="mold"
+              :align="'center'"
+            ></el-table-column>
+            <el-table-column
+              label="목적"
+              prop="purpose"
+              :align="'center'"
+            ></el-table-column>
+            <el-table-column label="생성일" prop="dateOfCreated" :align="'center'">
+              <template #default="scope">
+                {{ formatDate(scope.row.dateOfCreated) }}
+              </template></el-table-column
+            >
+            <el-table-column label="Action" :align="'center'">
+              <template #default="scope">
+                <div class =  "action-buttons">
+                  <el-button type="success" @click="handleButtons(scope.row)"
+                   >자세히</el-button
+                  >
+                  </div>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </el-tab-pane> -->
+    </el-tabs>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useRouter } from "vue-router";
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, ref, computed, watch} from "vue";
 import { getApplicationList } from "../../../../utils/module_group/application-list-utils";
 import type { ModuleMeasurementApp } from "../../../../interface/module_group/application/application";
 import { formatDate } from "../../../../utils/date-utils";
 const router = useRouter();
 const appList = reactive<ModuleMeasurementApp[]>([]);
 
-onMounted(async () => {
-  Object.assign(
-    appList,
-    await getApplicationList({ order_by: "created_date" })
+// type StatusKey = "waiting" | "in_progress" | "finished";
+const tabs = [
+  { label: "대기", name: "waiting" },
+  { label: "진행중", name: "in_progress" },
+  { label: "완료", name: "finished" },
+] as const;
+type StatusKey = (typeof tabs)[number]["name"];
+
+// 🔹 페이지네이션 상태
+const pageSize = ref(10);
+const currentPage = ref(1);     
+
+// 🔹 실제 테이블에 뿌리는 리스트 (슬라이스 적용)
+const pagedList = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  return filteredList.value.slice(start, end);
+});
+
+const query = reactive({
+  search_term: "",
+});
+
+const activeTabName = ref<StatusKey>("waiting"); // 기본은 대기
+
+watch(
+  () => [activeTabName.value, query.search_term],
+  () => {
+    currentPage.value = 1;
+  }
+);
+
+const handlePageChange = (page: number) => {
+  currentPage.value = page;
+};
+
+
+const getStatus = (app: ModuleMeasurementApp): StatusKey => {
+  if (app.finishedDate) return "finished";
+  if (app.completionDueDate) return "in_progress";
+  return "waiting";
+};
+
+const filteredList = computed(() => {
+  const statusFiltered = appList.filter(
+    (app) => getStatus(app) === activeTabName.value
   );
+  
+  const term = query.search_term?.trim().toLowerCase();
+  if (!term) return statusFiltered;
+
+  return statusFiltered.filter((app) => {
+    const productName = (app.productName ?? "").toLowerCase();
+    return productName.includes(term)
+  });
+});
+
+const handleSearch = () => {
+  console.log("search term:", query.search_term);
+};
+
+
+onMounted(async () => {
+  const result = await getApplicationList({ order_by: "date_of_created"})
+  Object.assign(appList, result);
   console.log(appList);
 });
 
@@ -109,6 +356,24 @@ const exportToExcel = (app: ModuleMeasurementApp) => {
 </script>
 
 <style>
+.tab-content {
+  padding-top: 8px; /* 탭 헤더와 테이블 사이 약간의 간격 */
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.search-input {
+  flex: 1;
+}
+
+.mr10 {
+  margin-right: 10px;
+}
+
 .action-buttons {
   display: flex;
   gap: 8px;
@@ -119,5 +384,11 @@ const exportToExcel = (app: ModuleMeasurementApp) => {
   height: 28px;
   font-size: 13px;
   padding: 0 12px;
+}
+
+.pagination-box {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
 }
 </style>

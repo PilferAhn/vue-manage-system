@@ -123,13 +123,6 @@ export const handleFileSelect = async (
       return;
     }
 
-    // if (!checkSnPNumber(selectedFile.name)) {
-    //   ElMessage.error(
-    //     "현재 버전에서는 S2P 형식만 지원됩니다. S parameter 파일을 S2P형식으로 변환 후 사용해주세요."
-    //   );
-    //   return;
-    // }
-
     if (selectedFile) {
       // Use FileReader to read the file content
       const reader = new FileReader();

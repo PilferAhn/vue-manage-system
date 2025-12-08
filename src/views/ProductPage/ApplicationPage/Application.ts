@@ -244,7 +244,7 @@ export interface PDTRequestFormBooleanType {
 
 export function usePDTRequestFormBoolean() {
   const form = ref<PDTRequestFormBooleanType>({
-    customerCompany: true,
+    customerCompany: false,
     specTemperature: true,
     specPower: true,
     isSpecEdit: true,
@@ -468,7 +468,25 @@ export function submitForm(application: PDTRequestFormType) {
 }
 
 export function saveForm(applicationForm: any) {
-  localStorage.setItem("pdtRequestForm", JSON.stringify(applicationForm.value));
+  const raw = (applicationForm as any).value ?? applicationForm;
+
+    // 깊은 복사해서 reactive 떼어내기
+    const cloned = JSON.parse(JSON.stringify(raw));
+
+    // 🔹 samples 안에 있는 큰 필드들만 제거 (localStorage에는 안 넣음)
+    if (Array.isArray(cloned.samples)) {
+      cloned.samples = cloned.samples.map((s: any) => {
+        const {
+          fileContent,   // sNp 원본 텍스트 (여기만 제거)
+          // reducedContent,  // 혹시 나중에 따로 쓴다면 이것도 제거 가능
+          ...rest
+        } = s;
+        return rest;
+      });
+    }
+
+  console.log('applicationForm', applicationForm.value)
+  localStorage.setItem("pdtRequestForm", JSON.stringify(cloned));
 }
 
 export function loadForm(applicationForm: any) {
@@ -615,9 +633,9 @@ export function setBandwidthOptions(
           bandwidthList.value = ["1.4Mhz"];
         }
       } else if (applicationForm.value.testType === "AMR") {
-        bandwidthList.value = ["5Mhz"];
+        bandwidthList.value = ["5Mhz", "20Mhz"];
       } else if (
-        ["Life", "Max Fuse", "Step Stress", "SMARTERMICRO FUSE"].includes(
+        ["Life", "Max Fuse", "Step", "SMARTERMICRO FUSE"].includes(
           applicationForm.value.testType
         )
       ) {
@@ -626,7 +644,12 @@ export function setBandwidthOptions(
         applicationForm.value.bandwidth = "None";
         bandwidthList.value = ["None"];
       }
-    }
+
+      if (bandwidthList.value.length === 1) {
+        applicationForm.value.bandwidth = bandwidthList.value[0];
+      }
+
+    },
   );
 }
 
@@ -638,26 +661,9 @@ export function watchDuplexMode(
     () => applicationForm.value.duplexMode,
     (newVal: string, oldVal: string) => {
       if (newVal === "TDD") {
-        applicationFormBoolean.duty = false;
+        applicationFormBoolean.value.duty = false;
       } else {
-        applicationFormBoolean.duty = true;
-        applicationForm.duty = "";
-      }
-    }
-  );
-}
-
-export function watchTemperature(
-  applicationForm: any,
-  applicationFormBoolean: any
-) {
-  watch(
-    () => applicationForm.value.watchTemperature,
-    (newVal: string, oldVal: string) => {
-      if (newVal === "TDD") {
-        applicationFormBoolean.duty = false;
-      } else {
-        applicationFormBoolean.duty = true;
+        applicationFormBoolean.value.duty = true;
         applicationForm.duty = "";
       }
     }
