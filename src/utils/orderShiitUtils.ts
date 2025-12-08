@@ -93,10 +93,20 @@ export async function createSheet(modelCode: string, level: string) {
       )
       return sheet.data
     } else {
-      return []  // 또는 null, 또는 에러 throw 등
+      data.full_model_name = '';
+      data.module_type = '';
+      data.assy_purpose_type = '';
+      data.assy_purpose_shipment = '';
+      data.saw_type = ''
+      // return []  // 또는 null, 또는 에러 throw 등
     }
   } catch (err) {
     console.error("There was an error with the submission", err);
+
+    const sheet = await axios.post(
+      '/ordersheet/createSheet', data
+    )
+    return sheet.data
     throw err;
 
   }
