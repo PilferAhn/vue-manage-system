@@ -22,11 +22,11 @@
           prop="model_name"
           label="Product Name"
           align="center"
-          width="150"
+          width="140"
         >
         </el-table-column>
 
-        <el-table-column prop="band" label="Band" align="center" width="100px">
+        <el-table-column prop="band" label="Band" width="60" align="center">
           <template #default="scope">
             <span v-if="scope.row.band.length > 5">{{
               scope.row.band.substring(0, 4)
@@ -35,25 +35,31 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="condition" label="Status" align="center">
+        <el-table-column prop="condition" label="Status" width="70" align="center">
         </el-table-column>
 
-        <el-table-column prop="signal_type" label="Signal" align="center">
+        <el-table-column prop="temperature" label="Temp°C" width="80" align="center">
         </el-table-column>
 
-        <el-table-column prop="target_position" label="Target" align="center">
+        <el-table-column prop="signal_type" label="Signal" width="90" align="center">
         </el-table-column>
 
-        <el-table-column prop="test_type" label="TEST" align="center">
+        <el-table-column prop="target_position" label="Target" width="70" align="center">
         </el-table-column>
 
-        <el-table-column prop="designer" label="개발자" align="center">
+        <el-table-column prop="test_type" label="TEST" width="90" align="center">
         </el-table-column>
 
-        <el-table-column prop="requester" label="담당자" align="center">
+         <el-table-column prop="vswr" label="vswr" width="60" align="center">
         </el-table-column>
 
-        <el-table-column label="상태" align="center">
+        <el-table-column prop="designer" label="개발자" width="70" align="center">
+        </el-table-column>
+
+        <el-table-column prop="requester" label="담당자" width="70" align="center">
+        </el-table-column>
+
+        <el-table-column label="상태" width="100" align="center">
           <template #default="scope">
             <span
               v-if="scope.row.status === 'in progress'"
@@ -74,13 +80,16 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="request_number" label="의뢰 번호" align="center">
+        <el-table-column prop="request_number" label="의뢰 번호" width="90" align="center">
         </el-table-column>
 
-        <el-table-column prop="date_of_created" label="의뢰서 생성일" align="center" width="200">
+        <el-table-column prop="date_of_created" label="의뢰서 생성일" width="140" align="center" >
+           <template #default="scope">
+            {{ formatDateTime(scope.row.date_of_created) }}
+            </template>
         </el-table-column>
 
-        <el-table-column label="Action" width="200" align="center">
+        <el-table-column label="Action" width="160" align="center">
           <template #default="scope">
             <el-button
               type="primary"
@@ -135,6 +144,7 @@ import { getLastThursday, formatDate } from "../../../utils/utility";
 import { applicationRules } from "../../../utils/FromRule";
 import { useRouter } from "vue-router";
 import { sendGetRequest } from "../../utils/httpProtocol";
+import { formatDateTime } from "../../utils/date-utils";
 
 const props = defineProps<{
   testType: string;
@@ -234,6 +244,7 @@ const filterData = () => {
 
   // 현재 페이지에 표시될 데이터 슬라이스
   tableData.value = filtered.slice(startIndex, endIndex);
+  console.log('tableData.value', tableData.value);
   pageTotal.value = filtered.length;
 };
 
