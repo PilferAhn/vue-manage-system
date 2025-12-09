@@ -554,6 +554,7 @@ import { onMounted, watch } from "vue";
 import * as xlsx from "xlsx";
 import ExcelJS, { Alignment, Borders, FillPattern } from "exceljs";
 import {saveAs} from "file-saver";
+import { holidaysList } from "../../../../utils/date-utils";
 const props = defineProps<{
   fabApp: FabRequest[];
   tegApp: TegApplication[];
@@ -680,10 +681,41 @@ const groupCounts = computed(() => {
 
 const modifiedFabData = ref<ModifiedFabDataInterface[]>([]);
 
-const customHolidays = ref<string[]>([
-  // '2025-09-18'
-  // '2024-12-25','2025-01-01', ...
-]);
+function  normalizeHolidayDate(str: string): string {
+  const s = str.trim();
+
+  // 이미 YYYY-MM-DD 형태인 경우
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+
+  // "YYYY. M. D." 형태인 경우
+  const m = s.match(/^(\d{4})\.\s*(\d{1,2})\.\s*(\d{1,2})\.$/);
+  if (m) {
+    const [, year, month, day] = m;
+    return [
+      year,
+      month.padStart(2, "0"),
+      day.padStart(2, "0"),
+    ].join("-");
+  }
+
+  // 그 외에는 Date로 한 번 파싱 후 YYYY-MM-DD로 포맷
+  const d = new Date(s);
+  if (!isNaN(d.getTime())) {
+    const y = d.getFullYear();
+    const m2 = String(d.getMonth() + 1).padStart(2, "0");
+    const d2 = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m2}-${d2}`;
+  }
+
+  console.warn("[normalizeHolidayDate] Unknown format:", str);
+  return s;
+}
+
+const customHolidays = ref<string[]>(
+  holidaysList.map((d) => normalizeHolidayDate(d))
+);
+
+
 
 const getWorkingDays = (n: number | null, digits = 1) =>
   n == null ? null : `${n.toFixed(digits)}일`;
