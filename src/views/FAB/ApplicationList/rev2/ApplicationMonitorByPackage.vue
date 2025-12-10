@@ -22,6 +22,7 @@ export default {};
         >
           <el-option label="Designer" value="designer"></el-option>
           <el-option label="Product Name" value="productName"></el-option>
+          <el-option label="Priority" value="priorityId"></el-option>
           <el-option label="Week Number" value="weekNumber"></el-option>
         </el-select>
 
