@@ -18,13 +18,13 @@ export default {};
         <el-button
           type="success"
           @click="handleButtons('download', scope.row, props.file_type)"
-          >다운로드</el-button
+          >Download</el-button
         >
 
         <el-button
           type="danger"
           @click="handleButtons('delete', scope.row, props.file_type)"
-          >삭제</el-button
+          >Delete</el-button
         >
       </template>
     </el-table-column>
