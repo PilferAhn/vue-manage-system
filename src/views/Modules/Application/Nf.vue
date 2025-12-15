@@ -162,7 +162,7 @@
       :file-list="props.fileObjList.nfSpecialFileList"
     >
   <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-      <div class="el-upload__text"><em>NF 이미지 File 선택</em></div></el-upload>
+      <div class="el-upload__text"><em>NF 이미지 파일 선택(<span class="highlight-text">측정용 EVB/SPL 실물사진 필수첨부</span>)</em></div></el-upload>
   </div>
 </template>
 
@@ -263,4 +263,8 @@ export default {};
   padding: 10px;
   background-color: #f0f9ff;
   border-radius: 6px;
-}</style>
+}
+.highlight-text {
+  color: red; 
+}
+</style>
