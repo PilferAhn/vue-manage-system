@@ -1,5 +1,12 @@
 <template>
-  <el-form-item :label="label" :prop="prop" :rules="rules">
+  <el-form-item :prop="prop" :rules="rules">
+    <template #label>
+      <div>
+        {{ label }}
+        <br v-if="subLabel" />
+        <span v-if="subLabel">{{ subLabel }}</span>
+      </div>
+    </template>
     <el-input
       v-model="internalValue"
       @input="updateValue"
@@ -17,6 +24,7 @@ import { ElInput } from "element-plus";
 const props = defineProps({
   modelValue: String,
   label: String,
+  subLabel: String,
   prop: String,
   rules: Array,
   placeholder: String,

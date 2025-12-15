@@ -177,7 +177,8 @@
           <el-col :span="12" class="formatForManager">
             <input-text
               v-model="props.application.naApp!.measurementManager"
-              label="NA 측정 담당자(Người phụ trách đo)-측정자작성"
+              label="NA 측정 담당자(측정자 작성)"
+              sub-label="Người phụ trách đo (Người đo điền)"
               prop="naApp.measurementManager"
               :disable="false"
               placeholder="NA 측정 담당자 이름"
@@ -226,7 +227,8 @@
           <el-col :span="12" class="formatForManager">
             <input-text
               v-model="props.application.nfApp!.measurementManager"
-              label="NF 측정 담당자(Người phụ trách đo)-측정자작성"
+              label="NF 측정 담당자(측정자 작성)"
+              sub-label="Người phụ trách đo (Người đo điền)"
               prop="nfApp.measurementManager"
               :disable="false"
               placeholder="NF 측정 담당자 이름"
@@ -494,9 +496,5 @@ function getOrderSheetUrl(sheet_id: string) {
   background-color: #f0f9ff;
   border-color: #409eff;
    transform: scale(1.01);
-}
-
-.formatForManager {
-  margin-top: 22px;
 }
 </style>
