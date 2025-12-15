@@ -29,19 +29,21 @@
             <el-table-column
               label="기종명"
               prop="productName"
+              width="140"
               :align="'center'"
             />
             <el-table-column
-              label="조립차수(Order Sheet)"
-              prop="smtHistory"
+              label="조립차수"
+              prop="assemblyOrder"
+              width="80"
               :align="'center'"
             />
-            <el-table-column label="자재 전달 일자" :align="'center'">
+            <el-table-column label="자재 전달 일자" width="140" :align="'center'">
               <template #default="scope">
                 {{ formatDate(scope.row.dateOfDeliveryDate) }}
               </template>
             </el-table-column>
-            <el-table-column label="완료 요청 일자" :align="'center'">
+            <el-table-column label="완료 요청 일자" width="140" :align="'center'">
               <template #default="scope">
                 {{ formatDate(scope.row.dateOfExpectedFinished) }}
               </template>
@@ -49,6 +51,7 @@
             <el-table-column
               label="Mold"
               prop="mold"
+              width="80"
               :align="'center'"
             />
             <el-table-column
@@ -56,12 +59,40 @@
               prop="purpose"
               :align="'center'"
             />
-            <el-table-column label="생성일" :align="'center'">
+            <el-table-column label="생성일" width="140" :align="'center'">
               <template #default="scope">
                 {{ formatDate(scope.row.dateOfCreated) }}
               </template>
             </el-table-column>
-            <el-table-column label="Action" :align="'center'">
+            <el-table-column
+              label="NA Status"
+              width="120"
+              :align="'center'"
+            >
+              <template #default="{ row }">
+                <el-tag
+                  :type="statusTagTypeMap[getNaStatus(row)]"
+                  effect="light"
+                >
+                  {{ statusLabelMap[getNaStatus(row)] }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="NF Status"
+              width="120"
+              :align="'center'"
+            >
+              <template #default="{ row }">
+                <el-tag
+                  :type="statusTagTypeMap[getNfStatus(row)]"
+                  effect="light"
+                >
+                  {{ statusLabelMap[getNfStatus(row)] }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="Action" width="140" :align="'center'">
               <template #default="scope">
                 <div class="action-buttons">
                   <el-button type="success" @click="handleButtons(scope.row)">
@@ -262,8 +293,7 @@ import type { ModuleMeasurementApp } from "../../../../interface/module_group/ap
 import { formatDate } from "../../../../utils/date-utils";
 const router = useRouter();
 const appList = reactive<ModuleMeasurementApp[]>([]);
-
-// type StatusKey = "waiting" | "in_progress" | "finished";
+type StatusForList = "none" | "waiting" | "in_progress" | "completed";
 const tabs = [
   { label: "대기", name: "waiting" },
   { label: "진행중", name: "in_progress" },
@@ -287,7 +317,6 @@ const query = reactive({
 });
 
 const activeTabName = ref<StatusKey>("waiting"); // 기본은 대기
-
 watch(
   () => [activeTabName.value, query.search_term],
   () => {
@@ -299,11 +328,81 @@ const handlePageChange = (page: number) => {
   currentPage.value = page;
 };
 
-
 const getStatus = (app: ModuleMeasurementApp): StatusKey => {
-  if (app.finishedDate) return "finished";
-  if (app.completionDueDate) return "in_progress";
+  const hasNa = app.isNa && app.naApp;
+  const hasNf = app.isNf && app.nfApp;
+
+  // ✅ 1) NA만 있는 경우
+  if (hasNa && !hasNf) {
+    if (app.naApp!.finishedDate) return "finished";
+    if (app.naApp!.completionDueDate) return "in_progress";
+    return "waiting";
+  }
+
+  // ✅ 2) NF만 있는 경우
+  if (hasNf && !hasNa) {
+    if (app.nfApp!.finishedDate) return "finished";
+    if (app.nfApp!.completionDueDate) return "in_progress";
+    return "waiting";
+  }
+
+  // ✅ 3) NA + NF 둘 다 있는 경우
+  if (hasNa && hasNf) {
+    const naFinished = !!app.naApp!.finishedDate;
+    const nfFinished = !!app.nfApp!.finishedDate;
+    const naDue = !!app.naApp!.completionDueDate;
+    const nfDue = !!app.nfApp!.completionDueDate;
+
+    // (isNa && isNf) 이고 finishedDate 둘 다 있으면 → finished
+    if (naFinished && nfFinished) return "finished";
+
+    // (isNa && isNf) 이고 completionDueDate 둘 다 있으면 → in_progress
+    if (naDue || nfDue) return "in_progress";
+
+    // 그 외 조합(한쪽만 완료/진행중 등)은 일단 waiting 으로 처리
+    return "waiting";
+  }
+};
+
+const getNaStatus = (app: ModuleMeasurementApp): StatusForList => {
+  const hasNa = app.isNa && app.naApp;
+
+  // NA 자체가 없으면
+  if (!hasNa) return "none";
+  // 완료일 있으면 Completed
+  if (app.naApp!.finishedDate) return "completed";
+  // 예정일 있으면 In progress
+  if (app.naApp!.completionDueDate) return "in_progress";
+  // 나머지는 Waiting
   return "waiting";
+};
+
+const getNfStatus = (app: ModuleMeasurementApp): StatusForList => {
+  const hasNf = app.isNf && app.nfApp;
+
+  // NF 자체가 없으면
+  if (!hasNf) return "none";
+  // 완료일 있으면 Completed
+  if (app.nfApp!.finishedDate) return "completed";
+  // 예정일 있으면 In progress
+  if (app.nfApp!.completionDueDate) return "in_progress";
+  // 나머지는 Waiting
+  return "waiting";
+};
+
+// 화면에 찍을 라벨
+const statusLabelMap: Record<StatusForList, string> = {
+  none: "None",
+  waiting: "Waiting",
+  in_progress: "In progress",
+  completed: "Completed",
+};
+
+const statusTagTypeMap: Record<StatusForList, "" | "success" | "warning" | "info" | "primary"> = {
+  none: "info",
+  waiting: "warning",
+  in_progress: "success",
+  completed: "primary",
 };
 
 const filteredList = computed(() => {
