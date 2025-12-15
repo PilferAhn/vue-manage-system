@@ -456,6 +456,9 @@ watch(
 watch(
   () => props.fabApplication.productName,
   (newVal) => {
+    if (props.fabApplication.bom || props.fabApplication.bom2) {
+      return;
+    }
     if (bomCodeList.value.length === 0) {
       console.warn("bomCodeList.value가 비어 있음");
       return;
