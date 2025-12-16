@@ -456,14 +456,10 @@ watch(
 watch(
   () => props.fabApplication.productName,
   (newVal) => {
-    if (props.fabApplication.bom || props.fabApplication.bom2) {
-      return;
-    }
     if (bomCodeList.value.length === 0) {
       console.warn("bomCodeList.value가 비어 있음");
       return;
     }
-
     if (newVal.length >= 10) {
       let isFound = false;
       const tempname = newVal.slice(0, 10);
@@ -479,10 +475,11 @@ watch(
         }
       }
 
-      if (!isFound) {
-        props.fabApplication.bomMainCode = "";
+      if (isFound) {
+        // props.fabApplication.bomMainCode = "";
         props.fabApplication.isNewBom = true;
       } else {
+        props.fabApplication.bomMainCode = "";
         props.fabApplication.isNewBom = false;
         props.fabApplication.isNewBom2 = false;
         props.fabApplication.bom = null;
