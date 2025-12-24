@@ -526,6 +526,9 @@ export default {};
     <el-button type="warning" @click="toggleDVFilter" class="buttun-section">
       {{ isDVonly ? "Cancel DV" : "DV only" }}
     </el-button>
+    <el-button type="warning" @click="toggleSMFilter" class="buttun-section">
+      {{ isSMOnly ? "Cancel SM" : "SM only" }}
+    </el-button>
     <el-button type="warning" @click="toggleTransitedFilter" class="buttun-section">
       {{ isTransitedOnly ? "전체 보기" : "출하완료 보기" }}
     </el-button>
@@ -568,11 +571,27 @@ const searchCategory = ref("productName"); // 기본 검색 기준을 "Lot ID"�
 const isRunningFab = ref(true);
 const isDealyFab = ref(false);
 const isDVonly = ref(false);
+const isSMOnly = ref(false);
 const isTransitedOnly = ref(false);
 // Clear the search input
 function handleClear() {
   searchTerm.value = ""; // Reset search term
 }
+
+const smModelNames = [
+  "TX897AG7001A",
+  "TQG47AVB0B4A",
+  "TRG00AA8003A",
+  "TDG93BAT006A",
+  "TX725BT7003A",
+  "TX725BT7001A",
+  "TDG35AAU001A",
+  "TDG93BAT004A",
+  "TXG35ANN003A",
+  "TX831AG6002A",
+  "TRG00AA8002B",
+  "TQG47AVB0A2B",
+];
 
 const dialogTableVisible = ref(false);
 const selectApplicationId = ref("");
@@ -626,6 +645,15 @@ const filteredData = computed(() => {
   if (isDVonly.value) {
     // Filter by first character 'D' in productName
     tempApp.value = tempApp.value.filter((item) => item.productName.charAt(0) === 'D');
+  }
+
+  if (isSMOnly.value) {
+  const set = new Set(smModelNames);
+  tempApp.value = tempApp.value.filter((item) => {
+    if (!item.productName) return false;
+    const base = item.productName.split("@")[0].trim().toUpperCase();
+    return set.has(base);
+    });
   }
 
   if (isTransitedOnly.value) {
@@ -1166,6 +1194,10 @@ const toggleLateFilter = () => {
 
 const toggleDVFilter = () => {
   isDVonly.value = !isDVonly.value;
+};
+
+const toggleSMFilter = () => {
+  isSMOnly.value = !isSMOnly.value;
 };
 
 const toggleTransitedFilter = () => {
