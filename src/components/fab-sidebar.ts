@@ -49,16 +49,11 @@ export const fabSilderBarList = {
       title: "Admin Option",
       permiss: "16",
     },
-    // {
-    //   index: "/fab/review-application2",
-    //   title: "Form Review2",
-    //   permiss: "11",
-    // },
     {
       index: "/fab/feb-application-list3",
       title: "Sample Monitor",
       permiss: "11",
-    },    
+    },
     {
       index: "/fab/mes",
       title: "Other Sites",

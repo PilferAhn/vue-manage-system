@@ -151,8 +151,6 @@ export default {};
               :label="numberOption.label"
             />
           </el-select>
-          <!-- <SelectNumberOption v-model="scope.row.quantity"
-        :options="[1,2,3,4,5]"></SelectNumberOption> -->
         </template>
       </el-table-column>
       <el-table-column
@@ -505,6 +503,7 @@ import { createNumberOptions } from "../../../../utils/utility";
 const props = defineProps<{
   processData: FabRequest[];
   weekNumber: number;
+  weekYear: number;
 }>();
 
 const waferQuantity = ref<OptionNumberInterface[]>([]);
@@ -606,13 +605,14 @@ async function handleStatus(
   } else {
     updatePendingStatus(row, isPending);
   }
-  await getFabAppForReview(props.processData, props.weekNumber, getUserId());
+  await getFabAppForReview(props.processData, props.weekNumber, props.weekYear, getUserId());
 }
 
 onMounted(async () => {
   priorityList.value = await receivePriorityList();
   waferQuantity.value = createNumberOptions(25);
-  await getFabAppForReview(props.processData, props.weekNumber, getUserId());
+  console.log('weekNumber, weekYear', props.weekNumber, props.weekYear);
+  await getFabAppForReview(props.processData, props.weekNumber, props.weekYear, getUserId());
   await getMesFabFormInfo(props.processData);
 });
 
