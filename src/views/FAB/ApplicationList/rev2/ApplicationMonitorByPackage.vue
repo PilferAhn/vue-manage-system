@@ -591,6 +591,7 @@ const smModelNames = [
   "TX831AG6002A",
   "TRG00AA8002B",
   "TQG47AVB0A2B",
+  "TXG35ANN004A",
 ];
 
 const dialogTableVisible = ref(false);
