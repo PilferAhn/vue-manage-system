@@ -4,7 +4,7 @@
 
         <!-- table of wafers -->
         <el-table :data="idtProbeItems" class="table" border @filter-change="handleFilterChange" v-loading="loading">
-            <el-table-column type="index" :index="indexMethod" label="No" width="50" :align="'center'"/>
+            <el-table-column type="index" :index="indexMethod" label="No" width="60" :align="'center'"/>
             <el-table-column prop="lotId" label="Lot ID" width="120" />
             <el-table-column prop="productName" label="Product Name"  />
             <el-table-column prop="priority" label="Priority" width="80" />
