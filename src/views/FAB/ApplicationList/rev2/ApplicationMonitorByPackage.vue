@@ -855,11 +855,12 @@ function getFabLeadTime(item: any, wantedFabFinishDate?: string): string | null 
   const base = getWorkingDays(lead);
   const diffTxt = `${delta > 0 ? '+' : ''}${delta.toFixed(1)}`;
 
-  return `${base} ${
-    delta > 0
-      ? `<span style="color:red;">(${diffTxt})</span>`
-      : `<span style="color:blue;">(${diffTxt})</span>`
-  }`;
+  return base
+  // return `${base} ${
+  //   delta > 0
+  //     ? `<span style="color:red;">(${diffTxt})</span>`
+  //     : `<span style="color:blue;">(${diffTxt})</span>`
+  // }`;
 }
 
 
