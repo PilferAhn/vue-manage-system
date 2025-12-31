@@ -527,7 +527,10 @@ export default {};
       {{ isDVonly ? "Cancel DV" : "DV only" }}
     </el-button>
     <el-button type="warning" @click="toggleSMFilter" class="buttun-section">
-      {{ isSMOnly ? "Cancel SM" : "SM only" }}
+      {{ isSMOnly ? "Cancel SM" : "SM 개발" }}
+    </el-button>
+    <el-button type="warning" @click="toggleSMSPLFilter" class="buttun-section">
+      {{ isSMSPLOnly ? "Cancel SMSPL" : "SM SPL" }}
     </el-button>
     <el-button type="warning" @click="toggleTransitedFilter" class="buttun-section">
       {{ isTransitedOnly ? "전체 보기" : "출하완료 보기" }}
@@ -572,6 +575,7 @@ const isRunningFab = ref(true);
 const isDealyFab = ref(false);
 const isDVonly = ref(false);
 const isSMOnly = ref(false);
+const isSMSPLOnly = ref(false);
 const isTransitedOnly = ref(false);
 // Clear the search input
 function handleClear() {
@@ -579,11 +583,14 @@ function handleClear() {
 }
 
 const smModelNames = [
-  "TX897AG7001A",
   "TQG47AVB0B4A",
   "TRG00AA8003A",
   "TDG93BAT006A",
   "TX725BT7003A",
+  "TXG35ANN004A",
+];
+const smSPLModelNames = [
+  "TX897AG7001A",
   "TX725BT7001A",
   "TDG35AAU001A",
   "TDG93BAT004A",
@@ -591,9 +598,9 @@ const smModelNames = [
   "TX831AG6002A",
   "TRG00AA8002B",
   "TQG47AVB0A2B",
-  "TXG35ANN004A",
   "THG93AS5001A",
 ];
+
 
 const dialogTableVisible = ref(false);
 const selectApplicationId = ref("");
@@ -657,7 +664,14 @@ const filteredData = computed(() => {
     return set.has(base);
     });
   }
-
+  if (isSMSPLOnly.value) {
+  const set = new Set(smSPLModelNames);
+  tempApp.value = tempApp.value.filter((item) => {
+    if (!item.productName) return false;
+    const base = item.productName.split("@")[0].trim().toUpperCase();
+    return set.has(base);
+    });
+  }
   if (isTransitedOnly.value) {
     // Keep only the lotStatus.operationId 'TRANSIT'
     const filteredTransited = tempApp.value.map((item) => {
@@ -1202,7 +1216,9 @@ const toggleDVFilter = () => {
 const toggleSMFilter = () => {
   isSMOnly.value = !isSMOnly.value;
 };
-
+const toggleSMSPLFilter = () => {
+  isSMSPLOnly.value = !isSMSPLOnly.value;
+};
 const toggleTransitedFilter = () => {
   isTransitedOnly.value = !isTransitedOnly.value;
 };
