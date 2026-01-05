@@ -766,8 +766,9 @@
                   </td>
                   <td colspan="6">
                     <div>
-                      <div v-for="(img, index) in existingMWA1" :key="'existing-' + index"
+                      <div v-for="(file, index) in existingMWA1" :key="'existing-' + index"
                         style="position: relative; display: inline-block; margin: 10px;">
+                        <span>{{ file.file_name }}</span>
                         <button @click.stop="removeExistingImageMWA1(index)"
                           style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
                           ❌
@@ -777,7 +778,7 @@
                         style="position: relative; display: inline-block; margin: 10px;">
                         <span>{{ file.name }}</span>
 
-                        <span>{{ file.file_name }}</span>
+
                         <button @click.stop="removeImageMWA1(index)"
                           style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
                           ❌
@@ -802,16 +803,17 @@
                       <div v-for="(file, index) in existingMWA1" :key="'existing-' + index"
                         style="position: relative; display: inline-block; margin: 10px;">
                         <!-- <span>{{ file.file_name }}</span> -->
+                        <span>{{ file.file_name }}</span>
                         <button @click.stop="removeExistingImagePMAP1(index)"
                           style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-                          ❌asdasd
+                          ❌
                         </button>
                       </div>
                       <div v-for="(file, index) in filesetPMAP1" :key="index"
                         style="position: relative; display: inline-block; margin: 10px;">
                         <span>{{ file.name }}</span>
 
-                        <span>{{ file.file_name }}</span>
+
                         <button @click.stop="removeImagePMAP1(index)"
                           style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
                           ❌
@@ -833,8 +835,9 @@
                   </td>
                   <td colspan="6">
                     <div>
-                      <div v-for="(img, index) in existingWMAP1" :key="'existing-' + index"
+                      <div v-for="(file, index) in existingWMAP1" :key="'existing-' + index"
                         style="position: relative; display: inline-block; margin: 10px;">
+                        <span>{{ file.file_name }}</span>
                         <button @click.stop="removeExistingImageWMAP1(index)"
                           style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
                           ❌
@@ -843,7 +846,7 @@
                       <div v-for="(file, index) in filesetWMAP1" :key="index"
                         style="position: relative; display: inline-block; margin: 10px;">
                         <span>{{ file.name }}</span>
-                        <span>{{ file.file_name }}</span>
+
                         <button @click.stop="removeImageWMAP1(index)"
                           style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
                           ❌
@@ -1247,6 +1250,7 @@ function removeExistingImageSS1(index: number) {
 }
 function removeExistingImageMWA1(index: number) {
   const target = existingMWA1.value[index];
+  console.log("target", target)
   if (target) {
     deleteImage.value.push(target);
     existingMWA1.value.splice(index, 1);
@@ -1656,11 +1660,11 @@ async function handleEnter(value) {
       } else if (item.cell_name === 'EV1') {
         existingEV1.value.push(item);
       } else if (item.cell_name === 'WMA1') {
-        filesetMWA1.value.push(item);
+        existingMWA1.value.push(item);
       } else if (item.cell_name === 'PMAP1') {
-        filesetPMAP1.value.push(item);
+        existingPMAP1.value.push(item);
       } else if (item.cell_name === 'WMAP1') {
-        filesetWMAP1.value.push(item);
+        existingWMAP1.value.push(item);
       }
     });
   }
