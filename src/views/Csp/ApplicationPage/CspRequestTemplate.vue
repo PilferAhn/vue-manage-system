@@ -1301,6 +1301,11 @@ function onFilesChange(event: Event, imageset: Ref<File[]>) {
         imageset.value.push(file);
       }
     }
+  } else {
+    for (const file of Array.from(files)) {
+      imageset.value.push(file); // 🔥 여기서 진짜 파일을 저장해야 함
+
+    }
   }
 }
 

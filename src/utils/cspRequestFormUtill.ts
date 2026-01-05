@@ -136,7 +136,6 @@ export async function handleSubmitForm(formdata: ApplicationData, imagesFB1: Fil
   imagesWMAP1.forEach(file => {
     formDataToSend.append('imagesetWMAP1', file);
   })
-
   try {
     await axios.post('/csp/create', formDataToSend, {
       headers: {
@@ -189,16 +188,14 @@ export async function handleSubmitTempForm(formdata: ApplicationData, imagesFB1:
   })
 
   imagesWMA1.forEach(file => {
-    formDataToSend.append('imagesetWMA1', file);
+    formDataToSend.append('filesetWMA1', file);
   })
   imagesPMAP1.forEach(file => {
-    formDataToSend.append('imagesetPMAP1', file);
+    formDataToSend.append('filesetPMAP1', file);
   })
   imagesWMAP1.forEach(file => {
-    formDataToSend.append('imagesetWMAP1', file);
+    formDataToSend.append('filesetWMAP1', file);
   })
-
-
   try {
     await axios.post('/csp/createtemp', formDataToSend, {
       headers: {
