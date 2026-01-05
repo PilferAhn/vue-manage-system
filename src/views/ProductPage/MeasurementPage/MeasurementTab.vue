@@ -22,7 +22,7 @@
           prop="model_name"
           label="Product Name"
           :align="'center'"
-          width="150"
+          width="140"
         >
         </el-table-column>
 
@@ -30,7 +30,7 @@
           prop="band"
           label="Band"
           :align="'center'"
-          width="100px"
+          width="70"
         >
           <template #default="scope">
             <span v-if="scope.row.band.length > 5">{{
@@ -40,32 +40,36 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="condition" label="Status" :align="'center'">
+        <el-table-column prop="condition" label="Status" width="70" :align="'center'">
         </el-table-column>
 
-        <el-table-column prop="temperature" label="Temp°C" :align="'center'">
+        <el-table-column prop="temperature" label="Temp°C" width="80" :align="'center'">
         </el-table-column>
 
-        <el-table-column prop="signal_type" label="Signal" :align="'center'">
+        <el-table-column prop="signal_type" label="Signal" width="140" :align="'center'">
         </el-table-column>
 
         <el-table-column
           prop="target_position"
           label="Target"
+          width="70"
           :align="'center'"
         >
         </el-table-column>
 
-        <el-table-column prop="test_type" label="TEST" :align="'center'">
+        <el-table-column prop="test_type" label="TEST" width="90" :align="'center'">
         </el-table-column>
 
-        <el-table-column prop="designer" label="Designer" :align="'center'">
+        <el-table-column prop="vswr" label="vswr" width="60" :align="'center'">
         </el-table-column>
 
-        <el-table-column prop="requester" label="Requester" :align="'center'">
+        <el-table-column prop="designer" label="Designer" width="90" :align="'center'">
         </el-table-column>
 
-        <el-table-column label="Status" :align="'center'">
+        <el-table-column prop="requester" label="Requester" width="100" :align="'center'">
+        </el-table-column>
+
+        <el-table-column label="Status" width="110" :align="'center'">
           <template #default="scope">
             <span
               v-if="scope.row.status === 'in progress'"
@@ -84,6 +88,7 @@
         <el-table-column
           prop="request_number"
           label="Request Number"
+          width="90"
           :align="'center'"
         >
         </el-table-column>
@@ -92,7 +97,7 @@
             <span>{{ moment(scope.row.date_of_created).format('YY/MM/DD') }}</span>            
           </template>
         </el-table-column> -->
-        <el-table-column label="Finished Date" :align="'center'">
+        <el-table-column label="Finished Date" width="90" :align="'center'">
           <template #default="scope">
             <span v-if="scope.row.status === 'finished'">{{
               moment(scope.row.date_of_finished).format("YY/MM/DD")
@@ -101,7 +106,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="Action" width="150" :align="'center'">
+        <el-table-column label="Action" width="90" :align="'center'">
           <template #default="scope">
             <el-button
               type="primary"

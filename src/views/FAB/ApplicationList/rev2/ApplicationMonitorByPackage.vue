@@ -22,6 +22,7 @@ export default {};
         >
           <el-option label="Designer" value="designer"></el-option>
           <el-option label="Product Name" value="productName"></el-option>
+          <el-option label="Priority" value="priorityId"></el-option>
           <el-option label="Week Number" value="weekNumber"></el-option>
         </el-select>
 
@@ -525,6 +526,12 @@ export default {};
     <el-button type="warning" @click="toggleDVFilter" class="buttun-section">
       {{ isDVonly ? "Cancel DV" : "DV only" }}
     </el-button>
+    <el-button type="warning" @click="toggleSMFilter" class="buttun-section">
+      {{ isSMOnly ? "Cancel SM" : "SM 개발" }}
+    </el-button>
+    <el-button type="warning" @click="toggleSMSPLFilter" class="buttun-section">
+      {{ isSMSPLOnly ? "Cancel SMSPL" : "SM SPL" }}
+    </el-button>
     <el-button type="warning" @click="toggleTransitedFilter" class="buttun-section">
       {{ isTransitedOnly ? "전체 보기" : "출하완료 보기" }}
     </el-button>
@@ -554,6 +561,7 @@ import { onMounted, watch } from "vue";
 import * as xlsx from "xlsx";
 import ExcelJS, { Alignment, Borders, FillPattern } from "exceljs";
 import {saveAs} from "file-saver";
+import { holidaysList } from "../../../../utils/date-utils";
 const props = defineProps<{
   fabApp: FabRequest[];
   tegApp: TegApplication[];
@@ -566,11 +574,33 @@ const searchCategory = ref("productName"); // 기본 검색 기준을 "Lot ID"�
 const isRunningFab = ref(true);
 const isDealyFab = ref(false);
 const isDVonly = ref(false);
+const isSMOnly = ref(false);
+const isSMSPLOnly = ref(false);
 const isTransitedOnly = ref(false);
 // Clear the search input
 function handleClear() {
   searchTerm.value = ""; // Reset search term
 }
+
+const smModelNames = [
+  "TQG47AVB0B4A",
+  "TRG00AA8003A",
+  "TDG93BAT006A",
+  "TX725BT7003A",
+  "TXG35ANN004A",
+];
+const smSPLModelNames = [
+  "TX897AG7001A",
+  "TX725BT7001A",
+  "TDG35AAU001A",
+  "TDG93BAT004A",
+  "TXG35ANN003A",
+  "TX831AG6002A",
+  "TRG00AA8002B",
+  "TQG47AVB0A2B",
+  "THG93AS5001A",
+];
+
 
 const dialogTableVisible = ref(false);
 const selectApplicationId = ref("");
@@ -626,6 +656,22 @@ const filteredData = computed(() => {
     tempApp.value = tempApp.value.filter((item) => item.productName.charAt(0) === 'D');
   }
 
+  if (isSMOnly.value) {
+  const set = new Set(smModelNames);
+  tempApp.value = tempApp.value.filter((item) => {
+    if (!item.productName) return false;
+    const base = item.productName.split("@")[0].trim().toUpperCase();
+    return set.has(base);
+    });
+  }
+  if (isSMSPLOnly.value) {
+  const set = new Set(smSPLModelNames);
+  tempApp.value = tempApp.value.filter((item) => {
+    if (!item.productName) return false;
+    const base = item.productName.split("@")[0].trim().toUpperCase();
+    return set.has(base);
+    });
+  }
   if (isTransitedOnly.value) {
     // Keep only the lotStatus.operationId 'TRANSIT'
     const filteredTransited = tempApp.value.map((item) => {
@@ -680,10 +726,41 @@ const groupCounts = computed(() => {
 
 const modifiedFabData = ref<ModifiedFabDataInterface[]>([]);
 
-const customHolidays = ref<string[]>([
-  // '2025-09-18'
-  // '2024-12-25','2025-01-01', ...
-]);
+function  normalizeHolidayDate(str: string): string {
+  const s = str.trim();
+
+  // 이미 YYYY-MM-DD 형태인 경우
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+
+  // "YYYY. M. D." 형태인 경우
+  const m = s.match(/^(\d{4})\.\s*(\d{1,2})\.\s*(\d{1,2})\.$/);
+  if (m) {
+    const [, year, month, day] = m;
+    return [
+      year,
+      month.padStart(2, "0"),
+      day.padStart(2, "0"),
+    ].join("-");
+  }
+
+  // 그 외에는 Date로 한 번 파싱 후 YYYY-MM-DD로 포맷
+  const d = new Date(s);
+  if (!isNaN(d.getTime())) {
+    const y = d.getFullYear();
+    const m2 = String(d.getMonth() + 1).padStart(2, "0");
+    const d2 = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m2}-${d2}`;
+  }
+
+  console.warn("[normalizeHolidayDate] Unknown format:", str);
+  return s;
+}
+
+const customHolidays = ref<string[]>(
+  holidaysList.map((d) => normalizeHolidayDate(d))
+);
+
+
 
 const getWorkingDays = (n: number | null, digits = 1) =>
   n == null ? null : `${n.toFixed(digits)}일`;
@@ -792,11 +869,12 @@ function getFabLeadTime(item: any, wantedFabFinishDate?: string): string | null 
   const base = getWorkingDays(lead);
   const diffTxt = `${delta > 0 ? '+' : ''}${delta.toFixed(1)}`;
 
-  return `${base} ${
-    delta > 0
-      ? `<span style="color:red;">(${diffTxt})</span>`
-      : `<span style="color:blue;">(${diffTxt})</span>`
-  }`;
+  return base
+  // return `${base} ${
+  //   delta > 0
+  //     ? `<span style="color:red;">(${diffTxt})</span>`
+  //     : `<span style="color:blue;">(${diffTxt})</span>`
+  // }`;
 }
 
 
@@ -1135,6 +1213,12 @@ const toggleDVFilter = () => {
   isDVonly.value = !isDVonly.value;
 };
 
+const toggleSMFilter = () => {
+  isSMOnly.value = !isSMOnly.value;
+};
+const toggleSMSPLFilter = () => {
+  isSMSPLOnly.value = !isSMSPLOnly.value;
+};
 const toggleTransitedFilter = () => {
   isTransitedOnly.value = !isTransitedOnly.value;
 };

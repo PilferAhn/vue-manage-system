@@ -1,7 +1,7 @@
 export const moduleSilderBarList = {
   icon: "Pear",
   index: "7",
-  title: "모둘 (Module)",
+  title: "모듈 (Module)",
   permiss: "11",
   subs: [
     {

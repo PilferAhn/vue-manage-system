@@ -1,14 +1,61 @@
-export function getCurrentWeekNumber(): number {
-  const now = new Date();
-  const startOfYear = new Date(now.getFullYear(), 0, 1);
-  const pastDaysOfYear =
-    (now.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000);
+export function getCurrentWeekNumber(targetDate?: Date): number {
+  const date = targetDate ? new Date(targetDate) : new Date();
+  // 시간 날리고 날짜만 보정
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  // ISO: 월요일=1, ..., 일요일=7
+  const day = d.getUTCDay() || 7;
+  // 그 주의 "목요일"로 이동 (ISO 규칙: 목요일이 속한 해가 그 주의 해)
+  d.setUTCDate(d.getUTCDate() + 4 - day);
+  // 그 해 1월 1일(해당 ISO week-year의 시작점)
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const diffDays = Math.floor((d.getTime() - yearStart.getTime()) / 86400000);
+  const weekNo = Math.floor((diffDays + 1) / 7) + 1;
+  return weekNo;
+  // const now = new Date();
+  // const startOfYear = new Date(now.getFullYear(), 0, 1);
+  // const pastDaysOfYear =
+  //   (now.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000);
 
-  // startOfYear.getDay()가 1(월요일)이 되도록 조정
-  const dayOfWeekAdjustment = (startOfYear.getDay() + 6) % 7;
+  // // startOfYear.getDay()가 1(월요일)이 되도록 조정
+  // const dayOfWeekAdjustment = (startOfYear.getDay() + 6) % 7;
 
-  return Math.ceil((pastDaysOfYear + dayOfWeekAdjustment) / 7);
+  // return Math.ceil((pastDaysOfYear + dayOfWeekAdjustment) / 7);
 }
+
+export function getWeekYearFromWantedFabStart(dateInput: Date | string): number {
+  const d = dateInput instanceof Date ? new Date(dateInput) : new Date(dateInput);
+
+  // NaN 방지
+  if (isNaN(d.getTime())) {
+    throw new Error("Invalid date in getWeekYearFromWantedFabStart");
+  }
+
+  const year = d.getFullYear();
+
+  // JS: getDay() 0=일, 1=월 ... 6=토
+  const day = d.getDay();
+  const monday = new Date(d);
+  const diffToMonday = (day + 6) % 7; // 월(1) → 0, 화(2) → 1, ... 일(0) → 6
+  monday.setDate(d.getDate() - diffToMonday);
+
+  const friday = new Date(monday);
+  friday.setDate(monday.getDate() + 4);
+
+  const nextJan1 = new Date(year + 1, 0, 1); // (year+1)-01-01
+
+  if (nextJan1 >= monday && nextJan1 <= friday) {
+    return year + 1;
+  }
+  return year;
+}
+
+// export function getIsoWeekYear(date: Date): number {
+//   // ISO 8601 week-year 계산
+//   const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+//   const dayNum = d.getUTCDay() || 7; // 일요일=7
+//   d.setUTCDate(d.getUTCDate() + 4 - dayNum); // 그 주의 목요일로 이동
+//   return d.getUTCFullYear();
+// }
 
 /**
  * 문자열에서 첫 번째 연도(4자리 숫자)를 추출하는 함수
@@ -367,6 +414,23 @@ export const holidaysList = [
     "2025. 10. 8.",
     "2025. 10. 9.",
     "2025. 12. 25.",
+    "2026. 1. 1.",
+    "2026. 2. 16.",
+    "2026. 2. 17.",
+    "2026. 2. 18.",
+    "2026. 3. 2.",
+    "2026. 5. 1.",
+    "2026. 5. 5.",
+    "2026. 5. 25.",
+    "2026. 6. 3.",
+    "2026. 6. 6.",
+    "2026. 8. 17.",
+    "2026. 9. 1.",
+    "2026. 9. 24.",
+    "2026. 9. 25.",
+    "2026. 10. 5.",
+    "2026. 10. 9.",
+    "2026. 12. 25.",
   ];
 
 function workday(startDate: string, holidaysList: string[]): string {

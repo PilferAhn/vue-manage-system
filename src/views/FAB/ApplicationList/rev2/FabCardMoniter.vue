@@ -145,8 +145,7 @@ import { downloadExcelWithCountdown } from "../../../../utils/Fab/fab-aplication
 import { getFabAppForReview, getMesFabFormInfo } from "./ApplicationTable";
 import ApplicationTableHeader from "./FabCardMoniterHeader.vue";
 import { createNumberOptions } from "../../../../utils/utility";
-import { getCurrentWeekNumber } from "../../../../utils/date-utils";
-
+import { getCurrentWeekNumber, getWeekYearFromWantedFabStart} from "../../../../utils/date-utils";
 const processData = reactive<FabRequest[]>([]);
 const currentWeek = reactive<FabRequest[]>([]);
 const previousWeek = reactive<FabRequest[]>([]);
@@ -190,11 +189,14 @@ const priorityList = ref<OptionInterface[]>([]);
 const emit = defineEmits<{
   (e: "update:currentWeek", updatedData: FabRequest[]): void;
 }>();
+const base = new Date();
+const thisWeekDate= new Date(base);
+const thisWeekYearForSearch   = getWeekYearFromWantedFabStart(thisWeekDate);
 
 const fetchData = async () => {
-  await getFabAppForReview(currentWeek, weekNumber, getUserId());
-  await getFabAppForReview(previousWeek, weekNumber - 1, getUserId());
-  await getFabAppForReview(previousWeek2, weekNumber - 2, getUserId());
+  await getFabAppForReview(currentWeek, weekNumber, thisWeekYearForSearch, getUserId());
+  await getFabAppForReview(previousWeek, weekNumber - 1, thisWeekYearForSearch, getUserId());
+  await getFabAppForReview(previousWeek2, weekNumber - 2, thisWeekYearForSearch, getUserId());
 
 
   const merged = [...currentWeek, ...previousWeek, ...previousWeek2];

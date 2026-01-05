@@ -460,7 +460,6 @@ watch(
       console.warn("bomCodeList.value가 비어 있음");
       return;
     }
-
     if (newVal.length >= 10) {
       let isFound = false;
       const tempname = newVal.slice(0, 10);
@@ -476,10 +475,11 @@ watch(
         }
       }
 
-      if (!isFound) {
-        props.fabApplication.bomMainCode = "";
+      if (isFound) {
+        // props.fabApplication.bomMainCode = "";
         props.fabApplication.isNewBom = true;
       } else {
+        props.fabApplication.bomMainCode = "";
         props.fabApplication.isNewBom = false;
         props.fabApplication.isNewBom2 = false;
         props.fabApplication.bom = null;

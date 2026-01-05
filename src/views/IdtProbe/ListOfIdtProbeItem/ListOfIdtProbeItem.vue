@@ -3,8 +3,8 @@
     <div class="list-of-idt-probe-items">
 
         <!-- table of wafers -->
-        <el-table :data="idtProbeItems" class="table" border @filter-change="handleFilterChange">
-            <el-table-column type="index" :index="indexMethod" label="No" width="50" :align="'center'"/>
+        <el-table :data="idtProbeItems" class="table" border @filter-change="handleFilterChange" v-loading="loading">
+            <el-table-column type="index" :index="indexMethod" label="No" width="60" :align="'center'"/>
             <el-table-column prop="lotId" label="Lot ID" width="120" />
             <el-table-column prop="productName" label="Product Name"  />
             <el-table-column prop="priority" label="Priority" width="80" />
@@ -65,6 +65,7 @@ const idtProbeItems = ref<IdtProbeItem[]>([]);
 const idtProbeTypesFilters = ref<ColumnFilterOption[]>([]);
 const totalItems = ref(0);
 const currentPage = ref(1);
+const loading = ref(true)
 let filterBy : FilterIdtProbeItemBy = {};
 
 // Items indexed
@@ -73,10 +74,12 @@ const indexMethod = (index: number) => {
 };
 
 const handlePageChange = async () => {
+    loading.value = true;
     const totalItemsPromise = fetchCountIdtProbeItems(props.status, filterBy);
     const idtProbeItemsPromise = fetchIdtProbeItems(props.status, filterBy, props.pageSize, currentPage.value, props.orderParams);
 
     [totalItems.value, idtProbeItems.value] = await Promise.all([totalItemsPromise, idtProbeItemsPromise]);
+    loading.value = false;
 };
 
 const handleFilterChange = async (newFilters: FilterIdtProbeItemBy) => {

@@ -69,8 +69,8 @@ export function initApplication2() {
     dateOfExpectedFinished: null,
     wantedFinishedDate: null,
     tcfTemperature: null,
-    measurementManager: "",
-    completionDueDate: null,
+    // measurementManager: "",
+    // completionDueDate: null,
     naApp: null,
     nfApp: null,
     measurer: "",
@@ -102,6 +102,9 @@ export function initNa() {
     measMethod: "",
     sParaType: "",
     note: "",
+    measurementManager: "",
+    completionDueDate: null,
+    finishedDate: null
   });
   return na.value;
 }
@@ -113,6 +116,9 @@ export function initNf() {
     isRealMatching: true,
     matchingFile: null,
     note: "",
+    measurementManager: "",
+    completionDueDate: null,
+    finishedDate: null,
   });
   return nf.value;
 }
@@ -349,6 +355,7 @@ export const submitApplication = async (
   app.dateOfExpectedFinished = formatDateTime(app.dateOfExpectedFinished);
 
   const convertedData = convertKeysToPEP8(app);
+  console.log('Converted Data:', convertedData);  
   let url = "";
   if (submitType === "create") {
     url = "/module/create_app";

@@ -44,14 +44,14 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-           <LongInputText2
-              v-model="props.application.quantityDetail"
-              label="세부 수량"
-              prop="quantityDetail"
-              :disable="false"
-              placeholder="예)줄바꿈으로 구분 가능"
-              :need-bold="false"
-            />
+              <LongInputText2
+                 v-model="props.application.quantityDetail"
+                 label="세부 수량"
+                 prop="quantityDetail"
+                 :disable="false"
+                 placeholder="예)줄바꿈으로 구분 가능"
+                 :need-bold="false"
+               />
           </el-col>
          </el-row>
 
@@ -76,12 +76,23 @@
          <el-row :gutter="20">
           <el-col :span="12">
             <div class="order-sheet-wrapper">
-              <div class="order-sheet-input">
+              <div class="order-sheet-input" style="flex-basis: 15%;">
+                <input-text
+                v-model="props.application.assemblyOrder"
+                label="조립차수(OrderSheet)"
+                prop="assemblyOrder"
+                :disable="false"
+                :need-bold="false"
+                style="flex-grow: 1;"
+                />
+              </div>
+              <div class="order-sheet-input" style="flex-basis: 50%;">
                 <inputText
                   v-model="props.application.smtHistory"
-                  label="조립차수(Order Sheet)"
+                  label=""
                   prop="smtHistory"
                   placeholder=""
+                  style="flex-grow: 2; width: 100%;"
                 />
               </div>
               <el-button
@@ -89,6 +100,7 @@
                 size="small"
                 class="order-sheet-btn"
                 @click="handleOrderSheetClick"
+                style="flex-grow: 0; margin-left: 10px;"
               >
                 Order Sheet 찾기
               </el-button>
@@ -103,7 +115,7 @@
               :need-bold="false"
             />
           </el-col>
-           <el-col :span="4">            
+           <el-col :span="6">            
             <el-form-item prop="dateOfDeliveryDate" label="자재 전달 일자">              
               <el-date-picker
                 v-model="props.application.dateOfDeliveryDate"
@@ -159,22 +171,32 @@
             />
           </el-col>
         </el-row>
-            
-        <el-row :gutter="20">
-          <el-col :span="12">
+        
+        <!-- ✅ NA 측정 정보 -->
+        <el-row v-if="props.application.isNa && props.application.naApp" :gutter="20">
+          <el-col :span="12" class="formatForManager">
             <input-text
-              v-model="props.application.measurementManager"
-              label="측정 담당자(측정자 작성)"
-              prop="measurementManager"
+              v-model="props.application.naApp!.measurementManager"
+              label="NA 측정 담당자(측정자 작성)"
+              sub-label="Người phụ trách đo (Người đo điền)"
+              prop="naApp.measurementManager"
               :disable="false"
-              placeholder="측정 담당자 이름"
+              placeholder="NA 측정 담당자 이름"
               :need-bold="false"
             />
           </el-col>
           <el-col :span="6">
-            <el-form-item prop="completionDueDate" label="완료 예정일(측정자 작성)">
+            <el-form-item
+              prop="naApp.completionDueDate"
+            >
+                <template #label>
+                <div>
+                  NA 완료 예정일(측정자 작성)<br />
+                  Ngày dự kiến hoàn thành (Người đo điền)
+                </div>
+              </template>
               <el-date-picker
-                v-model="props.application.completionDueDate"
+                v-model="props.application.naApp!.completionDueDate"
                 type="date"
                 value-format="YYYY-MM-DD HH:mm"
                 placeholder="Click date"
@@ -183,9 +205,15 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item prop="finishedDate" label="완료일(측정자 작성)">
+            <el-form-item prop="naApp.finishedDate">
+              <template #label>
+                <div>
+                  NA 완료일(측정자 작성)<br />
+                  Ngày hoàn thành (Người đo điền)
+                </div>
+              </template>
               <el-date-picker
-                v-model="props.application.finishedDate"
+                v-model="props.application.naApp!.finishedDate"
                 type="date"
                 value-format="YYYY-MM-DD HH:mm"
                 placeholder="Click date"
@@ -194,6 +222,55 @@
           </el-col>
         </el-row>
         
+        <!-- ✅ NF 측정 정보 -->
+        <el-row v-if="props.application.isNf && props.application.nfApp" :gutter="20">
+          <el-col :span="12" class="formatForManager">
+            <input-text
+              v-model="props.application.nfApp!.measurementManager"
+              label="NF 측정 담당자(측정자 작성)"
+              sub-label="Người phụ trách đo (Người đo điền)"
+              prop="nfApp.measurementManager"
+              :disable="false"
+              placeholder="NF 측정 담당자 이름"
+              :need-bold="false"
+            />
+          </el-col>
+          <el-col :span="6">
+            <el-form-item
+              prop="nfApp.completionDueDate"
+            >
+              <template #label>
+                <div>
+                  NF 완료 예정일(측정자 작성)<br />
+                  Ngày dự kiến hoàn thành (Người đo điền)
+                </div>
+              </template>
+              <el-date-picker
+                v-model="props.application.nfApp!.completionDueDate"
+                type="date"
+                value-format="YYYY-MM-DD HH:mm"
+                placeholder="Click date"
+                :disabled-date="disableBeforeToday"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item prop="nfApp.finishedDate">
+              <template #label>
+                <div>
+                  NF 완료일(측정자 작성)<br />
+                  Ngày hoàn thành (Người đo điền)
+                </div>
+              </template>
+              <el-date-picker
+                v-model="props.application.nfApp!.finishedDate"
+                type="date"
+                value-format="YYYY-MM-DD HH:mm"
+                placeholder="Click date"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
         <CommonFiles
           :application="props.application"
           :applicationType="props.applicationType"
@@ -374,6 +451,7 @@ const handleSelectOrderSheetLevel = async (level: string) => {
   const fullUrl = window.location.origin + resolved;
   console.log("Resolved Order Sheet URL:", fullUrl);
   // ✅ 조립차수 input에 최종 URL 저장
+  props.application.assemblyOrder = level;
   props.application.smtHistory = fullUrl;
 
   orderSheetDialogVisible.value = false;
@@ -392,6 +470,7 @@ function getOrderSheetUrl(sheet_id: string) {
 .order-sheet-wrapper {
   display: flex;
   align-items: flex-end;
+  justify-content: space-between;
   gap: 8px;
 }
 
@@ -401,6 +480,7 @@ function getOrderSheetUrl(sheet_id: string) {
 
 .order-sheet-btn {
   margin-bottom: 22px;
+  flex-grow: 0;
 }
 
 .order-sheet-level-item {

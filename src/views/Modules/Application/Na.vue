@@ -20,7 +20,8 @@ export default {};
               :value="'Port Extension'"
               label="Port Extension"
             ></el-option>
-            <el-option :value="'De-Embedding'" label="De-Embedding"></el-option>
+            <el-option :value="'De-EmbeddingOn'" label="De-Embedding On"></el-option>
+            <el-option :value="'De-EmbeddingOff'" label="De-Embedding Off"></el-option>
           </el-select>
         </el-form-item>
       </el-col>
@@ -31,7 +32,7 @@ export default {};
         <el-form-item label="Port Extension Loss">
           <el-select
             v-model="props.application.naApp.portExtensionLoss"
-            :disabled="props.application.naApp.deMethod === 'De-Embedding'"
+            :disabled="props.application.naApp.deMethod === 'De-EmbeddingOn'"
           >
             <el-option :value="true" label="ON"></el-option>
             <el-option :value="false" label="OFF"></el-option>
@@ -55,9 +56,9 @@ export default {};
           <el-select v-model="props.application.naApp.sParaType">
             <el-option
               :value="'false'"
-              label="Ideal Matching 미포함"
+              label="Port Matching Off"
             ></el-option>
-            <el-option :value="'true'" label="Ideal Matching 포함"></el-option>
+            <el-option :value="'true'" label="Port Matching On"></el-option>
           </el-select>
         </el-form-item>
       </el-col>
@@ -72,7 +73,7 @@ export default {};
       </el-col>
     </el-row>
 
-    <el-row :gutter="20" v-if="props.application.naApp?.deMethod === 'De-Embedding'">
+    <el-row :gutter="20" v-if="props.application.naApp?.deMethod === 'De-EmbeddingOn'">
       <el-col :span="24">
         <file-table
           :app-file="props.application.naApp.s2pFile"
@@ -202,7 +203,7 @@ export default {};
       :file-list="props.fileObjList.naSpecialFileList"
     >
   <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-      <div class="el-upload__text"><em>NA 이미지 파일 선택</em></div></el-upload>
+      <div class="el-upload__text"><em>NA 이미지 파일 선택(<span class="highlight-text">측정용 EVB/SPL 실물사진 필수첨부</span>)</em></div></el-upload>
   </div>
 </template>
 
@@ -242,7 +243,7 @@ watch(
   () => props.application.naApp?.deMethod,
   (newVal) => {
     if(newVal){
-      props.application.naApp.portExtensionLoss = (newVal !== 'De-Embedding')
+      props.application.naApp.portExtensionLoss = (newVal !== 'De-EmbeddingOn')
     }
   }
 );
@@ -291,17 +292,17 @@ const handleConfigFileRemove: UploadProps["onRemove"] = () => {
   props.fileObjList.naConfigFileList = []
 };
 
-// //XML 파일 선택 핸들러 
-// const handleXmlFileChange = (
-//   file: UploadFile,
-//   filesList: UploadFile[]
-// ) => {
-//   props.fileObjList.xmlFileList = [...filesList];
-// };
-// //XML 파일 삭제 핸들러
-// const handleXmlFileRemove: UploadProps["onRemove"] = () => {
-//   props.fileObjList.xmlFileList = []
-// };
+//XML 파일 선택 핸들러 
+const handleXmlFileChange = (
+  file: UploadFile,
+  filesList: UploadFile[]
+) => {
+  props.fileObjList.xmlFileList = [...filesList];
+};
+//XML 파일 삭제 핸들러
+const handleXmlFileRemove: UploadProps["onRemove"] = () => {
+  props.fileObjList.xmlFileList = []
+};
 
 //Reference 파일 선택 핸들러 
 const handleReferenceFileChange = (
@@ -336,4 +337,8 @@ const handleSpecialFileRemove: UploadProps["onRemove"] = () => {
   padding: 10px;
   background-color: #f0f9ff;
   border-radius: 6px;
-}</style>
+}
+.highlight-text {
+  color: red; 
+}
+</style>

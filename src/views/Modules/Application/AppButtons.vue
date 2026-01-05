@@ -9,10 +9,10 @@ export default {};
       type="button"
       @click="handleButtons('create')"
     >
-      생성
+      Create
     </button>
     <button class="btn update" type="button" @click="handleButtons('update')">
-      업데이트
+      Update
     </button>
     <button
 
@@ -21,10 +21,10 @@ export default {};
       type="button"
       @click="handleExcelDownload"
      >
-       Excel 다운로드
+       Excel Download
      </button>
     <button class="btn delete" type="button" @click="handleButtons('delete')">
-      삭제
+      Delete
     </button>
      
     <!-- <button class="btn clone">복제</button> -->
@@ -157,6 +157,9 @@ const handleExcelDownload = async () => {
   try {
     const app = props.application;
 
+    const hasNa = app.isNa && app.naApp;
+    const hasNf = app.isNf && app.nfApp;
+
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet("NA, NF 측정 의뢰서");
 
@@ -182,6 +185,13 @@ const handleExcelDownload = async () => {
       type: "pattern",
       pattern: "solid",
       fgColor: { argb: "FFFFE4C4" }, // 살구색
+    };
+
+    // ✅ 측정자 작성용 하늘색 계열
+    const measLabelFill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "FFCCFFFF" }, // 연한 하늘색
     };
 
     const center = { vertical: "middle", horizontal: "center" } as const;
@@ -290,9 +300,6 @@ const handleExcelDownload = async () => {
     });
     sheet.getRow(2).height = 24;
 
-    // -----------------------
-    // Row 3: 의뢰인 / 개발자
-    // -----------------------
     setCell("B3", "의뢰인\nNgười yêu cầu", {
       bold: true,
       align: center,
@@ -318,9 +325,6 @@ const handleExcelDownload = async () => {
       borderAll: true,
     });
 
-    // -----------------------
-    // Row 4: 기종명 / 수량
-    // -----------------------
     setCell("B4", "기종명\nTên model", {
       bold: true,
       align: center,
@@ -346,9 +350,6 @@ const handleExcelDownload = async () => {
       borderAll: true,
     });
 
-    // -----------------------
-    // Row 5: 의뢰 목적 / 세부 수량
-    // -----------------------
     setCell("B5", "의뢰 목적\nMục đích yêu cầu", {
       bold: true,
       align: center,
@@ -417,9 +418,6 @@ const handleExcelDownload = async () => {
       borderAll: true,
     });
 
-    // -----------------------
-    // Row 7: Mold 여부 / 완료 요청 일자
-    // -----------------------
     setCell("B7", "Mold 여부\nCó Mold", {
       bold: true,
       align: center,
@@ -448,9 +446,6 @@ const handleExcelDownload = async () => {
       borderAll: true,
     });
 
-    // -----------------------
-    // Row 8: TCF 측정 / 샘플 전달 방법
-    // -----------------------
     setCell("B8", "TCF 측정\nĐo TCF", {
       bold: true,
       align: center,
@@ -478,39 +473,62 @@ const handleExcelDownload = async () => {
       wrap: true,
     });
 
-    // -----------------------
-    // Row 9: 측정 담당자 / 완료 예정일
-    // -----------------------
-    setCell("B9", "측정 담당자\nNgười phụ trách đo", {
+    setCell("B9", "NA 측정 담당자\nNgười phụ trách đo", {
       bold: true,
       align: center,
       borderAll: true,
-      fill: labelFill,
+      fill: measLabelFill,
       wrap: true,
     });
-    setCell("C9", app.measurementManager, {
+     setCell("C9", hasNa ? app.naApp!.measurementManager : "", {
       align: left,
       borderAll: true,
     });
 
-    setCell("D9", "완료 예정일\nNgày dự kiến hoàn thành", {
+    setCell("D9", "NA 완료 예정일\nNgày dự kiến hoàn thành", {
       bold: true,
       align: center,
       borderAll: true,
-      fill: labelFill,
+      fill: measLabelFill,
       wrap: true,
     });
     sheet.mergeCells("E9:G9");
-    setCell("E9", getFormatDateForExcel(app.completionDueDate), {
+    setCell("E9", hasNa ? getFormatDateForExcel(app.naApp!.completionDueDate) : "", {
+      align: center,
+      borderAll: true,
+    });
+
+
+    setCell("B10", "NF 측정 담당자\nNgười phụ trách đo", {
+      bold: true,
+      align: center,
+      borderAll: true,
+      fill: measLabelFill,
+      wrap: true,
+    });
+    setCell("C10", hasNf ? app.nfApp!.measurementManager : "", {
+      align: left,
+      borderAll: true,
+    });
+
+    setCell("D10", "NF 완료 예정일\nNgày dự kiến hoàn thành", {
+      bold: true,
+      align: center,
+      borderAll: true,
+      fill: measLabelFill,
+      wrap: true,
+    });
+    sheet.mergeCells("E10:G10");
+    setCell("E10", hasNf ? getFormatDateForExcel(app.nfApp!.completionDueDate) : "", {
       align: center,
       borderAll: true,
     });
 
     // -----------------------
-    // Row 10: NA, NF 헤더 추가
+    // Row 11: NA, NF 헤더 추가
     // -----------------------
-    sheet.mergeCells("B10:C10");
-    setCell("B10", "측정 정보 (NA)\nTHÔNG TIN NA", {
+    sheet.mergeCells("B11:C11");
+    setCell("B11", "측정 정보 (NA)\nTHÔNG TIN NA", {
       bold: true,
       align: center,
       borderAll: true,
@@ -518,8 +536,8 @@ const handleExcelDownload = async () => {
       fontSize: 16,
       wrap: true,
     });
-    sheet.mergeCells("D10:G10");
-    setCell("D10", "측정 정보 (NF)\nTHÔNG TIN NF", {
+    sheet.mergeCells("D11:G11");
+    setCell("D11", "측정 정보 (NF)\nTHÔNG TIN NF", {
       bold: true,
       align: center,
       borderAll: true,
@@ -529,28 +547,26 @@ const handleExcelDownload = async () => {
     });
 
     // -----------------------
-    // Row 11부터 NA, NF 항목 추가
+    // Row 12부터 NA, NF 항목 추가
     // -----------------------
     // NA 항목
     let imageRow = 18;
-    if (app.isNa) {
-      setCell("B11", "NA 선택\nLựa chọn NA", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
-      setCell("C11", app.naApp?.na ?? "", { align: left, borderAll: true });
-      setCell("B12", "De-embedding 방식\nPhương thức De-embedding", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
-      setCell("C12", app.naApp?.deMethod ?? "", { align: left, borderAll: true });
-      setCell("B13", "Port Extension Loss\nMất Port Extension", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
-      setCell("C13", app.naApp?.portExtensionLoss ? "ON" : "OFF", { align: left, borderAll: true });
-      setCell("B14", "측정 방식\nPhương thức đo", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
-      setCell("C14", app.naApp?.measMethod ?? "", { align: left, borderAll: true });
-      setCell("B15", "S-Parameter 형식\nHình thức SPARA", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
-      setCell("C15", app.naApp?.sParaType === "true" ? "Ideal Matching 포함" : "Ideal Matching 미포함", { align: left, borderAll: true });
-      setCell("B16", "특이사항\nLưu ý", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
-      setCell("C16", app.naApp?.note ?? "", { align: left, borderAll: true, wrap: true });
-      // -----------------------
-      // Row 17: NA 이미지 헤더 추가
-      // -----------------------
-      sheet.mergeCells("B17:C17");
-      setCell("B17", "NA 이미지 FILE", {
+    if (hasNa) {
+      setCell("B12", "NA 선택\nLựa chọn NA", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
+      setCell("C12", app.naApp?.na ?? "", { align: left, borderAll: true });
+      setCell("B13", "De-embedding 방식\nPhương thức De-embedding", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
+      setCell("C13", app.naApp?.deMethod ?? "", { align: left, borderAll: true });
+      setCell("B14", "Port Extension Loss\nMất Port Extension", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
+      setCell("C14", app.naApp?.portExtensionLoss ? "ON" : "OFF", { align: left, borderAll: true });
+      setCell("B15", "측정 방식\nPhương thức đo", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
+      setCell("C15", app.naApp?.measMethod ?? "", { align: left, borderAll: true });
+      setCell("B16", "S-Parameter 형식\nHình thức SPARA", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
+      setCell("C16", app.naApp?.sParaType === "true" ? "Ideal Matching 포함" : "Ideal Matching 미포함", { align: left, borderAll: true });
+      setCell("B17", "특이사항\nLưu ý", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
+      setCell("C17", app.naApp?.note ?? "", { align: left, borderAll: true, wrap: true });
+
+      sheet.mergeCells("B18:C18");
+      setCell("B18", "NA 이미지 FILE", {
         bold: true,
         align: center,
         borderAll: true,
@@ -558,34 +574,29 @@ const handleExcelDownload = async () => {
         fontSize: 16,
         wrap: true,
       });
-      // if (app.isNa && app.naApp?.naSpecialFile?.length) {
-        // for (const file of app.naApp.naSpecialFile) {
-        //   imageRow = await insertImageBelow(file, imageRow, "na_special");
-        // }
-      // }
     }
 
-    if (app.isNf) {
+    if (hasNf) {
       // -----------------------
       // NF 관련 항목
       // -----------------------
-      setCell("D11", "Capture", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
-      sheet.mergeCells("E11:G11");
-      setCell("E11", app.nfApp?.capture ? "O" : "X", { align: left, borderAll: true });
-      setCell("D12", "NF-Parameter (MDF) 전달\nTruyền NF-Parameter (MDF)", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
+      setCell("D12", "Capture", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
       sheet.mergeCells("E12:G12");
-      setCell("E12", app.nfApp?.nfParameterMdf ? "O" : "X", { align: left, borderAll: true });
-      setCell("D13", "Matching(Real)\nSự khớp (Thực tế)", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
+      setCell("E12", app.nfApp?.capture ? "O" : "X", { align: left, borderAll: true });
+      setCell("D13", "NF-Parameter (MDF) 전달\nTruyền NF-Parameter (MDF)", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
       sheet.mergeCells("E13:G13");
-      setCell("E13", app.nfApp?.isRealMatching ? "O" : "X", { align: left, borderAll: true });
-      setCell("D14", "특이사항\nLưu ý", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
+      setCell("E13", app.nfApp?.nfParameterMdf ? "O" : "X", { align: left, borderAll: true });
+      setCell("D14", "Matching(Real)\nSự khớp (Thực tế)", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
       sheet.mergeCells("E14:G14");
-      setCell("E14", app.nfApp?.note ?? "", { align: left, borderAll: true, wrap: true });
+      setCell("E14", app.nfApp?.isRealMatching ? "O" : "X", { align: left, borderAll: true });
+      setCell("D15", "특이사항\nLưu ý", { bold: true, align: center, borderAll: true, fill: labelFill, wrap: true });
+      sheet.mergeCells("E15:G15");
+      setCell("E15", app.nfApp?.note ?? "", { align: left, borderAll: true, wrap: true });
       // -----------------------
       // Row 17: NF 이미지 헤더 추가
       // -----------------------
-      sheet.mergeCells("D17:G17");
-      setCell("D17", "NF 이미지 FILE", {
+      sheet.mergeCells("D18:G18");
+      setCell("D18", "NF 이미지 FILE", {
         bold: true,
         align: center,
         borderAll: true,
@@ -593,15 +604,10 @@ const handleExcelDownload = async () => {
         fontSize: 16,
         wrap: true,
       });
-      // if (app.isNf && app.nfApp?.nfSpecialFile?.length) {
-      //   for (const file of app.nfApp.nfSpecialFile) {
-      //     imageRow = await insertImageBelow(file, imageRow, "nf_special");
-      //   }
-      // }
     }
 
     // ---- 이미지 영역 설정 ----
-    const IMAGE_HEADER_ROW = 17;           // "NA 이미지 FILE", "NF 이미지 FILE"이 있는 행
+    const IMAGE_HEADER_ROW = 18;           // "NA 이미지 FILE", "NF 이미지 FILE"이 있는 행
     const IMAGE_START_ROW = IMAGE_HEADER_ROW + 1;
       
     const imageHeight = 240;

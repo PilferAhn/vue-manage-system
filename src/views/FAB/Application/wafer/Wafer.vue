@@ -68,6 +68,40 @@ const localFabApplication = computed({
   get: () => props.fabApplication,
   set: (newValue) => emit("update:fabApplication", newValue),
 });
+
+watch(
+  () => [props.fabApplication.waferId, props.fabApplication.waferType],
+  ([newWaferId, waferType]) => {
+    if (!newWaferId) return;
+    if (waferType !== "HS") return;
+
+    // 1) wafer 재조회
+    const watchedWafer = getFabWaferFromWaferId(String(newWaferId), props.sawType.wafers);
+    wafer.value = watchedWafer;
+
+    // 2) hs 옵션 재생성 (hsId 리스트)
+    hsWaferOptions.value = createHsWaferCondition(watchedWafer);
+
+    
+    // 3) 현재 hsId가 없거나 옵션에 없으면 첫 번째로 보정
+    const optionValues = hsWaferOptions.value.map(o => String(o.value));
+    const currentHsId = String((props.fabApplication as any).hsId ?? "");
+
+    if (!currentHsId || !optionValues.includes(currentHsId)) {
+      const first = optionValues[0];
+      if (first) {
+        (props.fabApplication as any).hsId = Number(first); // 타입이 number면 Number로
+      }
+    }
+
+    // 4) hsLayers 갱신 (핵심: hsId를 넣어서 호출)
+    const hsIdStr = String((props.fabApplication as any).hsId ?? "");
+    hsLayers.value = createHsWaferLayerOption(hsIdStr, watchedWafer);
+
+  },
+  { immediate: true }
+);
+
 </script>
 
 

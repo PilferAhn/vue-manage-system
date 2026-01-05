@@ -72,6 +72,7 @@ export async function getMesFabFormInfo(apps: FabRequest[]) {
 export async function getFabAppForReview(
   apps: FabRequest[],
   weekNumber: number,
+  weekYear: number,
   userId: string
 ) {
   apps.length = 0;
@@ -79,8 +80,8 @@ export async function getFabAppForReview(
   try {
     // getApplicationList를 호출하고 결과를 기다림
     const year = new Date().getFullYear();
-    const wanted_fab_start_date_start = `${year}-01-01T00:00:00`;
-    const wanted_fab_start_date_end   = `${year + 1}-01-01T00:00:00`;
+    const wanted_fab_start_date_start = `${weekYear}-01-01T00:00:00`;
+    const wanted_fab_start_date_end   = `${weekYear + 1}-01-01T00:00:00`;
     let para = {
       users: true,
       wafer: true,
@@ -88,6 +89,7 @@ export async function getFabAppForReview(
       hs_type: true,
       idt_layers: true,
       week_numbers: weekNumber,
+      week_year: weekYear,
       wanted_fab_start_date_start,
       wanted_fab_start_date_end,
       order_by: "created_date",
