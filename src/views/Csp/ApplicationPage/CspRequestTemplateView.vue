@@ -953,7 +953,7 @@ async function handleEnter(value) {
       }
       else if (item.cell_name === 'SS1') {
         filesetSS1.value.push(item);
-      } else if (item.cell_name === 'MWA1') {
+      } else if (item.cell_name === 'WMA1') {
         filesetMWA1.value.push(item);
       } else if (item.cell_name === 'PMAP1') {
         filesetPMAP1.value.push(item);
