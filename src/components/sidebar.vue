@@ -350,6 +350,11 @@ const items = [
         title: "Package(PCB) COST",
         permiss: "2",
       },
+       {
+        index: "/rules/k1standard",
+        title: "K1 IND,CAP Standard Value",
+        permiss: "2",
+      },
     ],
   },
   // {

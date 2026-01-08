@@ -509,6 +509,18 @@ const routes: RouteRecordRaw[] = [
             /* webpackChunkName: "table" */ "../views/Rules/PcbCost.vue"
           ),
       },
+       {
+        path: "/rules/k1standard",
+        name: "K1 Standard",
+        meta: {
+          title: "K1 Standard",
+          permiss: "2",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "table" */ "../views/Rules/K1Standard.vue"
+          ),
+      },
       {
         path: "/table",
         name: "basetable",
