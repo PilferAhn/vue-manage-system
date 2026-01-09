@@ -588,6 +588,8 @@ const smModelNames = [
   "TDG93BAT006A",
   "TX725BT7003A",
   "TXG35ANN004A",
+  "THG93AS5002A",
+  "THG93AS5002B",
 ];
 const smSPLModelNames = [
   "TX897AG7001A",
