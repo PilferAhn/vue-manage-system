@@ -99,7 +99,7 @@
           class="wide-select"
         />
       </el-col>
-      <el-col :span="4"
+      <!-- <el-col :span="4"
         ><SelectCheckBox
           v-model="props.fabApplication.isAlPad"
           label="AL PAD 적용"
@@ -108,7 +108,7 @@
           :rules="[]"
           class="wide-select"
         />
-      </el-col>
+      </el-col> -->
     </el-row>
     <el-row :gutter="20" class="form-row">
       <el-col :span="12">

@@ -3,14 +3,14 @@
       <!-- <h3 class="section-title">Set Wafer Details</h3> -->
   
       <el-row :gutter="20">
-        <el-col :span="7">
+        <el-col :span="6">
           <el-form-item class="custom-form-item" prop="waferAngle">
             <el-input
               v-model="props.fabApplication.waferAngle"
               placeholder="Enter Angle"
-              style="width: 250px"
+              style="width: 200px"
             >
-              <template #prepend>{{ cutLabel }}</template>
+              <template #prepend><span class="prepend-label">{{ cutLabel }}</span></template>
             </el-input>
           </el-form-item>
         </el-col>
@@ -23,7 +23,7 @@
             <el-select
               v-model="props.fabApplication.waferAngle"
               placeholder="Select Anlge"
-              style="width: 200px"
+              style="width: 100px"
             >
               <!-- <el-options></el-options> -->
               <el-option
@@ -36,7 +36,7 @@
           </el-form-item>
         </el-col>
   
-        <el-col :span="7">
+        <el-col :span="6">
           <el-form-item
             class="custom-form-item"
             prop="waferThickness"
@@ -45,17 +45,17 @@
             <el-input
               v-model="props.fabApplication.waferThickness"
               placeholder="Enter Thickness"
-              style="width: 250px"
+              style="width: 150px"
             >
-              <template #prepend>Thickness</template>
+              <template #prepend><span class="prepend-label">Thickness</span></template>
             </el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="3"
+        <el-col :span="2"
           ><el-select
             v-model="props.fabApplication.waferThickness"
             placeholder="Select Anlge"
-            style="width: 200px"
+            style="width: 90px"
             v-if="props.fabApplication.waferType !== 'HS'"
           >
             <!-- <el-options></el-options> -->
@@ -66,26 +66,86 @@
               :value="angleOption.value"
             ></el-option> </el-select
         ></el-col>
-        <!-- <el-col :span="7">
-          <input-text-by-recommad
-            v-model="props.fabApplication.waferCode"
-            :options="waferCodeOptions"
-            :use-template="true"
-            :template-label="'Code'"
-          ></input-text-by-recommad>
+        <el-col :span="1"></el-col>
+        <el-col
+          v-if="props.fabApplication.isMixedWafer && props.fabApplication.waferType !== 'HS'"
+          :span="6"
+        >
+          <el-form-item class="custom-form-item" prop="waferQty1">
+            <el-input
+              v-model.number="props.fabApplication.waferQty1"
+              style="width: 150px"
+            >
+              <template #prepend><span class="qty-label">Qty1</span></template>
+            </el-input>
+          </el-form-item>
         </el-col>
-        <el-col :span="3">
-          
-        </el-col>
-        <el-col :span="7">
-          <input-text-by-recommad
-            v-model="props.fabApplication.waferCode"
-            :options="waferCodeOptions"
-            :use-template="true"
-            :template-label="'Code'"
-          ></input-text-by-recommad>
-        </el-col>-->
       </el-row> 
+      <div v-if="props.fabApplication.isMixedWafer && props.fabApplication.waferType !== 'HS' " style="margin-top: 10px">
+        <el-row :gutter="20" style="margin-top: 10px">
+          <el-col :span="6">
+            <el-form-item class="custom-form-item" prop="waferAngle2">
+              <el-input
+                v-model="props.fabApplication.waferAngle2"
+                placeholder="2nd Angle"
+                style="width: 180px"
+              >
+                <template #prepend><span class="prepend-label">{{ cutLabel }}2</span></template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        
+          <el-col :span="3">
+            <el-form-item
+              v-if="['NS', 'TC'].includes(props.fabApplication.waferType)"
+              class="custom-form-item"
+              prop="Angle2 Options"
+            >
+              <el-select
+                v-model="props.fabApplication.waferAngle2"
+                placeholder="Select 2nd Angle"
+                style="width: 100px"
+              >
+                <el-option
+                  v-for="angleOption in angleOptions"
+                  :key="angleOption.key"
+                  :label="angleOption.label"
+                  :value="angleOption.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          
+          <el-col :span="6">
+            <el-form-item class="custom-form-item" prop="waferThickness2">
+              <el-input
+                v-model="props.fabApplication.waferThickness2"
+                placeholder="2nd Thickness (same as 1st)"
+                style="width: 150px"
+                disabled
+              >
+                <template #prepend><span class="prepend-label">Thickness2</span></template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="3"></el-col>
+          <el-col :span="6">
+            <el-form-item class="custom-form-item" prop="waferQty2">
+              <el-input
+                v-model.number="props.fabApplication.waferQty2"
+                placeholder="2nd Qty"
+                style="width: 150px"
+              >
+                <template #prepend><span class="qty-label">Qty2</span></template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      
+        <div style="margin-top: 8px; color: #666;">
+          ※ 혼입은 2개까지만 가능합니다. Thickness는 1번과 동일해야 해서 자동으로 맞춰집니다.
+        </div>
+      </div>
       <div
         class="flex-container"
         v-if="props.fabApplication.waferType !== 'HS'"
@@ -94,7 +154,7 @@
   </template>
   
   <script lang="ts" setup>
-  import { defineProps, defineEmits, ref, watch, onMounted } from "vue";
+  import { defineProps, defineEmits, ref, watch, onMounted, computed} from "vue";
   import InputTextByRecommad from "../../../Common/InputTextByRecommadAsLabel.vue";
   import {
     getFabWaferFromWaferId,
@@ -130,7 +190,6 @@
   const thickOptions = ref<OptionInterface[]>([]);
   const waferCodeOptions = ref<OptionInterface[]>([]);
   // 로컬 상태 정의
-  
   const waferThickness = ref(0);
   const angAndThink = ref("");
   
@@ -140,6 +199,41 @@
     "update:wafer",
   ]);
   
+  const totalQty = computed(() => {
+  const q1 = Number(props.fabApplication.waferQty1 ?? 0);
+  const q2 = Number(props.fabApplication.waferQty2 ?? 0);
+  return q1 + q2;
+  });
+
+  watch(
+    () => [
+      props.fabApplication.isMixedWafer,
+      props.fabApplication.waferQty1,
+      props.fabApplication.waferQty2,
+      props.fabApplication.waferType,
+    ] as const,
+    ([mixed, _q1, _q2, waferType]) => {
+      if (!mixed) return;
+      if (waferType === "HS") return;
+      props.fabApplication.quantity = totalQty.value;
+    },
+    { immediate: true }
+  );
+
+  watch(
+  () => props.fabApplication.isMixedWafer,
+  (enabled) => {
+    if (!enabled) return;
+    if (props.fabApplication.waferType === "HS") return;
+
+    if (props.fabApplication.waferQty1 == null) {
+      props.fabApplication.waferQty1 = Number(props.fabApplication.quantity ?? 0);
+    }
+    props.fabApplication.waferQty2 = Number(props.fabApplication.waferQty2 ?? 0);
+    },
+  { immediate: true }
+  );
+
   onMounted(async () => {
     if (props.applicationType === "load") {
       wafer.value = getFabWaferFromWaferId(
@@ -191,7 +285,12 @@
         props.fabApplication.waferThickness = 0;
         waferThickness.value = 0;
         angAndThink.value = "";
-  
+        
+        if (props.fabApplication.isMixedWafer && props.fabApplication.waferType !== "HS") {
+          props.fabApplication.waferAngle2 = props.fabApplication.waferAngle;
+          props.fabApplication.waferQty2 = 0;
+        }
+
         if (props.fabApplication.waferId !== undefined) {
           wafer.value = getFabWaferFromWaferId(
             newVal.toString(),
@@ -219,12 +318,26 @@
                 thickOptions.value[0].value
               );
             }
+            if(props.fabApplication.isMixedWafer && props.fabApplication.waferType !== "HS"){
+              props.fabApplication.waferThickness2 = props.fabApplication.waferThickness;
+            }
           }
         }
       }
     }
   );
   
+  watch(
+  () => props.fabApplication.waferThickness,
+  (t) => {
+    if (!props.fabApplication.isMixedWafer) return;
+    if (props.fabApplication.waferType === "HS") return;
+    if (t == null || t === 0) return;
+    props.fabApplication.waferThickness2 = t;
+  },
+  { immediate: true }
+);
+
   // watch(
   //   () => angAndThink.value,
   //   (newVal) => {
@@ -249,4 +362,19 @@
     display: flex;
     gap: 20px;
   }
+
+  .prepend-label {
+  display: inline-block;
+  width: 60px;        
+  text-align: center;
+  white-space: nowrap;
+  } 
+
+ .qty-label {
+  display: inline-block;
+  width: 30px;        
+  text-align: center;
+  white-space: nowrap;
+  } 
+
   </style>

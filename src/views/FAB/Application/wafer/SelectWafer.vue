@@ -18,7 +18,12 @@
           ></el-option>
         </el-select>
         <div class="checkbox-group">
-          <el-checkbox v-model="props.fabApplication.isFreeWafer" label="유상" />        
+          <el-checkbox v-model="props.fabApplication.isFreeWafer" label="유상" /> 
+          <el-checkbox
+            v-if="props.fabApplication.waferType !== 'HS'"
+            v-model="props.fabApplication.isMixedWafer"
+            label="혼입"
+          />       
         </div>
         <el-checkbox v-if="props.fabApplication.waferType === 'HS'"
           v-model="props.fabApplication.isNeededLtEtching"
@@ -67,9 +72,16 @@
         props.fabApplication.isNeededLtEtching = true
       }
       else{
+        props.fabApplication.hsId = null;
+        props.fabApplication.hsTrimingTarget = null;
         props.fabApplication.isNeededLtEtching = false
       }
-  
+      
+      props.fabApplication.isMixedWafer = false;
+      props.fabApplication.waferAngle2 = undefined;
+      props.fabApplication.waferThickness2 = undefined;
+      props.fabApplication.waferQty2 = 0;
+
       if (availableWafer.value.length == 1) {
         props.fabApplication.waferId = availableWafer.value[0].key;
       } else if (props.fabApplication.waferType === "TC") {
@@ -80,6 +92,29 @@
     }
   );
   
+  watch(
+  () => props.fabApplication.isMixedWafer,
+  (enabled) => {
+    if (props.fabApplication.waferType === "HS") {
+      props.fabApplication.isMixedWafer = false;
+      return;
+    }
+
+    if (!enabled) {
+      props.fabApplication.waferAngle2 = undefined;
+      props.fabApplication.waferThickness2 = undefined;
+      props.fabApplication.waferQty2 = 0;
+    } else {
+      // 켜면 thickness2는 1번과 동일로 시작
+      props.fabApplication.waferThickness2 = props.fabApplication.waferThickness;
+      // angle2는 1번으로 시작(사용자가 바꿀 수 있음)
+      props.fabApplication.waferAngle2 = props.fabApplication.waferAngle;
+      props.fabApplication.waferQty2 = props.fabApplication.waferQty2 ?? 0;
+    }
+  },
+  {immediate:true}
+);
+
   // watch(() => waferId.value , (newVal) => {
   //   props.fabApplication.waferId = parseInt(newVal)
   //   emit("update:waferId", newVal)

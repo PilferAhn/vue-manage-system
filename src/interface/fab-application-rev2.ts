@@ -141,6 +141,11 @@ export interface FabRequestForm extends FabprobeInformation {
   waferId?: number;
   waferAngle?: number;
   waferThickness?: number;
+  waferQty1?: number;
+  isMixedWafer?: boolean;
+  waferAngle2?: number;
+  waferThickness2?: number;
+  waferQty2?: number;
   hsTrimingTarget?: number | null;
   freqRange?: string;
   idtId?: number;

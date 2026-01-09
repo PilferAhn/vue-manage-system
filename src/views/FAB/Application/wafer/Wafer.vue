@@ -5,13 +5,13 @@ export default {};
   <div class="deposition-container">
     <SelectWafer
       :fabApplication="props.fabApplication"
-      :sawType="sawType"
+      :sawType="props.sawType"
     ></SelectWafer>
 
     <WaferDetails
       :fabApplication="props.fabApplication"
       :wafer-id="waferId"
-      :sawType="sawType"
+      :sawType="props.sawType"
       v-model:hsWaferOptions="hsWaferOptions"
       v-model:hs-layers="hsLayers"
       v-model:wafer="wafer"
@@ -77,10 +77,14 @@ watch(
 
     // 1) wafer 재조회
     const watchedWafer = getFabWaferFromWaferId(String(newWaferId), props.sawType.wafers);
+     if (!watchedWafer || Object.keys(watchedWafer).length === 0) return;
     wafer.value = watchedWafer;
 
     // 2) hs 옵션 재생성 (hsId 리스트)
-    hsWaferOptions.value = createHsWaferCondition(watchedWafer);
+    const options = createHsWaferCondition(watchedWafer) ?? [];
+    if (options.length === 0) return;
+
+    hsWaferOptions.value = options;
 
     
     // 3) 현재 hsId가 없거나 옵션에 없으면 첫 번째로 보정
@@ -90,7 +94,11 @@ watch(
     if (!currentHsId || !optionValues.includes(currentHsId)) {
       const first = optionValues[0];
       if (first) {
-        (props.fabApplication as any).hsId = Number(first); // 타입이 number면 Number로
+        emit("update:fabApplication", {
+          ...props.fabApplication,
+          hsId: Number(first),
+        });
+        // (props.fabApplication as any).hsId = Number(first); // 타입이 number면 Number로
       }
     }
 
@@ -102,6 +110,11 @@ watch(
   { immediate: true }
 );
 
+watch(
+  () => props.fabApplication.waferType,
+  (v) => console.log("waferType =", v),
+  { immediate: true }
+);
 </script>
 
 
