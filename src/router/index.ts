@@ -522,6 +522,18 @@ const routes: RouteRecordRaw[] = [
           ),
       },
       {
+        path: "/rules/csp-assy-design",
+        name: "CSP Ass'y Design",
+        meta: {
+          title: "CSP Ass'y Design",
+          permiss: "2",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "table" */ "../views/Rules/CspAssyDesign.vue"
+          ),
+      },
+      {
         path: "/table",
         name: "basetable",
         meta: {

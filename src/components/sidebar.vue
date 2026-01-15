@@ -355,6 +355,11 @@ const items = [
         title: "K1 IND,CAP Standard Value",
         permiss: "2",
       },
+      {
+        index: "/rules/csp-assy-design",
+        title: "CSP Ass'y Design",
+        permiss: "2",
+      },
     ],
   },
   // {
