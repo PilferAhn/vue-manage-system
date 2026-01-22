@@ -26,7 +26,7 @@
           </el-select>
         </el-form-item>
         <el-button type="success" @click="updateApplicationStatus(uuid.toString(), applicationForm.requestNumber, applicationForm.status)">업데이트</el-button>
-      </div container>
+      </div>
       <div class="inline-fields">
       <selectOption
         v-model="applicationForm.testType"
@@ -298,6 +298,13 @@
         </el-form-item>
       </div>
 
+      <!-- ✅ ModuleFiles는 packageType이 Module일 때만 -->
+      <ApplicationDetailModuleFiles
+        v-if="applicationForm.packageType === 'Module'"
+        ref="moduleFilesRef"
+        :applicationUuid="uuid"
+        :fileObjList="fileObjList"
+      />
       <longInputText
         v-model="applicationForm.detail"
         label="세부사항"
@@ -326,13 +333,11 @@ import inputNumber from "../Common/InputNumber.vue";
 import longInputText from "../Common/LongInputText.vue";
 import selectOption from "../Common/SelectOption.vue";
 import selectNumberOption from "../Common/SelectNumberOption.vue";
-import pdtSample from "../ProductPage/ApplicationPage/PDTSample.vue";
 import pdtSampleTab from "../ProductPage/ApplicationPage/PDTSampleTab.vue";
 import applicationDetail from "./ApplicationDetailSample.vue"
 
 import {
   applicationRules,
-  createApplicationRules,
 } from "../ProductPage/ApplicationPage/ApplicationRules";
 import axios from "axios";
 import {
@@ -340,11 +345,8 @@ import {
   usePDTRequestFormBoolean,
   testOptions,
   vswrOptions,
-  resetForm,
   saveForm,
-  updateNote,
   updatePdtApplicationForm,
-  loadForm,
   signalList,
   packageTypeList,
   waferTypeList,
@@ -357,7 +359,6 @@ import {
   testPostionList,
   sampleRequestMode,
   setMode,
-  updateSampleInformation,
   SampleInformation,
   getSystemFreq,
 } from "../ProductPage/ApplicationPage/Application";
@@ -365,45 +366,35 @@ import { deleteApplicationByUuid, updateApplicationNumber, updateApplicationStat
 import {downloadExcel} from "../ProductPage/ApplicationPage/Application"
 import { ElNotification } from "element-plus";
 import { useRoute } from "vue-router";
+import ApplicationDetailModuleFiles from "./ApplicationDetailModuleFiles.vue";
+
 const { form: applicationForm } = usePDTRequestForm();
 const { form: applicationFormBoolean } = usePDTRequestFormBoolean();
 const requestNumber = localStorage.getItem("ms_username");
 
 // useRoute 훅을 사용하여 현재 라우트 객체를 가져옵니다.
 const route = useRoute();
-
 // route.params에서 uuid 값을 추출합니다.
 const uuid = route.params.uuid;
-
-// Watch for changes in testType and reset the form
-// watch(
-//   () => applicationForm.value.testType,
-//   () => {
-//     resetForm(applicationForm, requestNumber);
-//     applicationRules.value = createApplicationRules(
-//       applicationFormBoolean.value
-//     );
-//     // console.log(applicationFormBoolean.value);
-//   }
-// );
-
-const formRef = ref(null);
-
-// Load form values from localStorage when the component is mounted
-// onMounted(() => {
-//   loadForm(applicationForm);
-// });
+const formRef = ref<FormInstance | null>(null);
+const moduleFilesRef = ref<any>(null);
 
 function handleDownload() {
   downloadExcel(applicationForm)
 }
 
+// watch(
+//   () => uuid,
+//   (newVal, oldVal) => {
+//     if (newVal !== oldVal) {
+//       fetchApplicationDetail();
+//     }
+//   }
+// );
 watch(
-  () => uuid,
-  (newVal, oldVal) => {
-    if (newVal !== oldVal) {
-      fetchApplicationDetail();
-    }
+  () => route.params.uuid,
+  () => {
+    fetchApplicationDetail();
   }
 );
 
@@ -420,20 +411,7 @@ function handleDelete() {
   deleteApplicationByUuid(uuid.toString());
 }
 
-// function handleNoteUpdate() {
-
-//   formRef.value.validate((valid: boolean) => {
-//     if (valid) {
-//       console.log("Form is valid and ready for submission!");
-//       console.log('applicationForm.value', applicationForm.value);
-//       updateNote(applicationForm.value);
-//     } else {
-//       console.log("Form validation failed");
-//     }
-//   });
-// }
-
-function handleRequestUpdate() {
+async function handleRequestUpdate() {
   const status = applicationForm.value.status;
   if (status !== "created" && status !== "reserved") {
      ElNotification({
@@ -445,13 +423,36 @@ function handleRequestUpdate() {
         });
     return;
   }
-  formRef.value.validate((valid: boolean) => {
-    if (valid) {
-      updatePdtApplicationForm(applicationForm.value);
-    } else {
-      console.log("폼 유효성 검사 실패");
-    }
-  });
+  try {
+   const valid = await formRef.value?.validate();
+   if (!valid) return;
+  // formRef.value.validate((valid: boolean) => {
+    // if (valid) {
+   await updatePdtApplicationForm(applicationForm.value);
+
+   if (applicationForm.value.packageType === "Module") {
+     await moduleFilesRef.value?.uploadPendingFiles();
+   }
+
+   ElNotification({
+      title: "성공",
+      message: "의뢰서 업데이트 완료",
+      type: "success",
+      duration: 2500,
+      position: "top-right",
+    });
+  } catch (e) {
+    console.error(e);
+    ElNotification({
+      title: "실패",
+      message: "업데이트 중 오류 발생",
+      type: "error",
+      duration: 3000,
+      position: "top-right",
+    });
+  }
+    // }
+  // });
 }
 
 const fetchApplicationDetail = async () => {

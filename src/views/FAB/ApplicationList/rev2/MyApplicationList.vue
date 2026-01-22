@@ -121,15 +121,12 @@ import { ElNotification, ElMessageBox } from "element-plus";
 import DialogTemplate from "../ApplicationLinksDialog.vue";
 import type { FabRequestForm } from "../../../../interface/fab-application-rev2";
 import {
-  getApplicationList,
   getApplicationListByDict,
   sendAppRemoveRequest,
 } from "../../../../utils/Fab/fab-application-utils";
 import router from "../../../../router";
 import { getUserId } from "../../../../utils/account-utils";
-import { userInfo } from "os";
-import { get } from "http";
-import { adjustDate, getTodayDate, getTodayDatetime } from "../../../../utils/date-utils";
+import { adjustDate, getTodayDate } from "../../../../utils/date-utils";
 import { formatDate } from "../../Common/Application";
 
 const applications = reactive<FabRequestForm[]>([]);

@@ -276,6 +276,13 @@
         </el-form-item>
       </div>
 
+        <PdtModuleAttachFiles
+          v-if="applicationForm.packageType === 'Module'"
+          :form="applicationForm"
+          :files="pdtModuleFiles"
+        />
+
+
       <longInputText
         v-model="applicationForm.detail"
         label="세부사항"
@@ -297,7 +304,7 @@
 
 <script lang="ts" setup>
 import { watch, onMounted, ref } from "vue";
-import { FormInstance } from "element-plus";
+import { UploadFile  } from "element-plus";
 import inputText from "../../Common/InputText.vue";
 import inputNumber from "../../Common/InputNumber.vue";
 import longInputText from "../../Common/LongInputText.vue";
@@ -306,6 +313,7 @@ import selectNumberOption from "../../Common/SelectNumberOption.vue";
 import pdtSample from "./PDTSample.vue";
 import pdtSampleTab from "./PDTSampleTab.vue";
 import { applicationRules, createApplicationRules } from "./ApplicationRules";
+import PdtModuleAttachFiles from "./PdtModuleAttachFiles.vue";
 import {ElMessage} from "element-plus";
 import {
   usePDTRequestForm,
@@ -344,7 +352,7 @@ import {
 
 const { form: applicationForm } = usePDTRequestForm();
 const { form: applicationFormBoolean } = usePDTRequestFormBoolean();
-const requestNumber = localStorage.getItem("ms_username");
+const requestNumber = localStorage.getItem("ms_username") ?? "";
 
 // Watch for changes in testType and reset the form
 watch(
@@ -359,6 +367,14 @@ watch(
 
 const formRef = ref(null);
 const isDownload = ref<Boolean>(false)
+
+const pdtModuleFiles = ref<{
+  pdtModuleRffeFileList: UploadFile[];
+  pdtModuleConfigFileList: UploadFile[];
+}>({
+  pdtModuleRffeFileList: [],
+  pdtModuleConfigFileList: [],
+});
 
 // Load form values from localStorage when the component is mounted
 onMounted(() => {
@@ -389,6 +405,24 @@ watch(
   { deep: true }
 );
 
+
+watch(
+  () => applicationForm.value.packageType,
+  (v) => {
+    if (v === "Module") {
+      applicationForm.value.pdtModule ??= { rffeFileList: [], configFileList: [] };
+      return;
+    }
+
+    // ✅ Module 해제 시 데이터/파일리스트 정리
+    applicationForm.value.pdtModule = null;
+    pdtModuleFiles.value.pdtModuleRffeFileList = [];
+    pdtModuleFiles.value.pdtModuleConfigFileList = [];
+  },
+  { immediate: true }
+);
+
+
 function handleSubmitDetail() {}
 
 function isValidSnpFile(fileName?: string | null): boolean {
@@ -411,6 +445,14 @@ function validateSparaFiles(): { ok: true } | { ok: false; message: string } {
   return { ok: true };
 }
 
+  watch(
+  pdtModuleFiles,
+  (v) => {
+    console.log("pdtModuleFiles changed", v);
+  },
+  { deep: true }
+  );
+  
 function handleSubmit() {
   const snpCheck = validateSparaFiles();
   if (!snpCheck.ok) {
@@ -421,7 +463,8 @@ function handleSubmit() {
   formRef.value.validate((valid: boolean) => {
     if (valid) {
       console.log("Form is valid and ready for submission!");
-      submitPdtApplicationForm(applicationForm.value, isDownload);
+      console.log('pdtModuleFiles.value', pdtModuleFiles.value);
+      submitPdtApplicationForm(applicationForm.value, pdtModuleFiles.value, isDownload);
     } else {
       console.log("Form validation failed");
     }
@@ -439,6 +482,8 @@ function handleDownload() {
 </script>
 
 <style>
+ 
+
 @import "../../../assets/css/PDTRequestForm.css";
 
 

@@ -7,10 +7,11 @@ import { containSPL } from "./ApplicationValidation";
 import PDTRequestForm from "./PDTRequestForm.vue";
 import { OptionInterface } from "../../../interface/option";
 import { convertKeysToPEP8 } from "../../../utils/key-converter";
+import type {UploadFile} from "element-plus";
 
 export const signalTypeOptions = [];
 
-export const packageTypeList = ["CSP 및 기타", "WLP-Mold", "WLP-Bare"];
+export const packageTypeList = ["CSP 및 기타", "WLP-Mold", "WLP-Bare", "Module"];
 
 export const waferTypeList = ["NS", "TS", "HS", "Fbar"];
 
@@ -281,9 +282,27 @@ export function usePDTRequestFormBoolean() {
   };
 }
 
+// 서버에서 내려오는 파일(=FileTable이 보여줄 것) 타입
+export interface PDTUploadedFile {
+  id?: number | string;
+  fileName: string;     
+  url?: string;        
+  createdAt?: string;
+}
+
+//applicationForm 안에 들어갈 Module 파일 메타(서버용)
+export interface PDTModuleAttachType {
+  rffeFileList: PDTUploadedFile[];
+  configFileList: PDTUploadedFile[];
+}
+
+export interface PdtFiles {
+  pdtModuleRffeFileList: UploadFile[];
+  pdtModuleConfigFileList: UploadFile[];
+}
+
 export interface PDTRequestFormType {
   applicationUuid: string;
-
   customerCompany: string;
   specTemperature: string;
   specPower: string;
@@ -291,12 +310,10 @@ export interface PDTRequestFormType {
 
   modelName: string;
   condition: string;
-
   signalType: string;
   band: string;
   duplexMode: string;
   bandwidth: string;
-
   designer: string;
   requester: string;
   purpose: string;
@@ -305,23 +322,21 @@ export interface PDTRequestFormType {
   duty: string;
   dateOfSampleConvey: string;
   dateOfCreate: string;
-
   waferType: string;
   packageType: string;
-
   testType: string;
   vswr: string;
   phase: string;
   targetPosition: string;
 
   link: string;
-
   sampleQuantity: number;
   samples: SampleInformation[];
   detail: string;
-
   requestNumber: string;
   status: string;
+
+  pdtModule?: PDTModuleAttachType | null;
 }
 
 export function usePDTRequestForm() {
@@ -334,17 +349,13 @@ export function usePDTRequestForm() {
 
     modelName: "",
     condition: "",
-
     signalType: "",
     band: "",
     duplexMode: "",
     bandwidth: "",
-
     designer: "",
-
     requester: "",
     purpose: "",
-
     temperature: "0",
     duty: "",
     dateOfSampleConvey: "",
@@ -352,20 +363,17 @@ export function usePDTRequestForm() {
 
     waferType: "",
     packageType: "",
-
     testType: "",
     vswr: "",
     phase: "",
     targetPosition: "",
-
     link: "",
-
     sampleQuantity: 0,
     samples: [],
     detail: "",
-
     requestNumber: "",
     status: "",
+    pdtModule: null,
   });
 
   return {
@@ -383,7 +391,6 @@ export function usePDTRequestForm2() {
 
     modelName: "",
     condition: "",
-
     signalType: "",
     band: "",
     duplexMode: "",
@@ -392,7 +399,6 @@ export function usePDTRequestForm2() {
     designer: "",
     requester: "",
     purpose: "",
-
     temperature: "85",
     duty: "",
     dateOfSampleConvey: "",
@@ -402,18 +408,15 @@ export function usePDTRequestForm2() {
     vswr: "",
     phase: "",
     packageType: "",
-
     testType: "",
     targetPosition: "",
-
     link: "",
-
     sampleQuantity: 0,
     samples: [],
     detail: "",
-
     requestNumber: "",
     status: "",
+    pdtModule: null,
   });
 
   return form.value;
@@ -432,12 +435,10 @@ export function resetForm(applicationForm: any, requesterName: string) {
 
     modelName: "",
     condition: "",
-
     signalType: "",
     band: "",
     duplexMode: "",
     bandwidth: "",
-
     designer: "",
     requester: requesterName,
     purpose: "",
@@ -446,18 +447,15 @@ export function resetForm(applicationForm: any, requesterName: string) {
     duty: "",
     dateOfSampleConvey: "",
     dateOfCreate: getTodayDate(),
-
     waferType: "",
     packageType: "",
-
     testType: applicationForm.value.testType,
     targetPosition: "",
-
     link: "",
-
     sampleQuantity: 0,
     samples: [],
     detail: "",
+    pdtModule: null,
   };
 
   saveForm(applicationForm); // Save the reset form to localStorage
@@ -901,6 +899,7 @@ export function getTodayDate() {
 
 export async function submitPdtApplicationForm(
   application: PDTRequestFormType,
+  pdtFiles: PdtFiles,
   isDownload: any
 ) {
   try {
@@ -920,6 +919,9 @@ export async function submitPdtApplicationForm(
           ElMessage.success("의뢰서가 성공적으로 작성되었습니다.");
           isDownload.value = true;
           application.applicationUuid = response.data.applicationUuid;
+          if(application.packageType === "Module"){
+            await uploadPdtModuleFiles(application.applicationUuid, pdtFiles);
+          }
         } else {
           ElMessage.error("의뢰서 작성에 실패했습니다. 잠시 후에 시도하세요");
         }
@@ -1083,19 +1085,6 @@ function validateSampleNumber(
     }
   }
 
-  // 만약 sample 번호에 spl이 안들어가 있으면 ㅈ매ㅑ더쇄먇ㄱ저
-  // for (let i = 0; i < samples.length; i++) {
-  //   if (containSPL(samples[i]["sampleNumber"])) {
-
-  //   }
-  //   else{
-  //     return {
-  //       status: false,
-  //       message: "Sample 번호에는 SPL이 꼭 들어가야합니다",
-  //     };
-  //   }
-  // }
-
   if (hasDuplicates(sampleNumberList)) {
     return {
       status: false,
@@ -1146,9 +1135,23 @@ function validatePort(samples: SampleInformation[]) {
       }
     }
   }
-
   return {
     status: true,
     message: "Port 입력 확인 완료",
   };
+}
+
+export async function uploadPdtModuleFiles(uuid: string, pdtFiles: PdtFiles) {
+  const form = new FormData();
+
+  for (const f of pdtFiles.pdtModuleRffeFileList) {
+    if (f.raw) form.append("rffe_files", f.raw);
+  }
+  for (const f of pdtFiles.pdtModuleConfigFileList) {
+    if (f.raw) form.append("config_files", f.raw);
+  }
+
+  return axios.post(`/pdt_application/upload_pdt_module_files/${uuid}`, form, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
 }
