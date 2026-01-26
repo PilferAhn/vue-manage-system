@@ -1123,3 +1123,30 @@ export function addWorkdays(startDate: Date, numDays: number): Date {
   // }
   return date;
 }
+
+export async function uploadPackageEvidence(productName: string, file: File) {
+  const form = new FormData();
+  form.append("product_name", productName);
+  form.append("file", file);
+
+  const url = serverUrl + "/fab_package_evidence/upload_package_evidence";
+
+  const res = await axios.post(url, form, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return convertPep8ToCamelCase2(res.data);
+}
+
+export async function getPackageEvidence(productName: string) {
+  const form = new FormData();
+  form.append("product_name", productName);
+
+  const url = serverUrl + "/fab_package_evidence/get_package_evidence";
+
+  const res = await axios.post(url, form, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+  // 없으면 null 반환
+  return res.data ? convertPep8ToCamelCase2(res.data) : null;
+}

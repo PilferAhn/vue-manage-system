@@ -210,8 +210,14 @@ export interface FabRequestForm extends FabprobeInformation {
   lotStatus?: LotStatus[] | null;
   lots?: any[];
   activeLots?: ActiveLot[];
+  fabPackageEvidence?: FabPackageEvidence | null;
 }
 
+export interface FabPackageEvidence {
+  productName: string;
+  path: string;
+  createdTime: string; // 또는 Date
+}
 
 export interface band {
   bandCombinationId: string;

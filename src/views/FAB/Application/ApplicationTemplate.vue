@@ -26,6 +26,9 @@ export default {
               v-model:fabApplication="props.fabApplication"
               :fabFormRef="fabFormRef"
               :application-type="props.applicationType"
+              :packageEvidenceFile="packageEvidenceFile"
+              :refreshPackageEvidence="() => packageEvidenceRef?.refreshEvidence?.()"
+              @clear-package-evidence-file="packageEvidenceFile = null"
             />
           </div>
   
@@ -67,6 +70,12 @@ export default {
               v-model:fabApplication="props.fabApplication"
               :sawType="sawType"
             />
+            <PackageEvidenceUpload
+              ref="packageEvidenceRef"
+              v-model:fabApplication="props.fabApplication"
+              :mode="props.applicationType"
+              @selected-file="handleSelectedEvidenceFile"
+            />
           </div>
         </div>
       </el-form>
@@ -84,6 +93,7 @@ export default {
   import Seed from "./seed/seed.vue";
   import Passivation from "./Passivation.vue";
   import fabP from "./fabP.vue";
+  import PackageEvidenceUpload from "./PackageEvidenceUpload.vue";
   import ProductName from "./ProductName.vue";
   import Buttons from "./Buttons.vue";
   import ApplicationContent from "./ApplicationContent.vue";
@@ -92,10 +102,14 @@ export default {
   import { fabRequestFormRules } from "../../../utils/rules/fab-application";
   import type { FormInstance } from "element-plus";
   
-  import IdtProcess from "./IdtProcess.vue";
-  import Bom from "./bom/Bom.vue";
-  const fabFormRef = ref<FormInstance | null>(null);
   
+  const fabFormRef = ref<FormInstance | null>(null);
+  const packageEvidenceFile = ref<File | null>(null);
+  const packageEvidenceRef = ref<InstanceType<typeof PackageEvidenceUpload> | null>(null);
+  function handleSelectedEvidenceFile(file: File | null) {
+    packageEvidenceFile.value = file;
+  }
+
   const props = defineProps<{
     fabApplication: FabRequestForm;
     simpleFabApp: FabprobeInformation;
