@@ -303,6 +303,19 @@ export default {};
         </template>
       </el-table-column>
       
+      <el-table-column
+        label="BOX ID"
+        width="125"
+        :align="'center'"
+      >
+        <template #default="scope">
+          <span v-for="(item, index) in scope.row.lotStatus" :key="index">
+            {{ item.lotUdf12 ?? '--' }}
+            <br />
+          </span>
+        </template>
+      </el-table-column>
+      
       <el-table-column :align="'center'" width="90">
         <template #header>
           출하<br/>리드타임
