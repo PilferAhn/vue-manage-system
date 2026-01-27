@@ -305,7 +305,7 @@ export default {};
       
       <el-table-column
         label="BOX ID"
-        width="125"
+        width="130"
         :align="'center'"
       >
         <template #default="scope">
