@@ -532,6 +532,9 @@ export default {};
     <el-button type="warning" @click="toggleSMSPLFilter" class="buttun-section">
       {{ isSMSPLOnly ? "Cancel SMSPL" : "SM SPL" }}
     </el-button>
+    <el-button type="warning" @click="toggleSMPFilter" class="buttun-section">
+      {{ isSMPOnly ? "Cancel SMP" : "SM P" }}
+    </el-button>
     <el-button type="warning" @click="toggleTransitedFilter" class="buttun-section">
       {{ isTransitedOnly ? "전체 보기" : "출하완료 보기" }}
     </el-button>
@@ -576,6 +579,7 @@ const isDealyFab = ref(false);
 const isDVonly = ref(false);
 const isSMOnly = ref(false);
 const isSMSPLOnly = ref(false);
+const isSMPOnly = ref(false)
 const isTransitedOnly = ref(false);
 // Clear the search input
 function handleClear() {
@@ -602,7 +606,15 @@ const smSPLModelNames = [
   "TQG47AVB0A2B",
   "THG93AS5001A",
 ];
-
+const smpModelNames = [
+  "TXG35A00000A",
+  "TX787A00000A",
+  "TX707A00000A",
+  "TX634A00000A",
+  "TV831A00000A",
+  "TT725A00000A",
+  "TDG35A00000A",
+];
 
 const dialogTableVisible = ref(false);
 const selectApplicationId = ref("");
@@ -668,6 +680,14 @@ const filteredData = computed(() => {
   }
   if (isSMSPLOnly.value) {
   const set = new Set(smSPLModelNames);
+  tempApp.value = tempApp.value.filter((item) => {
+    if (!item.productName) return false;
+    const base = item.productName.split("@")[0].trim().toUpperCase();
+    return set.has(base);
+    });
+  }
+  if (isSMPOnly.value) {
+  const set = new Set(smpModelNames);
   tempApp.value = tempApp.value.filter((item) => {
     if (!item.productName) return false;
     const base = item.productName.split("@")[0].trim().toUpperCase();
@@ -1220,6 +1240,9 @@ const toggleSMFilter = () => {
 };
 const toggleSMSPLFilter = () => {
   isSMSPLOnly.value = !isSMSPLOnly.value;
+};
+const toggleSMPFilter = () => {
+  isSMPOnly.value = !isSMPOnly.value;
 };
 const toggleTransitedFilter = () => {
   isTransitedOnly.value = !isTransitedOnly.value;
