@@ -16,6 +16,7 @@ import {
   Layer,
   band,
   BomCode,
+  FabMonitorRow,
 } from "../../interface/fab-application-rev2";
 import User from "../../views/user.vue";
 import { ElMessage, ElNotification } from "element-plus";
@@ -35,6 +36,7 @@ import type { TegApplication as TegApplicationInterface } from "../../views/TegP
 import { Bom, FabRequest } from "../../interface/fab-application-rev2";
 import { fa } from "element-plus/es/locale";
 import { holidaysList , isHoliday } from "../date-utils";
+import { MesProgressRow } from "../../interface/fab-application-rev2";
 import { getUserId } from "../account-utils";
 // export const serverUrl = "http://10.29.11.124:40000";
 export const serverUrl = "";
@@ -507,6 +509,63 @@ export async function getApplicationListByDictRev2(
   }
   
   return applications.value;
+}
+
+export async function getFabMonitorRowsByWantedDate(params: {
+  wantedStart: string;          // "YYYY-MM-DDTHH:mm:ss"
+  wantedEnd?: string | null;    // optional
+  observerId?: string | null;
+}): Promise<FabMonitorRow[]> {
+  const formData = new FormData();
+  formData.append("wanted_start", params.wantedStart);
+  if (params.wantedEnd) formData.append("wanted_end", params.wantedEnd);
+  if (params.observerId) formData.append("observer_id", params.observerId);
+  const data = (await sendPostRequest(
+    serverUrl + "/fab_monitoring_rev2/get_monitor_rows_by_wanted_date",
+    formData
+  )) as object[];
+  return data.map((x) => convertPep8ToCamelCase2(x)) as FabMonitorRow[];
+}
+
+export async function getTransitLotsByMaterial(params: {
+  materialId: string;                
+  packageType: "CSP" | "WLP" | "MODULE" | "ETC";        
+  firstHistory?: boolean;            
+  prevHistory?: boolean;           
+}): Promise<any[]> {
+  const formData = new FormData();
+  formData.append("material_id", params.materialId);
+  formData.append("package_type", params.packageType);
+
+  formData.append("first_history", String(params.firstHistory ?? false));
+  formData.append("prev_history", String(params.prevHistory ?? false));
+
+  const data = (await sendPostRequest(
+    serverUrl + "/fab_monitoring_rev2/get_transit_lots_by_material",
+    formData
+  )) as object[];
+  console.log('data', data)
+  return (data ?? []).map((x) => convertPep8ToCamelCase2(x));
+}
+
+export async function getWafersByMaterial(params: {
+  materialId: string;
+  creation_dttm: string;
+  operation_id: string;
+  packageType: "CSP" | "WLP" | "MODULE" | "ETC";
+}) {
+  // const { materialId, creation_dttm, operation_id, packageType } = params;
+  const form = new FormData()
+  form.append("material_id", params.materialId);
+  form.append("creation_dttm", params.creation_dttm);
+  form.append("operation_id", params.operation_id);
+  form.append("package_type", params.packageType);
+    const data = await sendPostRequest(
+    serverUrl + "/fab_monitoring_rev2/get_wafers_by_material",
+    form
+  );
+
+  return  (data ?? []).map((x: any) => convertPep8ToCamelCase2(x));
 }
 
 export async function getApplicationList(
@@ -1110,17 +1169,6 @@ export function addWorkdays(startDate: Date, numDays: number): Date {
       daysAdded++;
     }
   }
-
-  // const holidays = new Set(holidaysList); // 공휴일을 Set으로 변환하여 빠른 검색 가능
-  // let tempCounter = 0
-  
-  // while (isHoliday(new Date(date.getTime() + 9 * 60 * 60 * 1000), holidays)) {
-  //   tempCounter += 1;
-  //   date.setDate(date.getDate() + 1);
-  //   if (tempCounter >= 20) {
-  //     break;
-  //   }    
-  // }
   return date;
 }
 
