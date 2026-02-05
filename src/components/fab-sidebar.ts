@@ -40,6 +40,11 @@ export const fabSilderBarList = {
       permiss: "11",
     },
     {
+      index: "/fab/operration-by-model",
+      title: "기종별 공정진행상황",
+      permiss: "11",
+    },
+    {
       index: "/fab/review-application",
       title: "Form Review",
       permiss: "11",

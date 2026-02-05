@@ -99,6 +99,18 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
       ),
   },
   {
+    path: "/fab/operration-by-model",
+    name: "OperationByModel",
+    meta: {
+      title: "공정현황",
+      permiss: "11",
+    },
+    component: () =>
+      import(
+        /* webpackChunkName: "table" */ "../views/FAB/ApplicationList/rev2/OperationByModelMonitor.vue"
+      ),
+  },
+  {
     path: "/fab/review-application",
     name: "ApplicationReviewList",
     meta: {
