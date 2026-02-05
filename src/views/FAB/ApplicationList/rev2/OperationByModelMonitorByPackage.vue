@@ -441,12 +441,12 @@ const modelRows = computed<ModelRow[]>(() => {
   
   // 정렬: priority desc, productName, creation asc(원하면 desc로), operationName asc
   return out.sort((a, b) => {
-    const p = priorityRank(b.priorityId) - priorityRank(a.priorityId);
-    if (p !== 0) return p;
-    
     const ta = String(a.creationDttm ?? "");
     const tb = String(b.creationDttm ?? "");
-    if (ta !== tb) return ta.localeCompare(tb);
+    if (ta !== tb) return tb.localeCompare(ta);
+
+    const p = priorityRank(b.priorityId) - priorityRank(a.priorityId);
+    if (p !== 0) return p;
     
     const pn = String(a.productName ?? "").localeCompare(String(b.productName ?? ""));
     if (pn !== 0) return pn;
