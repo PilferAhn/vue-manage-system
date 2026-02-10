@@ -23,14 +23,14 @@ export default {};
           label="No"
           :align="'center'"
           fixed="left"
-          :min-width="20"
+          width="100"
         ></el-table-column>
 
         <el-table-column
-          label="FabCard Status"
+          label="Status"
           :align="'center'"
           fixed="left"
-          :min-width="23"
+          width="160"
         >
           <template #default="scope">
             <el-tag v-if="scope.row.isFabCardCreated === null" type="warning"
@@ -50,7 +50,7 @@ export default {};
           label="Group"
           :align="'center'"
           fixed="left"
-          :min-width="40"
+          width="320"
         >
           <template #default="scope">
             {{ scope.row.designer.department }}
@@ -62,13 +62,13 @@ export default {};
           label="Model Name"
           :align="'center'"
           fixed="left"
-          :min-width="65"
+          width="320"
         />
 
         <el-table-column
           label="담당자"
           :align="'center'"
-          :min-width="40"
+           width="280"
           show-overflow-tooltip="true"
         >
           <template #default="scope">
@@ -79,14 +79,14 @@ export default {};
         <el-table-column
           label="Fab Card 전달일"
           :align="'center'"
-          :min-width="40"
+          width="220"
         >
           <template #default="scope">
             <span>{{ scope.row.calFabCardConveyDate() }}</span>
           </template>
         </el-table-column>
-
-        <el-table-column label="투입예정일" :align="'center'" :min-width="40">
+0
+        <el-table-column label="투입예정일" :align="'center'" width="220">
           <template #default="scope">
             {{ formatDate(scope.row.wantedFabStartDate) }}
           </template>
