@@ -1,7 +1,7 @@
 <template>
   <el-form
     :model="applicationForm"
-    :rules="applicationRules"
+    :rules="rulesForCreate"
     ref="formRef"
     label-width="100"
   >
@@ -303,7 +303,7 @@
 </template>
 
 <script lang="ts" setup>
-import { watch, onMounted, ref } from "vue";
+import { watch, onMounted, ref, computed } from "vue";
 import { UploadFile  } from "element-plus";
 import inputText from "../../Common/InputText.vue";
 import inputNumber from "../../Common/InputNumber.vue";
@@ -353,15 +353,49 @@ import {
 const { form: applicationForm } = usePDTRequestForm();
 const { form: applicationFormBoolean } = usePDTRequestFormBoolean();
 const requestNumber = localStorage.getItem("ms_username") ?? "";
+const NO_BW = new Set(["CW", "CW Duty 50%", "WIFI", "GSM"]);
+
+const rulesForCreate = computed(() => ({
+  ...applicationRules,
+  bandwidth: [
+    {
+      trigger: ["blur", "change"],
+      validator: (_rule, value, callback) => {
+        const sig = applicationForm.value.signalType;
+
+        // ✅ CW/CW Duty/WIFI/GSM 은 bandwidth 없어도 통과
+        if (sig && NO_BW.has(sig)) return callback();
+
+        // ✅ 그 외엔 필수 유지
+        if (value === "" || value == null) {
+          return callback(new Error("대역폭을 입력해주세요."));
+        }
+        return callback();
+      },
+    },
+  ],
+}));
+
+watch(
+  () => applicationForm.value.signalType,
+  (sig) => {
+    if (sig && NO_BW.has(sig)) {
+      applicationForm.value.bandwidth = "";
+      formRef.value?.clearValidate(["bandwidth"]);
+    } else {
+      formRef.value?.validateField("bandwidth");
+    }
+  }
+);
 
 // Watch for changes in testType and reset the form
 watch(
   () => applicationForm.value.testType,
   () => {
     resetForm(applicationForm, requestNumber);
-    applicationRules.value = createApplicationRules(
-      applicationFormBoolean.value
-    );
+    // applicationRules.value = createApplicationRules(
+    //   applicationFormBoolean.value
+    // );
   }
 );
 
