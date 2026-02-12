@@ -25,7 +25,7 @@
     <div class="kv-row">
       <div class="kv-label">입고여부</div>
         <div class="kv-field">
-          <el-select v-model="probeInformation.stockYn" placeholder="선택">
+          <el-select v-model="probeInformation.stockYn" placeholder="선택" popper-class="right-lg-popper">
             <el-option label="입고완료"   value="Y" />
             <el-option label="미입고" value="N" />
           </el-select>
@@ -35,7 +35,7 @@
     <div class="kv-row">
       <div class="kv-label">1차 Chip측정</div>
         <div class="kv-field">
-          <el-select v-model="probeInformation.firstchipMeas" placeholder="선택">
+          <el-select v-model="probeInformation.firstchipMeas" placeholder="선택" popper-class="right-lg-popper">
             <el-option label="측정"   value="Y" />
             <el-option label="SKIP" value="N" />
           </el-select>
@@ -45,7 +45,7 @@
     <div class="kv-row" v-if="props.packageId === 'WLP'">
       <div class="kv-label">SiN 후 측정</div>
         <div class="kv-field">
-          <el-select v-model="probeInformation.sinMeas" placeholder="선택">
+          <el-select v-model="probeInformation.sinMeas" placeholder="선택" popper-class="right-lg-popper">
             <el-option label="측정"   value="Y" />
             <el-option label="SKIP" value="N" />
         </el-select>
@@ -55,7 +55,7 @@
     <div class="kv-row">
       <div class="kv-label">2차 Chip측정</div>
         <div class="kv-field">
-          <el-select v-model="probeInformation.secondchipMeas" placeholder="선택">
+          <el-select v-model="probeInformation.secondchipMeas" placeholder="선택" popper-class="right-lg-popper">
             <el-option label="측정"   value="Y" />
             <el-option label="SKIP" value="N" />
           </el-select>

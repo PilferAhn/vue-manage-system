@@ -155,6 +155,45 @@ export default {
     width: 50%;
   }
   
+.right-section :deep(*) {
+  --el-font-size-base: 18px;
+  --el-font-size-small: 16px;
+  --el-font-size-large: 20px;
+  font-size: 18px;
+}
+
+/* 필요하면 폼 라벨도 더 키우기 */
+.right-section :deep(.el-form-item__label) {
+  font-size: 18px;
+}
+
+/* input/select/textarea 등 컨트롤 글자 */
+.right-section :deep(.el-input__inner),
+.right-section :deep(.el-textarea__inner),
+.right-section :deep(.el-select__selected-item),
+.right-section :deep(.el-radio__label),
+.right-section :deep(.el-checkbox__label) {
+  font-size: 20px;
+}
+
+.right-section :deep(.el-button),
+.right-section :deep(.el-table),
+.right-section :deep(.el-table th),
+.right-section :deep(.el-table td) {
+  font-size: 18px;
+}
+
+
+:global(.right-lg-popper .el-select-dropdown__item) {
+  font-size: 18px;
+  height: 40px;
+  line-height: 40px;
+}
+:global(.right-lg-popper .el-select-dropdown__empty),
+:global(.right-lg-popper .el-select-group__title) {
+  font-size: 18px;
+}
+
   /* 반응형 디자인 - 화면이 너무 작아질 때 */
   @media (max-width: 1024px) {
     .form-container {

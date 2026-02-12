@@ -8,7 +8,8 @@
           placeholder="Select Wafer"
           class="custom-select"
           clearable
-          style="width: 300px"
+          style="width: 400px"
+          popper-class="right-lg-popper"
         >
           <el-option
             v-for="opt in availableWafer"

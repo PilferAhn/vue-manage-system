@@ -7,7 +7,7 @@
         <el-row :gutter="20" class="align-center">
           <el-col :span="8">
             <el-form-item>
-              <el-select v-model="props.fabApplication.idtProcessId">
+              <el-select v-model="props.fabApplication.idtProcessId" popper-class="right-lg-popper">
                 <el-option
                   v-for="idtProcessOption in newidtProcessList"
                   :key="idtProcessOption.key"
@@ -33,6 +33,7 @@
                   placeholder="Select IDT"
                   class="custom-select"
                   clearable
+                  popper-class="right-lg-popper"
                 >
                   <el-option
                     v-for="condition in depositionOptions"
@@ -46,6 +47,7 @@
                   v-if="props.sawType.sawTypeId !== 'TC'"
                   v-model="props.fabApplication.idtMachineName"
                   placeholder="IDT Deposition Machine"
+                  popper-class="right-lg-popper"
                 >
                   <el-option
                     v-for="machine in machineOptions"
@@ -74,6 +76,7 @@
                 <el-select
                   v-model="props.fabApplication.idtProcessMachineName"
                   placeholder="IDT Etching Machine"
+                  popper-class="right-lg-popper"
                 >
                   <el-option
                     v-for="machine in machineOptions3"
@@ -104,6 +107,7 @@
                     placeholder="Select IDT"
                     class="custom-select"
                     clearable
+                    popper-class="right-lg-popper"
                   >
                     <el-option
                       v-for="condition in depositionOptions2"
@@ -117,6 +121,7 @@
                   v-if="props.sawType.sawTypeId !== 'TC'"
                     v-model="props.fabApplication.idt2MachineName"
                     placeholder="IDT Deposition Machine"
+                    popper-class="right-lg-popper"
                   >
                     <el-option
                       v-for="machine in machineOptions2"
@@ -479,5 +484,9 @@
   
   .custom-select {
     min-width: 200px; /* 선택 박스 최소 크기 설정 */
+  }
+
+  :deep(.el-form-item__label) {
+  font-size: 18px;
   }
   </style>

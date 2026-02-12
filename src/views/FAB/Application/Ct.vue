@@ -24,7 +24,7 @@
           </el-table-column>        
           <el-table-column label="Machine" :align="'center'">
             <template #default="scope">
-              <el-select v-model="props.fabApplication.tcMachineName">
+              <el-select v-model="props.fabApplication.tcMachineName" popper-class="right-lg-popper">
                 <el-option
                   v-for="machine in machineList"
                   :key="machine.key"

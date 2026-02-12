@@ -13,6 +13,7 @@ export default {};
           placeholder="Select Wafer"
           class="custom-select"
           clearable
+          popper-class="right-lg-popper"
         >
           <el-option
             v-for="opt in props.hsWaferOptions"
@@ -46,7 +47,7 @@ export default {};
           v-model="props.fabApplication.hsTrimingTarget"
           placeholder="Enter Target Value (LT)"
           class="custom-input"
-          style="width: 400px"
+          style="width: 500px"
         >
           <template #prepend>Target Value After Trimming </template>
         </el-input>

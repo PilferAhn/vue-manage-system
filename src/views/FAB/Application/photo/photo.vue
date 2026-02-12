@@ -17,6 +17,7 @@
             <el-select
               v-model="scope.row.machineName"
               :disabled="scope.row.machineName === 'Nikon'"
+              popper-class="right-lg-popper"
             >
               <el-option
                 v-for="machine in tempMachineList"
