@@ -177,6 +177,7 @@ export default {
 .right-section :deep(.el-radio__label),
 .right-section :deep(.el-checkbox__label) {
   font-size: 20px;
+  font-weight: 700;
 }
 
 .right-section :deep(.el-button),
