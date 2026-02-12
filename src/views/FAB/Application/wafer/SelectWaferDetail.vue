@@ -121,7 +121,7 @@
               <el-input
                 v-model="props.fabApplication.waferThickness2"
                 placeholder="2nd Thickness (same as 1st)"
-                style="width: 150px"
+                style="width: 180px"
                 disabled
               >
                 <template #prepend><span class="prepend-label">Thickness2</span></template>

@@ -48,10 +48,7 @@ export default {
               :sawType="sawType"
             />
   
-            <PhotoSection
-              v-model:fabApplication="props.fabApplication"
-              :sawType="sawType"
-            />
+
   
             <Ct
               v-model:fabApplication="props.fabApplication"
@@ -61,6 +58,12 @@ export default {
               v-model:fabApplication="props.fabApplication"
               :sawType="sawType"
             />
+
+            <PhotoSection
+              v-model:fabApplication="props.fabApplication"
+              :sawType="sawType"
+            />
+            
             <fabP
               v-model="props.fabApplication"
               :package-id="props.fabApplication.packageId"
