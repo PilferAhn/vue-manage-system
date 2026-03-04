@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import vue from '@vitejs/plugin-vue';
 import VueSetupExtend from 'vite-plugin-vue-setup-extend';
 import AutoImport from 'unplugin-auto-import/vite';
@@ -44,6 +44,18 @@ export default defineConfig({
 		alias: {
 			'vue': 'vue/dist/vue.esm-bundler.js', // 이 부분이 추가되었습니다.
 		},
+	},
+	test: {
+		environment: 'happy-dom',
+		css: false,
+		server: {
+			deps: {
+				inline: ['element-plus']
+			}
+		},
+		alias: {
+			'\\.(css|less|scss|sass)$': './__mocks__/styleMock.js'
+		}
 	},
 	server: {
 		host: getServerIpAddress(),

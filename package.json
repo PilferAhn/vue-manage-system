@@ -5,7 +5,8 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "vue-tsc --noEmit && vite build",
-		"serve": "vite preview"
+		"serve": "vite preview",
+		"test": "vitest"
 	},
 	"dependencies": {
 		"@element-plus/icons-vue": "*",
@@ -35,16 +36,19 @@
 		"xlsx": "^0.18.5"
 	},
 	"devDependencies": {
+		"@testing-library/vue": "^8.1.0",
 		"@types/highcharts": "^7.0.0",
 		"@types/node": "^22.1.0",
 		"@vitejs/plugin-vue": "^3.0.0",
 		"@vue/compiler-sfc": "^3.1.2",
+		"happy-dom": "^20.8.3",
 		"sass": "^1.81.0",
 		"typescript": "^4.6.4",
 		"unplugin-auto-import": "^0.11.2",
 		"unplugin-vue-components": "^0.22.4",
 		"vite": "^3.0.0",
 		"vite-plugin-vue-setup-extend": "^0.4.0",
+		"vitest": "^4.0.18",
 		"vue-tsc": "^0.38.4"
 	},
 	"browserslist": [
