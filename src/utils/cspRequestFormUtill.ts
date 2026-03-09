@@ -65,7 +65,8 @@ export const initializeApplicationData = () => {
     fb_note: "",
     fb_1_numbering: "",
     mk_marking: "",
-    form_status: ""
+    form_status: "",
+    box_id:""
 
   });
 };
@@ -269,6 +270,8 @@ export async function getLotNo(modelCode: string) {
     const response = await axios.get(
       "/csp/get_lot_no?modelCode=" + modelCode
     );
+
+    console.log("hhhhㅗㅗㅗㅗ",response.data)
     return response.data;
   } catch (err) {
     console.error("There was an error with the submission", err);

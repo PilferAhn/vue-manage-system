@@ -270,7 +270,7 @@ import { ref, onMounted, watch, computed, nextTick, reactive, Ref } from "vue";
 import { getCodeWpms, getLevels, getSheetsByLevel, createSheet, deleteSheet, copySheet, copyLevel, changeSheetName, createPcb, createBom, excelDownload } from '../../../utils/orderShiitUtils';
 import { ElMessageBox, ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
-
+import { onBeforeRouteLeave, onBeforeRouteUpdate } from "vue-router";
 const loading = ref(true);
 
 const code = reactive(["", "", "", ""])
@@ -291,6 +291,59 @@ const sheetsList = ref([]);
 const optionsCopy = ref([])
 const optionsPaste = ref([])
 const visibleArrow = ref(false)
+
+const STATE_KEY = "ordersheet:list:state";
+function saveState() {
+  const payload = {
+    code: [...code],
+    fCode: fCode.value,
+    message: message.value,
+    copyMode: copyMode.value,
+    levelsList: levelsList.value,
+    curLevel: curLevel.value,
+    pasteLevel: pasteLevel.value,
+    sheetsList: sheetsList.value,
+    visibleArrow: visibleArrow.value,
+  };
+  sessionStorage.setItem(STATE_KEY, JSON.stringify(payload));
+}
+function restoreState() {
+  const raw = sessionStorage.getItem(STATE_KEY);
+  if (!raw) return;
+  try {
+    const s = JSON.parse(raw);
+    if (Array.isArray(s.code)) s.code.forEach((v: string, i: number) => (code[i] = v ?? ""));
+    fCode.value = s.fCode ?? "";
+    message.value = s.message ?? "";
+    copyMode.value = !!s.copyMode;
+    levelsList.value = s.levelsList ?? [];
+    curLevel.value = s.curLevel ?? "";
+    pasteLevel.value = s.pasteLevel ?? "";
+    sheetsList.value = s.sheetsList ?? [];
+    visibleArrow.value = !!s.visibleArrow;
+  } catch (e) {
+    // 깨진 값이면 무시
+    sessionStorage.removeItem(STATE_KEY);
+  }
+}
+watch(
+  () => [
+    code.join(""),
+    fCode.value,
+    curLevel.value,
+    pasteLevel.value,
+    copyMode.value,
+    JSON.stringify(levelsList.value),
+    JSON.stringify(sheetsList.value),
+  ],
+  () => saveState(),
+  { deep: false }
+);
+onMounted(() => {
+  restoreState();
+  loading.value = false;
+  if (!message.value) message.value = "P/N 입력 후 ENTER";
+});
 
 
 async function onClickLevel(lev: string) {

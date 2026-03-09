@@ -1304,7 +1304,7 @@ import { useRoute, useRouter } from "vue-router";
 import CustomSelect from '../components/CustomSelect.vue';
 import BomSelectModal from "../components/BomSelectModal.vue";
 import BomSelectModalIC from "../components/BomSelectModalIC.vue";
-import { setLabels } from "vue-chartjs/dist/utils";
+// import { setLabels } from "vue-chartjs/dist/utils";
 import Module from "module";
 import MeteiralSim from "../components/MeteiralSim.vue";
 const {

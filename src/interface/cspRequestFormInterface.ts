@@ -67,6 +67,7 @@ export interface ApplicationData {
     fb_1_numbering: string
     mk_marking: string
     form_status: string
+    box_id:string
 }
 
 export interface CspImages {

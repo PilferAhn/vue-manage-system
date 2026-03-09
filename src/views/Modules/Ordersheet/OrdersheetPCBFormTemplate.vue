@@ -90,11 +90,12 @@ export default {};
                                         비고
                                     </td>
                                 </tr>
-                                <tr v-for="(pcb, index) in formDataTemp.pcb_list" :key="index">
+                                <tr v-for="(pcb, index) in formData.pcb_list" :key="index">
                                     <td contenteditable="true"
                                         @input="e => formDataTemp.pcb_list[index].array_no = (e.target as HTMLElement).innerText">
                                         {{ pcb.array_no }}
                                     </td>
+                          
                                     <td style="background-color: #f2f2f2;" @click="changeProw('d', index)">
                                         ㅡ
                                     </td>
@@ -102,6 +103,7 @@ export default {};
                                         @input="e => formDataTemp.pcb_list[index].px = (e.target as HTMLElement).innerText">
                                         {{ pcb.px }}
                                     </td>
+                                     
                                     <td contenteditable="true"
                                         @input="e => formDataTemp.pcb_list[index].py = (e.target as HTMLElement).innerText">
                                         {{ pcb.py }}
@@ -202,7 +204,7 @@ import type {
 
 import { useRoute, useRouter } from "vue-router";
 import ModelName from "../../TegPage/Application/ModelName.vue";
-
+import cloneDeep from 'lodash/cloneDeep';
 
 
 
@@ -363,19 +365,16 @@ function mappingTemp(fq: PcbInterface) {
     formDataTemp.remark = fq.remark
     formDataTemp.note = fq.note
 
-    formDataTemp.image_List = fq.image_List
+    formDataTemp.image_List = cloneDeep(fq.image_List)
     if (fq.pcb_list.length > 0) {
         prow.value = fq.pcb_list.length + 1
     }
-    formData.pcb_list = fq.pcb_list.map(item => ({
+    formData.pcb_list = cloneDeep(fq.pcb_list.map(item => ({
         ...item,
         status: 'u'
-    }))
+    })))
+    formDataTemp.pcb_list = cloneDeep(formData.pcb_list)
 
-    formDataTemp.pcb_list = fq.pcb_list.map(item => ({
-        ...item,
-        status: 'u'
-    }))
     if (formData.image_List && formData.image_List.length > 0) {
         formData.image_List.forEach((item) => {
             if (item.cell_name === 'PCB') {
@@ -384,7 +383,6 @@ function mappingTemp(fq: PcbInterface) {
         });
     }
 
-    console.log(formData)
 }
 
 function mappingData() {
@@ -393,7 +391,7 @@ function mappingData() {
     formData.note = formDataTemp.note
     const pcb = [...formDataTemp.pcb_list, ...delList.value]
     console.log(pcb)
-    formData.pcb_list = pcb
+    formData.pcb_list = cloneDeep(pcb)
 }
 
 async function saveChildren() {
