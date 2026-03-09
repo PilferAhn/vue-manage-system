@@ -443,7 +443,11 @@ function addMeterial(index: number) {
             alert(`PN 값 형식 오류 : 필수값 누락 'EX: SFMxxxxx001_REV1.0'`)
             return;
         }
-        const pn = d1.trim();
+        console.log(d1)
+        const [m1,m2] = d1.split(",")
+        console.log(m2.trim())
+ 
+        const pn = m2.trim();
         const ss = esize
         const desc1 = d2.trim();
         const mk = 'S (SMST AKM)';
@@ -458,8 +462,9 @@ function addMeterial(index: number) {
         console.log("mk:", mk);
         console.log("rv:", rv);
         console.log("pp:", pp);
-        // const link = `http://10.20.10.128/sapmaterialsetup.html?source=fromRF&sc1=${encodeURIComponent(sc1)}&ss=${encodeURIComponent(ssStr)}&pn=${encodeURIComponent(pn)}&mk=${encodeURIComponent(mk)}&rv=${encodeURIComponent(rv)}&pp=${encodeURIComponent(pp)}&desc1=${encodeURIComponent(desc1)}`;
-        const link = `http://10.20.10.128/sapmaterialsetup.html?source=fromRF&sc1=${encodeURIComponent(sc1)}&sc2=${encodeURIComponent(sc1)}&ss=${encodeURIComponent(ss)}&pn=${encodeURIComponent(pn)}&mk=${encodeURIComponent(mk)}&rv=${encodeURIComponent(rv)}&pp=${encodeURIComponent(pp)}&desc1=${encodeURIComponent(desc1)}&i1=${encodeURIComponent(desc1)}&i2=${encodeURIComponent(desc1)}&uid=${encodeURIComponent(uid)}`;
+        const link = `http://10.20.10.128/sapmaterialsetup.html?source=fromRF&sc1=${encodeURIComponent(sc1)}&ss=${encodeURIComponent(ssStr)}&pn=${encodeURIComponent(pn)}&mk=${encodeURIComponent(mk)}&rv=${encodeURIComponent(rv)}&pp=${encodeURIComponent(pp)}&desc1=${encodeURIComponent(desc1)}`;
+        // const link = `http://10.20.10.128/sapmaterialsetupTest.html?source=fromRF&sc1=${encodeURIComponent(sc1)}&sc2=${encodeURIComponent(sc1)}&ss=${encodeURIComponent(ss)}&pn=${encodeURIComponent(pn)}&mk=${encodeURIComponent(mk)}&rv=${encodeURIComponent(rv)}&pp=${encodeURIComponent(pp)}&desc1=${encodeURIComponent(desc1)}&i1=${encodeURIComponent(desc1)}&i2=${encodeURIComponent(desc1)}&uid=${encodeURIComponent(uid)}`;
+        window.open(link, '_blank');
     }
 
 
@@ -495,7 +500,7 @@ function addMeterial(index: number) {
         const i1 = vP.slice(0, 2);
         const i2 = vP.slice(2, 5);
 
-        const link = `http://localhost:3000?source=fromRF&sc1=${encodeURIComponent(sc1)}&sc2=${encodeURIComponent(sc2)}&ss=${encodeURIComponent(ss)}
+        const link = `http://10.20.10.128/sapmaterialsetup.html?source=fromRF&sc1=${encodeURIComponent(sc1)}&sc2=${encodeURIComponent(sc2)}&ss=${encodeURIComponent(ss)}
         &pn=${encodeURIComponent(pn)}&mk=${encodeURIComponent(mk)}&rv=${encodeURIComponent(rv)}&pp=${encodeURIComponent(pp)}
         &desc1=${encodeURIComponent('')}&i1=${encodeURIComponent(i1)}&i2=${encodeURIComponent(i2)}`;
         window.open(link, '_blank');

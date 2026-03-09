@@ -1,7 +1,7 @@
 <template>
 
       <CspSearch @updateSearchQuery="handleSearchQuery" />
-      <CspListTable :cspTableData="cspTableData" />
+      <CspListTable :customList="customList" />
 </template>
 
 <script lang="ts" setup>
@@ -23,7 +23,7 @@ import { getApplicationListByDict } from "../../../utils/Fab/fab-application-uti
 import { ApplicationData } from "../../../interface/cspRequestFormInterface";
 
 const cspTableData = ref<ApplicationData[]>([]); 
-
+const customList = ref<any[]>([]);
  
 
 // 📌 기존 데이터 저장 (ref 사용)
@@ -35,10 +35,29 @@ const searchQuery = ref({
 });
 
 const username = localStorage.getItem('ms_username') || 'Guest';
-
-const handleSearchQuery = async (query) => {
+const handleSearchQuery = async (query: any) => {
   searchQuery.value = query;
-  cspTableData.value = await handleGetFormList(query.searchQuery,username)
+
+  const result = await handleGetFormList(query.searchQuery, username);
+
+  // cspTableData.value = result;
+
+  customList.value = result.map(item => {
+    const rawBox = item.box_id ?? '';
+    const [datePart, boxId] = rawBox.split('/');
+    return {
+      ...item,                         // 기존 데이터 유지
+      tx_date: boxIdFormat(rawBox),  // 출하일자 (yyyyMMdd)
+      box_id: boxId ?? '-'              // 슬래시 뒤쪽
+    };
+  });
+};
+
+const boxIdFormat = (str?: string) => {
+  if (!str) return '-';
+
+  const datePart = str.split('/')[0] ?? '';
+  return datePart.slice(0, 8);
 };
 
 

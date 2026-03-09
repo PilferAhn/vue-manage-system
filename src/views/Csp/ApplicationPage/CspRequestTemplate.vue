@@ -93,6 +93,9 @@
 
 
           <el-card>
+            <div style="text-align: right;">
+              출하여부
+            </div>
             <table class="custom-table">
               <colgroup>
                 <col style="width: 11%;" />
@@ -1005,7 +1008,8 @@ const formData = reactive<ApplicationData>({
   fb_note: "",
   fb_1_numbering: "",
   mk_marking: "",
-  form_status: ""
+  form_status: "",
+  box_id:""
 })
 
 
@@ -1068,7 +1072,8 @@ const formDataTemp = reactive<ApplicationData>({
   fb_note: "",
   fb_1_numbering: "",
   mk_marking: "",
-  form_status: ""
+  form_status: "",
+  box_id:""
 })
 const loading = ref(true);
 const application = ref<ApplicationData>();
@@ -1121,7 +1126,7 @@ const filesetWMAP1 = ref<File[]>([]);
 const selectedLots = ref<string[]>([]);
 const lotsData = ref<string[]>([]);
 const dotincay = ref<string[]>([])
-
+const txData = ref<Record<string, string>>({});
 
 interface OptionItem {
   value: string
@@ -1337,10 +1342,12 @@ function handleTempSave() {
     alert('저장할 기종명이 존재하지 않습니다.')
     return;
   }
+  console.log(formDataTemp.box_id)
   mappingTemp()
   console.log("saving..")
 
   formData.form_status = "임시저장"
+
   handleSubmitTempForm(formData, imagesetFB1.value, imagesetFB2.value, imagesetFB3.value, imagesetFB4.value, imagesetMK1.value, imagesetEV1.value,
     filesetSS1.value, filesetMWA1.value, filesetPMAP1.value, filesetWMAP1.value, deleteImage.value);
 }
@@ -1350,6 +1357,7 @@ function mappingTemp() {
   formData.default_pkgRequirement = formDataTemp.default_pkgRequirement
   formData.wafer_mark = formDataTemp.wafer_mark
   formData.wafer_lot_no = formDataTemp.wafer_lot_no
+  formData.box_id = formDataTemp.box_id
   formData.pkg_size = formDataTemp.pkg_size
   formData.pkg_note = formDataTemp.pkg_note
   formData.fb_2_spl = formDataTemp.fb_2_spl
@@ -1533,7 +1541,17 @@ async function handleEnter(value) {
   // const username = ref(localStorage.getItem('ms_username'));
   const req = await handleGetDataByModelCode(value);
   const lotids = await getLotNo(value);
-  lotsData.value = lotids;
+  if (lotids && lotids.length > 0) {
+    const [left, right] = lotids[0].split(';;');
+
+    // lotsData
+    lotsData.value = [left]; 
+    console.log(right)
+    // txData lot no : boxid 출하날짜
+    txData.value = {
+      [left]: right
+    };
+  }
   if (req.default_modelName === 'false') {
     alert(value + " NOT FOUND");
     return;
@@ -1563,13 +1581,15 @@ async function handleEnter(value) {
   formData.wafer_send_quantity = req.wafer_send_quantity;
   formData.wafer_mes_code = req.wafer_mes_code;
 
+
   // lot id 로 Wafer lot selectlot에넣ㄱ시
   if (req.wafer_lot_no) {
     selectedLots.value = req.wafer_lot_no.split(",").filter(item => item.trim() !== '');
   }
+
   formData.wafer_mark = req.wafer_mark;
   formData.wafer_lot_no = req.wafer_lot_no;
-
+  formData.box_id = req.box_id
   formData.wafer_chip_qty = req.wafer_chip_qty;
 
   formData.pkg_size = req.pkg_size;
@@ -1609,6 +1629,7 @@ async function handleEnter(value) {
   formData.default_requireName = req.default_requireName
 
   formData.wafer_lot_no = req.wafer_lot_no
+  formData.box_id = req.box_id
   formData.system_erp_wafer = req.system_erp_wafer
   formData.system_erp_pkg = req.system_erp_pkg
   formData.system_erp_epoxy = req.system_erp_epoxy
@@ -1752,10 +1773,15 @@ watch(selectedLots, (newValue) => {
     formDataTemp.wafer_lot_no = newValue.join(',');
     formDataTemp.wafer_mark = newValue
       .map(v => v.split('/')[1])
-      .join(', ');
+      .join(', '); 
+    formDataTemp.box_id = newValue
+      .map(lot => txData.value[lot])
+      .filter(Boolean)
+      .join(',');
   } else {
     formDataTemp.wafer_lot_no = '';
     formDataTemp.wafer_mark = '';
+    formDataTemp.box_id = '';
   }
 });
 watch(dotincay, (newValue) => {
