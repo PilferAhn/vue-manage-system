@@ -611,6 +611,9 @@ const smModelNames = [
   "TXG35ANN004A",
   "THG93AS5002A",
   "THG93AS5002B",
+  "THG93AS5003A",
+  "THG93AS5003B",
+  "TX725BT7004A",
 ];
 const smSPLModelNames = [
   "TX897AG7001A",
@@ -631,6 +634,10 @@ const smpModelNames = [
   "TV831A00000A",
   "TT725A00000A",
   "TDG35A00000A",
+  "TDG93A00000A",
+  "TWG40A00001A",
+  "TWG42A00001A",
+  "TXG82A00000A"
 ];
 const k1ModelNames = [
   "TXG10AQZ004A",
