@@ -45,9 +45,9 @@
             <el-input
               v-model="props.fabApplication.waferThickness"
               placeholder="Enter Thickness"
-              style="width: 150px"
+              style="width: 180px"
             >
-              <template #prepend><span class="prepend-label">Thickness</span></template>
+              <template #prepend ><span class="prepend-label" >Thickness</span></template>
             </el-input>
           </el-form-item>
         </el-col>
@@ -121,7 +121,7 @@
               <el-input
                 v-model="props.fabApplication.waferThickness2"
                 placeholder="2nd Thickness (same as 1st)"
-                style="width: 150px"
+                style="width: 180px"
                 disabled
               >
                 <template #prepend><span class="prepend-label">Thickness2</span></template>

@@ -54,15 +54,22 @@ import type { FabRequestForm } from "../../../interface/fab-application-rev2";
 import type { FormInstance } from "element-plus";
 import { sendingForm, ValChkBeforeSending } from "../../../utils/Fab/fab-application-utils";
 import { getUserId } from "../../../utils/account-utils";
-import { ElMessageBox } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { getCurrentWeekNumber } from "../../../utils/date-utils";
 import { sendPostRequest } from "../../../utils/httpProtocol";
-
+import { uploadPackageEvidence } from "../../../utils/Fab/fab-application-utils";
 
 const props = defineProps<{
   fabApplication: FabRequestForm;
   fabFormRef: FormInstance | null;
   applicationType: string;
+  packageEvidenceFile?: File | null;
+  refreshPackageEvidence?: () => void;
+}>();
+
+const emit = defineEmits<{
+  (e: "update:fabApplication", value: FabRequestForm): void;
+  (e: "clear-package-evidence-file"): void;
 }>();
 
 const excludeList = ["admin", "w220112", "w2180511", "w223051", "w2220606"]; 
@@ -70,12 +77,40 @@ const excludeList = ["admin", "w220112", "w2180511", "w223051", "w2220606"];
 // Submit 함수
 const submitForm = async (type: string) => {
   const isValid = await props.fabFormRef?.validate();
-    if (isValid) {
-      const resultApplication = await ValChkBeforeSending(props.fabApplication, type)
-      await sendingForm(resultApplication, type);
-    } else {
+    if (!isValid) {
       console.error("폼 유효성 검사 실패: 필수 항목을 확인해주세요.");
+      return;
     }
+    const resultApplication = await ValChkBeforeSending(props.fabApplication, type)
+    if (!resultApplication) return;
+
+    //1) 의뢰서 생성/업데이트
+    const savedApp = await sendingForm(resultApplication, type);
+    if (!savedApp) return;
+
+    emit("update:fabApplication", savedApp as any);
+
+    //2) create + 사진 선택되어 있으면 업로드까지 이어서 처리
+    if (type === "submit" && props.packageEvidenceFile) {
+      const productName =
+        (savedApp as any).productName || resultApplication.productName;
+        if (!productName) {
+          ElMessage.error("productName이 없어서 evidence 업로드를 할 수 없습니다.");
+          return;
+        }
+        
+        try {      
+      await uploadPackageEvidence(productName, props.packageEvidenceFile);
+      props.refreshPackageEvidence?.();
+      //부모가 들고 있는 file ref 비우기
+      emit("clear-package-evidence-file");
+
+      ElMessage.success("의뢰서 제출 + Package Evidence 업로드 완료!");
+    } catch (e: any) {
+      console.error(e);
+      ElMessage.error(e?.response?.data?.detail ?? "Evidence 업로드 실패");
+    }
+  }
 };
 
 

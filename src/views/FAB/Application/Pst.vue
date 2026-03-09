@@ -13,6 +13,7 @@
           placeholder="Select Piston"
           class="custom-select"
           clearable
+          popper-class="right-lg-popper"
         >
           <el-option
             v-for="pst in props.sawType.pstTypes"

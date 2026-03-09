@@ -26,6 +26,9 @@ export default {
               v-model:fabApplication="props.fabApplication"
               :fabFormRef="fabFormRef"
               :application-type="props.applicationType"
+              :packageEvidenceFile="packageEvidenceFile"
+              :refreshPackageEvidence="() => packageEvidenceRef?.refreshEvidence?.()"
+              @clear-package-evidence-file="packageEvidenceFile = null"
             />
           </div>
   
@@ -45,10 +48,7 @@ export default {
               :sawType="sawType"
             />
   
-            <PhotoSection
-              v-model:fabApplication="props.fabApplication"
-              :sawType="sawType"
-            />
+
   
             <Ct
               v-model:fabApplication="props.fabApplication"
@@ -58,6 +58,12 @@ export default {
               v-model:fabApplication="props.fabApplication"
               :sawType="sawType"
             />
+
+            <PhotoSection
+              v-model:fabApplication="props.fabApplication"
+              :sawType="sawType"
+            />
+            
             <fabP
               v-model="props.fabApplication"
               :package-id="props.fabApplication.packageId"
@@ -66,6 +72,12 @@ export default {
               v-if="sawType?.seedTypes?.length > 0"
               v-model:fabApplication="props.fabApplication"
               :sawType="sawType"
+            />
+            <PackageEvidenceUpload
+              ref="packageEvidenceRef"
+              v-model:fabApplication="props.fabApplication"
+              :mode="props.applicationType"
+              @selected-file="handleSelectedEvidenceFile"
             />
           </div>
         </div>
@@ -84,6 +96,7 @@ export default {
   import Seed from "./seed/seed.vue";
   import Passivation from "./Passivation.vue";
   import fabP from "./fabP.vue";
+  import PackageEvidenceUpload from "./PackageEvidenceUpload.vue";
   import ProductName from "./ProductName.vue";
   import Buttons from "./Buttons.vue";
   import ApplicationContent from "./ApplicationContent.vue";
@@ -92,10 +105,14 @@ export default {
   import { fabRequestFormRules } from "../../../utils/rules/fab-application";
   import type { FormInstance } from "element-plus";
   
-  import IdtProcess from "./IdtProcess.vue";
-  import Bom from "./bom/Bom.vue";
-  const fabFormRef = ref<FormInstance | null>(null);
   
+  const fabFormRef = ref<FormInstance | null>(null);
+  const packageEvidenceFile = ref<File | null>(null);
+  const packageEvidenceRef = ref<InstanceType<typeof PackageEvidenceUpload> | null>(null);
+  function handleSelectedEvidenceFile(file: File | null) {
+    packageEvidenceFile.value = file;
+  }
+
   const props = defineProps<{
     fabApplication: FabRequestForm;
     simpleFabApp: FabprobeInformation;
@@ -141,6 +158,46 @@ export default {
     width: 50%;
   }
   
+.right-section :deep(*) {
+  --el-font-size-base: 18px;
+  --el-font-size-small: 16px;
+  --el-font-size-large: 20px;
+  font-size: 18px;
+}
+
+/* 필요하면 폼 라벨도 더 키우기 */
+.right-section :deep(.el-form-item__label) {
+  font-size: 18px;
+}
+
+/* input/select/textarea 등 컨트롤 글자 */
+.right-section :deep(.el-input__inner),
+.right-section :deep(.el-textarea__inner),
+.right-section :deep(.el-select__selected-item),
+.right-section :deep(.el-radio__label),
+.right-section :deep(.el-checkbox__label) {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.right-section :deep(.el-button),
+.right-section :deep(.el-table),
+.right-section :deep(.el-table th),
+.right-section :deep(.el-table td) {
+  font-size: 18px;
+}
+
+
+:global(.right-lg-popper .el-select-dropdown__item) {
+  font-size: 18px;
+  height: 40px;
+  line-height: 40px;
+}
+:global(.right-lg-popper .el-select-dropdown__empty),
+:global(.right-lg-popper .el-select-group__title) {
+  font-size: 18px;
+}
+
   /* 반응형 디자인 - 화면이 너무 작아질 때 */
   @media (max-width: 1024px) {
     .form-container {

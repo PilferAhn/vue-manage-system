@@ -210,8 +210,14 @@ export interface FabRequestForm extends FabprobeInformation {
   lotStatus?: LotStatus[] | null;
   lots?: any[];
   activeLots?: ActiveLot[];
+  fabPackageEvidence?: FabPackageEvidence | null;
 }
 
+export interface FabPackageEvidence {
+  productName: string;
+  path: string;
+  createdTime: string; // 또는 Date
+}
 
 export interface band {
   bandCombinationId: string;
@@ -344,6 +350,35 @@ export interface MesStatus {
   assy?: string[];
   finalOut?: string[];
 }
+
+export type MesProgressRow = {
+  materialId: string;
+  creationDttm?: string | null;
+  lotNum?: number | null;
+  operationName?: string | null;
+  currentSeqNo?: number | null;
+  returnSeqNo?: number | null;
+  lastSeqNoCurrentRt?: number | null;
+  lastSeqNoReturnRt?: number | null;
+  progress?: number | null;
+  isRework?: number | null;
+  routeName?: string | null;
+  routeGroup1?: string | null;
+};
+
+
+export type FabMonitorRow =  {
+  productName: string;           
+  packageId: "CSP" | "WLP" | "BDMP" | "ETC";
+  destinationId: "WHC" | "개발전달" | string;  
+  priorityId?: string | null;
+  designer?: string | null;
+  designerId?: string | null;
+  wantedFabStartDate?: string | null;
+  wantedFabEndDate?: string | null;
+  // 진행률 (MES)
+  mes: MesProgressRow | null;
+};
 
 export class FabRequest implements FabRequestForm {
   photo?: Photo;

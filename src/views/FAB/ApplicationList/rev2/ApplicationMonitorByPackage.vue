@@ -303,6 +303,19 @@ export default {};
         </template>
       </el-table-column>
       
+      <el-table-column
+        label="BOX ID"
+        width="130"
+        :align="'center'"
+      >
+        <template #default="scope">
+          <span v-for="(item, index) in scope.row.lotStatus" :key="index">
+            {{ item.lotUdf12 ?? '--' }}
+            <br />
+          </span>
+        </template>
+      </el-table-column>
+      
       <el-table-column :align="'center'" width="90">
         <template #header>
           출하<br/>리드타임
@@ -532,6 +545,12 @@ export default {};
     <el-button type="warning" @click="toggleSMSPLFilter" class="buttun-section">
       {{ isSMSPLOnly ? "Cancel SMSPL" : "SM SPL" }}
     </el-button>
+    <el-button type="warning" @click="toggleSMPFilter" class="buttun-section">
+      {{ isSMPOnly ? "Cancel SMP" : "SM P" }}
+    </el-button>
+    <el-button type="warning" @click="toggleK1Filter" class="buttun-section">
+      {{ isK1Only ? "Cancel K1_긴급" : "K1_긴급" }}
+    </el-button>
     <el-button type="warning" @click="toggleTransitedFilter" class="buttun-section">
       {{ isTransitedOnly ? "전체 보기" : "출하완료 보기" }}
     </el-button>
@@ -576,6 +595,8 @@ const isDealyFab = ref(false);
 const isDVonly = ref(false);
 const isSMOnly = ref(false);
 const isSMSPLOnly = ref(false);
+const isSMPOnly = ref(false)
+const isK1Only = ref(false)
 const isTransitedOnly = ref(false);
 // Clear the search input
 function handleClear() {
@@ -602,7 +623,29 @@ const smSPLModelNames = [
   "TQG47AVB0A2B",
   "THG93AS5001A",
 ];
-
+const smpModelNames = [
+  "TXG35A00000A",
+  "TX787A00000A",
+  "TX707A00000A",
+  "TX634A00000A",
+  "TV831A00000A",
+  "TT725A00000A",
+  "TDG35A00000A",
+];
+const k1ModelNames = [
+  "TXG10AQZ004A",
+  "TXG10AQZ003A",
+  "TX634AQL006A",
+  "TX634AQL006B",
+  "TX787AQX005D",
+  "TX787AQX005B",
+  "TX787AQX005C",
+  "TX787AQX005A",
+  "TX748BQY001A",
+  "MX748AQY003A",
+  "MRG00DAH001A",
+  "THG72CFC002B",
+];
 
 const dialogTableVisible = ref(false);
 const selectApplicationId = ref("");
@@ -668,6 +711,24 @@ const filteredData = computed(() => {
   }
   if (isSMSPLOnly.value) {
   const set = new Set(smSPLModelNames);
+  tempApp.value = tempApp.value.filter((item) => {
+    if (!item.productName) return false;
+    const base = item.productName.split("@")[0].trim().toUpperCase();
+    return set.has(base);
+    });
+  }
+  
+  if (isSMPOnly.value) {
+  const set = new Set(smpModelNames);
+  tempApp.value = tempApp.value.filter((item) => {
+    if (!item.productName) return false;
+    const base = item.productName.split("@")[0].trim().toUpperCase();
+    return set.has(base);
+    });
+  }
+
+  if (isK1Only.value) {
+  const set = new Set(k1ModelNames);
   tempApp.value = tempApp.value.filter((item) => {
     if (!item.productName) return false;
     const base = item.productName.split("@")[0].trim().toUpperCase();
@@ -1220,6 +1281,12 @@ const toggleSMFilter = () => {
 };
 const toggleSMSPLFilter = () => {
   isSMSPLOnly.value = !isSMSPLOnly.value;
+};
+const toggleSMPFilter = () => {
+  isSMPOnly.value = !isSMPOnly.value;
+};
+const toggleK1Filter = () => {
+  isK1Only.value = !isK1Only.value;
 };
 const toggleTransitedFilter = () => {
   isTransitedOnly.value = !isTransitedOnly.value;

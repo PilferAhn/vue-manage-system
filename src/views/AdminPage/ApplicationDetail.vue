@@ -1,7 +1,7 @@
 <template>
   <el-form
     :model="applicationForm"
-    :rules="applicationRules"
+    :rules="rulesForUpdate"
     ref="formRef"
     label-width="100"
   >
@@ -326,7 +326,7 @@
 </template>
 
 <script lang="ts" setup>
-import { watch, onMounted, ref } from "vue";
+import { watch, onMounted, ref, computed} from "vue";
 import { FormInstance } from "element-plus";
 import inputText from "../Common/InputText.vue";
 import inputNumber from "../Common/InputNumber.vue";
@@ -378,6 +378,29 @@ const route = useRoute();
 const uuid = route.params.uuid;
 const formRef = ref<FormInstance | null>(null);
 const moduleFilesRef = ref<any>(null);
+
+const NO_BW = new Set(["CW", "CW Duty 50%", "WIFI", "GSM"]);
+
+const rulesForUpdate = computed(() => ({
+  ...applicationRules,
+  bandwidth: [
+    {
+      trigger: ["blur", "change"],
+      validator: (_rule, value, callback) => {
+        const sig = applicationForm.value.signalType;
+
+        // CW/CW Duty/WIFI/GSM이면 bandwidth 없어도 OK
+        if (sig && NO_BW.has(sig)) return callback();
+
+        // 그 외는 필수 유지
+        if (value === "" || value == null) {
+          return callback(new Error("대역폭을 입력해주세요."));
+        }
+        return callback();
+      },
+    },
+  ],
+}));
 
 function handleDownload() {
   downloadExcel(applicationForm)
