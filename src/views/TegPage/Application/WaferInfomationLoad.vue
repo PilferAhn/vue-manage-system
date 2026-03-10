@@ -71,7 +71,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, defineProps, defineEmits } from "vue";
+import { ref, watch } from "vue";
 import type { waferInformation } from "./../../../utils/tegTypes";
 import { getStatusText, updateStatus } from "./WaferInformation";
 import type { FormItemRule } from "element-plus"; // Element Plus의 FormItemRule 타입 가져오기

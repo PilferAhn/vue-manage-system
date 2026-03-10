@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, watch, ref, defineProps } from "vue";
+import { onMounted, onUnmounted, watch, ref } from "vue";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import {
   Chart,

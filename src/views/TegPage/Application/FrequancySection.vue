@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, reactive, ref, watch, defineEmits, nextTick, onMounted } from "vue";
+import { reactive, ref, watch, nextTick } from "vue";
 
 const emit = defineEmits(["updateFreqInfo"]);
 const props = defineProps({

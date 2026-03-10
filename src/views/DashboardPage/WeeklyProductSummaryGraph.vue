@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, onMounted, computed } from "vue";
+import { ref, onMounted, computed } from "vue";
 import Schart from "vue-schart";
 import axios from "../../utils/request";
 

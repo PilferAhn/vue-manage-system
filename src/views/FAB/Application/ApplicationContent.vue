@@ -349,23 +349,19 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, watch } from "vue";
 import { getWaferList } from "../../../utils/Fab/fab_application-wafer-utils";
-import { filterTypeOptions } from "../../../utils/dropdown-options";
 import type {
   FabRequestForm,
   SawType,
   BomCode,
 } from "../../../interface/fab-application-rev2";
-import SelectOptions from "../../Common/SelectOptions.vue";
 import SelectCheckBox from "../../Common/SelectCheckBox.vue";
 import InputTextByRecommad from "../../Common/InputTextByRecommad.vue";
 import InputText from "../../Common/InputText.vue";
 import InputNumber from "../../Common/InputNumber.vue";
 
-import BooleanInput from "../../Common/SelectBoolean.vue";
 import LongInputText from "../../Common/LongInputText2.vue";
 import SelectOptionsNew2 from "../../Common/SelectOptionsNew2.vue";
 import User2 from "../../Common/User2.vue";
-import ProductName from "./ProductName.vue";
 import { getOptionNumbers } from "../../../utils/Fab/options";
 import SelectNumberOption from "../../Common/SelectNumberOption.vue";
 import ApplicationChip from "./ApplicationSize.vue";
@@ -381,29 +377,15 @@ import {
 } from "../../../utils/Fab/fab-application-utils";
 import extraProcess from "./extra_process/ExtraProcess.vue";
 import IdtProcess from "./IdtProcess.vue";
-import Dvb from "./dvr/Dvr.vue";
-import BandSection from "./band/band.vue";
 import NoteSection from "./Note.vue";
 import {
-  groupList,
-  processList,
-  // destinationList,
-  getSampleQuantityOptions,
-  codeList,
-  waferTypes,
-  waferComList,
-  machineList,
-  sendFormData,
-  freqRangeList,
+  codeList, freqRangeList,
   samplePurposeOptions,
-  samplePurposeContentOptions,
+  samplePurposeContentOptions
 } from "../Common/Application";
-import axios from "axios";
-import { Option } from "element-plus/es/components/select-v2/src/select.types";
 import { initBom } from "../../../utils/Fab/bom-utils";
 import Bom from "./bom/Bom.vue";
-import { composeEventHandlers } from "element-plus/es/utils";
-import {getPackageList} from "../../../utils/utility"
+import { getPackageList } from "../../../utils/utility";
 import type { OptionInterfaceWithSubTypes } from "../../../utils/utility";
 
 const props = defineProps<{

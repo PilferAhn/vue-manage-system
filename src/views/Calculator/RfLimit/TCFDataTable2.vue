@@ -60,7 +60,6 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
 import { CalculatedTCFValues, CalculatedTCFValue } from "./sparameter";
 
 const props = defineProps<{ tcfValues: CalculatedTCFValue[] }>();

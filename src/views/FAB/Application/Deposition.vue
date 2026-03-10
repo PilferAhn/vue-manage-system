@@ -155,25 +155,22 @@
   
   <script setup lang="ts">
   import type {
-    SawType,
-    Layer,
-    FabRequestForm,
-    IdtType,
-  } from "../../../interface/fab-application-rev2";
-  import {
-    generateIdtOptions,
-    generateIdtOptions2,
-    getLayerNameFromIdtTypes,
-    generateMachineOptions,
-    getIdtTypeByIdtId,
-    setMachineForEtching,
-  } from "../../../utils/Fab/fab-application-deposition.utils";
-  import IdtProcess from "./IdtProcess.vue";
-  import { ref, watch, reactive, onMounted } from "vue";
-  import { OptionInterface } from "../../../interface/option";
-  import { tr } from "element-plus/es/locale";
-  import LongInputText2 from "../../Common/LongInputText2.vue";
-  import InputText from "../../Common/InputText.vue";
+  SawType,
+  Layer,
+  FabRequestForm,
+  IdtType,
+} from "../../../interface/fab-application-rev2";
+import {
+  generateIdtOptions,
+  generateIdtOptions2,
+  getLayerNameFromIdtTypes,
+  generateMachineOptions,
+  getIdtTypeByIdtId,
+  setMachineForEtching,
+} from "../../../utils/Fab/fab-application-deposition.utils";
+import { ref, watch, reactive, onMounted } from "vue";
+import { OptionInterface } from "../../../interface/option";
+import LongInputText2 from "../../Common/LongInputText2.vue";
   
   // props 정의
   const props = defineProps<{

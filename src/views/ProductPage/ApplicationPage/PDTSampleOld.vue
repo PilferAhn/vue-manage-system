@@ -53,7 +53,7 @@
   </template>
   
   <script lang="ts" setup>
-  import { defineProps, defineEmits, ref, watch } from 'vue';
+  import { ref, watch } from 'vue';
   import type { SampleInformation } from './Application'; // Import the interface
   
   const props = defineProps({

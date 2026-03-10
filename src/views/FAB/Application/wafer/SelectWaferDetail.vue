@@ -154,7 +154,7 @@
   </template>
   
   <script lang="ts" setup>
-  import { defineProps, defineEmits, ref, watch, onMounted, computed} from "vue";
+  import { ref, watch, onMounted, computed} from "vue";
   import InputTextByRecommad from "../../../Common/InputTextByRecommadAsLabel.vue";
   import {
     getFabWaferFromWaferId,

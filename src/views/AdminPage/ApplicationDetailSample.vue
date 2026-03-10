@@ -111,7 +111,6 @@
   </template>
   
   <script lang="ts" setup>
-  import { defineProps, defineEmits } from "vue";
   import type { SampleInformation } from "../../views/ProductPage/ApplicationPage/Application";
   import { handleFileSelect, updateSampleStatus } from "../../views/ProductPage/ApplicationPage/PDTSample"
   

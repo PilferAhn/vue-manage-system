@@ -109,21 +109,18 @@ export default {};
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, watch, computed, nextTick, reactive, Ref } from "vue";
-import { getCodeWpms, getOds, getMenu, getPcbCode, getLevels, getSheetsByLevel } from '../../../utils/orderShiitUtils';
-import { el } from "element-plus/es/locale";
+import { ref, onMounted, reactive } from "vue";
+import { getOds, getLevels, getSheetsByLevel } from '../../../utils/orderShiitUtils';
 import Step1 from "./Steps/Step1.vue";
 import Step2 from "./Steps/Step2.vue";
 import Step3 from "./Steps/Step3.vue";
 import All from "./Steps/All.vue";
 import cloneDeep from 'lodash/cloneDeep';
 import type {
-    ApplicationData, SmtItem, PositionItem, MoudleMenu, CspImages
+    ApplicationData
 } from "../../../interface/orderSheetInterface";
 
 import { useRoute, useRouter } from "vue-router";
-import ModelName from "../../TegPage/Application/ModelName.vue";
-import { Position } from "@element-plus/icons-vue/dist/types";
 
 
 

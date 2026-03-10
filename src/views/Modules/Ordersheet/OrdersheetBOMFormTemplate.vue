@@ -362,9 +362,8 @@ export default {};
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, watch, computed, nextTick, reactive, Ref } from "vue";
-import { getBomList, getMenu, saveBomList, getBomCode, getModuleCodeRev, getSawType, getOdsBom, saveBomWait, findSheetName, getQtyByPnSheetId, getEpoxyBomQty, getCCSQty } from '../../../utils/orderShiitUtils';
-import { el } from "element-plus/es/locale";
+import { ref, onMounted } from "vue";
+import { getBomList, getMenu, saveBomList, getBomCode, getModuleCodeRev, getOdsBom, saveBomWait, findSheetName, getQtyByPnSheetId, getEpoxyBomQty, getCCSQty } from '../../../utils/orderShiitUtils';
 import CustomSelect from './components/CustomSelect.vue';
 import SheetSelectModal from './components/SheetSelectModal.vue';
 
@@ -373,12 +372,10 @@ import type {
     ModuleMenu,
     SmtItem,
     BomMeterial,
-    BomModule,
-    BomModuleTable
+    BomModule
 } from "../../../interface/orderSheetInterface";
 
-import { useRoute, useRouter } from "vue-router";
-import ModelName from "../../TegPage/Application/ModelName.vue";
+import { useRoute } from "vue-router";
 import BomSelectModal from "./components/BomSelectModal.vue";
 const route = useRoute();
 

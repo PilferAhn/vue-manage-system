@@ -15,7 +15,6 @@
   <script setup>
   import { ref, watch } from 'vue';
   import { applicationPriority } from '../../../utils/waferApplicationHelper';
-  import { defineProps, defineEmits } from 'vue';
   
   const props = defineProps({
     priority: String,

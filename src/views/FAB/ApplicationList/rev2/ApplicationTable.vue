@@ -471,7 +471,7 @@ export default {};
 </template>
 
 <script lang="ts" setup>
-import { defineProps, computed, ref, onMounted, reactive, watch } from "vue";
+import { computed, ref, onMounted, reactive, watch } from "vue";
 import { FabRequest } from "../../../../interface/fab-application-rev2";
 import {
   handleDateChange as externalHandleDateChange,

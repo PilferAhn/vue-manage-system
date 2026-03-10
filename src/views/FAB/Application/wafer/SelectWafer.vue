@@ -35,7 +35,7 @@
     </section>
   </template>
   <script lang="ts" setup>
-  import { defineProps, defineEmits, ref, watch, onMounted } from "vue";
+  import { ref, watch, onMounted } from "vue";
   import { createWaferOptions } from "../../../../utils/Fab/fab_application-wafer-utils";
   import type { OptionInterface } from "../../../../interface/option";
   import {

@@ -17,7 +17,7 @@
   </template>
   
   <script lang="ts" setup>
-  import { defineProps, defineEmits, ref, watch } from "vue";
+  import { ref, watch } from "vue";
   import { ElSelect, ElOption } from "element-plus";
   
   // props 정의

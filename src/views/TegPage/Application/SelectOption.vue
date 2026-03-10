@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, defineEmits, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { ElSelect, ElOption } from "element-plus";
 import type { FormItemRule } from "element-plus"; // Element Plus의 FormItemRule 타입 가져오기
 

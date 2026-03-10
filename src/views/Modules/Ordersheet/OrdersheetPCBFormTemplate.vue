@@ -193,17 +193,15 @@ export default {};
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, watch, computed, nextTick, reactive, Ref } from "vue";
-import { getCodeWpms, getPcbSheet, savePcb } from '../../../utils/orderShiitUtils';
-import { el } from "element-plus/es/locale";
+import { ref, onMounted, reactive, Ref } from "vue";
+import { getPcbSheet, savePcb } from '../../../utils/orderShiitUtils';
 
 
 import type {
     PcbInterface, PcbList
 } from "../../../interface/orderSheetInterface";
 
-import { useRoute, useRouter } from "vue-router";
-import ModelName from "../../TegPage/Application/ModelName.vue";
+import { useRoute } from "vue-router";
 import cloneDeep from 'lodash/cloneDeep';
 
 
