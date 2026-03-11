@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineEmits } from "vue";
+import { ref, computed } from "vue";
 import type { Dv2 } from "../../../interface/Dv2/dv2-list-interface";
 import { FabRequestForm } from "../../../interface/fab-application-rev2";
 import Dv2Actions from "./Dv2Actions.vue";

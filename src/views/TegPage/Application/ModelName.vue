@@ -11,7 +11,7 @@
 </template>
 
 <script lang = 'ts' setup>
-import { ref, defineEmits, watch } from "vue";
+import { ref, watch } from "vue";
 
 const props = defineProps({
   modelName: String

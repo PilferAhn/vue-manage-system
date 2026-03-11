@@ -28,7 +28,6 @@
 
 <script setup>
 import { ref, watch } from "vue";
-import { defineEmits } from "vue";
 // Defines the types of events this component might emit
 const emit = defineEmits(['updateWaferData']);
 

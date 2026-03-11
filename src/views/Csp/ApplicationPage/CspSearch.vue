@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineEmits } from "vue";
+import { ref, computed } from "vue";
 
 
 const searchType = ref("productName"); // 기본 검색 기준
