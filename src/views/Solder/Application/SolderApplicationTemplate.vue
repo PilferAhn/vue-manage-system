@@ -477,46 +477,28 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, watch, computed } from "vue";
-import {
-  initializeApplicationData,
-  // updateMeasurements,
-  // updateSegments,
-} from "../../../utils/solderApplicationUtil";
-import { evbTypeList, getSuggestions } from "./Application";
+import { evbTypeList } from "./Application";
 import {
   sendApplicationData2,
   downloadSolderApplicationXlsx,
-  loadApplicationData,
-  getMeasurementLabel,
-  updateStatusByUuid,
-  updateMeasurement,
+  loadApplicationData
 } from "./SolderApplication";
 import SelectOptions from "../../Common/SelectOptionsNew2.vue";
 import { clientOptions } from "../../../utils/Solder/option-values";
 import { useRouter } from "vue-router";
 import { packgeList } from "../../../utils/package-types";
-import { statusList } from "../ApplicationList/SolderApplicationList";
-import { chipInductorList } from "../../../utils/ChipInductorList";
 import inputText from "../../Common/InputText.vue";
-import longInputText from "../../Common/LongInputText.vue";
-import { reactive } from "vue";
 import { solderApplicationRules } from "./SolderApplicationRules";
-import { bandInformationDict } from "../../../utils/frequancyInfo";
 import type {
-  ApplicationData,
-  SolderFile,
+  ApplicationData
 } from "../../../interface/solderAppInterface";
 import { useUserOptions } from "../../Common/utility";
-import { downloadFileByUrl } from "./LoadSolderApplication";
 import { updateMeasurementDataByClient } from "../../../utils/Solder/application-utils";
-import type { UploadInstance, UploadProps, UploadRawFile } from "element-plus";
-import { genFileId, ElMessage } from "element-plus";
-import { formatDate } from "../../FAB/Common/Application";
+import type { UploadInstance } from "element-plus";
+import { genFileId } from "element-plus";
 import { removeApplicationHandler } from "../../../utils/Solder/application-utils";
-import { optionList } from "../../Calculator/SParameter/sparameter";
 import SolderMeasurement from "./SolderMeasurement.vue";
 import SolderMeasureList from "./SolderMeasurementList.vue";
-import { forceRouteReload } from "../../../utils/utility";
 const router = useRouter();
 
 // Define props to receive processData
