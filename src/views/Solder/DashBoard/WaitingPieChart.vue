@@ -56,7 +56,7 @@ const createChart = () => {
     const barDatasets = statusList.map((status, index) => {
       return {
         label: status,
-        type: "bar", // 막대그래프
+        type: "bar" as const, // 막대그래프
         data: props.measurements.map((item) =>
           item.measurements.find((m) => m.status === status)?.cnt || 0
         ),
@@ -71,7 +71,7 @@ const createChart = () => {
 
     const lineDataset = {
       label: "Total Trend",
-      type: "line", // 선 그래프
+      type: "line" as const, // 선 그래프
       data: totalData,
       borderColor: "rgba(75, 192, 192, 1)", // 선 색상
       borderWidth: 2,
