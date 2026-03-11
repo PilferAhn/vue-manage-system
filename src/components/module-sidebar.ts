@@ -1,4 +1,6 @@
-export const moduleSilderBarList = {
+import { SidebarItem } from "../interface/sidebar";
+
+export const moduleSilderBarList: SidebarItem = {
   icon: "Pear",
   index: "7",
   title: "모듈 (Module)",

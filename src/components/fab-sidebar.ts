@@ -1,4 +1,6 @@
-export const fabSilderBarList = {
+import { SidebarItem } from "../interface/sidebar";
+
+export const fabSilderBarList: SidebarItem = {
   icon: "DocumentAdd",
   index: "3",
   title: "Development SAMPLE",

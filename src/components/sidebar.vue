@@ -103,14 +103,13 @@
 import { computed } from "vue";
 import { useSidebarStore } from "../store/sidebar";
 import { useRoute } from "vue-router";
-import { permission, title } from "process";
 import { fabSilderBarList } from "./fab-sidebar";
 import { whcSilderBarList } from "./whc-sidebar";
 import { moduleSilderBarList } from "./module-sidebar";
 import { dv2SilderBarList } from "./dv2-sidebar";
 import { idtProbeBarList } from "./idt-probe-sidebar";
-
-const items = [
+import { SidebarItem } from "../interface/sidebar";
+const items: SidebarItem[] = [
   {
     icon: "Odometer",
     index: "/dashboard",
