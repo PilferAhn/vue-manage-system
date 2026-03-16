@@ -299,7 +299,11 @@
           props.fabApplication.waferId = parseInt(newVal.toString());
   
           if (props.fabApplication.waferType === "HS") {
-            props.fabApplication.waferThickness = 500;
+            if(wafer.value.size == 4) {
+              props.fabApplication.waferThickness = 500;
+            } else {
+              props.fabApplication.waferThickness = 675;
+            }
             emit("update:hsWaferOptions", createHsWaferCondition(wafer.value));
             emit("update:wafer", wafer.value);
             emit("update:hsLayers", createHsWaferCondition(wafer.value));
