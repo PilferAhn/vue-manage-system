@@ -249,6 +249,11 @@ const items = [
         title: "TCF Calculator",
         permiss: "11",
       },
+      {
+        index: "/calculator/marking_maker",
+        title: "마킹설정자동화",
+        permiss: "11",
+      }
       // {
       //   index: "/calculator/rf-limit",
       //   title: "RF Limit",

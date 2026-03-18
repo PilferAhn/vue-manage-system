@@ -382,6 +382,18 @@ const routes: RouteRecordRaw[] = [
           ),
       },
       {
+        path: "/calculator/marking_maker",
+        name: "MarkingMaker",
+        meta: {
+          title: "마킹설정",
+          permiss: "11",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "table" */ "../views/Calculator/Markings/MarkingMaker.vue"
+          ),
+      },
+      {
         path: "/calculator/rf-limit",
         name: "RF Limit",
         meta: {
