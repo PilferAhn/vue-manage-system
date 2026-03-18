@@ -64,7 +64,7 @@ export default {};
   </template>
   
   <script lang="ts" setup>
-  import { defineProps, defineEmits, watch, ref, computed, onMounted } from "vue";
+  import { watch, ref, computed, onMounted } from "vue";
   import type {
     FabWafer,
     Layer,

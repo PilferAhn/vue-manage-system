@@ -263,7 +263,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineProps, defineEmits, Ref, onMounted } from "vue";
+import { ref, watch, Ref, onMounted } from "vue";
 import type { Dv2 } from "../../../interface/Dv2/dv2-list-interface";
 import { convertKeysToPEP8 } from "../../../utils/key-converter";
 import { sendDv2 } from "../../../utils/Dv2/dv2-list-utils";

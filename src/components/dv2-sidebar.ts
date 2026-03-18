@@ -1,4 +1,6 @@
-export const dv2SilderBarList = {
+import { SidebarItem } from "../interface/sidebar";
+
+export const dv2SilderBarList: SidebarItem = {
   icon: "DocumentAdd",
   index: "11",
   title: "DV2",

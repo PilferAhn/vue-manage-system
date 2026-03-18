@@ -14,7 +14,7 @@ export default {};
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref, watch, computed } from "vue";
+import { ref, watch, computed } from "vue";
 import type { ModuleMeasurementApp } from "../../../interface/module_group/application/application";
 
 const props = defineProps<{

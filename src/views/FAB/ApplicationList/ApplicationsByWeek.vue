@@ -192,7 +192,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, computed, ref } from "vue";
+import { computed, ref } from "vue";
 import type { ProcessData } from "../Interface/ApplicationInterface";
 import {
   handleDateChange as externalHandleDateChange,

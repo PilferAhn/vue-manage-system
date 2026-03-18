@@ -323,7 +323,7 @@
 </template>
 
 <script setup lang="ts" name="baseform">
-import { reactive, ref, watch, onMounted, defineProps } from "vue";
+import { reactive, ref, watch, onMounted } from "vue";
 import { ElMessageBox, ElMessage } from "element-plus";
 import type { FormInstance, FormRules } from "element-plus";
 import axios from "axios";

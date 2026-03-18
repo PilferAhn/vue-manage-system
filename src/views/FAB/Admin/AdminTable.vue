@@ -56,7 +56,7 @@ export default {};
 
 <!-- components/AdminTable.vue -->
 <script lang="ts" setup>
-import { computed, defineProps, ref } from "vue";
+import { computed,  ref } from "vue";
 import { FabRequestCreateSchedule } from "../../../interface/fab-request-create-schedule";
 import { sendPostRequest } from "../../../utils/httpProtocol";
 import { getUserId } from "../../../utils/account-utils";

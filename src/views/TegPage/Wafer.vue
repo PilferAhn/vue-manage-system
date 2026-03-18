@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, reactive, computed, defineEmits, watch } from "vue";
+import { reactive, computed, watch } from "vue";
 
 const props = defineProps<{
   waferInfo: {

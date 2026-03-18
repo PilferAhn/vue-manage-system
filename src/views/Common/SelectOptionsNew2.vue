@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, defineEmits, ref, watch, PropType } from "vue";
+import { ref, watch, PropType } from "vue";
 import type { OptionInterface } from "../../interface/option";
 // Define the OptionItem interface with all properties as strings
 import type { FormRules } from "element-plus";

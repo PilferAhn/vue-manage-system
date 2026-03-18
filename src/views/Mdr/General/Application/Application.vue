@@ -141,8 +141,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from "vue";
-import type { MdrApplication, groupList } from "../../Common/Interface";
+import type { MdrApplication } from "../../Common/Interface";
 import InputText from "../../../Common/InputText.vue";
 import * as OptionList from "../../../Common/OptionList";
 import { categoryList } from "../../Common/OptionList";

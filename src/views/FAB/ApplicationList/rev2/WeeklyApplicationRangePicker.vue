@@ -20,8 +20,6 @@
   </template>
   
   <script lang="ts" setup>
-  import { defineProps, defineModel } from "vue";
-  
   const start = defineModel<string>("start");
   const end = defineModel<string>("end");
   </script>

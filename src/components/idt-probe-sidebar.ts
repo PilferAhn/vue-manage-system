@@ -1,4 +1,6 @@
-export const idtProbeBarList = {
+import { SidebarItem } from "../interface/sidebar";
+
+export const idtProbeBarList:SidebarItem = {
     icon: "Calendar",
     index: "fab-probe",
     title: "FAB Probe",

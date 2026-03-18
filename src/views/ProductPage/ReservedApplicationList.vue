@@ -94,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, defineProps, onUnmounted } from "vue";
+import { ref, reactive, onMounted, onUnmounted } from "vue";
 import axios from "axios";
 import { ElMessage } from "element-plus";
 import { getLastThursday, formatDate } from "../../utils/utility";

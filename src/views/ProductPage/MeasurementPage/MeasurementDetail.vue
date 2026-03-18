@@ -288,22 +288,12 @@
 </template>
 
 <script setup lang="ts" name="baseform">
-import { reactive, ref, watch, onMounted, defineProps } from "vue";
-import { ElMessageBox, ElMessage } from "element-plus";
-import type { FormInstance, FormRules } from "element-plus";
-import axios from "axios";
-import { getCurrentDate } from "../../../utils/utility";
-import { createApplicationForm } from "../../../utils/form";
+import { ref, watch } from "vue";
+import type { FormInstance } from "element-plus";
 import { ApplicationForm } from "../../../utils/types";
-import { useRoute } from "vue-router";
-import { utils } from "xlsx";
 
 import {
-  Chart,
-  ScatterDataPoint,
-  ChartConfiguration,
-  registerables,
-  ChartType,
+  Chart, registerables
 } from "chart.js";
 
 // Props 정의 및 타입 설정

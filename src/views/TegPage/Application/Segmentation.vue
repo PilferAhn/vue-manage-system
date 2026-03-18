@@ -26,7 +26,7 @@ export default {};
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits, watch, ref } from "vue";
+import { watch, ref } from "vue";
 import FrequancySection from "./FrequancySection.vue";
 import { MeasInfo } from "../../../utils/tegTypes";
 

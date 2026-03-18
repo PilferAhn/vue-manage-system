@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineEmits } from 'vue';
+import { ref } from 'vue';
 
 const data = ref([...Array(9)].map(() => ({ status: Array(9).fill(false) })));
 const selectedPositions = ref([]);

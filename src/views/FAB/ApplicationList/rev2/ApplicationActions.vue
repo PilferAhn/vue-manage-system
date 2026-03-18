@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineEmits, defineProps, ref } from "vue";
+import { ref } from "vue";
 import type { FabRequestForm } from "../../../../interface/fab-application-rev2";
 import { convertPep8ToCamelCase2, convertKeysToPEP8 } from "../../../../utils/key-converter";
 import { TempTegApplicationForm } from "../../../../utils/tegTypes";

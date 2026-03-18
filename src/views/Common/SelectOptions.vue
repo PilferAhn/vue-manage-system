@@ -20,7 +20,7 @@ export default {};
 </template>
 
 <script lang="ts" setup>
-import { defineProps, defineEmits, ref, watch, PropType } from "vue";
+import { ref, watch, PropType } from "vue";
 import { ElSelect, ElOption } from "element-plus";
 
 // Define the OptionItem interface with all properties as strings

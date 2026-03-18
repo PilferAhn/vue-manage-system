@@ -1,4 +1,6 @@
-export const whcSilderBarList = {
+import { SidebarItem } from "../interface/sidebar";
+
+export const whcSilderBarList: SidebarItem = {
   icon: "Pear",
   index: "4",
   title: "WHC Measurement",

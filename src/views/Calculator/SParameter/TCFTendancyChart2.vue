@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, computed, ref, onMounted, watch } from "vue";
+import { computed, ref, onMounted, watch } from "vue";
 import { Scatter } from "vue-chartjs";
 import { CalculatedTCFValue } from "./sparameter";
 import { colorList } from "../../../utils/utility";

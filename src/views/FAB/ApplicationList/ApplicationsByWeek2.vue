@@ -382,7 +382,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, ref, computed, watch } from "vue";
+import { ref, computed, watch } from "vue";
 
 import {
   handleDateChange as externalHandleDateChange,

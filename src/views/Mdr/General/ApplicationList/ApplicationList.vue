@@ -96,7 +96,6 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
 import dayjs from "dayjs";
 import type { MdrApplication } from "../../Common/Interface";
 

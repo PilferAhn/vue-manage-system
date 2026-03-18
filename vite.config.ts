@@ -82,6 +82,7 @@ export default defineConfig({
 			"/dv2": "http://10.29.11.57:40000",
 			"/test": "http://10.29.11.59:8002",
 			"/fab_monitoring_rev2": "http://10.29.11.57:40000",
+			"/fab_package_evidence": "http://10.29.11.57:40000",
 			"/customer": "http://10.29.11.57:40000",
 			"/band": "http://10.29.11.57:40000",
 			"/api": "http://10.20.10.128",

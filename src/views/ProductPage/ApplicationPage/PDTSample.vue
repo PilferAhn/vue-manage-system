@@ -93,7 +93,6 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, defineEmits } from "vue";
 import type { SampleInformation } from "./Application";
 import { handleFileSelect, updateSampleStatus, isPortReady } from "./PDTSample";
 

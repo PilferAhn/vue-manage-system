@@ -19,7 +19,7 @@ export default {};
 </template>
 
 <script lang="ts" setup>
-import { defineProps, defineEmits, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { OptionNumberInterface } from "../../interface/option";
 
 const props = defineProps<{

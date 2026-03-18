@@ -51,7 +51,7 @@ export default {};
 </template>
 
 <script lang="ts" setup>
-import { defineProps, computed, ref, onMounted, reactive, watch } from "vue";
+import { computed } from "vue";
 import { FabRequest } from "../../../../interface/fab-application-rev2";
 import { getUserId } from "../../../../utils/account-utils";
 

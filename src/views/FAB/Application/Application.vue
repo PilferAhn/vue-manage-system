@@ -336,7 +336,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, ref,watch } from "vue";
+import { ref,watch } from "vue";
 
 import InputText from "../../Common/InputText.vue";
 import SelectOptions from "../../Common/SelectOptions.vue";
