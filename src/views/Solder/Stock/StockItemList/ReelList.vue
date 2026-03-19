@@ -21,7 +21,7 @@ onMounted(async () => {
   // console.log("Department:", getDepartment())  
 
   // Fetch StockInfo data on component mount
-  if(["admin"].includes(getUserName()) || getDepartment() === "whc" || ["w2240310", "w2171209", "w2150708", "w2120102", "w2240712"].includes(getUserId()) ){
+  if(["admin"].includes(getUserName()) || getDepartment() === "whc" || ["w2240310", "w2171209", "w2150708", "w2120102", "w2240712", "w2170312"].includes(getUserId()) ){
     stockItems.value = await fetchStockItems("reel");
   }
   else{
