@@ -1,224 +1,198 @@
 <template>
     <el-form label-position="top" label-width="100px" ref="applicationForm">
-        <div class="container" v-if="!loading" style="height:80vh;">
-
-            <div class="container" style="padding: 15px; margin-bottom: 100px">
-                <span style="font-weight: bold; text-align: center;font-size: 45px;">
-                    마킹 설정 다운로드
-                </span>
+        <div class="page" v-if="!loading">
+            <div class="page-header">
+                <div class="page-title">마킹 설정 다운로드</div>
+                <div class="page-desc">마킹 설정 파일을 다운로드하거나 업로드하세요.</div>
             </div>
 
-            <div>
-
-                <div style="position: relative; width: 240px;">
-                    <div>기종명</div>
-                    <input v-model="modelName" @input="filterModels" @focus="showModelSuggestions = true"
-                        @blur="hideSuggestions" @keydown="handleKeydown" placeholder="기종명 검색" class="toss-select" />
-
-                    <ul v-if="showModelSuggestions && filteredModels.length" style="position: absolute;
-                            top: 70px;
-                            left: 0;
-                            right: 0;
-                            background: white;
-                            border: 1px solid #ddd;
-                            border-radius: 8px;
-                            max-height: 200px;
-                            overflow-y: auto;
-                            z-index: 1000;
-                            padding: 0;
-                            margin: 0;
-                            list-style: none;
-                        ">
-                        <li v-for="(m, idx) in filteredModels" :key="m" @mousedown="selectModel(m)"
-                            @mouseenter="highlightedIndex = idx" :style="{
-                                padding: '10px',
-                                cursor: 'pointer',
-                                borderBottom: '1px solid #f1f1f1',
-                                background: highlightedIndex === idx ? '#e6f0ff' : 'white'
-                            }">
-                            {{ m }}
-                        </li>
-                    </ul>
-                </div>
-
-                <div>
-                    사이즈
-                    <select v-model="size">
-                        <option v-for="s in sizeList" :key="s" :value="s">
-                            {{ s }}
-                        </option>
-                    </select>
-                </div>
-
-                <div>
-                    타입
-                    <select v-model="type">
-                        <option v-for="t in typeList" :key="t" :value="t">
-                            {{ t }}
-                        </option>
-                    </select>
-                </div>
-                <div>
-                    pkgName
-                    <select v-model="pkgName">
-                        <option v-for="t in pkgNameList" :key="t" :value="t">
-                            {{ t }}
-                        </option>
-                    </select>
-                </div>
-
-
-            </div>
-
-            <div>
-                <button @click.prevent="downloadFile">다운로드</button>
-            </div>
-            <div style="border: 1px solid black;">
-
-                BOTTOM 이미지 추가
-                <div>
-                    <!-- 조건 담당자만/ 하드코딩 할꺼임 -->
-                    <div>
-                        <input type="file" accept=".zip" @change="handleZipUpload" />
+            <!-- 다운로드 섹션 -->
+            <div class="toss-card">
+                <div class="title">파일 다운로드</div>
+                <div class="form-grid">
+                    <div class="form-field" style="position: relative;">
+                        <div class="field-label">기종명</div>
+                        <input
+                            v-model="modelName"
+                            @input="filterModels"
+                            @focus="showModelSuggestions = true"
+                            @blur="hideSuggestions"
+                            @keydown="handleKeydown"
+                            placeholder="기종명 검색"
+                            class="toss-input"
+                        />
+                        <ul v-if="showModelSuggestions && filteredModels.length" class="suggestion-list">
+                            <li
+                                v-for="(m, idx) in filteredModels"
+                                :key="m"
+                                @mousedown="selectModel(m)"
+                                @mouseenter="highlightedIndex = idx"
+                                :class="['suggestion-item', { active: highlightedIndex === idx }]"
+                            >
+                                {{ m }}
+                            </li>
+                        </ul>
                     </div>
-                    <div>
-                        <button @click.prevent="handleButtonUpload">업로드</button>
+
+                    <div class="form-field">
+                        <div class="field-label">사이즈</div>
+                        <select v-model="size" class="toss-select">
+                            <option value="">사이즈 선택</option>
+                            <option v-for="s in sizeList" :key="s" :value="s">{{ s }}</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <div class="field-label">타입</div>
+                        <select v-model="type" class="toss-select">
+                            <option value="">타입 선택</option>
+                            <option v-for="t in typeList" :key="t" :value="t">{{ t }}</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <div class="field-label">pkgName</div>
+                        <select v-model="pkgName" class="toss-select">
+                            <option value="">pkgName 선택</option>
+                            <option v-for="t in pkgNameList" :key="t" :value="t">{{ t }}</option>
+                        </select>
                     </div>
                 </div>
-
-            </div>
-            <div style="border: 1px solid black;">
-                마킹 체번 추가
-                <!-- 조건 담당자만/ 하드코딩 할꺼임 -->
-                <div>
-                    <input type="file"
-                        accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                        @change="handleExcel" />
-                </div>
-                <div>
-                    <button @click.prevent="handleButtonExcelUpload">엑셀업로드</button>
+                <div class="button-wrap">
+                    <button type="button" class="toss-btn primary" @click.prevent="downloadFile">
+                        다운로드
+                    </button>
                 </div>
             </div>
-            <div style="border: 1px solid black;">
+            <div v-if="ismanager">
+            <!-- BOTTOM 이미지 업로드 섹션 -->
+            <div class="toss-card">
+                <div class="title">BOTTOM 이미지 추가</div>
+                <div class="desc">담당자 전용 기능입니다.</div>
+                <div class="upload-row">
+                    <div class="form-field" style="flex:1;">
+                        <div class="field-label">ZIP 파일 선택</div>
+                        <input type="file" accept=".zip" @change="handleZipUpload" class="toss-file-input" />
+                    </div>
+                    <div class="button-wrap" style="margin-top: 0; align-self: flex-end;">
+                        <button type="button" class="toss-btn primary" @click.prevent="handleButtonUpload">
+                            업로드
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-                <div>타입 추가</div>
+            <!-- 마킹 체번 추가 섹션 -->
+            <div class="toss-card">
+                <div class="title">마킹 체번 추가</div>
+                <div class="desc">담당자 전용 기능입니다.</div>
+                <div class="upload-row">
+                    <div class="form-field" style="flex:1;">
+                        <div class="field-label">엑셀 파일 선택</div>
+                        <input
+                            type="file"
+                            accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                            @change="handleExcel"
+                            class="toss-file-input"
+                        />
+                    </div>
+                    <div class="button-wrap" style="margin-top: 0; align-self: flex-end;">
+                        <button type="button" class="toss-btn primary" @click.prevent="handleButtonExcelUpload">
+                            엑셀 업로드
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-                <div style="display: flex; gap: 10px;">
-                    <!-- 타입 선택 -->
-                    <div>
-                        종류
-
-                        <select v-model="ftype">
+            <!-- 타입 추가 섹션 -->
+            <div class="toss-card">
+                <div class="title">타입 추가</div>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <div class="field-label">종류</div>
+                        <select v-model="ftype" class="toss-select">
                             <option value="">종류 선택</option>
                             <option value="size">사이즈</option>
                             <option value="type">타입</option>
                             <option value="pkgName">pkgName</option>
                         </select>
-
                     </div>
-
-                    <!-- 값 입력 -->
-                    <div>
-                        <input v-model="inputValue" />
-                    </div>
-
-                    <!-- 추가 버튼 -->
-                    <div>
-                        <button @click="addType">추가</button>
+                    <div class="form-field">
+                        <div class="field-label">값 입력</div>
+                        <input v-model="inputValue" class="toss-input" placeholder="추가할 값을 입력하세요" />
                     </div>
                 </div>
-
-
+                <div class="button-wrap">
+                    <button type="button" class="toss-btn primary" @click="addType">추가</button>
+                </div>
             </div>
-            <div class="page">
-                <div class="toss-card">
-                    <div class="title">Grid 생성(담당자 전용)</div>
 
-                    <div class="legend-wrap">
-                        <div class="legend-item"><b>A</b> 고정문자(앞)</div>
-                        <div class="legend-item"><b>U</b> 고정문자(뒤)</div>
-                        <div class="legend-item"><b>X</b> DATA</div>
-                        <div class="legend-item"><b style="font-size: 20px;">○</b> 인덱스</div>
-                        <div class="legend-item"><b style="font-size: 20px;">●</b> 인덱스</div>
-                        <div class="legend-item"><b>[]</b> 공란</div>
-                    </div>
-                    <div class="row-card" style="background-color: white;">
-                        <div class="cell-row">
+            <!-- Grid 생성 섹션 -->
+            <div class="toss-card">
+                <div class="title">Grid 생성 <span class="badge">담당자 전용</span></div>
 
+                <div class="legend-wrap">
+                    <div class="legend-item"><b>A</b> 고정문자(앞)</div>
+                    <div class="legend-item"><b>U</b> 고정문자(뒤)</div>
+                    <div class="legend-item"><b>X</b> DATA</div>
+                    <div class="legend-item"><b style="font-size: 18px;">○</b> 인덱스</div>
+                    <div class="legend-item"><b style="font-size: 18px;">●</b> 인덱스</div>
+                    <div class="legend-item"><b>[]</b> 공란</div>
+                </div>
+
+                <div class="row-card" style="background-color: white;">
+                    <div class="cell-row">
+                        <div class="form-field" style="flex:1;">
+                            <div class="field-label">사이즈</div>
                             <select v-model="selectedSize" class="toss-select">
                                 <option value="">사이즈 선택</option>
-
-                                <option v-for="size in MsizeList" :key="size" :value="size">
-                                    {{ size }}
-                                </option>
+                                <option v-for="size in MsizeList" :key="size" :value="size">{{ size }}</option>
                             </select>
-
-
+                        </div>
+                        <div class="form-field" style="flex:1;">
+                            <div class="field-label">타입</div>
                             <select v-model="selectedType" class="toss-select">
                                 <option value="">타입 선택</option>
-                                <option v-for="t in typeList" :key="t" :value="t">
-                                    {{ t }}
-                                </option>
-                                <!-- <option value="">TYPE 선택</option>
-                                <option value="SAW">SAW</option>
-                                <option value="FBAR">FBAR</option>
-                                <option value="QPX">QPX</option> -->
+                                <option v-for="t in typeList" :key="t" :value="t">{{ t }}</option>
                             </select>
                         </div>
                     </div>
-                    <div v-for="(row, rowIndex) in gridData" :key="rowIndex" class="row-card">
-                        <div class="row-title">
-                            {{ rowIndex + 1 }}번째 줄
+                </div>
+
+                <div v-for="(row, rowIndex) in gridData" :key="rowIndex" class="row-card">
+                    <div class="row-title">{{ rowIndex + 1 }}번째 줄</div>
+                    <div class="cell-row">
+                        <div v-for="(cell, colIndex) in row" :key="colIndex" class="cell-card">
+                            <div class="cell-label">칸 {{ colIndex + 1 }}</div>
+                            <select v-model="cell.fval" class="toss-select">
+                                <option value="">선택</option>
+                                <option value="A">A</option>
+                                <option value="U">U</option>
+                                <option value="X">X</option>
+                                <option value="O">○</option>
+                                <option value="Q">●</option>
+                                <option value="S">[]</option>
+                            </select>
                         </div>
-
-                        <div class="cell-row">
-                            <div v-for="(cell, colIndex) in row" :key="colIndex" class="cell-card">
-                                <div class="cell-label">칸 {{ colIndex + 1 }}</div>
-
-                                <select v-model="cell.fval" class="toss-select">
-                                    <option value="">선택</option>
-                                    <option value="A">A</option>
-                                    <option value="U">U</option>
-                                    <option value="X">X</option>
-                                    <option value="O" style="font-size: 20px;">○</option>
-                                    <option value="Q" style="font-size: 20px;">●</option>
-                                    <option value="S" style="font-size: 20px;">[]</option>
-                                </select>
-
-                                <!-- <select v-model="cell.ftype" class="toss-select">
-                                    <option value="">유형 선택</option>
-                                    <option value="TEXT">TEXT</option>
-                                    <option value="DATE">DATE</option>
-                                    <option value="LOT">LOT</option>
-                                    <option value="INDEX">INDEX</option>
-                                </select> -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="button-wrap">
-                        <button type="button" class="toss-btn secondary" @click="resetGrid">
-                            초기화
-                        </button>
-                        <button type="button" class="toss-btn primary" @click="saveGrid">
-                            Grid 저장
-                        </button>
                     </div>
                 </div>
-            </div>
-        </div>
 
+                <div class="button-wrap">
+                    <button type="button" class="toss-btn secondary" @click="resetGrid">초기화</button>
+                    <button type="button" class="toss-btn primary" @click="saveGrid">Grid 저장</button>
+                </div>
+            </div>
+</div>
+        </div>
     </el-form>
 </template>
 
 <script>
 import axios from 'axios';
-import Form from '../../form.vue';
 export default {
     data() {
         return {
             loading: false,
-
             modelName: "",
             modelList: [],
             filteredModels: [],
@@ -226,56 +200,40 @@ export default {
             highlightedIndex: -1,
             size: "",
             type: "",
+            pkgName: "",
             usage: "",
-
-
-            // sizeList: ["0907", "20", "30"],
-            // typeList: ["Mobile", "Mobile QPX", "TYPE3"],
-            // pkgNameList: ["단일", "A0"],
             sizeList: [],
             typeList: [],
             pkgNameList: [],
             fileCodeList: [],
             ftype: "",
-            fTypeList: ["기종명", "사이즈", "타입", "pkgName"],
             inputValue: "",
             zipfile: null,
             exfile: null,
-            typeId: "0907",
+            ismanager: false,
             gridData: [
-                [
-                    { fval: "" },
-                    { fval: "" },
-                    { fval: "" }
-                ],
-                [
-                    { fval: "" },
-                    { fval: "" },
-                    { fval: "" }
-                ]
+                [{ fval: "" }, { fval: "" }, { fval: "" }],
+                [{ fval: "" }, { fval: "" }, { fval: "" }]
             ],
-            MsizeList: [
-                "0907", "1109", "1411", "1511",
-                "1612", "1713", "1814", "2016", "2520"
-            ],
+            MsizeList: ["0907", "1109", "1411", "1511", "1612", "1713", "1814", "2016", "2520"],
             selectedSize: "",
             selectedType: "",
-            selectedUsage: "",
         }
     },
     async mounted() {
         const res = await axios.get("/csp/getMkFilters");
         const mnres = await axios.get("/csp/getMkModels");
         const fileCode = await axios.get("/csp/getMkFileCode");
+        const empId = localStorage.getItem("id");
+        if(empId == 'admin'){
+            this.ismanager = true;
+        }
         this.fileCodeList = fileCode.data;
         const grouped = res.data.reduce((acc, cur) => {
             if (!acc[cur.ftype]) acc[cur.ftype] = [];
             acc[cur.ftype].push(cur.fvalue);
             return acc;
         }, {});
-
-        console.log(mnres.data)
-
         this.sizeList = grouped.size || [];
         this.typeList = grouped.type || [];
         this.pkgNameList = grouped.pkgName || [];
@@ -284,188 +242,89 @@ export default {
     },
     watch: {
         size(newSize) {
-            if (!newSize) {
-                this.pkgNameList = [];
-                return;
-            }
-
-            const filtered = this.fileCodeList
-                .filter(v => v.fsize === newSize)
-                .map(v => v.fpkg);
-
-            // 중복 제거
+            if (!newSize) { this.pkgNameList = []; return; }
+            const filtered = this.fileCodeList.filter(v => v.fsize === newSize).map(v => v.fpkg);
             this.pkgNameList = [...new Set(filtered)];
-
-            // 기존 선택값 초기화 (중요)
             this.pkgName = "";
         }
     },
     methods: {
         async downloadFile() {
-            const params = {
-                modelName: this.modelName,
-                size: this.size,
-                type: this.type,
-                pkgName: this.pkgName
-            }
-
+            const params = { modelName: this.modelName, size: this.size, type: this.type, pkgName: this.pkgName };
             try {
-                const response = await axios.post(
-                    "/csp/createMarking",
-                    params,
-                    {
-                        responseType: "blob"
-                    }
-                )
-                console.log("sddsd", response.data)
-
-                const url = window.URL.createObjectURL(new Blob([response.data]))
-                const link = document.createElement("a")
-
-                link.href = url
-                link.download = "marking.jpg"
-                link.click()
-                window.URL.revokeObjectURL(url)
-            } catch (err) {
-                console.error("There was an error with the submission", err);
-                throw err;
-            }
-            console.log(params)
+                const response = await axios.post("/csp/createMarking", params, { responseType: "blob" });
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "marking.jpg";
+                link.click();
+                window.URL.revokeObjectURL(url);
+            } catch (err) { console.error(err); throw err; }
         },
         handleZipUpload(event) {
-
-            const file = event.target.files[0]
-
-            if (!file) return
-
-            if (!file.name.endsWith(".zip")) {
-                alert("ZIP 파일만 업로드 가능합니다.")
-                event.target.value = ""
-                return
-            }
-            this.zipfile = file
-            console.log("선택된 ZIP:", file)
+            const file = event.target.files[0];
+            if (!file) return;
+            if (!file.name.endsWith(".zip")) { alert("ZIP 파일만 업로드 가능합니다."); event.target.value = ""; return; }
+            this.zipfile = file;
         },
         async handleButtonUpload() {
-            console.log("업로드 버튼 클릭", this.zipfile)
-            const formData = new FormData()
-            formData.append('zipFiles', this.zipfile)
-
-            const res = await axios.post('/csp/uploadTopThru', formData)
-            console.log(res.data)
+            const formData = new FormData();
+            formData.append('zipFiles', this.zipfile);
+            const res = await axios.post('/csp/uploadTopThru', formData);
+            console.log(res.data);
         },
         handleExcel(event) {
-            const file = event.target.files[0]
-
-            if (!file) return
-
-            if (
-                !file.name.toLowerCase().endsWith(".xlsx") &&
-                !file.name.toLowerCase().endsWith(".xls")
-            ) {
-                alert("ZIP 파일만 업로드 가능합니다.")
-                event.target.value = ""
-                return
+            const file = event.target.files[0];
+            if (!file) return;
+            if (!file.name.toLowerCase().endsWith(".xlsx") && !file.name.toLowerCase().endsWith(".xls")) {
+                alert("엑셀 파일만 업로드 가능합니다."); event.target.value = ""; return;
             }
-            this.exfile = file
-            console.log("선택된 ZIP:", file)
+            this.exfile = file;
         },
         async handleButtonExcelUpload() {
-            console.log("업로드 버튼 클릭", this.exfile)
-            const formData = new FormData()
-            formData.append('exfile', this.exfile)
-
-            const res = await axios.post('/csp/uploadMarkerCode', formData)
+            const formData = new FormData();
+            formData.append('exfile', this.exfile);
+            await axios.post('/csp/uploadMarkerCode', formData);
         },
         resetGrid() {
-            this.gridData = this.gridData.map(row =>
-                row.map(() => ({
-                    fval: ""
-                }))
-            )
+            this.gridData = this.gridData.map(row => row.map(() => ({ fval: "" })));
         },
         async saveGrid() {
-            const rows = []
-
+            const rows = [];
             this.gridData.forEach((row, rowIndex) => {
                 row.forEach((cell, colIndex) => {
-                    rows.push({
-                        type: this.selectedType,
-                        size: this.selectedSize,
-                        row_idx: rowIndex,
-                        col_idx: colIndex,
-                        fval: cell.fval,
-                    })
-                })
-            })
-
-            console.log("저장 데이터:", rows)
-
-            response = await axios.post("/csp/saveMarkingGrid", rows)
-            console.log(response.data)
+                    rows.push({ type: this.selectedType, size: this.selectedSize, row_idx: rowIndex, col_idx: colIndex, fval: cell.fval });
+                });
+            });
+            const response = await axios.post("/csp/saveMarkingGrid", rows);
+            console.log(response.data);
         },
         async addType() {
             if (!this.inputValue) return;
-            const req = {
-                ftype: this.ftype,
-                fvalue: this.inputValue
-            };
-            console.log("se x", req)
-            response = await axios.post('/csp/addMkOptions', req)
-            console.log(response.data)
-
-            // this.inputValue = ""; // 초기화
+            const req = { ftype: this.ftype, fvalue: this.inputValue };
+            const response = await axios.post('/csp/addMkOptions', req);
+            console.log(response.data);
         },
         handleKeydown(e) {
             if (!this.showModelSuggestions) return;
-
-            if (e.key === "ArrowDown") {
-                e.preventDefault();
-                this.highlightedIndex++;
-                if (this.highlightedIndex >= this.filteredModels.length) {
-                    this.highlightedIndex = 0;
-                }
-            }
-
-            if (e.key === "ArrowUp") {
-                e.preventDefault();
-                this.highlightedIndex--;
-                if (this.highlightedIndex < 0) {
-                    this.highlightedIndex = this.filteredModels.length - 1;
-                }
-            }
-
-            if (e.key === "Enter") {
-                e.preventDefault();
-                if (this.highlightedIndex >= 0) {
-                    this.selectModel(this.filteredModels[this.highlightedIndex]);
-                }
-            }
+            if (e.key === "ArrowDown") { e.preventDefault(); this.highlightedIndex = (this.highlightedIndex + 1) % this.filteredModels.length; }
+            if (e.key === "ArrowUp") { e.preventDefault(); this.highlightedIndex = (this.highlightedIndex - 1 + this.filteredModels.length) % this.filteredModels.length; }
+            if (e.key === "Enter") { e.preventDefault(); if (this.highlightedIndex >= 0) this.selectModel(this.filteredModels[this.highlightedIndex]); }
         },
-
         filterModels() {
             const keyword = this.modelName.toLowerCase();
-
-            this.filteredModels = this.modelList.filter(v =>
-                v.toLowerCase().includes(keyword)
-            );
-
+            this.filteredModels = this.modelList.filter(v => v.toLowerCase().includes(keyword));
             this.showModelSuggestions = true;
-            this.highlightedIndex = -1; // 초기화
+            this.highlightedIndex = -1;
         },
-
         selectModel(model) {
             this.modelName = model;
             this.showModelSuggestions = false;
             this.highlightedIndex = -1;
         },
-
         hideSuggestions() {
-            setTimeout(() => {
-                this.showModelSuggestions = false;
-            }, 150);
+            setTimeout(() => { this.showModelSuggestions = false; }, 150);
         }
-
     }
 }
 </script>
@@ -475,114 +334,185 @@ export default {
     background: #f9fafb;
     min-height: 100vh;
     padding: 40px 20px;
+    max-width: 1000px;
+    margin: 0 auto;
 }
 
+.page-header {
+    margin-bottom: 32px;
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: #191f28;
+    margin-bottom: 6px;
+}
+
+.page-desc {
+    font-size: 15px;
+    color: #8b95a1;
+}
+
+/* 카드 */
 .toss-card {
-    max-width: 980px;
-    margin: 0 auto;
     background: #ffffff;
     border-radius: 24px;
     padding: 32px;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-}
-
-.title {
-    font-size: 28px;
-    font-weight: 700;
-    color: #191f28;
-    margin-bottom: 8px;
-}
-
-.desc {
-    font-size: 15px;
-    color: #8b95a1;
-    margin-bottom: 24px;
-}
-
-.legend-wrap {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 24px;
-}
-
-.legend-item {
-    background: #f2f4f6;
-    color: #4e5968;
-    border-radius: 14px;
-    padding: 10px 14px;
-    font-size: 14px;
-}
-
-.row-card {
-    background: #f9fafb;
-    border-radius: 20px;
-    padding: 20px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
     margin-bottom: 20px;
 }
 
-.row-title {
-    font-size: 18px;
+.title {
+    font-size: 20px;
     font-weight: 700;
     color: #191f28;
-    margin-bottom: 16px;
-}
-
-.cell-row {
+    margin-bottom: 6px;
     display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.badge {
+    font-size: 12px;
+    font-weight: 600;
+    background: #fff0f0;
+    color: #f04452;
+    border-radius: 8px;
+    padding: 3px 10px;
+}
+
+.desc {
+    font-size: 14px;
+    color: #8b95a1;
+    margin-bottom: 20px;
+}
+
+/* 폼 그리드 */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 16px;
-    flex-wrap: wrap;
+    margin-bottom: 20px;
 }
 
-.cell-card {
-    flex: 1;
-    min-width: 180px;
-    background: #ffffff;
-    border: 1px solid #eef1f4;
-    border-radius: 18px;
-    padding: 16px;
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.cell-label {
+.field-label {
     font-size: 14px;
     font-weight: 600;
     color: #4e5968;
-    margin-bottom: 12px;
 }
 
+/* 인풋/셀렉트 공통 */
+.toss-input,
 .toss-select {
     width: 100%;
     height: 44px;
     border: 1px solid #e5e8eb;
     border-radius: 12px;
-    padding: 0 12px;
+    padding: 0 14px;
     font-size: 15px;
     color: #191f28;
     background: #fff;
-    margin-bottom: 10px;
     outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.15s, box-shadow 0.15s;
 }
 
+.toss-input:focus,
 .toss-select:focus {
     border-color: #3182f6;
     box-shadow: 0 0 0 3px rgba(49, 130, 246, 0.12);
 }
 
+/* 파일 인풋 */
+.toss-file-input {
+    width: 100%;
+    height: 44px;
+    border: 1.5px dashed #d1d6db;
+    border-radius: 12px;
+    padding: 0 14px;
+    font-size: 14px;
+    color: #4e5968;
+    background: #f9fafb;
+    outline: none;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.toss-file-input:hover {
+    border-color: #3182f6;
+    background: #f0f6ff;
+}
+
+/* 업로드 행 */
+.upload-row {
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+}
+
+/* 자동완성 */
+.suggestion-list {
+    position: absolute;
+    top: 76px;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e5e8eb;
+    border-radius: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    padding: 6px;
+    margin: 0;
+    list-style: none;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.10);
+}
+
+.suggestion-item {
+    padding: 10px 12px;
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #191f28;
+    transition: background 0.1s;
+}
+
+.suggestion-item:hover,
+.suggestion-item.active {
+    background: #e8f1ff;
+    color: #3182f6;
+}
+
+/* 버튼 */
 .button-wrap {
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
-    margin-top: 28px;
+    gap: 10px;
+    margin-top: 20px;
 }
 
 .toss-btn {
-    height: 48px;
-    padding: 0 20px;
+    height: 44px;
+    padding: 0 22px;
     border: none;
-    border-radius: 14px;
+    border-radius: 12px;
     font-size: 15px;
     font-weight: 700;
     cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+}
+
+.toss-btn:active {
+    transform: scale(0.97);
 }
 
 .toss-btn.primary {
@@ -590,8 +520,69 @@ export default {
     color: #ffffff;
 }
 
+.toss-btn.primary:hover {
+    opacity: 0.88;
+}
+
 .toss-btn.secondary {
     background: #f2f4f6;
     color: #4e5968;
+}
+
+.toss-btn.secondary:hover {
+    background: #e5e8eb;
+}
+
+/* Legend */
+.legend-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.legend-item {
+    background: #f2f4f6;
+    color: #4e5968;
+    border-radius: 12px;
+    padding: 8px 14px;
+    font-size: 13px;
+}
+
+/* Row 카드 */
+.row-card {
+    background: #f9fafb;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.row-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #191f28;
+    margin-bottom: 14px;
+}
+
+.cell-row {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.cell-card {
+    flex: 1;
+    min-width: 160px;
+    background: #ffffff;
+    border: 1px solid #eef1f4;
+    border-radius: 14px;
+    padding: 14px;
+}
+
+.cell-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #8b95a1;
+    margin-bottom: 10px;
 }
 </style>
