@@ -5,7 +5,7 @@
         prop="user.designer.department"
         label="그룹"
         :align="'center'"
-        width="150"
+        width="160"
       >
         <template #default="scope">
           {{ scope.row.designer.department }}
@@ -16,7 +16,7 @@
         prop="waferType"
         label="공정"
         :align="'center'"
-        width="60"
+        width="55"
       >
         <template #default="scope">{{ scope.row.wafer.sawTypeId }}</template>
       </el-table-column>
@@ -25,7 +25,7 @@
         prop="priorityId"
         label="긴급도"
         :align="'center'"
-        width="70"
+        width="65"
       />
 
       <el-table-column
@@ -33,6 +33,7 @@
         label="패키지"
         :align="'center'"
         width="90"
+        sortable
       />
 
       <el-table-column
@@ -82,7 +83,7 @@
       </el-table-column> 
       <el-table-column label="출하" prop="destinationId" :align="'center'">
       </el-table-column>
-      <el-table-column label="생성일" prop="createdDate" width="100" :align="'center'" :formatter="callFormatDate">
+      <el-table-column label="생성일" prop="createdDate" width="100" :align="'center'" :formatter="callFormatDate" sortable>
       </el-table-column>
       <el-table-column
         label="Action"
