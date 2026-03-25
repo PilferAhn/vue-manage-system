@@ -33,7 +33,8 @@
         label="패키지"
         :align="'center'"
         width="90"
-        sortable
+        :filters="packageFilters"
+        :filter-method="filterByPackage"
       />
 
       <el-table-column
@@ -135,6 +136,16 @@ const isLoad = ref<boolean>(false);
 
 const dialogTableVisible = ref(false);
 const selectApplication = ref<FabRequestForm>({});
+
+  const packageFilters = [
+  { text: "CSP", value: "CSP" },
+  { text: "WLP", value: "WLP" },
+  { text: "BDMP", value: "BDMP" },
+];
+
+function filterByPackage(value: string, row: FabRequestForm) {
+  return (row.packageId ?? "") === value;
+}
 
 function handleVisible(status: boolean, fabRequestForm: FabRequestForm) {
   dialogTableVisible.value = status;
