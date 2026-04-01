@@ -306,6 +306,13 @@
                 >의뢰서 다운로드</el-button
               >
               <el-button
+                type="primary"
+                @click="reuseApplication"
+                :disabled="!form.uuid"
+              >
+                의뢰서 재사용
+              </el-button>
+              <el-button
                 type="danger"
                 @click="handleDelete(form)"
                 :disabled="excelUuid === ''"
@@ -429,6 +436,40 @@ const handleDelete = async (row: ApplicationForm) => {
       name: "MyApplications",
     });
   }
+};
+
+const reuseApplication = () => {
+  const reuseData = {
+    customerCompany: form.customerCompany,
+    specTemperature: form.specTemperature,
+    specPower: form.specPower,
+    isSpecEdit: form.isSpecEdit,
+
+    modelName: form.modelName,
+    condition: form.condition,
+    signalType: form.signalType,
+    band: form.band,
+    duplexMode: form.duplexMode,
+    bandwidth: form.bandwidth,
+
+    designer: form.designer,
+    requester: form.requester,
+    purpose: form.purpose,
+    waferType: form.waferType,
+    packageType: form.packageType,
+    detail: form.detail,
+
+    testType: form.testType,
+    targetPosition: form.targetPosition,
+    temperature: String(form.temperature ?? "").replace("℃", ""),
+    sampleQuantity: form.sampleQuantity ?? 0,
+    samples: [],
+  };
+  sessionStorage.setItem("pdt_reuse_form", JSON.stringify(reuseData));
+
+  router.push({
+    name: "PDTApplication",
+  });
 };
 
 const updateApplication = async () => {

@@ -556,6 +556,18 @@ export function watchBand(applicationForm: any, applicationFormBoolean: any) {
           }
         }
       }
+      if (
+        applicationForm.value.sampleQuantity !== 0 &&
+        applicationForm.value.link !== ""
+      ) {
+        let defaultFreq = findFrequacy(applicationForm);
+        applicationForm.value.samples = applicationForm.value.samples.map(
+          (sample: any) => ({
+            ...sample,
+            defaultFreq: defaultFreq,
+          })
+        );
+      }
     }
   );
 }
