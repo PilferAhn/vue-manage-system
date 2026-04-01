@@ -1541,21 +1541,36 @@ async function handleEnter(value) {
   // const username = ref(localStorage.getItem('ms_username'));
   const req = await handleGetDataByModelCode(value);
   const lotids = await getLotNo(value);
-  if (lotids && lotids.length > 0) {
-    const [left, right] = lotids[0].split(';;');
+  // if (lotids && lotids.length > 0) {
+  //   const [left, right] = lotids[0].split(';;');
+  //   // lotsData
+  //   lotsData.value = [left]; 
+  //   console.log(right)
+  //   // txData lot no : boxid 출하날짜
+  //   txData.value = {
+  //     [left]: right
+  //   };
+  // }
+  // if (req.default_modelName === 'false') {
+  //   alert(value + " NOT FOUND");
+  //   return;
+  // }
+  const lotdata = [];
 
-    // lotsData
-    lotsData.value = [left]; 
-    console.log(right)
-    // txData lot no : boxid 출하날짜
-    txData.value = {
-      [left]: right
-    };
+  if (lotids?.length) {
+    for (const lot of lotids) {
+      const [left, right] = lot.split(';;');
+      if (!left) continue;
+
+      const [lotId, waferId, state] = left.split('/');
+
+      lotdata.push(left);
+    }
   }
-  if (req.default_modelName === 'false') {
-    alert(value + " NOT FOUND");
-    return;
-  }
+  lotsData.value = lotdata
+ 
+
+ 
 
   // 여기서 필요한 처리 수행 (예: 저장, API 호출 등) 
 

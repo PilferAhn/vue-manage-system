@@ -271,7 +271,7 @@ export async function getLotNo(modelCode: string) {
       "/csp/get_lot_no?modelCode=" + modelCode
     );
 
-    console.log("hhhhㅗㅗㅗㅗ",response.data)
+    console.log(response.data)
     return response.data;
   } catch (err) {
     console.error("There was an error with the submission", err);
