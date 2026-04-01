@@ -726,6 +726,10 @@ export async function submitForm2(
   applicationUuid,
   tegTypes: any | null
 ) {
+  if (!(files && files.length > 0)) {
+        ElMessage.error("CER 0 관련 파일을 업로드해주세요.");
+        return false;
+  }
   form?.validate(async (valid: boolean) => {
     activateDownload.value = false;
     if (valid) {
