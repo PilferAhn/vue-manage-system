@@ -147,7 +147,7 @@
                 </tr>
                 <!-- MERERIAL Wafer -->
                 <tr>
-                  <td rowspan="4" class="hcell">
+                  <td rowspan="5" class="hcell">
                     Wafer
                   </td>
                   <td class="hcell" style="background-color: #ff00ff;">
@@ -209,6 +209,16 @@
                   <td colspan="3">
                     {{ `${formData.wafer_chip_qty}*${formData.wafer_send_quantity}` }}
                   </td>
+                </tr>
+<tr>
+                  <td class="hcell" style="background-color: #ff00ff;">
+                    BOX ID
+                  </td>
+                  <td colspan="6">
+
+                    {{ formData.box_id }}
+                  </td>
+ 
                 </tr>
 
 
@@ -759,7 +769,8 @@ const formData = reactive<ApplicationData>({
   fb_note: "",
   fb_1_numbering: "",
   mk_marking: "",
-  form_status: ""
+  form_status: "",
+  box_id:""
 })
 
 const selectedLots = ref<string[]>([]);
@@ -932,6 +943,7 @@ async function handleEnter(value) {
   formData.default_productSize = req.default_productSize
   formData.dc_blade_thickness = req.dc_blade_thickness
   formData.dc_thickness = req.dc_thickness
+  formData.box_id = req.box_id
 
 
   // image seting

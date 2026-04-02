@@ -43,12 +43,12 @@ const handleSearchQuery = async (query: any) => {
   // cspTableData.value = result;
 
   customList.value = result.map(item => {
-    const rawBox = item.box_id ?? '';
-    const [datePart, boxId] = rawBox.split('/');
+    // const rawBox = item.box_id ?? '';
+    // const [datePart, boxId] = rawBox.split('/');
     return {
       ...item,                         // 기존 데이터 유지
-      tx_date: boxIdFormat(rawBox),  // 출하일자 (yyyyMMdd)
-      box_id: boxId ?? '-'              // 슬래시 뒤쪽
+      tx_date: "-",  // 출하일자 (yyyyMMdd)
+      // box_id: boxId ?? '-'              // 슬래시 뒤쪽
     };
   });
 };
