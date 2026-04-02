@@ -158,7 +158,7 @@
           class="wide-select"
         ></inputText>
         <inputText
-          v-model="requestNumber"
+          v-model="applicationForm.requester"
           label=""
           prop="requester"
           placeholder="의뢰자"
@@ -354,7 +354,7 @@ const { form: applicationForm } = usePDTRequestForm();
 const { form: applicationFormBoolean } = usePDTRequestFormBoolean();
 const requestNumber = localStorage.getItem("ms_username") ?? "";
 const NO_BW = new Set(["CW", "CW Duty 50%", "WIFI", "GSM"]);
-
+const isApplyingReuseData = ref(false);
 const rulesForCreate = computed(() => ({
   ...applicationRules,
   bandwidth: [
@@ -392,6 +392,7 @@ watch(
 watch(
   () => applicationForm.value.testType,
   () => {
+    if (isApplyingReuseData.value) return;
     resetForm(applicationForm, requestNumber);
     // applicationRules.value = createApplicationRules(
     //   applicationFormBoolean.value
@@ -412,7 +413,48 @@ const pdtModuleFiles = ref<{
 
 // Load form values from localStorage when the component is mounted
 onMounted(() => {
-  loadForm(applicationForm);
+  const reuseRaw = sessionStorage.getItem("pdt_reuse_form");
+  
+  if (reuseRaw) {
+     isApplyingReuseData.value = true;
+    const reuseData = JSON.parse(reuseRaw);
+    
+    applicationForm.value.customerCompany = reuseData.customerCompany ?? "";
+    applicationForm.value.specTemperature = reuseData.specTemperature ?? "";
+    applicationForm.value.specPower = reuseData.specPower ?? "";
+    applicationForm.value.isSpecEdit = reuseData.isSpecEdit ?? false;
+
+    applicationForm.value.modelName = reuseData.modelName ?? "";
+    applicationForm.value.condition = reuseData.condition ?? "";
+
+    applicationForm.value.signalType = reuseData.signalType ?? "";
+    applicationForm.value.band = reuseData.band ?? "";
+    applicationForm.value.duplexMode = reuseData.duplexMode ?? "";
+    applicationForm.value.bandwidth = reuseData.bandwidth ?? "";
+
+    applicationForm.value.designer = reuseData.designer ?? "";
+    applicationForm.value.requester = reuseData.requester ?? "";
+    applicationForm.value.purpose = reuseData.purpose ?? "";
+
+    applicationForm.value.waferType = reuseData.waferType ?? "";
+    applicationForm.value.packageType = reuseData.packageType ?? "";
+    applicationForm.value.detail = reuseData.detail ?? "";
+
+    applicationForm.value.testType = reuseData.testType ?? "";
+    applicationForm.value.targetPosition = reuseData.targetPosition ?? "";
+    applicationForm.value.temperature = reuseData.temperature ?? "";
+
+    applicationForm.value.sampleQuantity = 0;
+    applicationForm.value.samples = Array.isArray(reuseData.samples) ? reuseData.samples : [];
+
+    // 새 의뢰서이므로 초기화
+    applicationForm.value.requestNumber = "";
+    applicationForm.value.status = "created";
+    sessionStorage.removeItem("pdt_reuse_form");
+  }else{
+    loadForm(applicationForm);
+  }
+
   watchSignalType(
     applicationForm,
     applicationFormBoolean,
