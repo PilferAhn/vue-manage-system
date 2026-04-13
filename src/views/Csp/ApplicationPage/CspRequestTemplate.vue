@@ -136,7 +136,9 @@
                   <td colspan="1" style="background-color: #ff00ff;">
                     WAFER
                   </td>
-                  <td colspan="2">{{ `${formData.system_mes_wafer} &nbsp` }}</td>
+                  <td colspan="2">
+                    {{ `${formData.system_mes_wafer} &nbsp` }}
+                  </td>
                 </tr>
                 <tr>
                   <td colspan="1" style="background-color: #ff00ff;">PKG/PCB</td>
@@ -327,11 +329,11 @@
 
                 <!-- 중점공정 -->
                 <tr>
-                  <td rowspan="10" class="hcell">
+                  <td rowspan="12" class="hcell">
                     Trọng tâm công đoạn <br />
                     중점공정
                   </td>
-                  <td class="hcell" colspan="1">
+                  <td class="hcell" colspan="1" rowspan="2">
                     B/B
                   </td>
                   <td class="hcell" colspan="1" style="background-color: #ff00ff;">
@@ -339,6 +341,23 @@
                   </td>
                   <td colspan="6">
                     {{ formData.bb_ballsize }}
+                  </td>
+
+                </tr>
+                <tr>
+
+                  <td class="hcell" colspan="1">
+                    Bump Map
+                  </td>
+                  <td colspan="6" @input="e => formDataTemp.bump_map = (e.target as HTMLElement).innerText">
+                    <el-checkbox :label="'All Bump'" :true-label="'All Bump'" :false-label="''"
+                      v-model="formData.bump_map">
+                      All Bump
+                    </el-checkbox>
+                    <el-checkbox :label="'Marking WHC'" :true-label="'Marking WHC'" :false-label="''"
+                      v-model="formData.bump_map">
+                      Bump Map File
+                    </el-checkbox>
                   </td>
 
                 </tr>
@@ -670,7 +689,7 @@
 
 
                 <tr>
-                  <td class="hcell" rowspan="1" colspan="1">
+                  <td class="hcell" rowspan="2" colspan="1">
                     E/L
                   </td>
                   <td class="hcell" colspan="1">
@@ -679,7 +698,36 @@
                   </td>
                   <td colspan="2" contenteditable="true"
                     @input="e => formDataTemp.el_link_method = (e.target as HTMLElement).innerText">
-                    {{ formData.el_link_method }}
+                     <div style="display: flex;">
+                      <div class="drop-zone" @click="triggerFileSelect('fileInputJIG1')" @drop.prevent="onDropJIG1"
+                        @dragover.prevent>
+                        <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
+                        <div v-for="(img, index) in existingJIG1" :key="'existing-' + index"
+                          style="position: relative; display: inline-block; margin: 10px;">
+                          <img :src="img.url" style="max-width:200px;" />
+
+                          <button @click.stop="removeExistingImageJIG1(index)"
+                            style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                            ❌
+                          </button>
+                        </div>
+                        <div v-for="(file, index) in imagesetJIG1" :key="index"
+                          style="position: relative; display: inline-block; margin: 10px;">
+                          <img :src="getObjectURL(file)" alt="업로드된 이미지" style="max-width: 200px; max-height: 300px;" />
+                          <button @click.stop="removeImageJIG1(index)"
+                            style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                            ❌
+                          </button>
+                        </div>
+                        <input ref="fileInputJIG1" type="file" accept="image/*" style="display:none"
+                          @change="handelFilesChangeJIG1" multiple />
+                      </div>
+                      <div style="width: 100%; border:1px solid black" contenteditable="true"
+                        @paste.prevent="handlePaste('JIG1', $event)">
+                        <!-- {{ formData.el_EVB_setup_port }} -->
+                      </div>
+
+                    </div>
                   </td>
                   <td class="hcell" colspan="1">
                     EVB Setup Port
@@ -716,6 +764,31 @@
                       </div>
 
                     </div>
+                  </td>
+
+                </tr>
+                <tr>
+
+                  <td class="hcell" colspan="1">
+                    Packing Carrier Tape
+                  </td>
+                  <td colspan="2" contenteditable="true"
+                    @input="e => formDataTemp.el_carrier_tape = (e.target as HTMLElement).innerText">
+                    {{ formData.el_carrier_tape }}
+                  </td>
+                  <td class="hcell" colspan="1">
+                    Hướng packing <br />
+                    포장 방향
+                  </td>
+                  <td colspan="3" @input="e => formDataTemp.pak_direction = (e.target as HTMLElement).innerText">
+                    <el-checkbox :label="'default'" :true-label="'default'" :false-label="''"
+                      v-model="formData.pak_direction">
+                      표준 방향
+                    </el-checkbox>
+                    <el-checkbox :label="'QPX'" :true-label="'QPX'" :false-label="''"
+                      v-model="formData.pak_direction">
+                      QPX 방향
+                    </el-checkbox>
                   </td>
 
                 </tr>
@@ -874,9 +947,7 @@
                     </div>
                   </td>
                 </tr>
-                <tr>
-
-                </tr>
+            
               </tbody>
             </table>
             <div>
@@ -1018,7 +1089,10 @@ const formData = reactive<ApplicationData>({
   fb_1_numbering: "",
   mk_marking: "",
   form_status: "",
-  box_id: ""
+  box_id: "",
+  bump_map: "",
+  el_carrier_tape:"",
+  pak_direction:""
 })
 
 
@@ -1082,7 +1156,10 @@ const formDataTemp = reactive<ApplicationData>({
   fb_1_numbering: "",
   mk_marking: "",
   form_status: "",
-  box_id: ""
+  box_id: "",
+  bump_map: "",
+  el_carrier_tape:"",
+  pak_direction:""
 })
 const loading = ref(true);
 const application = ref<ApplicationData>();
@@ -1102,7 +1179,8 @@ const fileInputSS1 = ref<HTMLInputElement | null>(null);
 const fileInputMWA1 = ref<HTMLInputElement | null>(null);
 const fileInputPMAP1 = ref<HTMLInputElement | null>(null);
 const fileInputWMAP1 = ref<HTMLInputElement | null>(null);
-
+const fileInputPAK1 = ref<HTMLInputElement | null>(null);
+const fileInputJIG1 = ref<HTMLInputElement | null>(null);
 const boxMap = ref(new Map());
 
 const existingFB1 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
@@ -1115,7 +1193,8 @@ const existingSS1 = ref<{ url: string; file_index: string; cell_name: string }[]
 const existingMWA1 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
 const existingPMAP1 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
 const existingWMAP1 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
-
+const existingPAK1 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
+const existingJIG1 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
 
 
 const deleteImage = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
@@ -1130,6 +1209,8 @@ const filesetSS1 = ref<File[]>([]);
 const filesetMWA1 = ref<File[]>([]);
 const filesetPMAP1 = ref<File[]>([]);
 const filesetWMAP1 = ref<File[]>([]);
+const imagesetPAK1 = ref<File[]>([]);
+const imagesetJIG1 = ref<File[]>([]);
 
 
 const selectedLots = ref<string[]>([]);
@@ -1191,6 +1272,15 @@ function handleFilesChangePMAP1(e: Event) {
 function handleFilesChangeWMAP1(e: Event) {
   onFilesChange(e, filesetWMAP1);
 }
+function handleFilesChangePAK1(e: Event) {
+  onFilesChange(e, imagesetPAK1);
+}
+
+function handelFilesChangeJIG1(e:Event){
+  onFilesChange(e, imagesetJIG1)
+}
+
+
 function removeImageFB1(index: number) {
   imagesetFB1.value.splice(index, 1);
 }
@@ -1212,7 +1302,13 @@ function removeImageFB2(index: number) {
   filesetPMAP1.value.splice(index, 1);
 } function removeImageWMAP1(index: number) {
   filesetWMAP1.value.splice(index, 1);
+} function removeImagePAK1(index: number) {
+  imagesetPAK1.value.splice(index, 1);
+} function removeImageJIG1(index: number) {
+  imagesetJIG1.value.splice(index, 1);
 }
+
+
 function removeExistingImageFB1(index: number) {
   const target = existingFB1.value[index];
   if (target) {
@@ -1286,7 +1382,21 @@ function removeExistingImageWMAP1(index: number) {
   }
 }
 
+function removeExistingImagePAK1(index: number) {
+  const target = existingPAK1.value[index];
+  if (target) {
+    deleteImage.value.push(target);
+    existingPAK1.value.splice(index, 1);
+  }
+}
+function removeExistingImageJIG1(index: number) {
+  const target = existingJIG1.value[index];
+  if (target) {
+    deleteImage.value.push(target);
+    existingJIG1.value.splice(index, 1);
+  }
 
+}
 function getObjectURL(file: File): string {
   return URL.createObjectURL(file)
 }
@@ -1294,7 +1404,7 @@ function getObjectURL(file: File): string {
 
 // 파일 선택창 열기
 function triggerFileSelect(target: 'fileInputFB1' | 'fileInputFB2' | 'fileInputFB3' | 'fileInputFB4' | 'fileInputMK1' | 'fileInputEV1' | 'fileInputSS1'
-  | 'fileInputMWA1' | 'fileInputPMAP1' | 'fileInputWMAP1') {
+  | 'fileInputMWA1' | 'fileInputPMAP1' | 'fileInputWMAP1' | 'fileInputPAK1' | 'fileInputJIG1') {
   if (target === 'fileInputFB1') fileInputFB1.value?.click();
   if (target === 'fileInputFB2') fileInputFB2.value?.click();
   if (target === 'fileInputFB3') fileInputFB3.value?.click();
@@ -1305,6 +1415,8 @@ function triggerFileSelect(target: 'fileInputFB1' | 'fileInputFB2' | 'fileInputF
   if (target === 'fileInputMWA1') fileInputMWA1.value?.click();
   if (target === 'fileInputPMAP1') fileInputPMAP1.value?.click();
   if (target === 'fileInputWMAP1') fileInputWMAP1.value?.click();
+  if (target === 'fileInputPAK1') fileInputPAK1.value?.click();
+  if (target === 'fileInputJIG1') fileInputJIG1.value?.click();
 }
 
 function onFilesChange(event: Event, imageset: Ref<File[]>) {
@@ -1343,7 +1455,7 @@ function handleSubmitButtton() {
   console.log("saving..")
   formData.form_status = "완료"
   handleSubmitTempForm(formData, imagesetFB1.value, imagesetFB2.value, imagesetFB3.value, imagesetFB4.value, imagesetMK1.value, imagesetEV1.value,
-    filesetSS1.value, filesetMWA1.value, filesetPMAP1.value, filesetWMAP1.value, deleteImage.value);
+    filesetSS1.value, filesetMWA1.value, filesetPMAP1.value, filesetWMAP1.value, imagesetPAK1.value,imagesetJIG1.value, deleteImage.value);
 }
 
 function handleTempSave() {
@@ -1351,14 +1463,14 @@ function handleTempSave() {
     alert('저장할 기종명이 존재하지 않습니다.')
     return;
   }
- 
+
   mappingTemp()
   console.log("saving..")
 
   formData.form_status = "임시저장"
   console.log(formData)
   handleSubmitTempForm(formData, imagesetFB1.value, imagesetFB2.value, imagesetFB3.value, imagesetFB4.value, imagesetMK1.value, imagesetEV1.value,
-    filesetSS1.value, filesetMWA1.value, filesetPMAP1.value, filesetWMAP1.value, deleteImage.value);
+    filesetSS1.value, filesetMWA1.value, filesetPMAP1.value, filesetWMAP1.value, imagesetPAK1.value,imagesetJIG1.value,deleteImage.value);
 }
 
 function mappingTemp() {
@@ -1381,6 +1493,8 @@ function mappingTemp() {
   formData.analysis_fa_item = formDataTemp.analysis_fa_item
   formData.reliability_item = formDataTemp.reliability_item
   formData.dc_blade_thickness = formDataTemp.dc_blade_thickness
+  formData.el_carrier_tape = formDataTemp.el_carrier_tape
+  formData.bump_map = formDataTemp.bump_map
 }
 
 
@@ -1507,6 +1621,25 @@ function onDropWMAP1(event: DragEvent) {
   }
 }
 
+function onDropPAK1(event: DragEvent) {
+  const files = event.dataTransfer?.files;
+  if (!files) return;
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    imagesetPAK1.value.push(file);
+  }
+}
+
+function onDropJIG1(event:DragEvent) {
+  const files = event.dataTransfer?.files;
+  if (!files) return;
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    imagesetJIG1.value.push(file);
+  }
+}
 
 
 onMounted(async () => {
@@ -1564,6 +1697,7 @@ async function handleEnter(value) {
   //   alert(value + " NOT FOUND");
   //   return;
   // }
+  console.log(req)
   const lotdata = [];
   const lotMap = new Map();
 
@@ -1631,6 +1765,9 @@ async function handleEnter(value) {
   formData.bg_afterthickness = req.bg_afterthickness;
   formData.dc_meterial = req.dc_meterial;
   formData.mk_note = req.mk_note;
+  formData.bump_map = req.bump_map
+  formData.pak_direction = req.pak_direction
+  formData.el_carrier_tape = req.el_carrier_tape
   formData.pd_dicing_line_size = req.pd_dicing_line_size;
   formData.pd_note = req.pd_note;
   formData.el_link_method = req.el_link_method;
@@ -1676,6 +1813,9 @@ async function handleEnter(value) {
   formDataTemp.pkg_note = formData.pkg_note
   formDataTemp.fb_2_spl = formData.fb_2_spl
   formDataTemp.mk_note = formData.mk_note
+  formDataTemp.bump_map = formData.bump_map
+  formDataTemp.pak_direction = formData.pak_direction
+  formDataTemp.el_carrier_tape = formData.el_carrier_tape
   formDataTemp.pd_note = formData.pd_note
   formDataTemp.el_link_method = formData.el_link_method
   formDataTemp.el_EVB_setup_port = formData.el_EVB_setup_port
@@ -1703,7 +1843,7 @@ async function handleEnter(value) {
         existingMK1.value.push(item);
       } else if (item.cell_name === 'EV1') {
         existingEV1.value.push(item);
-      } else if (item.cell_name === 'WMA1') {
+      } else if (item.cell_name === 'MWA1') {
         existingMWA1.value.push(item);
       } else if (item.cell_name === 'PMAP1') {
         existingPMAP1.value.push(item);
@@ -1770,6 +1910,7 @@ const handlePaste = (state: string, e: ClipboardEvent) => {
         imagesetEV1.value.push(file);
         return
       }
+      
       // const reader = new FileReader();
       // reader.onload = (event) => {
       //   const imageUrl = event.target.result;

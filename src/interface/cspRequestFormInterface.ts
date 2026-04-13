@@ -50,6 +50,7 @@ export interface ApplicationData {
     dc_thickness: string
 
     mk_note: string
+    bump_map: string
 
     pd_dicing_line_size: string
     pd_note: string
@@ -68,6 +69,8 @@ export interface ApplicationData {
     mk_marking: string
     form_status: string
     box_id:string
+    el_carrier_tape:string
+    pak_direction:string
 }
 
 export interface CspImages {

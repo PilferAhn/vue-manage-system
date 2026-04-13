@@ -113,7 +113,7 @@
 
                 <!-- MERERIAL System -->
                 <tr>
-                  <td colspan="1" rowspan="9" class="hcell">Vật liệu
+                  <td colspan="1" rowspan="10" class="hcell">Vật liệu
                     <br />
                     자재
                   </td>

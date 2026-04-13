@@ -169,9 +169,9 @@
                                 <option value="A">A</option>
                                 <option value="U">U</option>
                                 <option value="X">X</option>
-                                <option value="O">○</option>
-                                <option value="Q">●</option>
-                                <option value="S">[]</option>
+                                <option value="오">○</option>
+                                <option value="큐">●</option>
+                                <option value="콩">[]</option>
                             </select>
                         </div>
                     </div>
