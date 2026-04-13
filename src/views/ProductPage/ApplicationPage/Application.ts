@@ -36,6 +36,7 @@ export const testOptions = [
   "Drop",
   "Step",
   "SMARTERMICRO FUSE",
+  "DEGRADE"
 ];
 
 export const vswrOptions = ["1:1", "1:4", "1:6"];
