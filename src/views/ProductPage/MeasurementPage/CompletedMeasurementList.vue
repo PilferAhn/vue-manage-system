@@ -95,6 +95,16 @@
         ></measurement-tab>
       </template>
     </el-tab-pane>
+     <!-- Degrade 탭 내용 -->
+    <el-tab-pane label="Degrade" name="Degrade">
+      <template v-if="activeTabName === 'Degrade'">
+        <measurement-tab
+          :testType="'Degrade'"
+          :searchType="'reverse'"
+          :status = "'finished'"
+        ></measurement-tab>
+      </template>
+    </el-tab-pane>
 
     <!-- 여기에 다른 탭들을 추가할 수 있습니다. -->
   </el-tabs>
