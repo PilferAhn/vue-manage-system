@@ -123,7 +123,7 @@
 
                 <!-- MERERIAL System -->
                 <tr>
-                  <td colspan="1" rowspan="9" class="hcell">Vật liệu
+                  <td colspan="1" rowspan="10" class="hcell">Vật liệu
                     <br />
                     자재
                   </td>
@@ -157,7 +157,7 @@
                 </tr>
                 <!-- MERERIAL Wafer -->
                 <tr>
-                  <td rowspan="4" class="hcell">
+                  <td rowspan="5" class="hcell">
                     Wafer
                   </td>
                   <td class="hcell" style="background-color: #ff00ff;">
@@ -225,7 +225,16 @@
                     {{ `${formData.wafer_chip_qty}*${formDataTemp.wafer_send_quantity}` }}
                   </td>
                 </tr>
+                <tr>
+                  <td class="hcell" style="background-color: #ff00ff;">
+                    BOX ID
+                  </td>
+                  <td colspan="6">
+                    {{ formDataTemp.box_id }}
+                  </td>
 
+
+                </tr>
 
                 <!-- MERERIAL PKG -->
 
@@ -1009,7 +1018,7 @@ const formData = reactive<ApplicationData>({
   fb_1_numbering: "",
   mk_marking: "",
   form_status: "",
-  box_id:""
+  box_id: ""
 })
 
 
@@ -1073,7 +1082,7 @@ const formDataTemp = reactive<ApplicationData>({
   fb_1_numbering: "",
   mk_marking: "",
   form_status: "",
-  box_id:""
+  box_id: ""
 })
 const loading = ref(true);
 const application = ref<ApplicationData>();
@@ -1094,7 +1103,7 @@ const fileInputMWA1 = ref<HTMLInputElement | null>(null);
 const fileInputPMAP1 = ref<HTMLInputElement | null>(null);
 const fileInputWMAP1 = ref<HTMLInputElement | null>(null);
 
-
+const boxMap = ref(new Map());
 
 const existingFB1 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
 const existingFB2 = ref<{ url: string; file_index: string; cell_name: string }[]>([]);
@@ -1342,12 +1351,12 @@ function handleTempSave() {
     alert('저장할 기종명이 존재하지 않습니다.')
     return;
   }
-  console.log(formDataTemp.box_id)
+ 
   mappingTemp()
   console.log("saving..")
 
   formData.form_status = "임시저장"
-
+  console.log(formData)
   handleSubmitTempForm(formData, imagesetFB1.value, imagesetFB2.value, imagesetFB3.value, imagesetFB4.value, imagesetMK1.value, imagesetEV1.value,
     filesetSS1.value, filesetMWA1.value, filesetPMAP1.value, filesetWMAP1.value, deleteImage.value);
 }
@@ -1556,6 +1565,7 @@ async function handleEnter(value) {
   //   return;
   // }
   const lotdata = [];
+  const lotMap = new Map();
 
   if (lotids?.length) {
     for (const lot of lotids) {
@@ -1563,14 +1573,12 @@ async function handleEnter(value) {
       if (!left) continue;
 
       const [lotId, waferId, state] = left.split('/');
-
+      lotMap.set(left, right);
       lotdata.push(left);
     }
   }
   lotsData.value = lotdata
- 
-
- 
+  boxMap.value = lotMap;
 
   // 여기서 필요한 처리 수행 (예: 저장, API 호출 등) 
 
@@ -1784,15 +1792,31 @@ const handlePaste = (state: string, e: ClipboardEvent) => {
   console.log('최종 붙여넣기 후 내용:', content);
 };
 watch(selectedLots, (newValue) => {
-  if (newValue.length > 0) {
+  if (newValue?.length > 0) {
+    // wafer lot
     formDataTemp.wafer_lot_no = newValue.join(',');
-    formDataTemp.wafer_mark = newValue
-      .map(v => v.split('/')[1])
-      .join(', '); 
-    formDataTemp.box_id = newValue
-      .map(lot => txData.value[lot])
-      .filter(Boolean)
-      .join(',');
+
+    // wafer mark (중복 제거 + 안전)
+    const waferMarks = new Set(
+      newValue
+        .map(v => v?.split('/')?.[1] || '-')
+        .filter(Boolean)
+    );
+
+    formDataTemp.wafer_mark = [...waferMarks].join(', ');
+
+    // box id (중복 제거 + null 방지)
+    const boxIds = new Set(
+      newValue
+        .map(lot => {
+          const val = boxMap.value?.get(lot);
+          return val ? val.split('/')?.[1] : '-';
+        })
+        .filter(Boolean)
+    );
+
+    formDataTemp.box_id = [...boxIds].join(',');
+
   } else {
     formDataTemp.wafer_lot_no = '';
     formDataTemp.wafer_mark = '';
