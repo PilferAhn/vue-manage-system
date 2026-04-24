@@ -66,7 +66,7 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
     path: "/fab/fab-card-moniter",
     name: "PlanedWholeApps",
     meta: {
-      title: "투입 계획서 목록",
+      title: "FabCard현황",
       permiss: "11",
     },
     component: () =>

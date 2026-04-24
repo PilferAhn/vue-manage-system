@@ -72,7 +72,7 @@ const emit = defineEmits<{
   (e: "clear-package-evidence-file"): void;
 }>();
 
-const excludeList = ["admin", "w220112", "w2180511", "w223051", "w2220606"]; 
+const excludeList = ["admin", "w220112", "w2180511", "w223051", "w2220606", "w2150305"]; 
 
 // Submit 함수
 const submitForm = async (type: string) => {

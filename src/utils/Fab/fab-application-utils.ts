@@ -1118,39 +1118,39 @@ export function calFabOutLeadTime(fabApp: FabRequestForm, sawTypeId: string) {
   let expectedDate = 9;
 
   if (sawTypeId === "NS") {
-    expectedDate = 9;
+    expectedDate = 7;
     if (fabApp.packageId === "CSP") {
       if (fabApp.isDualIdt) {
-        expectedDate = 11;
-      } else {
         expectedDate = 9;
+      } else {
+        expectedDate = 7;
       }
     } else if (fabApp.packageId === "WLP") {
-      expectedDate = 9;
+      expectedDate = 7;
     } else if (fabApp.packageId === "BDMP") {
-      expectedDate = 11;
+      expectedDate = 9;
     }
   } else if (sawTypeId === "TC") {
-    expectedDate = 12;
+    expectedDate = 10;
     if (fabApp.packageId === "CSP") {
       if (fabApp.isMst) {
-        expectedDate = 16;
+        expectedDate = 13;
       } else {
-        expectedDate = 12;
+        expectedDate = 10;
       }
+    } else if (fabApp.packageId === "WLP") {
+      expectedDate = 10;
+    } else if (fabApp.packageId === "BDMP") {
+      expectedDate = 12;
+    }
+  } else {
+    expectedDate = 12;
+    if (fabApp.packageId === "CSP") {
+      expectedDate = 12;
     } else if (fabApp.packageId === "WLP") {
       expectedDate = 12;
     } else if (fabApp.packageId === "BDMP") {
-      expectedDate = 15;
-    }
-  } else {
-    expectedDate = 15;
-    if (fabApp.packageId === "CSP") {
-      expectedDate = 15;
-    } else if (fabApp.packageId === "WLP") {
-      expectedDate = 15;
-    } else if (fabApp.packageId === "BDMP") {
-      expectedDate = 17;
+      expectedDate = 14;
     }
   }
   return expectedDate;
