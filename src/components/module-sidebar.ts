@@ -12,8 +12,18 @@ export const moduleSilderBarList: SidebarItem = {
       permiss: "11",
     },
     {
+      index: "/modules/application/create_new",
+      title: "의뢰서 작성_NEW",
+      permiss: "11",
+    },
+    {
       index: "/modules/application/list",
       title: "의뢰 항목",
+      permiss: "11",
+    },
+    {
+      index: "/modules/application/list_new",
+      title: "의뢰 항목_NEW",
       permiss: "11",
     },
     {
