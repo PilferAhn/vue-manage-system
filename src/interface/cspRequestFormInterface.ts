@@ -71,6 +71,14 @@ export interface ApplicationData {
     box_id:string
     el_carrier_tape:string
     pak_direction:string
+    wafer_sin:string
+    wafer_angle:string
+    el_ir_test:string
+    el_jig_vers:string
+    el_jig_spara:string
+    el_evb_flag:string
+    el_qty:string
+
 }
 
 export interface CspImages {

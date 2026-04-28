@@ -70,6 +70,14 @@ export const initializeApplicationData = () => {
     bump_map: "",
     el_carrier_tape:"",
     pak_direction:"",
+    wafer_sin: "",
+  wafer_angle: "",
+  el_ir_test: "",
+  el_jig_vers: "",
+  el_jig_spara: "",
+  el_evb_flag: "",
+  el_qty: ""
+
   });
 };
 

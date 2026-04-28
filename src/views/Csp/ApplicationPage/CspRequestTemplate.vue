@@ -123,7 +123,7 @@
 
                 <!-- MERERIAL System -->
                 <tr>
-                  <td colspan="1" rowspan="10" class="hcell">Vật liệu
+                  <td colspan="1" rowspan="12" class="hcell">Vật liệu
                     <br />
                     자재
                   </td>
@@ -159,9 +159,21 @@
                 </tr>
                 <!-- MERERIAL Wafer -->
                 <tr>
-                  <td rowspan="5" class="hcell">
+                  <td rowspan="7" class="hcell">
                     Wafer
                   </td>
+                  <td class="hcell">
+                    SiN
+                  </td>
+
+                   <td colspan="6" contenteditable="true"
+                    @input="e => formDataTemp.wafer_sin = (e.target as HTMLElement).innerText">
+                    {{ formData.wafer_sin }}
+                  </td>
+
+                </tr>
+                <tr>
+
                   <td class="hcell" style="background-color: #ff00ff;">
                     Chip size
                   </td>
@@ -174,6 +186,16 @@
                   <td colspan="3">
                     {{ `${formData.wafer_thickness}` }}
                   </td>
+                </tr>
+                <tr>
+
+                  <td class="hcell" style="background-color: #ff00ff;">
+                    Wafer Angle
+                  </td>
+                  <td colspan="6">
+                    {{ formData.wafer_angle }}
+                  </td>
+
                 </tr>
 
                 <tr>
@@ -329,7 +351,7 @@
 
                 <!-- 중점공정 -->
                 <tr>
-                  <td rowspan="12" class="hcell">
+                  <td rowspan="15" class="hcell">
                     Trọng tâm công đoạn <br />
                     중점공정
                   </td>
@@ -687,18 +709,83 @@
                 </tr>
 
 
-
                 <tr>
-                  <td class="hcell" rowspan="2" colspan="1">
+                  <td class="hcell" rowspan="5" colspan="1">
                     E/L
                   </td>
+                  <td class="hcell" colspan="1">
+                    IR Test<br />
+                    측정여부
+                  </td>
+            
+                   <td colspan="2">
+                    <el-checkbox :label="'YES'" :true-label="'YES'" :false-label="''"
+                      v-model="formData.el_ir_test">
+                      YES
+                    </el-checkbox>
+                    <el-checkbox :label="'NO'" :true-label="'NO'" :false-label="''" v-model="formData.el_ir_test">
+                      NO
+                    </el-checkbox>
+                  </td>
+                  <td class="hcell" colspan="1">
+                    E/L JIG<br />
+                    version
+                  </td>
+                  <td colspan="3" @input="e => formDataTemp.el_jig_vers = (e.target as HTMLElement).innerText">
+                    <el-checkbox :label="'MP'" :true-label="'MP'" :false-label="''"
+                      v-model="formData.el_jig_vers">
+                      MP
+                    </el-checkbox>
+                    <el-checkbox :label="'NEW'" :true-label="'NEW'" :false-label="''"
+                      v-model="formData.el_jig_vers">
+                      NEW
+                    </el-checkbox>
+                  </td>
+                </tr>
+                <tr>
+
+                  <td class="hcell" colspan="1">
+                    Jig S_para 측정 여부
+                  </td>
+         
+                   <td colspan="2" @input="e => formDataTemp.el_jig_spara = (e.target as HTMLElement).innerText">
+                    <el-checkbox :label="'Y'" :true-label="'Y'" :false-label="''"
+                      v-model="formData.el_jig_spara">
+                      Y
+                    </el-checkbox>
+                    <el-checkbox :label="'N'" :true-label="'N'" :false-label="''"
+                      v-model="formData.el_jig_spara">
+                      N
+                    </el-checkbox>
+                  </td>
+                  <td class="hcell" colspan="1">
+                    EVB 전달 여부
+                  </td>
+                  <td colspan="3" contenteditable="true"
+                    @input="e => formDataTemp.el_evb_flag = (e.target as HTMLElement).innerText">
+                    {{ formData.el_evb_flag }}
+                  </td>
+                </tr>
+                <tr>
+
+                  <td class="hcell" colspan="1">
+                    JIG 측정 수량 <br />
+                    (Q'ty Jig S-para)
+                  </td>
+                  <td colspan="6" contenteditable="true"
+                    @input="e => formDataTemp.el_qty = (e.target as HTMLElement).innerText">
+                    {{ formData.el_qty }}
+                  </td>
+
+                </tr>
+                <tr>
                   <td class="hcell" colspan="1">
                     Cách liên kết JIG<br />
                     연결방식
                   </td>
                   <td colspan="2" contenteditable="true"
                     @input="e => formDataTemp.el_link_method = (e.target as HTMLElement).innerText">
-                     <div style="display: flex;">
+                    <div style="display: flex;">
                       <div class="drop-zone" @click="triggerFileSelect('fileInputJIG1')" @drop.prevent="onDropJIG1"
                         @dragover.prevent>
                         <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
@@ -785,8 +872,7 @@
                       v-model="formData.pak_direction">
                       표준 방향
                     </el-checkbox>
-                    <el-checkbox :label="'QPX'" :true-label="'QPX'" :false-label="''"
-                      v-model="formData.pak_direction">
+                    <el-checkbox :label="'QPX'" :true-label="'QPX'" :false-label="''" v-model="formData.pak_direction">
                       QPX 방향
                     </el-checkbox>
                   </td>
@@ -947,7 +1033,7 @@
                     </div>
                   </td>
                 </tr>
-            
+
               </tbody>
             </table>
             <div>
@@ -1091,8 +1177,16 @@ const formData = reactive<ApplicationData>({
   form_status: "",
   box_id: "",
   bump_map: "",
-  el_carrier_tape:"",
-  pak_direction:""
+  el_carrier_tape: "",
+  pak_direction: "",
+  wafer_sin: "",
+  wafer_angle: "",
+  el_ir_test: "",
+  el_jig_vers: "",
+  el_jig_spara: "",
+  el_evb_flag: "",
+  el_qty: ""
+
 })
 
 
@@ -1158,8 +1252,16 @@ const formDataTemp = reactive<ApplicationData>({
   form_status: "",
   box_id: "",
   bump_map: "",
-  el_carrier_tape:"",
-  pak_direction:""
+  el_carrier_tape: "",
+  pak_direction: "",
+  wafer_sin: "",
+  wafer_angle: "",
+  el_ir_test: "",
+  el_jig_vers: "",
+  el_jig_spara: "",
+  el_evb_flag: "",
+  el_qty: ""
+
 })
 const loading = ref(true);
 const application = ref<ApplicationData>();
@@ -1276,7 +1378,7 @@ function handleFilesChangePAK1(e: Event) {
   onFilesChange(e, imagesetPAK1);
 }
 
-function handelFilesChangeJIG1(e:Event){
+function handelFilesChangeJIG1(e: Event) {
   onFilesChange(e, imagesetJIG1)
 }
 
@@ -1455,7 +1557,7 @@ function handleSubmitButtton() {
   console.log("saving..")
   formData.form_status = "완료"
   handleSubmitTempForm(formData, imagesetFB1.value, imagesetFB2.value, imagesetFB3.value, imagesetFB4.value, imagesetMK1.value, imagesetEV1.value,
-    filesetSS1.value, filesetMWA1.value, filesetPMAP1.value, filesetWMAP1.value, imagesetPAK1.value,imagesetJIG1.value, deleteImage.value);
+    filesetSS1.value, filesetMWA1.value, filesetPMAP1.value, filesetWMAP1.value, imagesetPAK1.value, imagesetJIG1.value, deleteImage.value);
 }
 
 function handleTempSave() {
@@ -1470,7 +1572,7 @@ function handleTempSave() {
   formData.form_status = "임시저장"
   console.log(formData)
   handleSubmitTempForm(formData, imagesetFB1.value, imagesetFB2.value, imagesetFB3.value, imagesetFB4.value, imagesetMK1.value, imagesetEV1.value,
-    filesetSS1.value, filesetMWA1.value, filesetPMAP1.value, filesetWMAP1.value, imagesetPAK1.value,imagesetJIG1.value,deleteImage.value);
+    filesetSS1.value, filesetMWA1.value, filesetPMAP1.value, filesetWMAP1.value, imagesetPAK1.value, imagesetJIG1.value, deleteImage.value);
 }
 
 function mappingTemp() {
@@ -1494,7 +1596,14 @@ function mappingTemp() {
   formData.reliability_item = formDataTemp.reliability_item
   formData.dc_blade_thickness = formDataTemp.dc_blade_thickness
   formData.el_carrier_tape = formDataTemp.el_carrier_tape
-  formData.bump_map = formDataTemp.bump_map
+  // formData.bump_map = formDataTemp.bump_map
+  formData.wafer_sin = formDataTemp.wafer_sin
+  formData.wafer_angle = formDataTemp.wafer_angle
+  // formData.el_ir_test = formDataTemp.el_ir_test
+  // formData.el_jig_vers = formDataTemp.el_jig_vers
+  // formData.el_jig_spara = formDataTemp.el_jig_spara
+  formData.el_evb_flag = formDataTemp.el_evb_flag
+  formData.el_qty = formDataTemp.el_qty
 }
 
 
@@ -1631,7 +1740,7 @@ function onDropPAK1(event: DragEvent) {
   }
 }
 
-function onDropJIG1(event:DragEvent) {
+function onDropJIG1(event: DragEvent) {
   const files = event.dataTransfer?.files;
   if (!files) return;
 
@@ -1715,7 +1824,7 @@ async function handleEnter(value) {
   boxMap.value = lotMap;
 
   // 여기서 필요한 처리 수행 (예: 저장, API 호출 등) 
-
+  console.log("reqeqeq",req)
   formData.default_modelName = req.default_modelName;
   formData.default_requireName = req.default_requireName;
   formData.default_requireDate = req.default_requireDate;
@@ -1805,7 +1914,15 @@ async function handleEnter(value) {
   formData.wafer_thickness = req.wafer_thickness
   formData.bb_ballsize = req.bb_ballsize
   formData.default_productSize = req.default_productSize
-
+  
+  formData.wafer_sin = req.wafer_sin
+  formData.wafer_angle = req.wafer_angle
+  formData.el_ir_test = req.el_ir_test
+  formData.el_jig_vers = req.el_jig_vers
+  formData.el_jig_spara = req.el_jig_spara
+  formData.el_evb_flag = req.el_evb_flag
+  formData.el_qty = req.el_qty
+   
   formDataTemp.default_requireAmount = formData.default_requireAmount
   formDataTemp.default_pkgRequirement = formData.default_pkgRequirement
   formDataTemp.wafer_mark = formData.wafer_mark
@@ -1827,6 +1944,15 @@ async function handleEnter(value) {
   formDataTemp.wafer_send_quantity = req.wafer_send_quantity
   formDataTemp.dc_thickness = req.dc_thickness
   formDataTemp.dc_blade_thickness = req.dc_blade_thickness
+  formDataTemp.wafer_sin = req.wafer_sin
+  formDataTemp.wafer_angle = req.wafer_angle
+  formDataTemp.el_ir_test = req.el_ir_test
+  formDataTemp.el_jig_vers = req.el_jig_vers
+  formDataTemp.el_jig_spara = req.el_jig_spara
+  formDataTemp.el_evb_flag = req.el_evb_flag
+  formDataTemp.el_qty = req.el_qty
+
+
 
   // image seting
   if (req.image_List && req.image_List.length > 0) {
@@ -1910,7 +2036,7 @@ const handlePaste = (state: string, e: ClipboardEvent) => {
         imagesetEV1.value.push(file);
         return
       }
-      
+
       // const reader = new FileReader();
       // reader.onload = (event) => {
       //   const imageUrl = event.target.result;
