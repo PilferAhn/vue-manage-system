@@ -10,6 +10,8 @@
         5) STEP
         6) Drop
         7) Self Heating
+        8) SmarterMicro Fuse
+        9) Degrade
 
 -->
 
@@ -36,7 +38,7 @@
       </template>
     </el-tab-pane>
     <el-tab-pane label="AMR" name="AMR">
-      <!-- Life Time 탭 내용 -->
+      <!-- AMR 탭 내용 -->
       <template v-if="activeTabName === 'AMR'">
         <ApplicationByType
           :testType="'AMR'"
@@ -46,7 +48,7 @@
       </template>
     </el-tab-pane>
     <el-tab-pane label="Aging" name="Aging">
-      <!-- Life Time 탭 내용 -->
+      <!-- Aging 탭 내용 -->
       <template v-if="activeTabName === 'Aging'">
         <ApplicationByType
           :testType="'Aging'"
@@ -56,7 +58,7 @@
       </template>
     </el-tab-pane>
     <el-tab-pane label="Self Heating" name="Self Heating">
-      <!-- Life Time 탭 내용 -->
+      <!-- Self Heating 탭 내용 -->
       <template v-if="activeTabName === 'Self Heating'">
         <ApplicationByType
           :testType="'Self Heating'"
@@ -66,7 +68,7 @@
       </template>
     </el-tab-pane>
     <el-tab-pane label="Drop" name="Drop">
-      <!-- Life Time 탭 내용 -->
+      <!-- Drop 탭 내용 -->
       <template v-if="activeTabName === 'Drop'">
         <ApplicationByType
           :testType="'Drop'"
@@ -76,7 +78,7 @@
       </template>
     </el-tab-pane>
     <el-tab-pane label="Step" name="Step">
-      <!-- Life Time 탭 내용 -->
+      <!-- Step 탭 내용 -->
       <template v-if="activeTabName === 'Step'">
         <ApplicationByType
           :testType="'Step'"
@@ -86,10 +88,20 @@
       </template>
     </el-tab-pane>
     <el-tab-pane label="SmarterMicro Fuse" name="SmarterMicro Fuse">
-      <!-- Life Time 탭 내용 -->
+      <!-- SmarterMicro Fuse 탭 내용 -->
       <template v-if="activeTabName === 'SmarterMicro Fuse'">
         <ApplicationByType
           :testType="'SmarterMicro Fuse'"
+          :searchType="'normal'"
+          :status="props.status"
+        ></ApplicationByType>
+      </template>
+      </el-tab-pane>
+      <el-tab-pane label="Degrade" name="Degrade">
+      <!-- Degrade 탭 내용 -->
+      <template v-if="activeTabName === 'Degrade'">
+        <ApplicationByType
+          :testType="'Degrade'"
           :searchType="'normal'"
           :status="props.status"
         ></ApplicationByType>

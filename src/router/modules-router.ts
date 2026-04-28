@@ -25,6 +25,18 @@ export const modulesRouteIndexList: RouteRecordRaw[] = [
         /* webpackChunkName: "table" */ "../views/Modules/Application/LoadApplication.vue"
       ),
   },
+    {
+    path: "/modules/application/create_new",
+    name: "Create New Module",
+    meta: {
+      title: "의뢰서 작성_NEW",
+      permiss: "11",
+    },
+    component: () =>
+      import(
+        /* webpackChunkName: "table" */ "../views/Modules/Application/Module_application.vue"
+      ),
+  },
   {
     path: "/modules/application/list",
     name: "ModuleApplicationList",
@@ -35,6 +47,18 @@ export const modulesRouteIndexList: RouteRecordRaw[] = [
     component: () =>
       import(
         /* webpackChunkName: "table" */ "../views/Modules/Applications/ApplicationList/ApplicationList.vue"
+      ),
+  },
+  {
+    path: "/modules/application/list_new",
+    name: "ModuleApplicationListNew",
+    meta: {
+      title: "의뢰서 목록_NEW",
+      permiss: "11",
+    },
+    component: () =>
+      import(
+        /* webpackChunkName: "table" */ "../views/Modules/Applications/ApplicationList/ApplicationListNew.vue"
       ),
   },
   {
@@ -108,5 +132,17 @@ export const modulesRouteIndexList: RouteRecordRaw[] = [
       import(
         /* webpackChunkName: "table" */ "../views/Modules/Ordersheet/OrdersheetBOMFormTemplate.vue"
       )
-  }
+  },
+  {
+    path: "/modules/application/:id",
+    name: "LoadModuleApplicationNew",
+    meta: {
+      title: "의뢰서 상세_NEW",
+      permiss: "11",
+    },
+    component: () =>
+      import(
+        /* webpackChunkName: "table" */ "../views/Modules/Application/Module_application.vue"
+      ),
+  },
 ];

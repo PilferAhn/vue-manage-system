@@ -36,7 +36,7 @@ export const testOptions = [
   "Drop",
   "Step",
   "SMARTERMICRO FUSE",
-  "DEGRADE"
+  "Degrade"
 ];
 
 export const vswrOptions = ["1:1", "1:4", "1:6"];
@@ -87,7 +87,7 @@ export function computeChannelBandwidth(testType: string, duplexMode: string) {
     }
   } else if (testType === "AMR") {
     return ["5Mhz"];
-  } else if (["Life", "Max Fuse", "Step Stress", "SMARTERMICRO FUSE"].includes(testType)) {
+  } else if (["Life", "Max Fuse", "Step Stress", "SMARTERMICRO FUSE", "Degrade"].includes(testType)) {
     return ["1.4Mhz", "5Mhz", "10Mhz", "20Mhz"];
   } else {
     return [];
@@ -646,7 +646,7 @@ export function setBandwidthOptions(
       } else if (applicationForm.value.testType === "AMR") {
         bandwidthList.value = ["5Mhz", "20Mhz"];
       } else if (
-        ["Life", "Max Fuse", "Step", "SMARTERMICRO FUSE"].includes(
+        ["Life", "Max Fuse", "Step", "SMARTERMICRO FUSE", "Degrade"].includes(
           applicationForm.value.testType
         )
       ) {

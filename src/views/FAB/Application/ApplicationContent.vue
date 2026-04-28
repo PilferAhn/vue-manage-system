@@ -530,6 +530,8 @@ watch(
   (newVal) => {
     if (newVal) {
       props.fabApplication.quantity = 4;
+      props.fabApplication.firstchipMeas = 'Y';
+      props.fabApplication.secondchipMeas = 'Y';
       if (props.fabApplication.note === "") {
         props.fabApplication.note = "DV2 LOT Main";
       } else {

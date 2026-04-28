@@ -181,7 +181,7 @@ const routes: RouteRecordRaw[] = [
         path: "/product/my-application-list",
         name: "MyApplications",
         meta: {
-          title: "의뢰서 자세히",
+          title: "내 의뢰서 목록",
           permiss: "2",
         },
         component: () =>
