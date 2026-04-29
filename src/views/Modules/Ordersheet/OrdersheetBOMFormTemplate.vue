@@ -31,7 +31,7 @@ export default {};
                                cursor: pointer;
                                white-space: pre-wrap;
                              " @click="pasteBom">
-                                내용 복사
+                                동기화
                             </div>
                         </el-col>
                         <el-col :span="3">

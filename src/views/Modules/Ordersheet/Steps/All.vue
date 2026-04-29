@@ -404,7 +404,7 @@
                         </el-checkbox>
                     </td>
                     <td colspan="16" style="padding: 0px">
-                        <el-checkbox :label="'PCB'" :true-label="'PCB'" :false-label="''"
+                        <!-- <el-checkbox :label="'PCB'" :true-label="'PCB'" :false-label="''"
                             v-model="formDataTemp.history_remark" size="small" style="margin-right: 4px; font-size:6px">
                             PCB
                         </el-checkbox>
@@ -423,7 +423,19 @@
                         <el-checkbox :label="'무'" :true-label="'무'" :false-label="''"
                             v-model="formDataTemp.history_remark" size="small" style="margin-right: 4px; font-size:6px">
                             기타
-                        </el-checkbox>
+                        </el-checkbox> -->
+                        <el-checkbox-group v-model="history_remark">
+                            <el-checkbox size="small" style="margin-right: 4px; font-size:6px"
+                                label="PCB">PCB</el-checkbox>
+                            <el-checkbox size="small" style="margin-right: 4px; font-size:6px"
+                                label="MASK">MASK</el-checkbox>
+                            <el-checkbox size="small" style="margin-right: 4px; font-size:6px"
+                                label="자재">자재</el-checkbox>
+                            <el-checkbox size="small" style="margin-right: 4px; font-size:6px"
+                                label="SMT정보">SMT정보</el-checkbox>
+                            <el-checkbox size="small" style="margin-right: 4px; font-size:6px"
+                                label="기타">기타</el-checkbox>
+                        </el-checkbox-group>
                     </td>
                 </tr>
 
@@ -1342,6 +1354,7 @@ const imagesetMD = ref<File[]>([]);
 const tempSmt = ref<SmtItem[]>([]);
 const tempSmtView = ref<SmtItem[]>([]);
 const bomSearchResult = ref<BomMeterial[]>([]);
+const history_remark = ref<string[]>([]);
 
 const showBomPopup = ref(false);
 const showBomPopup1 = ref(false);
@@ -1510,8 +1523,8 @@ async function handleEnterKey(state: string, index: number) {
         const response = await getBomCode(request);
 
         bomOptions.value = response;
-        if (smt.sref === "IC") {
-            showBomPopupIc1.value = true;
+        if (["IC", "PCB", "Resistor", "Capacitor", "Inductor"].includes(smt.sref)) {
+            showBomPopupIc.value = true;
         }
         else {
             showBomPopup1.value = true;
@@ -1545,7 +1558,7 @@ async function handleEnterKey(state: string, index: number) {
         // const response = await getBomCode(request);
 
         bomOptions.value = response;
-        if (smt.sref === "IC") {
+        if (["IC", "PCB", "Resistor", "Capacitor", "Inductor"].includes(smt.sref)) {
             showBomPopupIc.value = true;
         }
         else {
@@ -2137,6 +2150,9 @@ const mappingData = () => {
     //list 매핑 , 초기화 해줘야됌
     formData.smt_list = [...formDataTemp.smt_list, ...tempSmt.value];
     formData.position_list = [...formDataTemp.position_list];
+    formData.history_remark = history_remark.value.join(",")
+
+
 }
 
 function getCarrierBomCode(statec: string, index: number) {
@@ -2259,7 +2275,7 @@ onMounted(async () => {
     epoxybom.value = menu.filter(item => item.mtype === "epoxybom")
         .map(item => ({ mvalue: item.mvalue, mlabel: item.mlabel }));
     pcbcodes.value = pcbCodes.map(item => ({ mvalue: item.mvalue, mlabel: item.mlabel }));
-
+    history_remark.value = formDataTemp.history_remark.split(",")
 
     isLoading.value = true
 });

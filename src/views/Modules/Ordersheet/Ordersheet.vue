@@ -212,10 +212,9 @@ export default {};
                                                 <div class="sheet-action" @click="handleCreatePcb">
                                                     🧩 PCB Capture
                                                 </div>
-                                                <div class="sheet-action" @click="bomClick">
+                                                <!-- <div class="sheet-action" @click="bomClick">
                                                     📋 Bom List
-                                                </div>
-
+                                                </div> -->
                                             </div>
                                         </el-card>
 
@@ -228,7 +227,11 @@ export default {};
                                                             @click="handleSheetClick(item.sheet_id, item.stype)">
                                                             {{ item.sheet_name }}
                                                         </div>
-                                                        <div style="display: flex; gap: 10px;">
+                                                        <div style="display: flex; gap: 10px;align-items: end;">
+                                                            <div @click="newBomClick(item.sheet_id)"
+                                                                style="cursor: pointer;"v-if="item.stype === 'sheet'">
+                                                                <span style="align-items: end;">BOM /</span>
+                                                            </div>
                                                             <div @click="handleChangeSheetName(item.sheet_id)"
                                                                 style="cursor: pointer;">
                                                                 이름변경
@@ -238,7 +241,7 @@ export default {};
                                                                 / 복사
                                                             </div>
                                                             <div @click="deleted(item.sheet_id)"
-                                                                style="cursor: pointer;" v-if="item.stype === 'sheet'">
+                                                                style="cursor: pointer;" v-if="item.stype != 'pcb'">
                                                                 / 삭제
                                                             </div>
                                                         </div>
@@ -267,7 +270,7 @@ export default {};
 
 <script lang="ts" setup>
 import { ref, onMounted, watch, computed, nextTick, reactive, Ref } from "vue";
-import { getCodeWpms, getLevels, getSheetsByLevel, createSheet, deleteSheet, copySheet, copyLevel, changeSheetName, createPcb, createBom, excelDownload } from '../../../utils/orderShiitUtils';
+import { getCodeWpms, getLevels, getSheetsByLevel, createSheet, deleteSheet, copySheet, copyLevel, changeSheetName, createPcb, createBom, excelDownload,createBomDiv } from '../../../utils/orderShiitUtils';
 import { ElMessageBox, ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
 import { onBeforeRouteLeave, onBeforeRouteUpdate } from "vue-router";
@@ -525,6 +528,14 @@ async function bomClick() {
     sheetsList.value = list
     message.value = 'BOM 업데이트 완료'
 }
+async function newBomClick(sheetId:string){
+    message.value = 'BOM 생성중 ...'
+    console.log(sheetId)
+    const list = await createBomDiv(fCode.value, curLevel.value, sheetId)
+    sheetsList.value = list
+    message.value = 'BOM 업데이트 완료'
+}
+
 async function excelDownloadFile(level: string) {
     excelDownload(fCode.value, level)
 }

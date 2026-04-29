@@ -111,6 +111,7 @@ export async function createSheet(modelCode: string, level: string) {
 
   }
 }
+ 
 
 export async function deleteSheet(sheetId: string) {
   try {
@@ -195,6 +196,25 @@ export async function createBom(modelCode: string, level: string) {
   }
 }
 
+export async function createBomDiv(modelCode: string, level:string,sheetId:string){
+  const req = {
+    model_code : modelCode,
+    level : level,
+    stype: 'bom',
+    sheet_id : '',
+    m_sheet_id : sheetId,
+    sheet_name: '',
+    useyn: ''
+  }
+  try{
+    const response = await axios.post("/ordersheet/bomCreateDiv", req)
+    return response.data
+  }catch(err){
+    console.error("There was an error with the submission",err);
+    throw err;
+  }
+  
+}
 
 export async function getBomList(sheetId: string) {
   try {
@@ -642,6 +662,7 @@ export async function getCCSQty(ssize: string) {
 export async function getSMTstock() {
   try {
     const result = await axios.get('/OpeationMns/ScheduleSample/GetStockSampleSmtByModel?type=Stock%20By%20Model&_=1761010120516');
+    console.log("stock data sival sex",result.data)
     return result.data.data;
   } catch (err) {
     console.error("There was an error with the submission", err);
