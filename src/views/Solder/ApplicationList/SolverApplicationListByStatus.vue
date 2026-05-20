@@ -24,7 +24,12 @@ export default {};
         style="width: 300px"
       ></el-input>
       <el-button type="primary" @click="handleSearch">검색</el-button>
-
+      <el-button
+        type="success"
+        @click="downloadMeasurementStatusExcel"
+      >
+        Excel Download
+      </el-button>
       <div class="legend">
         <div class="legend-item">
           <el-button class="btn-in-progress" disabled>진행 중</el-button>
@@ -252,6 +257,8 @@ import {
 } from "../Application/SolderApplication";
 import axios from "axios";
 import { formatDate, formatDateTime } from "../../FAB/Common/Application";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 
 const props = defineProps<{
   applicationData: ApplicationData[];
@@ -374,6 +381,142 @@ const handleUpdate = async (uuid, assayLotId) => {
     // 에러 메시지 표시
   }
 };
+
+const statusLabelMap = {
+  "in progress": "In Progress",
+  finished: "Finished",
+  created: "Waiting",
+  "waiting feedback": "Waiting Feedback",
+  remeasure_request: "Re-Measure Request",
+};
+
+const downloadMeasurementStatusExcel = async () => {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Measurement Status");
+
+  // measurementType 전체 추출
+  const measurementTypes = Array.from(
+    new Set(
+      props.applicationData.flatMap((item) =>
+        item.measurements.map((m) => m.measurementType)
+      )
+    )
+  );
+
+  // 기본 컬럼
+  const headers = [
+    "ProductName",
+    "Request",
+    "Location",
+    "Designer",
+    "Measurer",
+    "JIG용 Solder관리",
+    "완제품(Reel)",
+    ...measurementTypes,
+  ];
+
+  worksheet.addRow(headers);
+
+  props.applicationData.forEach((item) => {
+    const measurementMap = {};
+
+    item.measurements.forEach((measurement) => {
+      measurementMap[measurement.measurementType] = statusLabelMap[measurement.status] || measurement.status;
+    });
+
+    const row = [
+      item.modelName,
+      // item.stage || "",
+      convertPythonTimeToVue(item.createdDate),
+      `${item.childStageName || ""} ${item.childOperation || ""}`,
+      item.designer,
+      item.measurer,
+      `${item.jigSolderId || ""} ${item.jigSolderLoc || ""}`,
+      `${item.reelId || ""} ${item.reelLoc || ""}`,
+      ...measurementTypes.map(
+        (type) => measurementMap[type] || ""
+      ),
+    ];
+
+    worksheet.addRow(row);
+  });
+
+  // 헤더 스타일
+  worksheet.getRow(1).font = {
+    bold: true,
+    color: {
+      argb: "000000",
+    },
+  };
+
+
+    // 헤더 배경색 (옅은 하늘색)
+  worksheet.getRow(1).eachCell((cell) => {
+    cell.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: {
+        argb: "DDEBF7",
+      },
+    };
+
+    cell.alignment = {
+      vertical: "middle",
+      horizontal: "center",
+    };
+  });
+
+  // 전체 셀 테두리 적용
+  worksheet.eachRow((row) => {
+    row.eachCell((cell) => {
+      cell.border = {
+        top: {
+          style: "thin",
+        },
+        left: {
+          style: "thin",
+        },
+        bottom: {
+          style: "thin",
+        },
+        right: {
+          style: "thin",
+        },
+      };
+
+      cell.alignment = {
+        vertical: "middle",
+        horizontal: "center",
+        wrapText: true,
+      };
+    });
+  });
+
+  // 컬럼 width 자동 비슷하게
+  worksheet.columns.forEach((column) => {
+    let maxLength = 10;
+
+    column.eachCell?.({ includeEmpty: true }, (cell) => {
+      const length = cell.value
+        ? cell.value.toString().length
+        : 0;
+
+      if (length > maxLength) {
+        maxLength = length;
+      }
+    });
+
+    column.width = Math.min(maxLength + 5, 35);
+  });
+
+  const buffer = await workbook.xlsx.writeBuffer();
+
+  saveAs(
+    new Blob([buffer]),
+    `measurement_status_${new Date().getTime()}.xlsx`
+  );
+};
+
 </script>
 
 <style lang="scss" scoped>
