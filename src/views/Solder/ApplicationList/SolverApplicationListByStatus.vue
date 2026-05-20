@@ -407,6 +407,9 @@ const downloadMeasurementStatusExcel = async () => {
   const headers = [
     "ProductName",
     "Request",
+    ...(props.applicationType === "finished"
+    ? ["Finish"]
+    : []),
     "Location",
     "Designer",
     "Measurer",
@@ -428,6 +431,9 @@ const downloadMeasurementStatusExcel = async () => {
       item.modelName,
       // item.stage || "",
       convertPythonTimeToVue(item.createdDate),
+      ...(props.applicationType === "finished"
+        ? [formatDate(item.completionDate)]
+        : []),
       `${item.childStageName || ""} ${item.childOperation || ""}`,
       item.designer,
       item.measurer,
