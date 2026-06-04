@@ -230,13 +230,27 @@
 
               <!-- EVB info input text field -->
               <el-col :span="12">
-                <inputText
-                  v-model="applicationData.evbInfo"
-                  label="EVB name for external deembeding"
-                  prop="evbInfo"
-                  placeholder="ex) EVB name for external deembeding"
-                  :disabled="applicationData.deembedMode === 'Port Extention'"
-                />
+                <el-form-item label="EVB name for external deembeding" prop="evbInfo">
+                  <el-select
+                    v-model="applicationData.evbInfo"
+                    filterable
+                    remote
+                    clearable
+                    reserve-keyword
+                    placeholder="EVB name을 검색하세요"
+                    :remote-method="searchEvbNames"
+                    :loading="evbNameLoading"
+                    :disabled="applicationData.deembedMode !== 'External Deembeding'"
+                    style="width: 100%"
+                  >
+                    <el-option
+                      v-for="item in evbNameOptions"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.name"
+                    />
+                  </el-select>
+                </el-form-item>
               </el-col>
             </el-row>
           </el-card>
@@ -481,7 +495,9 @@ import { evbTypeList } from "./Application";
 import {
   sendApplicationData2,
   downloadSolderApplicationXlsx,
-  loadApplicationData
+  loadApplicationData,
+  searchSolderEvbNames,
+  type SolderEvbNameOption,
 } from "./SolderApplication";
 import SelectOptions from "../../Common/SelectOptionsNew2.vue";
 import { clientOptions } from "../../../utils/Solder/option-values";
@@ -526,6 +542,10 @@ const sortedMatching = computed(() =>
 const loading = ref(true);
 
 const application = ref<ApplicationData>({});
+
+const evbNameLoading = ref(false);
+
+const evbNameOptions = ref<SolderEvbNameOption[]>([]);
 
 // EVB와 MAP 사진 리스트 관리
 const evbPic = ref<File[]>([]); // EVB 사진 리스트
@@ -771,6 +791,18 @@ watch(
   }
 );
 
+watch(
+  () => applicationData.deembedMode,
+  (newVal) => {
+    if (newVal !== "External Deembeding") {
+      applicationData.evbInfo = "";
+      evbNameOptions.value = [];
+    }
+
+    applicationForm.value?.validateField("evbInfo");
+  }
+);
+
 // Function to update the measurements array based on the selected quantity
 const updateSegments = () => {
   const selectedQuantity = applicationData.segmentQuantity;
@@ -806,14 +838,26 @@ function moveRounter(vueRouterName: string) {
   });
 }
 
-
-
 function moveRounterbyApplicationUuid(vueRouterName: string, uuid: string) {
   router.push({
     name: vueRouterName,
     params: { applicationUuid: uuid },
   });
 }
+
+const searchEvbNames = async (query: string) => {
+  if (!query || query.trim().length < 1) {
+    evbNameOptions.value = [];
+    return;
+  }
+  evbNameLoading.value = true;
+  try {
+    evbNameOptions.value = await searchSolderEvbNames(query);
+  } finally {
+    evbNameLoading.value = false;
+  }
+};
+
 </script>
 
 <script lang="ts">
