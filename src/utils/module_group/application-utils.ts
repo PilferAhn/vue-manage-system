@@ -77,6 +77,7 @@ export interface CommonMeasurementFields {
   requestedDueDate: NullableDate;
   expectedDoneDate: NullableDate;
   doneDate: NullableDate;
+  links?: Record<string, string>;
 }
 
 export interface SetupForm extends CommonMeasurementFields {
@@ -137,6 +138,13 @@ export interface ModuleApplicationDetail {
   developer: string;
   purpose: string;
   siteType: SiteType | "";
+  useSampleInfo?: boolean;
+  sampleInfo?: {
+    sender?: string;
+    deliveredDate?: NullableDate;
+    note?: string;
+    sampleLink?: string;
+  } | null;
   status?: string;
   creator?: string | null;
   modifier?: string | null;
@@ -155,39 +163,19 @@ export interface ModuleApplicationSubmitInput {
   developer: string;
   purpose: string;
   siteType: SiteType | "";
+  useSampleInfo?: boolean;
+  sampleInfo?: {
+    sender?: string;
+    deliveredDate?: NullableDate;
+    note?: string;
+    sampleLink?: string;
+  } | null;
   creator?: string | null;
   modifier?: string | null;
   measurements: Array<{
     type: string;
     data?: Record<string, any>;
   }>;
-}
-
-export interface ModuleMeasurementCell {
-  type: string | null;
-  status: "none" | "waiting" | "in_progress" | "done";
-  display_value: string | null;
-  display_color: "gray" | "orange" | "green" | "blue";
-  expected_done_date: string | null;
-  done_date: string | null;
-}
-
-export interface ModuleApplicationListRow {
-  application_id: string;
-  pn: string;
-  requester: string;
-  site_type: SiteType;
-  status: string;
-  creator?: string | null;
-  modifier?: string | null;
-  created_date?: string | null;
-  modified_date?: string | null;
-  measurement_1: ModuleMeasurementCell;
-  measurement_2: ModuleMeasurementCell;
-  measurement_3: ModuleMeasurementCell;
-  measurement_4: ModuleMeasurementCell;
-  measurement_5: ModuleMeasurementCell;
-  measurement_6: ModuleMeasurementCell;
 }
 
 export function createEmptyMeasurementForms(): MeasurementForms {
@@ -281,148 +269,66 @@ export function createEmptyMeasurementForms(): MeasurementForms {
 
 export function mapApiDetailToUi(detail: any): ModuleApplicationDetail {
   return {
-    applicationId: detail.application_id,
+    applicationId: detail.applicationId ?? "",
     pn: detail.pn ?? "",
     requester: detail.requester ?? "",
     developer: detail.developer ?? "",
     purpose: detail.purpose ?? "",
-    siteType: detail.site_type ?? "",
+    siteType: detail.siteType ?? "",
+    useSampleInfo: !!detail.useSampleInfo,
+    sampleInfo: detail.sampleInfo
+      ? {
+          sender: detail.sampleInfo.sender ?? "",
+          deliveredDate: detail.sampleInfo.deliveredDate ?? null,
+          note: detail.sampleInfo.note ?? "",
+          sampleLink: detail.sampleInfo.sampleLink ?? "",
+        }
+      : {
+          sender: "",
+          deliveredDate: null,
+          note: "",
+          sampleLink: "",
+        },
     status: detail.status ?? "",
     creator: detail.creator ?? null,
     modifier: detail.modifier ?? null,
-    createdDate: detail.created_date ?? null,
-    modifiedDate: detail.modified_date ?? null,
+    createdDate: detail.createdDate ?? null,
+    modifiedDate: detail.modifiedDate ?? null,
     measurements: (detail.measurements || []).map((item: any) => {
       const data = item.data || {};
 
-      if (item.type === "setup") {
-        return {
-          type: item.type,
-          data: {
-            vendor: data.vendor ?? "",
-            deembedding: data.deembedding ?? "",
-            portExtension: data.port_extension ?? "",
-            noteSpl: data.note_spl ?? "",
-            noteMeasurement: data.note_measurement ?? "",
-            fileLink: data.file_link ?? "",
-            resultFileLink: data.result_file_link ?? "",
-            measurer: data.measurer ?? "",
-            requestedDueDate: data.requested_due_date ?? null,
-            expectedDoneDate: data.expected_done_date ?? null,
-            doneDate: data.done_date ?? null,
-          },
-        };
-      }
-
-      if (item.type === "na") {
-        return {
-          type: item.type,
-          data: {
-            deembedding: data.deembedding ?? "",
-            portExtension: data.port_extension ?? "",
-            matching: data.matching ?? "",
-            mold: data.mold ?? "",
-            jigSoldering: data.jig_soldering ?? "",
-            evbTuning: !!data.evb_tuning,
-            appendix: !!data.appendix,
-            noteSpl: data.note_spl ?? "",
-            noteMeasurement: data.note_measurement ?? "",
-            fileLink: data.file_link ?? "",
-            resultFileLink: data.result_file_link ?? "",
-            measurer: data.measurer ?? "",
-            requestedDueDate: data.requested_due_date ?? null,
-            expectedDoneDate: data.expected_done_date ?? null,
-            doneDate: data.done_date ?? null,
-          },
-        };
-      }
-
-      if (item.type === "nf") {
-        return {
-          type: item.type,
-          data: {
-            boardType: data.board_type ?? "",
-            mold: data.mold ?? "",
-            appendix: !!data.appendix,
-            noteSpl: data.note_spl ?? "",
-            noteMeasurement: data.note_measurement ?? "",
-            fileLink: data.file_link ?? "",
-            resultFileLink: data.result_file_link ?? "",
-            measurer: data.measurer ?? "",
-            requestedDueDate: data.requested_due_date ?? null,
-            expectedDoneDate: data.expected_done_date ?? null,
-            doneDate: data.done_date ?? null,
-          },
-        };
-      }
-
-      if (item.type === "mwa") {
-        return {
-          type: item.type,
-          data: {
-            matching: data.matching ?? "",
-            loss: data.loss ?? "",
-            noteSpl: data.note_spl ?? "",
-            noteMeasurement: data.note_measurement ?? "",
-            fileLink: data.file_link ?? "",
-            resultFileLink: data.result_file_link ?? "",
-            measurer: data.measurer ?? "",
-            requestedDueDate: data.requested_due_date ?? null,
-            expectedDoneDate: data.expected_done_date ?? null,
-            doneDate: data.done_date ?? null,
-          },
-        };
-      }
-
-      if (item.type === "ca") {
-        return {
-          type: item.type,
-          data: {
-            trace: data.trace ?? "",
-            power: data.power ?? "",
-            freqStart: data.freq_start ?? "",
-            freqStop: data.freq_stop ?? "",
-            average: data.average ?? "",
-            point: data.point ?? "",
-            noteSpl: data.note_spl ?? "",
-            noteMeasurement: data.note_measurement ?? "",
-            fileLink: data.file_link ?? "",
-            resultFileLink: data.result_file_link ?? "",
-            measurer: data.measurer ?? "",
-            requestedDueDate: data.requested_due_date ?? null,
-            expectedDoneDate: data.expected_done_date ?? null,
-            doneDate: data.done_date ?? null,
-          },
-        };
-      }
-
-      if (item.type === "tcf") {
-        return {
-          type: item.type,
-          data: {
-            temperatureSequence: data.temperature_sequence ?? "",
-            matching: data.matching ?? "",
-            jigSoldering: data.jig_soldering ?? "",
-            noteSpl: data.note_spl ?? "",
-            noteMeasurement: data.note_measurement ?? "",
-            fileLink: data.file_link ?? "",
-            resultFileLink: data.result_file_link ?? "",
-            measurer: data.measurer ?? "",
-            requestedDueDate: data.requested_due_date ?? null,
-            expectedDoneDate: data.expected_done_date ?? null,
-            doneDate: data.done_date ?? null,
-          },
-        };
-      }
-
       return {
         type: item.type,
-        data: {},
+        data: {
+          ...data,
+          links: data.links ?? {},
+        },
       };
     }),
   };
 }
 
+function buildCommonMeasurementData(data: Record<string, any>) {
+  const links =
+    data.links && typeof data.links === "object"
+      ? data.links
+      : {};
+
+  return {
+    note_spl: data.noteSpl ?? "",
+    note_measurement: data.noteMeasurement ?? "",
+    file_link:
+      data.fileLink ||
+      Object.values(links).find((value) => String(value ?? "").trim() !== "") ||
+      "",
+    links,
+    result_file_link: data.resultFileLink ?? "",
+    measurer: data.measurer ?? "",
+    requested_due_date: data.requestedDueDate ?? null,
+    expected_done_date: data.expectedDoneDate ?? null,
+    done_date: data.doneDate ?? null,
+  };
+}
 export function buildModuleNewPayload(app: ModuleApplicationSubmitInput) {
   const measurements = (app.measurements || [])
     .map((item) => {
@@ -435,15 +341,8 @@ export function buildModuleNewPayload(app: ModuleApplicationSubmitInput) {
             vendor: data.vendor ?? "",
             deembedding: data.deembedding ?? "",
             port_extension: data.portExtension ?? "",
-            note_spl: data.noteSpl ?? "",
-            note_measurement: data.noteMeasurement ?? "",
-            file_link: data.fileLink ?? "",
-            result_file_link: data.resultFileLink ?? "",
-            measurer: data.measurer ?? "",
-            requested_due_date: data.requestedDueDate ?? null,
-            expected_done_date: data.expectedDoneDate ?? null,
-            done_date: data.doneDate ?? null,
-          },
+            ...buildCommonMeasurementData(data),
+          }
         };
       }
 
@@ -458,15 +357,8 @@ export function buildModuleNewPayload(app: ModuleApplicationSubmitInput) {
             jig_soldering: data.jigSoldering ?? "",
             evb_tuning: !!data.evbTuning,
             appendix: !!data.appendix,
-            note_spl: data.noteSpl ?? "",
-            note_measurement: data.noteMeasurement ?? "",
-            file_link: data.fileLink ?? "",
-            result_file_link: data.resultFileLink ?? "",
-            measurer: data.measurer ?? "",
-            requested_due_date: data.requestedDueDate ?? null,
-            expected_done_date: data.expectedDoneDate ?? null,
-            done_date: data.doneDate ?? null,
-          },
+            ...buildCommonMeasurementData(data),
+          }
         };
       }
 
@@ -477,14 +369,7 @@ export function buildModuleNewPayload(app: ModuleApplicationSubmitInput) {
             board_type: data.boardType ?? "",
             mold: data.mold ?? "",
             appendix: !!data.appendix,
-            note_spl: data.noteSpl ?? "",
-            note_measurement: data.noteMeasurement ?? "",
-            file_link: data.fileLink ?? "",
-            result_file_link: data.resultFileLink ?? "",
-            measurer: data.measurer ?? "",
-            requested_due_date: data.requestedDueDate ?? null,
-            expected_done_date: data.expectedDoneDate ?? null,
-            done_date: data.doneDate ?? null,
+            ...buildCommonMeasurementData(data),
           },
         };
       }
@@ -495,14 +380,7 @@ export function buildModuleNewPayload(app: ModuleApplicationSubmitInput) {
           data: {
             matching: data.matching ?? "",
             loss: data.loss ?? "",
-            note_spl: data.noteSpl ?? "",
-            note_measurement: data.noteMeasurement ?? "",
-            file_link: data.fileLink ?? "",
-            result_file_link: data.resultFileLink ?? "",
-            measurer: data.measurer ?? "",
-            requested_due_date: data.requestedDueDate ?? null,
-            expected_done_date: data.expectedDoneDate ?? null,
-            done_date: data.doneDate ?? null,
+            ...buildCommonMeasurementData(data),
           },
         };
       }
@@ -517,14 +395,7 @@ export function buildModuleNewPayload(app: ModuleApplicationSubmitInput) {
             freq_stop: data.freqStop ?? "",
             average: data.average ?? "",
             point: data.point ?? "",
-            note_spl: data.noteSpl ?? "",
-            note_measurement: data.noteMeasurement ?? "",
-            file_link: data.fileLink ?? "",
-            result_file_link: data.resultFileLink ?? "",
-            measurer: data.measurer ?? "",
-            requested_due_date: data.requestedDueDate ?? null,
-            expected_done_date: data.expectedDoneDate ?? null,
-            done_date: data.doneDate ?? null,
+            ...buildCommonMeasurementData(data),
           },
         };
       }
@@ -536,18 +407,81 @@ export function buildModuleNewPayload(app: ModuleApplicationSubmitInput) {
             temperature_sequence: data.temperatureSequence ?? "",
             matching: data.matching ?? "",
             jig_soldering: data.jigSoldering ?? "",
-            note_spl: data.noteSpl ?? "",
-            note_measurement: data.noteMeasurement ?? "",
-            file_link: data.fileLink ?? "",
-            result_file_link: data.resultFileLink ?? "",
-            measurer: data.measurer ?? "",
-            requested_due_date: data.requestedDueDate ?? null,
-            expected_done_date: data.expectedDoneDate ?? null,
-            done_date: data.doneDate ?? null,
+            ...buildCommonMeasurementData(data),
+          },
+        };
+      }
+      if (item.type === "nonlinear") {
+        return {
+          type: "nonlinear",
+          data: {
+            selected_type: data.selectedType ?? "",
+            selected_types: Array.isArray(data.selectedTypes) ? data.selectedTypes : [],
+          
+            imd_band: data.imdBand ?? "",
+            imd_input_power: data.imdInputPower ?? "",
+            imd_fjam_power: data.imdFjamPower ?? "",
+          
+            p1db_band: data.p1dbBand ?? "",
+            p1db_gain_bias_address: data.p1dbGainBiasAddress ?? "",
+          
+            iip3_band: data.iip3Band ?? "",
+            iip3_gain_bias_address: data.iip3GainBiasAddress ?? "",
+            iip3_fjam_power: data.iip3FjamPower ?? "",
+          
+            rse_frequency: data.rseFrequency ?? "",
+          
+            harmonic_band: data.harmonicBand ?? "",
+            harmonic_input_power: data.harmonicInputPower ?? "",
+            harmonic_order: data.harmonicOrder ?? "",
+            harmonic_unit: data.harmonicUnit ?? "",
+          
+            ...buildCommonMeasurementData(data),
           },
         };
       }
 
+      if (item.type === "probeSpl") {
+        return {
+          type: "probeSpl",
+          data: {
+            sample_type: data.sampleType ?? "",
+            freq_start: data.freqStart ?? "",
+            freq_stop: data.freqStop ?? "",
+            step_point: data.stepPoint ?? "",
+            power_ifbw: data.powerIfbw ?? "",
+            pitch: data.pitch ?? "",
+            gs_type: data.gsType ?? "",
+            ...buildCommonMeasurementData(data),
+          },
+        };
+      }
+
+      if (item.type === "probeDeembedding") {
+        return {
+          type: "probeDeembedding",
+          data: {
+            evb_info: data.evbInfo ?? "",
+            freq_start: data.freqStart ?? "",
+            freq_stop: data.freqStop ?? "",
+            step_point: data.stepPoint ?? "",
+            power_ifbw: data.powerIfbw ?? "",
+            pitch: data.pitch ?? "",
+            gs_type: data.gsType ?? "",
+            ...buildCommonMeasurementData(data),
+          },
+        };
+      }
+
+      if (item.type === "evbAssembly") {
+        return {
+          type: "evbAssembly",
+          data: {
+            request_link: data.requestLink ?? "",
+            ...buildCommonMeasurementData(data),
+          },
+        };
+      }
       return null;
     })
     .filter(Boolean);
@@ -558,6 +492,15 @@ export function buildModuleNewPayload(app: ModuleApplicationSubmitInput) {
     developer: app.developer,
     purpose: app.purpose,
     site_type: app.siteType,
+    use_sample_info: !!app.useSampleInfo,
+    sample_info: app.useSampleInfo
+    ? {
+        sender: app.sampleInfo?.sender ?? "",
+        delivered_date: app.sampleInfo?.deliveredDate ?? null,
+        note: app.sampleInfo?.note ?? "",
+        sample_link: app.sampleInfo?.sampleLink ?? "",
+      }
+    : null,
     measurements,
     creator: app.creator ?? null,
     modifier: app.modifier ?? null,
@@ -595,6 +538,46 @@ export async function getModuleApplicationNewById(applicationId: string) {
   const response = await axios.get(`/module_new/get_app_by_id/${applicationId}`);
   return mapApiDetailToUi(response.data);
 }
+
+
+export type ModuleApplicationStatus = "waiting" | "in_progress" | "done";
+export type ModuleMeasurementStatus = "none" | "waiting" | "in_progress" | "done";
+
+export interface ModuleMeasurementCell {
+  type: string | null;
+  status: ModuleMeasurementStatus;
+  displayValue: string | null;
+  displayColor: "gray" | "orange" | "green" | "blue";
+  expectedDoneDate: string | null;
+  doneDate: string | null;
+}
+
+export interface ModuleApplicationListRow {
+  applicationId: string;
+  pn: string;
+  requester: string;
+  developer?: string | null;
+  purpose?: string | null;
+  siteType: SiteType;
+  useSampleInfo: boolean;
+  status: ModuleApplicationStatus;
+  creator?: string | null;
+  modifier?: string | null;
+  createdDate?: string | null;
+  modifiedDate?: string | null;
+
+  measurement1: ModuleMeasurementCell;
+  measurement2: ModuleMeasurementCell;
+  measurement3: ModuleMeasurementCell;
+  measurement4: ModuleMeasurementCell;
+  measurement5: ModuleMeasurementCell;
+  measurement6: ModuleMeasurementCell;
+  measurement7: ModuleMeasurementCell;
+  measurement8: ModuleMeasurementCell;
+  measurement9: ModuleMeasurementCell;
+  measurement10: ModuleMeasurementCell;
+}
+
 
 export async function getModuleApplicationNewList(params?: {
   pn?: string;
