@@ -342,9 +342,29 @@ function validateMeasurementInfo(applicationData: ApplicationData) {
   return isValid;
 }
 
+function validateEvbInfo(applicationData: ApplicationData) {
+  if (
+    applicationData.deembedMode === "External Deembeding" &&
+    (!applicationData.evbInfo || applicationData.evbInfo.trim() === "")
+  ) {
+    ElNotification({
+      title: "에러",
+      message: "External Deembeding 선택 시 EVB name을 선택해야 합니다.",
+      type: "error",
+    });
+
+    return false;
+  }
+
+  return true;
+}
+
 function validateForm(applicationData: ApplicationData) {
   // segmentation과 matching정보를 확인
-
+  if (!validateEvbInfo(applicationData)) {
+    return false;
+  }
+  
   if (!validateMeasurementInfo(applicationData)) {
     return false;
   }
@@ -567,5 +587,34 @@ export async function updateStatusByUuid(
     axios.post(url, formData);
   } catch (error) {
     console.error("Error update status of application:", error);
+  }
+}
+
+export interface SolderEvbNameOption {
+  id: number;
+  name: string;
+}
+
+export async function searchSolderEvbNames(
+  keyword: string
+): Promise<SolderEvbNameOption[]> {
+  try {
+    const response = await axios.get("/solder/evb-names", {
+      params: {
+        keyword: keyword.trim(),
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Failed to search solder EVB names:", error);
+
+    ElNotification({
+      title: "에러",
+      message: "EVB name 목록을 불러오는 중 에러가 발생했습니다.",
+      type: "error",
+    });
+
+    return [];
   }
 }

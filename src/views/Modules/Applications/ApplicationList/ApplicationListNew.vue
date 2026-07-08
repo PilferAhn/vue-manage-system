@@ -9,7 +9,7 @@
       >
         <div class="tab-content">
           <div class="search-box">
-             <el-select
+            <el-select
               v-model="query.siteType"
               placeholder="사이트"
               clearable
@@ -19,6 +19,7 @@
               <el-option label="본사" value="HQ" />
               <el-option label="WHC" value="WHC" />
             </el-select>
+
             <el-input
               v-model="query.pn"
               placeholder="P/N 검색"
@@ -26,6 +27,7 @@
               clearable
               @keyup.enter="fetchList"
             />
+
             <el-input
               v-model="query.requester"
               placeholder="의뢰자 검색"
@@ -33,6 +35,7 @@
               clearable
               @keyup.enter="fetchList"
             />
+
             <el-button type="primary" @click="fetchList">검색</el-button>
           </div>
 
@@ -41,83 +44,87 @@
               type="index"
               label="No"
               width="60"
-              :align="'center'"
+              align="center"
             />
 
             <el-table-column
               label="의뢰번호"
-              prop="application_id"
+              prop="applicationId"
               width="120"
-              :align="'center'"
+              align="center"
             />
-            
-             <el-table-column
+
+            <el-table-column
               label="구분"
-              prop="site_type"
+              prop="siteType"
               width="90"
-              :align="'center'"
+              align="center"
             >
               <template #default="{ row }">
-                {{ row.site_type === "HQ" ? "본사" : "WHC" }}
+                {{ row.siteType === "HQ" ? "본사" : "WHC" }}
               </template>
             </el-table-column>
-            
+
             <el-table-column
               label="P/N"
               prop="pn"
               width="140"
-              :align="'center'"
+              align="center"
             />
 
             <el-table-column
               label="의뢰자"
               prop="requester"
               width="120"
-              :align="'center'"
+              align="center"
             />
 
             <el-table-column
               label="전체 Status"
               width="120"
-              :align="'center'"
+              align="center"
             >
               <template #default="{ row }">
-                <el-tag :type="applicationStatusTagTypeMap[row.status]" effect="light">
+                <el-tag
+                  :type="applicationStatusTagTypeMap[row.status]"
+                  effect="light"
+                >
                   {{ applicationStatusLabelMap[row.status] }}
                 </el-tag>
               </template>
             </el-table-column>
 
             <el-table-column
-              v-for="(label, index) in measurementHeaders"
-              :key="label.key"
-              :label="label.label"
-              width="130"
-              :align="'center'"
+              v-for="(header, index) in measurementHeaders"
+              :key="header.key"
+              :label="header.label"
+              width="135"
+              align="center"
             >
               <template #default="{ row }">
                 <el-tag
-                  :type="measurementCellTagType(row[`measurement_${index + 1}`])"
+                  :type="measurementCellTagType(row[`measurement${index + 1}`])"
                   effect="light"
                   class="measurement-tag"
                 >
-                  {{ measurementCellText(row[`measurement_${index + 1}`]) }}
+                  {{ measurementCellText(row[`measurement${index + 1}`]) }}
                 </el-tag>
               </template>
             </el-table-column>
 
-            <el-table-column label="생성일" width="140" :align="'center'">
+            <el-table-column label="생성일" width="140" align="center">
               <template #default="{ row }">
-                {{ formatDate(row.created_date) }}
-              </template>
-            </el-table-column>
-            <el-table-column label="수정일" width="140" :align="'center'">
-              <template #default="{ row }">
-                {{ formatDate(row.modified_date) }}
+                {{ formatDate(row.createdDate) }}
               </template>
             </el-table-column>
 
-            <el-table-column label="Action" width="120" :align="'center'">
+            <el-table-column label="수정일" width="140" align="center">
+              <template #default="{ row }">
+                {{ formatDate(row.modifiedDate) }}
+              </template>
+            </el-table-column>
+
+            <el-table-column label="Action" width="120" align="center" fixed="right">
               <template #default="{ row }">
                 <div class="action-buttons">
                   <el-button type="success" @click="handleButtons(row)">
@@ -148,40 +155,13 @@
 import { useRouter } from "vue-router";
 import { onMounted, reactive, ref, computed, watch } from "vue";
 import { formatDate } from "../../../../utils/date-utils";
-import {
-  getModuleApplicationNewList,
-} from "../../../../utils/module_group/application-utils";
+import { getModuleApplicationNewList,
+  type ModuleApplicationListRow,
+  type ModuleApplicationStatus,
+  type ModuleMeasurementCell, } from "../../../../utils/module_group/application-utils";
 
-type StatusKey = "waiting" | "in_progress" | "done";
-type CellStatus = "none" | "waiting" | "in_progress" | "done";
+type MeasurementCell = ModuleMeasurementCell;
 type SiteType = "HQ" | "WHC";
-
-interface MeasurementCell {
-  type: string | null;
-  status: CellStatus;
-  display_value: string | null;
-  display_color: "gray" | "orange" | "green" | "blue";
-  expected_done_date: string | null;
-  done_date: string | null;
-}
-
-interface ModuleApplicationListRow {
-  application_id: string;
-  pn: string;
-  requester: string;
-  site_type: SiteType;
-  status: StatusKey;
-  creator?: string | null;
-  modifier?: string | null;
-  created_date?: string | null;
-  modified_date?: string | null;
-  measurement_1: MeasurementCell;
-  measurement_2: MeasurementCell;
-  measurement_3: MeasurementCell;
-  measurement_4: MeasurementCell;
-  measurement_5: MeasurementCell;
-  measurement_6: MeasurementCell;
-}
 
 const router = useRouter();
 const appList = ref<ModuleApplicationListRow[]>([]);
@@ -193,12 +173,16 @@ const tabs = [
 ] as const;
 
 const measurementHeaders = [
-  { key: "measurement_1", label: "1. Setup" },
-  { key: "measurement_2", label: "2. NA" },
-  { key: "measurement_3", label: "3. NF" },
-  { key: "measurement_4", label: "4. MWA" },
-  { key: "measurement_5", label: "5. CA" },
-  { key: "measurement_6", label: "6. TCF" },
+  { key: "measurement1", label: "1. Setup" },
+  { key: "measurement2", label: "2. NA" },
+  { key: "measurement3", label: "3. NF" },
+  { key: "measurement4", label: "4. MWA" },
+  { key: "measurement5", label: "5. CA" },
+  { key: "measurement6", label: "6. TCF" },
+  { key: "measurement7", label: "7. 비선형" },
+  { key: "measurement8", label: "8. Probe SPL" },
+  { key: "measurement9", label: "9. Probe D/E" },
+  { key: "measurement10", label: "10. EVB 조립" },
 ];
 
 const pageSize = ref(10);
@@ -210,7 +194,7 @@ const query = reactive({
   siteType: "" as SiteType | "",
 });
 
-const activeTabName = ref<StatusKey>("waiting");
+const activeTabName = ref<ModuleApplicationStatus>("waiting");
 
 watch(
   () => [activeTabName.value, query.pn, query.requester, query.siteType],
@@ -219,14 +203,14 @@ watch(
   }
 );
 
-const applicationStatusLabelMap: Record<StatusKey, string> = {
+const applicationStatusLabelMap: Record<ModuleApplicationStatus, string> = {
   waiting: "Waiting",
   in_progress: "In progress",
   done: "Completed",
 };
 
 const applicationStatusTagTypeMap: Record<
-  StatusKey,
+  ModuleApplicationStatus,
   "" | "success" | "warning" | "info" | "primary"
 > = {
   waiting: "warning",
@@ -234,13 +218,13 @@ const applicationStatusTagTypeMap: Record<
   done: "primary",
 };
 
-function measurementCellText(cell: MeasurementCell) {
+function measurementCellText(cell?: MeasurementCell) {
   if (!cell) return "None";
   if (cell.status === "none") return "None";
-  return cell.display_value || "None";
+  return cell.displayValue || "None";
 }
 
-function measurementCellTagType(cell: MeasurementCell) {
+function measurementCellTagType(cell?: MeasurementCell) {
   if (!cell) return "info";
 
   if (cell.status === "none") return "info";
@@ -282,7 +266,7 @@ async function fetchList() {
 const handleButtons = (app: ModuleApplicationListRow) => {
   router.push({
     name: "LoadModuleApplicationNew",
-    params: { id: app.application_id },
+    params: { id: app.applicationId },
   });
 };
 

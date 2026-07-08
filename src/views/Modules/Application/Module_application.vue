@@ -2,733 +2,46 @@
   <div class="module-application-page" v-loading="loading">
     <div class="module-grid">
       <!-- 1번 칸: 기본 정보 -->
-      <el-card shadow="never" class="grid-card base-card">
-        <template #header>
-          <div class="card-header">
-            <div class="card-header-left">
-              <span class="card-title">
-                {{
-                  reuseMode
-                    ? "Module 의뢰서 재사용"
-                    : mode === "create"
-                    ? "Module 의뢰서 생성"
-                    : "Module 의뢰서 상세"
-                }}
-              </span>
-            
-              <span v-if="reuseMode" class="reuse-inline-text">
-                재사용 모드입니다. 수정하세요.
-              </span>
-            </div>
-          </div>
-        </template>
-
-        <el-form label-position="top">
-          <el-form-item label="P/N">
-            <el-input
-              v-model="baseForm.pn"
-              placeholder="P/N 입력"
-              clearable
-            />
-          </el-form-item>
-
-          <el-row :gutter="12">
-            <el-col :span="12">
-              <el-form-item label="의뢰자">
-                <el-input
-                  v-model="baseForm.requester"
-                  placeholder="의뢰자 입력"
-                  clearable
-                />
-              </el-form-item>
-            </el-col>
-
-            <el-col :span="12">
-              <el-form-item label="개발자">
-                <el-input
-                  v-model="baseForm.developer"
-                  placeholder="개발자 입력"
-                  clearable
-                />
-              </el-form-item>
-            </el-col>
-          </el-row>
-
-          <el-form-item label="측정 목적">
-            <el-input
-              v-model="baseForm.purpose"
-              placeholder="측정 목적 입력"
-              clearable
-            />
-          </el-form-item>
-
-          <el-form-item class="inline-site-type-item">
-            <div class="inline-site-type-row">
-              <span class="inline-site-type-label">구분</span>
-              <el-radio-group v-model="baseForm.siteType" class="inline-site-type-group">
-                <el-radio label="HQ">본사</el-radio>
-                <el-radio label="WHC">WHC</el-radio>
-              </el-radio-group>
-            </div>
-          </el-form-item>
-        </el-form>
-
-        <div class="left-bottom-button-area">
-          <el-button @click="goList">목록</el-button>
-
-          <el-button
-            v-if="mode === 'edit' && !reuseMode"
-            type="success"
-            @click="handleExcelDownload"
-          >
-            엑셀
-          </el-button>
-
-          <el-button
-            v-if="mode === 'edit' && !reuseMode"
-            type="warning"
-            @click="handleReuse"
-          >
-            재사용
-          </el-button>
-
-          <el-button type="primary" @click="handleSave">
-            {{ effectiveMode === "create" ? "생성" : "저장" }}
-          </el-button>
-
-          <el-button
-            v-if="mode === 'edit' && !reuseMode"
-            type="danger"
-            @click="handleDelete"
-          >
-            삭제
-          </el-button>
-        </div>
-      </el-card>
-
-      <!-- 2번 칸: 측정 선택 -->
-      <el-card shadow="never" class="grid-card selector-card">
-        <template #header>
-          <div class="card-title">측정 항목 선택</div>
-        </template>
-
-        <div v-if="isBaseInfoComplete" class="selector-scroll">
-          <div class="measurement-checkbox-group">
-            <el-card
-              v-for="item in measurementOptions"
-              :key="item.key"
-              shadow="hover"
-              class="measurement-option-card"
-            >
-              <el-checkbox
-                :model-value="selectedMeasurements.includes(item.key)"
-                @change="(checked) => handleMeasurementToggle(item.key, checked)"
-              >
-                {{ item.label }}
-              </el-checkbox>
-            </el-card>
-          </div>
-        </div>
-
-        <el-empty
-          v-else
-          description="P/N, 의뢰자, 구분을 먼저 입력해주세요."
-        />
-      </el-card>
-
-      <!-- 3~8번 칸 -->
-      <el-card
-        v-for="(slot, index) in cardSlots"
-        :key="`slot-${index}`"
-        shadow="never"
-        class="grid-card detail-slot-card"
-        :class="{ 'drag-over-card': dragOverIndex === index }"
-        @dragover.prevent="handleDragOverByIndex(index)"
-        @drop.prevent="handleDropByIndex(index)"
-      >
-        <template #header>
-          <div class="detail-card-header">
-            <div class="detail-card-title">
-              {{ slot ? `${index + 1}. ${slot.label}` : `측정 카드 ${index + 1}` }}
-            </div>
-
-            <div
-              v-if="slot"
-              class="drag-handle"
-              draggable="true"
-              title="드래그하여 순서 변경"
-              @dragstart="handleDragStart(slot.key)"
-              @dragend="handleDragEnd"
-            >
-              ⠿
-            </div>
-          </div>
-        </template>
-
-        <template v-if="!isBaseInfoComplete">
-          <el-empty description="기본 정보를 먼저 입력해주세요." />
-        </template>
-
-        <template v-else-if="slot">
-          <el-form label-position="top">
-            <!-- 1. Setup -->
-            <template v-if="slot.key === 'setup'">
-              <el-form-item label="Vendor">
-                <el-radio-group v-model="measurementForms.setup.vendor">
-                  <el-radio label="KEYSIGHT">Keysight</el-radio>
-                  <el-radio label="ROHDE">Rohde</el-radio>
-                </el-radio-group>
-              </el-form-item>
-
-              <el-form-item label="Deembedding">
-                <el-radio-group v-model="measurementForms.setup.deembedding">
-                  <el-radio label="ALL">ALL</el-radio>
-                  <el-radio label="ON">ON</el-radio>
-                  <el-radio label="OFF">OFF</el-radio>
-                </el-radio-group>
-              </el-form-item>
-
-              <el-form-item label="Port Extension">
-                <el-radio-group v-model="measurementForms.setup.portExtension">
-                  <el-radio label="ALL">ALL</el-radio>
-                  <el-radio label="ON">ON</el-radio>
-                  <el-radio label="OFF">OFF</el-radio>
-                </el-radio-group>
-              </el-form-item>
-
-              <el-form-item label="특이사항(SPL)">
-                <el-input
-                  v-model="measurementForms.setup.noteSpl"
-                  type="textarea"
-                  :rows="2"
-                />
-              </el-form-item>
-
-              <el-form-item label="특이사항(측정)">
-                <el-input
-                  v-model="measurementForms.setup.noteMeasurement"
-                  type="textarea"
-                  :rows="2"
-                />
-              </el-form-item>
-
-              <el-form-item label="측정 Set up 링크">
-                <el-input v-model="measurementForms.setup.fileLink" />
-              </el-form-item>
-
-              <el-form-item label="완료 요청일(의뢰자 작성)">
-                <el-date-picker
-                  type="date"
-                  placeholder="완료 요청일"
-                  v-model="measurementForms.setup.requestedDueDate"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  class="custom-date-picker"
-                />
-              </el-form-item>
-
-              <el-form-item label="완료 예정일(측정자 작성)">
-                <el-date-picker
-                  type="date"
-                  placeholder="완료 예정일"
-                  v-model="measurementForms.setup.expectedDoneDate"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  class="custom-date-picker"
-                />
-              </el-form-item>
-
-              <el-form-item label="측정자">
-                <el-input
-                  v-model="measurementForms.setup.measurer"
-                  placeholder="측정자 입력"
-                />
-              </el-form-item>
-
-              <el-form-item label="결과 파일 링크">
-                <el-input v-model="measurementForms.setup.resultFileLink" />
-              </el-form-item>
-
-              <el-form-item label="완료일(의뢰자 작성)">
-                <el-date-picker
-                  type="date"
-                  placeholder="완료일"
-                  v-model="measurementForms.setup.doneDate"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  class="custom-date-picker"
-                />
-              </el-form-item>
-            </template>
-
-            <!-- 2. NA -->
-            <template v-else-if="slot.key === 'na'">
-              <el-form-item label="Deembedding">
-                <el-radio-group v-model="measurementForms.na.deembedding">
-                  <el-radio label="ALL">ALL</el-radio>
-                  <el-radio label="ON">ON</el-radio>
-                  <el-radio label="OFF">OFF</el-radio>
-                </el-radio-group>
-              </el-form-item>
-
-              <el-form-item label="Port Extension">
-                <el-radio-group v-model="measurementForms.na.portExtension">
-                  <el-radio label="ALL">ALL</el-radio>
-                  <el-radio label="ON">ON</el-radio>
-                  <el-radio label="OFF">OFF</el-radio>
-                </el-radio-group>
-              </el-form-item>
-
-              <el-form-item label="Matching">
-                <el-radio-group v-model="measurementForms.na.matching">
-                  <el-radio label="ALL">ALL</el-radio>
-                  <el-radio label="ON">ON</el-radio>
-                  <el-radio label="OFF">OFF</el-radio>
-                </el-radio-group>
-              </el-form-item>
-
-              <el-form-item label="Mold">
-                <el-radio-group v-model="measurementForms.na.mold">
-                  <el-radio label="ALL">ALL</el-radio>
-                  <el-radio label="NO_MOLD">No Mold</el-radio>
-                  <el-radio label="MOLD">Mold</el-radio>
-                </el-radio-group>
-              </el-form-item>
-
-              <el-form-item label="Jig / Soldering">
-                <el-radio-group v-model="measurementForms.na.jigSoldering">
-                  <el-radio label="JIG">Jig</el-radio>
-                  <el-radio label="SOLDERING">Soldering</el-radio>
-                </el-radio-group>
-              </el-form-item>
-
-              <el-form-item label="EVB Tuning">
-                <el-checkbox v-model="measurementForms.na.evbTuning">사용</el-checkbox>
-              </el-form-item>
-
-              <el-form-item label="Appendix">
-                <el-checkbox v-model="measurementForms.na.appendix">사용</el-checkbox>
-              </el-form-item>
-
-              <el-form-item label="특이사항(SPL)">
-                <el-input
-                  v-model="measurementForms.na.noteSpl"
-                  type="textarea"
-                  :rows="2"
-                />
-              </el-form-item>
-
-              <el-form-item label="특이사항(측정)">
-                <el-input
-                  v-model="measurementForms.na.noteMeasurement"
-                  type="textarea"
-                  :rows="2"
-                />
-              </el-form-item>
-
-              <el-form-item label="측정 Set up 링크">
-                <el-input v-model="measurementForms.na.fileLink" />
-              </el-form-item>
-
-              <el-form-item label="완료 요청일(의뢰자 작성)">
-                <el-date-picker
-                  type="date"
-                  placeholder="완료 요청일"
-                  v-model="measurementForms.na.requestedDueDate"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  class="custom-date-picker"
-                />
-              </el-form-item>
-
-              <el-form-item label="완료 예정일(측정자 작성)">
-                <el-date-picker
-                  type="date"
-                  placeholder="완료 예정일"
-                  v-model="measurementForms.na.expectedDoneDate"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  class="custom-date-picker"
-                />
-              </el-form-item>
-
-              <el-form-item label="측정자">
-                <el-input
-                  v-model="measurementForms.na.measurer"
-                  placeholder="측정자 입력"
-                />
-              </el-form-item>
-
-              <el-form-item label="결과 파일 링크">
-                <el-input v-model="measurementForms.na.resultFileLink" />
-              </el-form-item>
-
-              <el-form-item label="완료일(의뢰자 작성)">
-                <el-date-picker
-                  type="date"
-                  placeholder="완료일"
-                  v-model="measurementForms.na.doneDate"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  class="custom-date-picker"
-                />
-              </el-form-item>
-            </template>
-
-            <!-- 3. NF -->
-            <template v-else-if="slot.key === 'nf'">
-              <el-form-item label="Board Type">
-                <el-radio-group v-model="measurementForms.nf.boardType">
-                  <el-radio label="IDEAL_BOARD">Ideal Board</el-radio>
-                  <el-radio label="REAL_BOARD">Real Board</el-radio>
-                </el-radio-group>
-              </el-form-item>
-
-              <el-form-item label="Mold">
-                <el-radio-group v-model="measurementForms.nf.mold">
-                  <el-radio label="ALL">ALL</el-radio>
-                  <el-radio label="NO_MOLD">No Mold</el-radio>
-                  <el-radio label="MOLD">Mold</el-radio>
-                </el-radio-group>
-              </el-form-item>
-
-              <el-form-item label="Appendix">
-                <el-checkbox v-model="measurementForms.nf.appendix">사용</el-checkbox>
-              </el-form-item>
-
-              <el-form-item label="특이사항(SPL)">
-                <el-input
-                  v-model="measurementForms.nf.noteSpl"
-                  type="textarea"
-                  :rows="2"
-                />
-              </el-form-item>
-
-              <el-form-item label="특이사항(측정)">
-                <el-input
-                  v-model="measurementForms.nf.noteMeasurement"
-                  type="textarea"
-                  :rows="2"
-                />
-              </el-form-item>
-
-              <el-form-item label="측정 Set up 링크">
-                <el-input v-model="measurementForms.nf.fileLink" />
-              </el-form-item>
-
-              <el-form-item label="완료 요청일(의뢰자 작성)">
-                <el-date-picker
-                  type="date"
-                  placeholder="완료 요청일"
-                  v-model="measurementForms.nf.requestedDueDate"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  class="custom-date-picker"
-                />
-              </el-form-item>
-
-              <el-form-item label="완료 예정일(측정자 작성)">
-                <el-date-picker
-                  type="date"
-                  placeholder="완료 예정일"
-                  v-model="measurementForms.nf.expectedDoneDate"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  class="custom-date-picker"
-                />
-              </el-form-item>
-
-              <el-form-item label="측정자">
-                <el-input
-                  v-model="measurementForms.nf.measurer"
-                  placeholder="측정자 입력"
-                />
-              </el-form-item>
-
-              <el-form-item label="결과 파일 링크">
-                <el-input v-model="measurementForms.nf.resultFileLink" />
-              </el-form-item>
-
-              <el-form-item label="완료일(의뢰자 작성)">
-                <el-date-picker
-                  type="date"
-                  placeholder="완료일"
-                  v-model="measurementForms.nf.doneDate"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  class="custom-date-picker"
-                />
-              </el-form-item>
-            </template>
-
-            <!-- 4. MWA -->
-            <template v-else-if="slot.key === 'mwa'">
-              <el-form-item label="Matching">
-                <el-radio-group v-model="measurementForms.mwa.matching">
-                  <el-radio label="ALL">ALL</el-radio>
-                  <el-radio label="ON">ON</el-radio>
-                  <el-radio label="OFF">OFF</el-radio>
-                </el-radio-group>
-              </el-form-item>
-
-              <el-form-item label="Loss">
-                <el-radio-group v-model="measurementForms.mwa.loss">
-                  <el-radio label="ALL">ALL</el-radio>
-                  <el-radio label="ON">ON</el-radio>
-                  <el-radio label="OFF">OFF</el-radio>
-                </el-radio-group>
-              </el-form-item>
-
-              <el-form-item label="특이사항(SPL)">
-                <el-input
-                  v-model="measurementForms.mwa.noteSpl"
-                  type="textarea"
-                  :rows="2"
-                />
-              </el-form-item>
-
-              <el-form-item label="특이사항(측정)">
-                <el-input
-                  v-model="measurementForms.mwa.noteMeasurement"
-                  type="textarea"
-                  :rows="2"
-                />
-              </el-form-item>
-
-              <el-form-item label="측정 Set up 링크">
-                <el-input v-model="measurementForms.mwa.fileLink" />
-              </el-form-item>
-
-              <el-form-item label="완료 요청일(의뢰자 작성)">
-                <el-date-picker
-                  type="date"
-                  placeholder="완료 요청일"
-                  v-model="measurementForms.mwa.requestedDueDate"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  class="custom-date-picker"
-                />
-              </el-form-item>
-
-              <el-form-item label="완료 예정일(측정자 작성)">
-                <el-date-picker
-                  type="date"
-                  placeholder="완료 예정일"
-                  v-model="measurementForms.mwa.expectedDoneDate"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  class="custom-date-picker"
-                />
-              </el-form-item>
-
-              <el-form-item label="측정자">
-                <el-input
-                  v-model="measurementForms.mwa.measurer"
-                  placeholder="측정자 입력"
-                />
-              </el-form-item>
-
-              <el-form-item label="결과 파일 링크">
-                <el-input v-model="measurementForms.mwa.resultFileLink" />
-              </el-form-item>
-
-              <el-form-item label="완료일(의뢰자 작성)">
-                <el-date-picker
-                  type="date"
-                  placeholder="완료일"
-                  v-model="measurementForms.mwa.doneDate"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  class="custom-date-picker"
-                />
-              </el-form-item>
-            </template>
-
-            <!-- 5. CA -->
-            <template v-else-if="slot.key === 'ca'">
-              <el-form-item label="Trace">
-                <el-input v-model="measurementForms.ca.trace" />
-              </el-form-item>
-
-              <el-form-item label="Power">
-                <el-input v-model="measurementForms.ca.power" />
-              </el-form-item>
-
-              <el-form-item label="Freq Start">
-                <el-input v-model="measurementForms.ca.freqStart" />
-              </el-form-item>
-
-              <el-form-item label="Freq Stop">
-                <el-input v-model="measurementForms.ca.freqStop" />
-              </el-form-item>
-
-              <el-form-item label="Average">
-                <el-input v-model="measurementForms.ca.average" />
-              </el-form-item>
-
-              <el-form-item label="Point">
-                <el-input v-model="measurementForms.ca.point" />
-              </el-form-item>
-
-              <el-form-item label="특이사항(SPL)">
-                <el-input
-                  v-model="measurementForms.ca.noteSpl"
-                  type="textarea"
-                  :rows="2"
-                />
-              </el-form-item>
-
-              <el-form-item label="특이사항(측정)">
-                <el-input
-                  v-model="measurementForms.ca.noteMeasurement"
-                  type="textarea"
-                  :rows="2"
-                />
-              </el-form-item>
-
-              <el-form-item label="측정 Set up 링크">
-                <el-input v-model="measurementForms.ca.fileLink" />
-              </el-form-item>
-
-              <el-form-item label="완료 요청일(의뢰자 작성)">
-                <el-date-picker
-                  type="date"
-                  placeholder="완료 요청일"
-                  v-model="measurementForms.ca.requestedDueDate"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  class="custom-date-picker"
-                />
-              </el-form-item>
-
-              <el-form-item label="완료 예정일(측정자 작성)">
-                <el-date-picker
-                  type="date"
-                  placeholder="완료 예정일"
-                  v-model="measurementForms.ca.expectedDoneDate"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  class="custom-date-picker"
-                />
-              </el-form-item>
-
-              <el-form-item label="측정자">
-                <el-input
-                  v-model="measurementForms.ca.measurer"
-                  placeholder="측정자 입력"
-                />
-              </el-form-item>
-
-              <el-form-item label="결과 파일 링크">
-                <el-input v-model="measurementForms.ca.resultFileLink" />
-              </el-form-item>
-
-              <el-form-item label="완료일(의뢰자 작성)">
-                <el-date-picker
-                  type="date"
-                  placeholder="완료일"
-                  v-model="measurementForms.ca.doneDate"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  class="custom-date-picker"
-                />
-              </el-form-item>
-            </template>
-
-            <!-- 6. TCF -->
-            <template v-else-if="slot.key === 'tcf'">
-              <el-form-item label="온도 순서">
-                <el-input v-model="measurementForms.tcf.temperatureSequence" />
-              </el-form-item>
-
-              <el-form-item label="Matching">
-                <el-radio-group v-model="measurementForms.tcf.matching">
-                  <el-radio label="ALL">ALL</el-radio>
-                  <el-radio label="ON">ON</el-radio>
-                  <el-radio label="OFF">OFF</el-radio>
-                </el-radio-group>
-              </el-form-item>
-
-              <el-form-item label="Jig / Soldering">
-                <el-radio-group v-model="measurementForms.tcf.jigSoldering">
-                  <el-radio label="JIG">Jig</el-radio>
-                  <el-radio label="SOLDERING">Soldering</el-radio>
-                </el-radio-group>
-              </el-form-item>
-
-              <el-form-item label="특이사항(SPL)">
-                <el-input
-                  v-model="measurementForms.tcf.noteSpl"
-                  type="textarea"
-                  :rows="2"
-                />
-              </el-form-item>
-
-              <el-form-item label="특이사항(측정)">
-                <el-input
-                  v-model="measurementForms.tcf.noteMeasurement"
-                  type="textarea"
-                  :rows="2"
-                />
-              </el-form-item>
-
-              <el-form-item label="측정 Set up 링크">
-                <el-input v-model="measurementForms.tcf.fileLink" />
-              </el-form-item>
-
-              <el-form-item label="완료 요청일(의뢰자 작성)">
-                <el-date-picker
-                  type="date"
-                  placeholder="완료 요청일"
-                  v-model="measurementForms.tcf.requestedDueDate"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  class="custom-date-picker"
-                />
-              </el-form-item>
-
-              <el-form-item label="완료 예정일(측정자 작성)">
-                <el-date-picker
-                  type="date"
-                  placeholder="완료 예정일"
-                  v-model="measurementForms.tcf.expectedDoneDate"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  class="custom-date-picker"
-                />
-              </el-form-item>
-
-              <el-form-item label="측정자">
-                <el-input
-                  v-model="measurementForms.tcf.measurer"
-                  placeholder="측정자 입력"
-                />
-              </el-form-item>
-
-              <el-form-item label="결과 파일 링크">
-                <el-input v-model="measurementForms.tcf.resultFileLink" />
-              </el-form-item>
-
-              <el-form-item label="완료일(의뢰자 작성)">
-                <el-date-picker
-                  type="date"
-                  placeholder="완료일"
-                  v-model="measurementForms.tcf.doneDate"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  class="custom-date-picker"
-                />
-              </el-form-item>
-            </template>
-          </el-form>
-        </template>
-
-        <template v-else>
-          <div class="empty-slot">
-            <el-empty description="선택된 측정 항목 없음" />
-          </div>
-        </template>
-      </el-card>
+      <BaseInfoCard
+        :base-form="baseForm"
+        :mode="mode"
+        :effective-mode="effectiveMode"
+        :reuse-mode="reuseMode"
+        @list="goList"
+        @excel="handleExcelDownload"
+        @reuse="handleReuse"
+        @save="handleSave"
+        @delete="handleDelete"
+      />
+
+      <!-- 2번 칸: 샘플 정보 카드 -->
+      <SampleInfoCard
+        v-if="(isBaseInfoComplete || mode === 'edit') && baseForm.useSampleInfo"
+        :sample-info="baseForm.sampleInfo"
+      />
+      
+      <!-- 측정 선택 -->
+      <MeasurementSelectorCard
+        v-if="isBaseInfoComplete || mode === 'edit'"
+        :measurement-options="measurementOptions"
+        :selected-measurements="selectedMeasurements"
+        @toggle="handleMeasurementToggle"
+      />
+
+      <MeasurementDetailCard
+        v-for="(slot, index) in selectedCards"
+        :key="slot.key"
+        :slot="slot"
+        :index="index"
+        :measurement-forms="measurementForms"
+        :nonlinear-options="nonlinearOptions"
+        :drag-over-index="dragOverIndex"
+        @nonlinear-toggle="handleNonlinearTypeToggle"
+        @drag-start="handleDragStart"
+        @drag-over="handleDragOverByIndex"
+        @drop="handleDropByIndex"
+        @drag-end="handleDragEnd"
+      />
     </div>
   </div>
 </template>
@@ -742,12 +55,17 @@ import {
   createModuleApplicationNew,
   updateModuleApplicationNew,
   deleteModuleApplicationNew,
-  downloadModuleApplicationNewExcel
+  downloadModuleApplicationNewExcel,
+  type ModuleApplicationDetail,
+  type NullableDate,
 } from "../../../utils/module_group/application-utils";
+import BaseInfoCard from "./components/BaseInfoCard.vue";
+import SampleInfoCard from "./components/SampleInfoCard.vue";
+import MeasurementSelectorCard from "./components/MeasurementSelectorCard.vue";
+import MeasurementDetailCard from "./components/MeasurementDetailCard.vue";
 
 type SiteType = "HQ" | "WHC";
 type ModeType = "create" | "edit";
-type NullableDate = string | null;
 
 type VendorType = "" | "KEYSIGHT" | "ROHDE";
 type OnOffType = "" | "ALL" | "ON" | "OFF";
@@ -762,24 +80,6 @@ interface MeasurementOption {
   label: string;
 }
 
-interface ModuleApplicationDetail {
-  applicationId?: string;
-  pn: string;
-  requester: string;
-  developer: string;
-  purpose: string;
-  siteType: SiteType | "";
-  status?: string;
-  creator?: string | null;
-  modifier?: string | null;
-  createdDate?: string | null;
-  modifiedDate?: string | null;
-  measurements: Array<{
-    type: string;
-    data?: Record<string, any>;
-  }>;
-}
-
 interface CommonMeasurementFields {
   noteSpl: string;
   noteMeasurement: string;
@@ -789,6 +89,7 @@ interface CommonMeasurementFields {
   requestedDueDate: NullableDate;
   expectedDoneDate: NullableDate;
   doneDate: NullableDate;
+  links: Record<string, string>;
 }
 
 interface SetupForm extends CommonMeasurementFields {
@@ -833,6 +134,62 @@ interface TcfForm extends CommonMeasurementFields {
   jigSoldering: JigSolderingType;
 }
 
+type NonlinearSubType = "imd" | "p1db" | "iip3" | "rse" | "harmonic";
+type NonlinearType = "" | NonlinearSubType;
+
+interface NonlinearForm extends CommonMeasurementFields {
+  // selectedType은 기존 저장 데이터 호환용으로 유지하고, 화면에서는 selectedTypes를 사용합니다.
+  selectedType: NonlinearType;
+  selectedTypes: NonlinearSubType[];
+
+  // IMD
+  imdBand: string;
+  imdInputPower: string;
+  imdFjamPower: string;
+
+  // P1dB
+  p1dbBand: string;
+  p1dbGainBiasAddress: string;
+
+  // IIP3
+  iip3Band: string;
+  iip3GainBiasAddress: string;
+  iip3FjamPower: string;
+
+  // RSE
+  rseFrequency: string;
+
+  // Harmonic
+  harmonicBand: string;
+  harmonicInputPower: string;
+  harmonicOrder: string;
+  harmonicUnit: "" | "dBc" | "dBm";
+}
+
+interface ProbeSplForm extends CommonMeasurementFields {
+  sampleType: string;
+  freqStart: string;
+  freqStop: string;
+  stepPoint: string;
+  powerIfbw: string;
+  pitch: string;
+  gsType: string;
+}
+
+interface ProbeDeembeddingForm extends CommonMeasurementFields {
+  evbInfo: string;
+  freqStart: string;
+  freqStop: string;
+  stepPoint: string;
+  powerIfbw: string;
+  pitch: string;
+  gsType: string;
+}
+
+interface EvbAssemblyForm extends CommonMeasurementFields {
+  requestLink: string;
+}
+
 function createEmptyMeasurementForms() {
   return {
     setup: {
@@ -847,6 +204,7 @@ function createEmptyMeasurementForms() {
       requestedDueDate: null,
       expectedDoneDate: null,
       doneDate: null,
+      links: {},
     } as SetupForm,
 
     na: {
@@ -865,6 +223,7 @@ function createEmptyMeasurementForms() {
       requestedDueDate: null,
       expectedDoneDate: null,
       doneDate: null,
+      links: {},
     } as NaForm,
 
     nf: {
@@ -879,6 +238,7 @@ function createEmptyMeasurementForms() {
       requestedDueDate: null,
       expectedDoneDate: null,
       doneDate: null,
+      links: {},
     } as NfForm,
 
     mwa: {
@@ -892,6 +252,7 @@ function createEmptyMeasurementForms() {
       requestedDueDate: null,
       expectedDoneDate: null,
       doneDate: null,
+      links: {},
     } as MwaForm,
 
     ca: {
@@ -909,6 +270,7 @@ function createEmptyMeasurementForms() {
       requestedDueDate: null,
       expectedDoneDate: null,
       doneDate: null,
+      links: {},
     } as CaForm,
 
     tcf: {
@@ -923,7 +285,93 @@ function createEmptyMeasurementForms() {
       requestedDueDate: null,
       expectedDoneDate: null,
       doneDate: null,
+      links: {},
     } as TcfForm,
+
+    nonlinear: {
+      selectedType: "",
+      selectedTypes: [],
+
+      imdBand: "",
+      imdInputPower: "",
+      imdFjamPower: "",
+
+      p1dbBand: "",
+      p1dbGainBiasAddress: "",
+
+      iip3Band: "",
+      iip3GainBiasAddress: "",
+      iip3FjamPower: "",
+
+      rseFrequency: "",
+
+      harmonicBand: "",
+      harmonicInputPower: "",
+      harmonicOrder: "",
+      harmonicUnit: "",
+
+      noteSpl: "",
+      noteMeasurement: "",
+      fileLink: "",
+      resultFileLink: "",
+      measurer: "",
+      requestedDueDate: null,
+      expectedDoneDate: null,
+      doneDate: null,
+      links: {},
+    } as NonlinearForm,
+
+    probeSpl: {
+      sampleType: "",
+      freqStart: "",
+      freqStop: "",
+      stepPoint: "",
+      powerIfbw: "",
+      pitch: "",
+
+      gsType: "",
+      noteSpl: "",
+      noteMeasurement: "",
+      fileLink: "",
+      resultFileLink: "",
+      measurer: "",
+      requestedDueDate: null,
+      expectedDoneDate: null,
+      doneDate: null,
+      links: {},
+    } as ProbeSplForm,
+
+    probeDeembedding: {
+      evbInfo: "",
+      freqStart: "",
+      freqStop: "",
+      stepPoint: "",
+      powerIfbw: "",
+      pitch: "",
+      gsType: "",
+      noteSpl: "",
+      noteMeasurement: "",
+      fileLink: "",
+      resultFileLink: "",
+      measurer: "",
+      requestedDueDate: null,
+      expectedDoneDate: null,
+      doneDate: null,
+      links: {},
+    } as ProbeDeembeddingForm,
+
+    evbAssembly: {
+      requestLink: "",
+      noteSpl: "",
+      noteMeasurement: "",
+      fileLink: "",
+      resultFileLink: "",
+      measurer: "",
+      requestedDueDate: null,
+      expectedDoneDate: null,
+      doneDate: null,
+      links: {},
+    } as EvbAssemblyForm,
   };
 }
 
@@ -954,7 +402,15 @@ const baseForm = reactive({
   developer: "",
   purpose: "",
   siteType: "" as SiteType | "",
+  useSampleInfo: false,
+  sampleInfo:{
+              sender: "",
+              deliveredDate: null as NullableDate,
+              note: "",
+              sampleLink: "",
+              }
 });
+
 
 const measurementOptions: MeasurementOption[] = [
   { key: "setup", label: "Set up 검증" },
@@ -963,6 +419,21 @@ const measurementOptions: MeasurementOption[] = [
   { key: "mwa", label: "Rohde MWA 측정" },
   { key: "ca", label: "Rohde CA 측정" },
   { key: "tcf", label: "Keysight TCF 측정" },
+  { key: "nonlinear", label: "비선형 측정" },
+  { key: "probeSpl", label: "Probe 측정 SPL" },
+  { key: "probeDeembedding", label: "Probe 측정 Deembedding" },
+  { key: "evbAssembly", label: "EVB 조립" },
+];
+
+const nonlinearOptions: Array<{
+  key: NonlinearSubType;
+  label: string;
+}> = [
+  { key: "imd", label: "IMD" },
+  { key: "p1db", label: "P1dB" },
+  { key: "iip3", label: "IIP3" },
+  { key: "rse", label: "RSE" },
+  { key: "harmonic", label: "Harmonic" },
 ];
 
 const selectedMeasurements = ref<string[]>([]);
@@ -982,10 +453,6 @@ const selectedCards = computed(() => {
     .filter((item): item is MeasurementOption => item !== null);
 });
 
-const cardSlots = computed<(MeasurementOption | null)[]>(() => {
-  return Array.from({ length: 6 }, (_, index) => selectedCards.value[index] ?? null);
-});
-
 function resetForm() {
   baseForm.pn = "";
   baseForm.requester = "";
@@ -993,6 +460,11 @@ function resetForm() {
   baseForm.purpose = "";
   baseForm.siteType = "";
   selectedMeasurements.value = [];
+  baseForm.useSampleInfo = false;
+  baseForm.sampleInfo.sender ="";
+  baseForm.sampleInfo.deliveredDate = null;
+  baseForm.sampleInfo.note = "";
+  baseForm.sampleInfo.sampleLink = "";
   Object.assign(measurementForms, createEmptyMeasurementForms());
   reuseMode.value = false;
 }
@@ -1000,7 +472,6 @@ function resetForm() {
 function clearReuseProgressFields() {
   Object.keys(measurementForms).forEach((key) => {
     const form = measurementForms[key as keyof typeof measurementForms] as any;
-
     form.requestedDueDate = null;
     form.expectedDoneDate = null;
     form.doneDate = null;
@@ -1025,10 +496,15 @@ async function handleReuse() {
   }
   reuseMode.value = true;
   clearReuseProgressFields();
-  ElMessage.warning("재사용 모드입니다. 수정 후 생성하면 새 의뢰서가 생성됩니다.");
+  ElMessage.warning(
+    "재사용 모드입니다. 수정 후 생성하면 새 의뢰서가 생성됩니다."
+  );
 }
 
-function handleMeasurementToggle(key: string, checked: boolean | string | number) {
+function handleMeasurementToggle(
+  key: string,
+  checked: boolean | string | number
+) {
   const isChecked = !!checked;
   const current = [...selectedMeasurements.value];
 
@@ -1046,7 +522,29 @@ function handleMeasurementToggle(key: string, checked: boolean | string | number
   selectedMeasurements.value = current;
 
   console.log("[checkbox toggle] key:", key, "checked:", isChecked);
-  console.log("[checkbox toggle] selectedMeasurements:", [...selectedMeasurements.value]);
+  console.log(
+    "[checkbox toggle] selectedMeasurements:",
+    [...selectedMeasurements.value]
+  );
+}
+
+function handleNonlinearTypeToggle(type: NonlinearSubType) {
+  const selectedTypes = measurementForms.nonlinear.selectedTypes;
+  const index = selectedTypes.indexOf(type);
+
+  if (index > -1) {
+    selectedTypes.splice(index, 1);
+  } else {
+    selectedTypes.push(type);
+  }
+
+  // 기존 selectedType 필드를 사용하는 저장 데이터와의 호환을 위해 첫 번째 선택값을 같이 보관합니다.
+  measurementForms.nonlinear.selectedType = selectedTypes[0] ?? "";
+
+  console.log(
+    "[nonlinear toggle] selectedTypes:",
+    [...measurementForms.nonlinear.selectedTypes]
+  );
 }
 
 function handleDragStart(key: string) {
@@ -1084,7 +582,14 @@ function handleDropByIndex(targetIndex: number) {
   current.splice(insertIndex, 0, moved);
 
   console.log("[drop before] order:", [...selectedMeasurements.value]);
-  console.log("[drop action] moved:", moved, "from:", fromIndex, "to:", insertIndex);
+  console.log(
+    "[drop action] moved:",
+    moved,
+    "from:",
+    fromIndex,
+    "to:",
+    insertIndex
+  );
 
   selectedMeasurements.value = current;
 
@@ -1100,15 +605,35 @@ function handleDragEnd() {
   dragOverIndex.value = null;
 }
 
+function normalizeLinks(data?: Record<string, any> | null): Record<string, string> {
+  const source =
+    data?.links && typeof data.links === "object"
+      ? data.links
+      : {};
+
+  return Object.entries(source).reduce((acc, [key, value]) => {
+    acc[key] = String(value ?? "");
+    return acc;
+  }, {} as Record<string, string>);
+}
+
 function applyDetail(detail: ModuleApplicationDetail) {
   baseForm.pn = detail.pn ?? "";
   baseForm.requester = detail.requester ?? "";
   baseForm.developer = detail.developer ?? "";
   baseForm.purpose = detail.purpose ?? "";
   baseForm.siteType = detail.siteType ?? "";
+  baseForm.useSampleInfo = !!detail.useSampleInfo;
+  baseForm.sampleInfo.sender = detail.sampleInfo?.sender ?? "";
+  baseForm.sampleInfo.deliveredDate = detail.sampleInfo?.deliveredDate ?? null;
+  baseForm.sampleInfo.note = detail.sampleInfo?.note ?? "";
+  baseForm.sampleInfo.sampleLink = detail.sampleInfo?.sampleLink ?? "";
 
   selectedMeasurements.value = detail.measurements.map((item) => item.type);
-  console.log("[applyDetail] loaded measurement order:", [...selectedMeasurements.value]);
+  console.log(
+    "[applyDetail] loaded measurement order:",
+    [...selectedMeasurements.value]
+  );
 
   detail.measurements.forEach((item) => {
     if (item.type === "setup") {
@@ -1120,9 +645,12 @@ function applyDetail(detail: ModuleApplicationDetail) {
       measurementForms.setup.fileLink = item.data?.fileLink ?? "";
       measurementForms.setup.resultFileLink = item.data?.resultFileLink ?? "";
       measurementForms.setup.measurer = item.data?.measurer ?? "";
-      measurementForms.setup.requestedDueDate = item.data?.requestedDueDate ?? null;
-      measurementForms.setup.expectedDoneDate = item.data?.expectedDoneDate ?? null;
+      measurementForms.setup.requestedDueDate =
+        item.data?.requestedDueDate ?? null;
+      measurementForms.setup.expectedDoneDate =
+        item.data?.expectedDoneDate ?? null;
       measurementForms.setup.doneDate = item.data?.doneDate ?? null;
+      measurementForms.setup.links = normalizeLinks(item.data);
     }
 
     if (item.type === "na") {
@@ -1138,9 +666,12 @@ function applyDetail(detail: ModuleApplicationDetail) {
       measurementForms.na.fileLink = item.data?.fileLink ?? "";
       measurementForms.na.resultFileLink = item.data?.resultFileLink ?? "";
       measurementForms.na.measurer = item.data?.measurer ?? "";
-      measurementForms.na.requestedDueDate = item.data?.requestedDueDate ?? null;
-      measurementForms.na.expectedDoneDate = item.data?.expectedDoneDate ?? null;
+      measurementForms.na.requestedDueDate =
+        item.data?.requestedDueDate ?? null;
+      measurementForms.na.expectedDoneDate =
+        item.data?.expectedDoneDate ?? null;
       measurementForms.na.doneDate = item.data?.doneDate ?? null;
+      measurementForms.na.links = normalizeLinks(item.data);
     }
 
     if (item.type === "nf") {
@@ -1152,9 +683,12 @@ function applyDetail(detail: ModuleApplicationDetail) {
       measurementForms.nf.fileLink = item.data?.fileLink ?? "";
       measurementForms.nf.resultFileLink = item.data?.resultFileLink ?? "";
       measurementForms.nf.measurer = item.data?.measurer ?? "";
-      measurementForms.nf.requestedDueDate = item.data?.requestedDueDate ?? null;
-      measurementForms.nf.expectedDoneDate = item.data?.expectedDoneDate ?? null;
+      measurementForms.nf.requestedDueDate =
+        item.data?.requestedDueDate ?? null;
+      measurementForms.nf.expectedDoneDate =
+        item.data?.expectedDoneDate ?? null;
       measurementForms.nf.doneDate = item.data?.doneDate ?? null;
+      measurementForms.nf.links = normalizeLinks(item.data);
     }
 
     if (item.type === "mwa") {
@@ -1165,9 +699,12 @@ function applyDetail(detail: ModuleApplicationDetail) {
       measurementForms.mwa.fileLink = item.data?.fileLink ?? "";
       measurementForms.mwa.resultFileLink = item.data?.resultFileLink ?? "";
       measurementForms.mwa.measurer = item.data?.measurer ?? "";
-      measurementForms.mwa.requestedDueDate = item.data?.requestedDueDate ?? null;
-      measurementForms.mwa.expectedDoneDate = item.data?.expectedDoneDate ?? null;
+      measurementForms.mwa.requestedDueDate =
+        item.data?.requestedDueDate ?? null;
+      measurementForms.mwa.expectedDoneDate =
+        item.data?.expectedDoneDate ?? null;
       measurementForms.mwa.doneDate = item.data?.doneDate ?? null;
+      measurementForms.mwa.links = normalizeLinks(item.data);
     }
 
     if (item.type === "ca") {
@@ -1182,13 +719,17 @@ function applyDetail(detail: ModuleApplicationDetail) {
       measurementForms.ca.fileLink = item.data?.fileLink ?? "";
       measurementForms.ca.resultFileLink = item.data?.resultFileLink ?? "";
       measurementForms.ca.measurer = item.data?.measurer ?? "";
-      measurementForms.ca.requestedDueDate = item.data?.requestedDueDate ?? null;
-      measurementForms.ca.expectedDoneDate = item.data?.expectedDoneDate ?? null;
+      measurementForms.ca.requestedDueDate =
+        item.data?.requestedDueDate ?? null;
+      measurementForms.ca.expectedDoneDate =
+        item.data?.expectedDoneDate ?? null;
       measurementForms.ca.doneDate = item.data?.doneDate ?? null;
+      measurementForms.ca.links = normalizeLinks(item.data);
     }
 
     if (item.type === "tcf") {
-      measurementForms.tcf.temperatureSequence = item.data?.temperatureSequence ?? "";
+      measurementForms.tcf.temperatureSequence =
+        item.data?.temperatureSequence ?? "";
       measurementForms.tcf.matching = item.data?.matching ?? "";
       measurementForms.tcf.jigSoldering = item.data?.jigSoldering ?? "";
       measurementForms.tcf.noteSpl = item.data?.noteSpl ?? "";
@@ -1196,9 +737,142 @@ function applyDetail(detail: ModuleApplicationDetail) {
       measurementForms.tcf.fileLink = item.data?.fileLink ?? "";
       measurementForms.tcf.resultFileLink = item.data?.resultFileLink ?? "";
       measurementForms.tcf.measurer = item.data?.measurer ?? "";
-      measurementForms.tcf.requestedDueDate = item.data?.requestedDueDate ?? null;
-      measurementForms.tcf.expectedDoneDate = item.data?.expectedDoneDate ?? null;
+      measurementForms.tcf.requestedDueDate =
+        item.data?.requestedDueDate ?? null;
+      measurementForms.tcf.expectedDoneDate =
+        item.data?.expectedDoneDate ?? null;
       measurementForms.tcf.doneDate = item.data?.doneDate ?? null;
+      measurementForms.tcf.links = normalizeLinks(item.data);
+    }
+
+    if (item.type === "nonlinear") {
+      const loadedSelectedTypes = Array.isArray(item.data?.selectedTypes)
+        ? item.data.selectedTypes
+        : item.data?.selectedType
+        ? [item.data.selectedType]
+        : [];
+
+      measurementForms.nonlinear.selectedTypes = loadedSelectedTypes.filter(
+        (type: string): type is NonlinearSubType =>
+          nonlinearOptions.some((option) => option.key === type)
+      );
+      measurementForms.nonlinear.selectedType =
+        measurementForms.nonlinear.selectedTypes[0] ?? "";
+
+      measurementForms.nonlinear.imdBand = item.data?.imdBand ?? "";
+      measurementForms.nonlinear.imdInputPower =
+        item.data?.imdInputPower ?? "";
+      measurementForms.nonlinear.imdFjamPower =
+        item.data?.imdFjamPower ?? "";
+
+      measurementForms.nonlinear.p1dbBand = item.data?.p1dbBand ?? "";
+      measurementForms.nonlinear.p1dbGainBiasAddress =
+        item.data?.p1dbGainBiasAddress ?? "";
+
+      measurementForms.nonlinear.iip3Band = item.data?.iip3Band ?? "";
+      measurementForms.nonlinear.iip3GainBiasAddress =
+        item.data?.iip3GainBiasAddress ?? "";
+      measurementForms.nonlinear.iip3FjamPower =
+        item.data?.iip3FjamPower ?? "";
+
+      measurementForms.nonlinear.rseFrequency =
+        item.data?.rseFrequency ?? "";
+
+      measurementForms.nonlinear.harmonicBand =
+        item.data?.harmonicBand ?? "";
+      measurementForms.nonlinear.harmonicInputPower =
+        item.data?.harmonicInputPower ?? "";
+      measurementForms.nonlinear.harmonicOrder =
+        item.data?.harmonicOrder ?? "";
+      measurementForms.nonlinear.harmonicUnit =
+        item.data?.harmonicUnit ?? "";
+
+      measurementForms.nonlinear.noteSpl = item.data?.noteSpl ?? "";
+      measurementForms.nonlinear.noteMeasurement =
+        item.data?.noteMeasurement ?? "";
+      measurementForms.nonlinear.fileLink = item.data?.fileLink ?? "";
+      measurementForms.nonlinear.resultFileLink =
+        item.data?.resultFileLink ?? "";
+      measurementForms.nonlinear.measurer = item.data?.measurer ?? "";
+      measurementForms.nonlinear.requestedDueDate =
+        item.data?.requestedDueDate ?? null;
+      measurementForms.nonlinear.expectedDoneDate =
+        item.data?.expectedDoneDate ?? null;
+      measurementForms.nonlinear.doneDate = item.data?.doneDate ?? null;
+      measurementForms.nonlinear.links = normalizeLinks(item.data);
+    }
+
+    if (item.type === "probeSpl") {
+      measurementForms.probeSpl.sampleType = item.data?.sampleType ?? "";
+      measurementForms.probeSpl.freqStart = item.data?.freqStart ?? "";
+      measurementForms.probeSpl.powerIfbw = item.data?.powerIfbw ?? "";
+      measurementForms.probeSpl.freqStop = item.data?.freqStop ?? "";
+      measurementForms.probeSpl.pitch = item.data?.pitch ?? "";
+      measurementForms.probeSpl.stepPoint = item.data?.stepPoint ?? "";
+      measurementForms.probeSpl.gsType = item.data?.gsType ?? "";
+      measurementForms.probeSpl.noteSpl = item.data?.noteSpl ?? "";
+      measurementForms.probeSpl.noteMeasurement =
+        item.data?.noteMeasurement ?? "";
+      measurementForms.probeSpl.fileLink = item.data?.fileLink ?? "";
+      measurementForms.probeSpl.resultFileLink =
+        item.data?.resultFileLink ?? "";
+      measurementForms.probeSpl.measurer = item.data?.measurer ?? "";
+      measurementForms.probeSpl.requestedDueDate =
+        item.data?.requestedDueDate ?? null;
+      measurementForms.probeSpl.expectedDoneDate =
+        item.data?.expectedDoneDate ?? null;
+      measurementForms.probeSpl.doneDate = item.data?.doneDate ?? null;
+      measurementForms.probeSpl.links = normalizeLinks(item.data);
+    }
+
+    if (item.type === "probeDeembedding") {
+      measurementForms.probeDeembedding.evbInfo = item.data?.evbInfo ?? "";
+      measurementForms.probeDeembedding.freqStart =
+        item.data?.freqStart ?? "";
+      measurementForms.probeDeembedding.powerIfbw =
+        item.data?.powerIfbw ?? "";
+      measurementForms.probeDeembedding.freqStop =
+        item.data?.freqStop ?? "";
+      measurementForms.probeDeembedding.pitch = item.data?.pitch ?? "";
+      measurementForms.probeDeembedding.stepPoint =
+        item.data?.stepPoint ?? "";
+      measurementForms.probeDeembedding.gsType =
+        item.data?.gsType ?? "";
+      measurementForms.probeDeembedding.noteSpl =
+        item.data?.noteSpl ?? "";
+      measurementForms.probeDeembedding.noteMeasurement =
+        item.data?.noteMeasurement ?? "";
+      measurementForms.probeDeembedding.fileLink =
+        item.data?.fileLink ?? "";
+      measurementForms.probeDeembedding.resultFileLink =
+        item.data?.resultFileLink ?? "";
+      measurementForms.probeDeembedding.measurer =
+        item.data?.measurer ?? "";
+      measurementForms.probeDeembedding.requestedDueDate =
+        item.data?.requestedDueDate ?? null;
+      measurementForms.probeDeembedding.expectedDoneDate =
+        item.data?.expectedDoneDate ?? null;
+      measurementForms.probeDeembedding.doneDate =
+        item.data?.doneDate ?? null;
+      measurementForms.probeDeembedding.links = normalizeLinks(item.data);
+    }
+
+    if (item.type === "evbAssembly") {
+      measurementForms.evbAssembly.requestLink =
+        item.data?.requestLink ?? "";
+      measurementForms.evbAssembly.noteSpl = item.data?.noteSpl ?? "";
+      measurementForms.evbAssembly.noteMeasurement =
+        item.data?.noteMeasurement ?? "";
+      measurementForms.evbAssembly.fileLink = item.data?.fileLink ?? "";
+      measurementForms.evbAssembly.resultFileLink =
+        item.data?.resultFileLink ?? "";
+      measurementForms.evbAssembly.measurer = item.data?.measurer ?? "";
+      measurementForms.evbAssembly.requestedDueDate =
+        item.data?.requestedDueDate ?? null;
+      measurementForms.evbAssembly.expectedDoneDate =
+        item.data?.expectedDoneDate ?? null;
+      measurementForms.evbAssembly.doneDate = item.data?.doneDate ?? null;
+      measurementForms.evbAssembly.links = normalizeLinks(item.data);
     }
   });
 }
@@ -1207,6 +881,7 @@ async function fetchDetail() {
   loading.value = true;
   try {
     const detail = await getModuleApplicationNewById(applicationId.value);
+    console.log("[fetchDetail] mapped detail:", detail)
     applyDetail(detail);
   } catch (error) {
     console.error(error);
@@ -1214,6 +889,20 @@ async function fetchDetail() {
   } finally {
     loading.value = false;
   }
+}
+
+function buildMeasurementPayloadData(key: string) {
+  const form = measurementForms[key as keyof typeof measurementForms] as any;
+  const links = normalizeLinks(form);
+
+  return {
+    ...form,
+    links,
+    fileLink:
+      form.fileLink ||
+      Object.values(links).find((value) => String(value ?? "").trim() !== "") ||
+      "",
+  };
 }
 
 function buildPayload() {
@@ -1228,11 +917,16 @@ function buildPayload() {
     modifier: loginId,
     measurements: selectedMeasurements.value.map((key) => ({
       type: key,
-      data: measurementForms[key as keyof typeof measurementForms],
+      data: buildMeasurementPayloadData(key),
     })),
+    useSampleInfo: baseForm.useSampleInfo,
+    sampleInfo: baseForm.useSampleInfo ? baseForm.sampleInfo : null,
   };
 
-  console.log("[buildPayload] measurement order:", payload.measurements.map((x) => x.type));
+  console.log(
+    "[buildPayload] measurement order:",
+    payload.measurements.map((x) => x.type)
+  );
   console.log("[buildPayload] payload:", payload);
 
   return payload;
@@ -1289,7 +983,9 @@ async function handleSave() {
   } catch (error: any) {
     console.error(error);
     ElMessage.error(
-      error?.response?.data?.detail || error?.message || "저장 중 오류가 발생했습니다."
+      error?.response?.data?.detail ||
+        error?.message ||
+        "저장 중 오류가 발생했습니다."
     );
   } finally {
     loading.value = false;
@@ -1303,15 +999,11 @@ async function handleDelete() {
   }
 
   try {
-    await ElMessageBox.confirm(
-      "삭제하시겠습니까?",
-      "확인",
-      {
-        confirmButtonText: "예",
-        cancelButtonText: "아니오",
-        type: "warning",
-      }
-    );
+    await ElMessageBox.confirm("삭제하시겠습니까?", "확인", {
+      confirmButtonText: "예",
+      cancelButtonText: "아니오",
+      type: "warning",
+    });
   } catch (action) {
     return;
   }
@@ -1325,7 +1017,9 @@ async function handleDelete() {
   } catch (error: any) {
     console.error(error);
     ElMessage.error(
-      error?.response?.data?.detail || error?.message || "삭제 중 오류가 발생했습니다."
+      error?.response?.data?.detail ||
+        error?.message ||
+        "삭제 중 오류가 발생했습니다."
     );
   } finally {
     loading.value = false;
@@ -1345,7 +1039,9 @@ async function handleExcelDownload() {
   } catch (error: any) {
     console.error(error);
     ElMessage.error(
-      error?.response?.data?.detail || error?.message || "엑셀 다운로드 중 오류가 발생했습니다."
+      error?.response?.data?.detail ||
+        error?.message ||
+        "엑셀 다운로드 중 오류가 발생했습니다."
     );
   } finally {
     loading.value = false;
@@ -1491,13 +1187,6 @@ onMounted(async () => {
   outline-offset: -4px;
 }
 
-.empty-slot {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .custom-date-picker {
   width: 100%;
 }
@@ -1528,6 +1217,38 @@ onMounted(async () => {
 
 .inline-site-type-group :deep(.el-radio) {
   margin-right: 0;
+}
+
+.nonlinear-type-button-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.nonlinear-type-button-row :deep(.el-button) {
+  margin-left: 0 !important;
+}
+
+.nonlinear-sub-section {
+  border: 1px solid #dcdfe6;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: #fafafa;
+}
+
+.nonlinear-sub-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #303133;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.mb-3 {
+  margin-bottom: 12px;
 }
 
 @media (max-width: 1400px) {
