@@ -68,15 +68,18 @@ export const initializeApplicationData = () => {
     form_status: "",
     box_id: "",
     bump_map: "",
-    el_carrier_tape:"",
-    pak_direction:"",
+    el_carrier_tape: "",
+    pak_direction: "",
     wafer_sin: "",
-  wafer_angle: "",
-  el_ir_test: "",
-  el_jig_vers: "",
-  el_jig_spara: "",
-  el_evb_flag: "",
-  el_qty: ""
+    wafer_angle: "",
+    el_ir_test: "",
+    el_jig_vers: "",
+    el_jig_spara: "",
+    el_evb_flag: "",
+    el_qty: "",
+    system_mes_auwire: "",
+    pkg_dmc: "",
+    analysis_fa_lcr: "",
 
   });
 };
@@ -162,7 +165,7 @@ export async function handleSubmitForm(formdata: ApplicationData, imagesFB1: Fil
 
 
 export async function handleSubmitTempForm(formdata: ApplicationData, imagesFB1: File[], imagesFB2: File[], imagesFB3: File[], imagesFB4: File[], imagesMK1: File[], imagesEV1: File[], imagesSS1: File[],
-  imagesWMA1: File[], imagesPMAP1: File[], imagesWMAP1: File[], imagesPAK1: File[],imagesJIG1:File[], deleteImage: { url: string; file_index: string; cell_name: string }[]) {
+  imagesWMA1: File[], imagesPMAP1: File[], imagesWMAP1: File[], imagesPAK1: File[], imagesJIG1: File[], deleteImage: { url: string; file_index: string; cell_name: string }[]) {
   const formDataToSend = new FormData();
   console.log("delete image +>", deleteImage);
 
@@ -170,8 +173,7 @@ export async function handleSubmitTempForm(formdata: ApplicationData, imagesFB1:
     if (formdata[key as keyof ApplicationData] !== undefined && formdata[key as keyof ApplicationData] !== null) {
       formDataToSend.append(key, formdata[key as keyof ApplicationData]);
     }
-  }
-
+  } 
   formDataToSend.append("deleteImage", JSON.stringify(deleteImage));
   // image processing
   imagesFB1.forEach(file => {

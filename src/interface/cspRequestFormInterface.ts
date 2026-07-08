@@ -23,6 +23,10 @@ export interface ApplicationData {
     system_mes_pkg: string
     system_mes_epoxy: string
 
+    system_mes_auwire: string,
+    pkg_dmc: string,
+    analysis_fa_lcr: string,
+
     wafer_chip_size: string
     wafer_thickness: string
     wafer_pad_type: string
@@ -68,16 +72,16 @@ export interface ApplicationData {
     fb_1_numbering: string
     mk_marking: string
     form_status: string
-    box_id:string
-    el_carrier_tape:string
-    pak_direction:string
-    wafer_sin:string
-    wafer_angle:string
-    el_ir_test:string
-    el_jig_vers:string
-    el_jig_spara:string
-    el_evb_flag:string
-    el_qty:string
+    box_id: string
+    el_carrier_tape: string
+    pak_direction: string
+    wafer_sin: string
+    wafer_angle: string
+    el_ir_test: string
+    el_jig_vers: string
+    el_jig_spara: string
+    el_evb_flag: string
+    el_qty: string
 
 }
 

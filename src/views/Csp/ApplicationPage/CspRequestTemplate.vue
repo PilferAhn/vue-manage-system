@@ -123,15 +123,15 @@
 
                 <!-- MERERIAL System -->
                 <tr>
-                  <td colspan="1" rowspan="12" class="hcell">Vật liệu
+                  <td colspan="1" rowspan="14" class="hcell">Vật liệu
                     <br />
                     자재
                   </td>
-                  <td colspan="1" rowspan="3" class="hcell">System <br /> 시스템</td>
-                  <td colspan="1" rowspan="3" class="hcell" style="background-color: #ff00ff;">ERP BOM</td>
+                  <td colspan="1" rowspan="4" class="hcell">System <br /> 시스템</td>
+                  <td colspan="1" rowspan="4" class="hcell" style="background-color: #ff00ff;">ERP BOM</td>
                   <td colspan="1" style="background-color: #ff00ff;">WAFER</td>
                   <td colspan="1">{{ `${formData.system_erp_wafer} &nbsp` }}</td>
-                  <td colspan="1" rowspan="3" class="hcell" style="background-color: #ff00ff;">MES CODE
+                  <td colspan="1" rowspan="4" class="hcell" style="background-color: #ff00ff;">MES CODE
                   </td>
                   <td colspan="1" style="background-color: #ff00ff;">
                     WAFER
@@ -157,6 +157,12 @@
                   <td colspan="1" style="background-color: #ff00ff;">EPOXY</td>
                   <td colspan="2">{{ `${formData.system_mes_epoxy}&nbsp` }}</td>
                 </tr>
+                <tr>
+                  <td colspan="2" style="background-color:white;"></td>
+                  <td colspan="1" style="background-color: #ff00ff;">AU WIRE</td>
+                  <td colspan="2">{{ `${formData.system_mes_auwire}&nbsp` }}</td>
+
+                </tr>
                 <!-- MERERIAL Wafer -->
                 <tr>
                   <td rowspan="7" class="hcell">
@@ -166,7 +172,7 @@
                     SiN
                   </td>
 
-                   <td colspan="6" contenteditable="true"
+                  <td colspan="6" contenteditable="true"
                     @input="e => formDataTemp.wafer_sin = (e.target as HTMLElement).innerText">
                     {{ formData.wafer_sin }}
                   </td>
@@ -264,7 +270,7 @@
 
 
                 <tr>
-                  <td rowspan="2" class="hcell">
+                  <td rowspan="3" class="hcell">
                     PKG
                   </td>
                   <td class="hcell">
@@ -306,17 +312,28 @@
                     {{ formData.system_erp_wafer }}
                   </td>
                 </tr>
-
-                <!-- <tr>
+                <tr>
+                  <td class="hcell">
+                    DMC
+                  </td>
+                  <td colspan="2">
+                    <el-checkbox :label="'YES'" :true-label="'YES'" :false-label="''" v-model="formData.pkg_dmc">
+                      YES
+                    </el-checkbox>
+                    <el-checkbox :label="'NO'" :true-label="'NO'" :false-label="''" v-model="formData.pkg_dmc">
+                      NO
+                    </el-checkbox>
+                  </td>
                   <td class="hcell" style="background-color: #ff00ff;">
                     Chât liệu <br /> 재질
                   </td>
-                  <td colspan="6" contenteditable="true"
+                  <td colspan="3" contenteditable="true"
                     @input="e => formDataTemp.pkg_meterial = (e.target as HTMLElement).innerText">
                     {{ formData.pkg_meterial }}
                   </td>
+                </tr>
 
-                </tr> -->
+
                 <tr>
 
                   <td class="hcell">
@@ -679,6 +696,10 @@
                       v-model="formData.mk_note">
                       Marking WHC
                     </el-checkbox>
+                    <el-checkbox :label="'Marking VC'" :true-label="'Marking VC'" :false-label="''"
+                      v-model="formData.mk_note">
+                      Marking VC
+                    </el-checkbox>
                   </td>
                 </tr>
 
@@ -717,10 +738,9 @@
                     IR Test<br />
                     측정여부
                   </td>
-            
-                   <td colspan="2">
-                    <el-checkbox :label="'YES'" :true-label="'YES'" :false-label="''"
-                      v-model="formData.el_ir_test">
+
+                  <td colspan="2">
+                    <el-checkbox :label="'YES'" :true-label="'YES'" :false-label="''" v-model="formData.el_ir_test">
                       YES
                     </el-checkbox>
                     <el-checkbox :label="'NO'" :true-label="'NO'" :false-label="''" v-model="formData.el_ir_test">
@@ -732,12 +752,10 @@
                     version
                   </td>
                   <td colspan="3" @input="e => formDataTemp.el_jig_vers = (e.target as HTMLElement).innerText">
-                    <el-checkbox :label="'MP'" :true-label="'MP'" :false-label="''"
-                      v-model="formData.el_jig_vers">
+                    <el-checkbox :label="'MP'" :true-label="'MP'" :false-label="''" v-model="formData.el_jig_vers">
                       MP
                     </el-checkbox>
-                    <el-checkbox :label="'NEW'" :true-label="'NEW'" :false-label="''"
-                      v-model="formData.el_jig_vers">
+                    <el-checkbox :label="'NEW'" :true-label="'NEW'" :false-label="''" v-model="formData.el_jig_vers">
                       NEW
                     </el-checkbox>
                   </td>
@@ -747,14 +765,12 @@
                   <td class="hcell" colspan="1">
                     Jig S_para 측정 여부
                   </td>
-         
-                   <td colspan="2" @input="e => formDataTemp.el_jig_spara = (e.target as HTMLElement).innerText">
-                    <el-checkbox :label="'Y'" :true-label="'Y'" :false-label="''"
-                      v-model="formData.el_jig_spara">
+
+                  <td colspan="2" @input="e => formDataTemp.el_jig_spara = (e.target as HTMLElement).innerText">
+                    <el-checkbox :label="'Y'" :true-label="'Y'" :false-label="''" v-model="formData.el_jig_spara">
                       Y
                     </el-checkbox>
-                    <el-checkbox :label="'N'" :true-label="'N'" :false-label="''"
-                      v-model="formData.el_jig_spara">
+                    <el-checkbox :label="'N'" :true-label="'N'" :false-label="''" v-model="formData.el_jig_spara">
                       N
                     </el-checkbox>
                   </td>
@@ -887,7 +903,21 @@
                   <td class="hcell" colspan="1">
                     Item /항목
                   </td>
-                  <td colspan="6" contenteditable="true"
+                  <td class="hcell" colspan="1">
+                    LCR 측정 필요 여부
+                  </td>
+                  <td>
+                     <el-checkbox :label="'Y'" :true-label="'Y'" :false-label="''" v-model="formData.analysis_fa_lcr">
+                      Y
+                    </el-checkbox>
+                    <el-checkbox :label="'N'" :true-label="'N'" :false-label="''" v-model="formData.analysis_fa_lcr">
+                      N
+                    </el-checkbox>
+                  </td>
+                  <td class="hcell" colspan="1">
+                      추가 분석 요청 사항
+                  </td>
+                  <td colspan="3" contenteditable="true"
                     @input="e => formDataTemp.analysis_fa_item = (e.target as HTMLElement).innerText">
                     {{ formData.analysis_fa_item }}
                   </td>
@@ -1132,6 +1162,11 @@ const formData = reactive<ApplicationData>({
   system_mes_pkg: '',
   system_mes_epoxy: '',
 
+  system_mes_auwire:'',
+  pkg_dmc:'',
+  analysis_fa_lcr:'',
+
+
   wafer_chip_size: '',
   wafer_thickness: '',
   wafer_pad_type: '',
@@ -1220,6 +1255,11 @@ const formDataTemp = reactive<ApplicationData>({
   pkg_erp_code: '',
   pkg_meterial: '',
   pkg_note: '',
+
+   
+  system_mes_auwire:'',
+  pkg_dmc:'',
+  analysis_fa_lcr:'',
 
   epoxy_model: '',
   epoxy_thickness: '',
@@ -1604,6 +1644,7 @@ function mappingTemp() {
   // formData.el_jig_spara = formDataTemp.el_jig_spara
   formData.el_evb_flag = formDataTemp.el_evb_flag
   formData.el_qty = formDataTemp.el_qty
+
 }
 
 
@@ -1791,6 +1832,7 @@ async function handleEnter(value) {
   // const value = modelCell.value?.innerText.trim() || "";
   // const username = ref(localStorage.getItem('ms_username'));
   const req = await handleGetDataByModelCode(value);
+  console.log("req",req);
   const lotids = await getLotNo(value);
   // if (lotids && lotids.length > 0) {
   //   const [left, right] = lotids[0].split(';;');
@@ -1824,7 +1866,6 @@ async function handleEnter(value) {
   boxMap.value = lotMap;
 
   // 여기서 필요한 처리 수행 (예: 저장, API 호출 등) 
-  console.log("reqeqeq",req)
   formData.default_modelName = req.default_modelName;
   formData.default_requireName = req.default_requireName;
   formData.default_requireDate = req.default_requireDate;
@@ -1914,7 +1955,7 @@ async function handleEnter(value) {
   formData.wafer_thickness = req.wafer_thickness
   formData.bb_ballsize = req.bb_ballsize
   formData.default_productSize = req.default_productSize
-  
+
   formData.wafer_sin = req.wafer_sin
   formData.wafer_angle = req.wafer_angle
   formData.el_ir_test = req.el_ir_test
@@ -1922,7 +1963,11 @@ async function handleEnter(value) {
   formData.el_jig_spara = req.el_jig_spara
   formData.el_evb_flag = req.el_evb_flag
   formData.el_qty = req.el_qty
-   
+
+  formData.system_mes_auwire = req.system_mes_auwire
+  formData.pkg_dmc = req.pkg_dmc
+  formData.analysis_fa_lcr = req.analysis_fa_lcr
+
   formDataTemp.default_requireAmount = formData.default_requireAmount
   formDataTemp.default_pkgRequirement = formData.default_pkgRequirement
   formDataTemp.wafer_mark = formData.wafer_mark
@@ -1951,7 +1996,10 @@ async function handleEnter(value) {
   formDataTemp.el_jig_spara = req.el_jig_spara
   formDataTemp.el_evb_flag = req.el_evb_flag
   formDataTemp.el_qty = req.el_qty
-
+  
+  formDataTemp.system_mes_auwire = req.system_mes_auwire
+  formDataTemp.pkg_dmc = req.pkg_dmc
+  formDataTemp.analysis_fa_lcr = req.analysis_fa_lcr
 
 
   // image seting
