@@ -1607,7 +1607,7 @@ function mappingTemp() {
   formData.analysis_fa_item = formDataTemp.analysis_fa_item
   formData.reliability_item = formDataTemp.reliability_item
   formData.dc_blade_thickness = formDataTemp.dc_blade_thickness
-  formData.el_carrier_tape = formDataTemp.el_carrier_tape
+  // formData.el_carrier_tape = formDataTemp.el_carrier_tape
   // formData.bump_map = formDataTemp.bump_map
   formData.wafer_sin = formDataTemp.wafer_sin
   formData.wafer_angle = formDataTemp.wafer_angle
