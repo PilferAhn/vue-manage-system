@@ -169,7 +169,7 @@
                     Wafer
                   </td>
                   <td class="hcell">
-                    SiN
+                    SiN Open Size
                   </td>
 
                   <td colspan="6" contenteditable="true"
@@ -445,7 +445,7 @@
                   </td>
                   <td colspan="1" style=" background-color: #f0f9ff;" contenteditable="true"
                     @input="e => formDataTemp.dc_blade_thickness = (e.target as HTMLElement).innerText">
-                    {{ formData.dc_blade_thickness }}
+                    {{ formDataTemp.dc_blade_thickness }}
                   </td>
                   <td class="hcell" colspan="1">
                     DicingLine<br />
@@ -559,10 +559,17 @@
                   <td class="hcell" colspan="1">
                     F/B#1
                     <br />
-                    (Numbering)
-
+                    (Wafer mapdata 정보)
                   </td>
-                  <td colspan="2">
+                  <td>
+                    MAP Name
+                    <div style="width: 100%; border:1px solid black" contenteditable="true"
+                        @input="e => formDataTemp.fb_1_numbering = (e.target as HTMLElement).innerText"
+                        @paste.prevent="handlePaste('FB3', $event)">
+                        {{ formData.fb_1_numbering }}
+                      </div>
+                  </td>
+                  <td colspan="1">
                     <div style="display: flex;">
 
                       <div class="drop-zone" @click="triggerFileSelect('fileInputFB3')" @drop.prevent="onDropFB3"
@@ -588,18 +595,14 @@
                         <input ref="fileInputFB3" type="file" accept="image/*" style="display:none"
                           @change="handleFilesChangeFB3" multiple />
                       </div>
-                      <div style="width: 100%; border:1px solid black" contenteditable="true"
-                        @input="e => formDataTemp.fb_1_numbering = (e.target as HTMLElement).innerText"
-                        @paste.prevent="handlePaste('FB3', $event)">
-                        {{ formData.fb_1_numbering }}
-                      </div>
+                     
 
                     </div>
                   </td>
                   <td class="hcell" colspan="1">
                     F/B#2
                     <br />
-                    (SPL)
+                    (Numbering SPL)
                   </td>
                   <td colspan="3">
                     <div style="display: flex;">
@@ -652,35 +655,56 @@
                   </td>
                   <td colspan="2">
                     <div style="display: flex;">
-                      <div class="drop-zone" @click="triggerFileSelect('fileInputMK1')" @drop.prevent="onDropMK1"
-                        @dragover.prevent>
-                        <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
-                        <div v-for="(img, index) in existingMK1" :key="'existing-' + index"
-                          style="position: relative; display: inline-block; margin: 10px;">
-                          <img :src="img.url" style="max-width:200px;" />
+                      <div v-if="existingMK1.length === 0 && imagesetMK1.length === 0" >
+                        <div class="form-grid">
+                          <div class="form-field">
+                            <div class="field-label">사이즈</div>
+                            <select v-model="size" class="toss-select">
+                              <option value="">사이즈 선택</option>
+                              <option v-for="s in sizeList" :key="s" :value="s">{{ s }}</option>
+                            </select>
+                          </div>
 
-                          <button @click.stop="removeExistingImageMK1(index)"
-                            style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-                            ❌
-                          </button>
+                          <div class="form-field">
+                            <div class="field-label">타입</div>
+                            <select v-model="type" class="toss-select">
+                              <option value="">타입 선택</option>
+                              <option v-for="t in typeList" :key="t" :value="t">{{ t }}</option>
+                            </select>
+                          </div>
+
+                          <div class="form-field">
+                            <div class="field-label">pkgName</div>
+                            <select v-model="pkgName" class="toss-select">
+                              <option value="">pkgName 선택</option>
+                              <option v-for="t in pkgNameList" :key="t" :value="t">{{ t }}</option>
+                            </select>
+                          </div>
+                          <button type="button" @click="searchMarking" class="search-button">마킹 연동</button>
                         </div>
-                        <div v-for="(file, index) in imagesetMK1" :key="index"
-                          style="position: relative; display: inline-block; margin: 10px;">
-                          <img :src="getObjectURL(file)" alt="업로드된 이미지" style="max-width: 200px; max-height: 300px;" />
-                          <button @click.stop="removeImageMK1(index)"
-                            style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-                            ❌
-                          </button>
-                        </div>
-                        <input ref="fileInputMK1" type="file" accept="image/*" style="display:none"
-                          @change="handleFilesChangeMK1" multiple />
-                      </div>
-                      <div style="width: 100%; border:1px solid black" contenteditable="true"
-                        @input="e => formDataTemp.mk_marking = (e.target as HTMLElement).innerText"
-                        @paste.prevent="handlePaste('MK1', $event)">
-                        {{ formData.mk_marking }}
+
+
                       </div>
 
+                    </div>
+                    
+                    <div>
+                      <div v-for="(img, index) in existingMK1" :key="'existing-mk1-' + index"
+                        style="position: relative; display: inline-block; margin: 10px;">
+                        <img :src="img.url" alt="업로드된 이미지" style="max-width: 200px; max-height: 300px;" />
+                        <button @click.stop="removeExistingImageMK1(index)"
+                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                          ❌
+                        </button>
+                      </div>
+                      <div v-for="(file, index) in imagesetMK1" :key="index"
+                        style="position: relative; display: inline-block; margin: 10px;">
+                        <img :src="getObjectURL(file)" alt="업로드된 이미지" style="max-width: 200px; max-height: 300px;" />
+                        <button @click.stop="removeImageMK1(index)"
+                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                          ❌
+                        </button>
+                      </div>
                     </div>
                   </td>
                   <td class="hcell" colspan="1">
@@ -875,9 +899,13 @@
                   <td class="hcell" colspan="1">
                     Packing Carrier Tape
                   </td>
-                  <td colspan="2" contenteditable="true"
-                    @input="e => formDataTemp.el_carrier_tape = (e.target as HTMLElement).innerText">
-                    {{ formData.el_carrier_tape }}
+                 
+                  <td colspan="2" style=" background-color: #f0f9ff;">
+                    <el-select v-model="formData.el_carrier_tape" placeholder="선택" class="custom-select"
+                      style=" height: 100%; ">
+                      <el-option v-for="item in columnOptionsMap.el_carrier_tape.value" :key="item.value"
+                        :label="item.label" :value="item.value" />
+                    </el-select>
                   </td>
                   <td class="hcell" colspan="1">
                     Hướng packing <br />
@@ -907,7 +935,7 @@
                     LCR 측정 필요 여부
                   </td>
                   <td>
-                     <el-checkbox :label="'Y'" :true-label="'Y'" :false-label="''" v-model="formData.analysis_fa_lcr">
+                    <el-checkbox :label="'Y'" :true-label="'Y'" :false-label="''" v-model="formData.analysis_fa_lcr">
                       Y
                     </el-checkbox>
                     <el-checkbox :label="'N'" :true-label="'N'" :false-label="''" v-model="formData.analysis_fa_lcr">
@@ -915,7 +943,7 @@
                     </el-checkbox>
                   </td>
                   <td class="hcell" colspan="1">
-                      추가 분석 요청 사항
+                    추가 분석 요청 사항
                   </td>
                   <td colspan="3" contenteditable="true"
                     @input="e => formDataTemp.analysis_fa_item = (e.target as HTMLElement).innerText">
@@ -963,7 +991,7 @@
                     첨부파일
                   </td>
                   <td class="hcell" colspan="2">
-                    MWA(개발)
+                    DataSheet
                   </td>
                   <td colspan="6">
                     <div>
@@ -994,76 +1022,7 @@
 
                     </div>
                   </td>
-                </tr>
-                <tr>
-                  <td class="hcell" colspan="2">
-                    PKG MAP
-                  </td>
-                  <td colspan="6">
-                    <div>
-                      <div v-for="(file, index) in existingMWA1" :key="'existing-' + index"
-                        style="position: relative; display: inline-block; margin: 10px;">
-                        <!-- <span>{{ file.file_name }}</span> -->
-                        <span>{{ file.file_name }}</span>
-                        <button @click.stop="removeExistingImagePMAP1(index)"
-                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-                          ❌
-                        </button>
-                      </div>
-                      <div v-for="(file, index) in filesetPMAP1" :key="index"
-                        style="position: relative; display: inline-block; margin: 10px;">
-                        <span>{{ file.name }}</span>
-
-
-                        <button @click.stop="removeImagePMAP1(index)"
-                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-                          ❌
-                        </button>
-                      </div>
-                      <div class="drop-zone" @click="triggerFileSelect('fileInputPMAP1')" @drop.prevent="onDropPMAP1"
-                        @dragover.prevent>
-                        <p>파일을 드래그하거나 클릭해서 업로드하세요</p>
-                        <input ref="fileInputPMAP1" type="file" style="display:none" @change="handleFilesChangePMAP1"
-                          multiple />
-                      </div>
-
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="hcell" colspan="2">
-                    WAFER MAP
-                  </td>
-                  <td colspan="6">
-                    <div>
-                      <div v-for="(file, index) in existingWMAP1" :key="'existing-' + index"
-                        style="position: relative; display: inline-block; margin: 10px;">
-                        <span>{{ file.file_name }}</span>
-                        <button @click.stop="removeExistingImageWMAP1(index)"
-                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-                          ❌
-                        </button>
-                      </div>
-                      <div v-for="(file, index) in filesetWMAP1" :key="index"
-                        style="position: relative; display: inline-block; margin: 10px;">
-                        <span>{{ file.name }}</span>
-
-                        <button @click.stop="removeImageWMAP1(index)"
-                          style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-                          ❌
-                        </button>
-                      </div>
-                      <div class="drop-zone" @click="triggerFileSelect('fileInputWMAP1')" @drop.prevent="onDropWMAP1"
-                        @dragover.prevent>
-                        <p>파일을 드래그하거나 클릭해서 업로드하세요</p>
-                        <input ref="fileInputWMAP1" type="file" style="display:none" @change="handleFilesChangeWMAP1"
-                          multiple />
-                      </div>
-
-                    </div>
-                  </td>
-                </tr>
-
+                </tr> 
               </tbody>
             </table>
             <div>
@@ -1119,6 +1078,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, watch, computed, reactive, Ref } from "vue";
+import axios from "axios";
 import {
   sendApplicationData2,
   downloadSolderApplicationXlsx,
@@ -1136,6 +1096,7 @@ import { handleGetDataByModelCode, dataValidation, handleSubmitForm, getColumnDa
 
 import { cspRequestRules } from "./CspRequestRules";
 import { convertKeysToCamelCase } from "../../../utils/key-converter";
+import { el } from "element-plus/es/locales.mjs";
 
 const props = defineProps<{
   applicationData: ApplicationData;
@@ -1162,9 +1123,9 @@ const formData = reactive<ApplicationData>({
   system_mes_pkg: '',
   system_mes_epoxy: '',
 
-  system_mes_auwire:'',
-  pkg_dmc:'',
-  analysis_fa_lcr:'',
+  system_mes_auwire: '',
+  pkg_dmc: '',
+  analysis_fa_lcr: '',
 
 
   wafer_chip_size: '',
@@ -1256,10 +1217,10 @@ const formDataTemp = reactive<ApplicationData>({
   pkg_meterial: '',
   pkg_note: '',
 
-   
-  system_mes_auwire:'',
-  pkg_dmc:'',
-  analysis_fa_lcr:'',
+
+  system_mes_auwire: '',
+  pkg_dmc: '',
+  analysis_fa_lcr: '',
 
   epoxy_model: '',
   epoxy_thickness: '',
@@ -1359,6 +1320,16 @@ const selectedLots = ref<string[]>([]);
 const lotsData = ref<string[]>([]);
 const dotincay = ref<string[]>([])
 const txData = ref<Record<string, string>>({});
+const size = ref("");
+const type = ref("");
+const pkgName = ref("");
+const sizeList = ref<string[]>([]);
+const typeList = ref<string[]>([]);
+const pkgNameList = ref<string[]>([]);
+const fileCodeList = ref<{ fsize: string; fpkg: string }[]>([]);
+const modelList = ref<string[]>([]);
+const filteredModels = ref<string[]>([]);
+const ismanager = ref(false);
 
 interface OptionItem {
   value: string
@@ -1377,7 +1348,8 @@ const columnOptionsMap: Record<string, Ref<OptionItem[]>> = {
   default_productSize: ref([]),
   pd_dicing_line_size: ref([]),
   wafer_pad_type: ref([]),
-  reliability_items: ref([])
+  reliability_items: ref([]),
+  el_carrier_tape: ref([]),
 }
 
 const imageUrl = ref<string | null>(null);
@@ -1797,6 +1769,26 @@ onMounted(async () => {
   await handleEnter(product_name)
 
   const columnlist = await getColumnData();
+  const [mkFilters, mkModels, mkFileCode] = await Promise.all([
+    axios.get("/csp/getMkFilters"),
+    axios.get("/csp/getMkModels"),
+    axios.get("/csp/getMkFileCode"),
+  ]);
+  const empId = localStorage.getItem("id");
+  if (empId === "admin") {
+    ismanager.value = true;
+  }
+  fileCodeList.value = mkFileCode.data;
+  const grouped = mkFilters.data.reduce((acc: Record<string, string[]>, cur: { ftype: string; fvalue: string }) => {
+    if (!acc[cur.ftype]) acc[cur.ftype] = [];
+    acc[cur.ftype].push(cur.fvalue);
+    return acc;
+  }, {});
+  sizeList.value = grouped.size || [];
+  typeList.value = grouped.type || [];
+  pkgNameList.value = grouped.pkgName || [];
+  modelList.value = mkModels.data.map((v: { model_code: string }) => v.model_code);
+  filteredModels.value = modelList.value;
 
   application.value = props.applicationData;
   username.value = localStorage.getItem('ms_username') || 'Guest';
@@ -1832,7 +1824,7 @@ async function handleEnter(value) {
   // const value = modelCell.value?.innerText.trim() || "";
   // const username = ref(localStorage.getItem('ms_username'));
   const req = await handleGetDataByModelCode(value);
-  console.log("req",req);
+  console.log("req", req);
   const lotids = await getLotNo(value);
   // if (lotids && lotids.length > 0) {
   //   const [left, right] = lotids[0].split(';;');
@@ -1996,12 +1988,12 @@ async function handleEnter(value) {
   formDataTemp.el_jig_spara = req.el_jig_spara
   formDataTemp.el_evb_flag = req.el_evb_flag
   formDataTemp.el_qty = req.el_qty
-  
+
   formDataTemp.system_mes_auwire = req.system_mes_auwire
   formDataTemp.pkg_dmc = req.pkg_dmc
   formDataTemp.analysis_fa_lcr = req.analysis_fa_lcr
 
-
+  console.log("reqse", req.image_List)
   // image seting
   if (req.image_List && req.image_List.length > 0) {
     req.image_List.forEach((item) => {
@@ -2049,6 +2041,27 @@ async function handleEnter(value) {
   // formData.pkg_erp_code = req[0].fpkgcode
   // formData.bb_ballsize = ''
 }
+
+const searchMarking = async () => {
+  console.log("searchMarking", formData.default_modelName, size.value, type.value, pkgName.value);
+  // const modelName = formData.default_modelName.trim().slice(1, -4);
+  const params = { modelName: formData.default_modelName, size: size.value, type: type.value, pkgName: pkgName.value };
+
+  try {
+    const response = await axios.post("/csp/createMarkingAdd", params);
+    console.log("response", response.data);
+
+    const item = {
+      cell_name: 'MK1',
+      url: response.data,
+      file_index: '0'
+    }
+
+    existingMK1.value.push(item);
+  } catch (err) { console.error(err); throw err; }
+
+};
+
 const handlePaste = (state: string, e: ClipboardEvent) => {
   // 1. 클립보드 아이템들을 가져옵니다.
   // console.log(e)
@@ -2146,6 +2159,26 @@ watch(dotincay, (newValue) => {
     formDataTemp.wafer_mark = '';
   }
 });
+
+watch(() => formData.dc_meterial, (newValue) => {
+  if (newValue === 'HS') {
+    formDataTemp.dc_blade_thickness = '50/30um(step cut)';
+  }
+});
+
+watch(size, (newSize) => {
+  if (!newSize) {
+    pkgNameList.value = [];
+    return;
+  }
+
+  const filtered = fileCodeList.value
+    .filter(v => v.fsize === newSize)
+    .map(v => v.fpkg);
+  pkgNameList.value = [...new Set(filtered)];
+  pkgName.value = "";
+});
+
 </script>
 
 <script lang="ts">
