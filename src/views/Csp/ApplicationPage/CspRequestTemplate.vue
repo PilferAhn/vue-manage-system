@@ -169,7 +169,7 @@
                     Wafer
                   </td>
                   <td class="hcell">
-                    SiN Open Size
+                    SiN Open Size(개구부)
                   </td>
 
                   <td colspan="6" contenteditable="true"
