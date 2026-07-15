@@ -564,10 +564,10 @@
                   <td>
                     MAP Name
                     <div style="width: 100%; border:1px solid black" contenteditable="true"
-                        @input="e => formDataTemp.fb_1_numbering = (e.target as HTMLElement).innerText"
-                        @paste.prevent="handlePaste('FB3', $event)">
-                        {{ formData.fb_1_numbering }}
-                      </div>
+                      @input="e => formDataTemp.fb_1_numbering = (e.target as HTMLElement).innerText"
+                      @paste.prevent="handlePaste('FB3', $event)">
+                      {{ formData.fb_1_numbering }}
+                    </div>
                   </td>
                   <td colspan="1">
                     <div style="display: flex;">
@@ -595,7 +595,7 @@
                         <input ref="fileInputFB3" type="file" accept="image/*" style="display:none"
                           @change="handleFilesChangeFB3" multiple />
                       </div>
-                     
+
 
                     </div>
                   </td>
@@ -654,8 +654,8 @@
 
                   </td>
                   <td colspan="2">
-                    <div style="display: flex;">
-                      <div v-if="existingMK1.length === 0 && imagesetMK1.length === 0" >
+                    <div style="display: flex;" v-if="existingMK1.length === 0 && imagesetMK1.length === 0">
+                      <div >
                         <div class="form-grid">
                           <div class="form-field">
                             <div class="field-label">사이즈</div>
@@ -684,10 +684,38 @@
                         </div>
 
 
+
+                      </div>
+                      <div style="display: flex;">
+                        <div class="drop-zone" @click="triggerFileSelect('fileInputMK1')" @drop.prevent="onDropMK1"
+                          @dragover.prevent>
+                          <p>이미지를 드래그하거나 클릭해서 업로드하세요</p>
+                          <div v-for="(img, index) in existingMK1" :key="'existing-' + index"
+                            style="position: relative; display: inline-block; margin: 10px;">
+                            <img :src="img.url" style="max-width:200px;" />
+
+                            <button @click.stop="removeExistingImageMK1(index)"
+                              style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                              ❌
+                            </button>
+                          </div>
+                          <div v-for="(file, index) in imagesetMK1" :key="index"
+                            style="position: relative; display: inline-block; margin: 10px;">
+                            <img :src="getObjectURL(file)" alt="업로드된 이미지"
+                              style="max-width: 200px; max-height: 300px;" />
+                            <button @click.stop="removeImageMK1(index)"
+                              style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+                              ❌
+                            </button>
+                          </div>
+                          <input ref="fileInputMK1" type="file" accept="image/*" style="display:none"
+                            @change="handleFilesChangeMK1" multiple />
+                        </div>
+                   
                       </div>
 
                     </div>
-                    
+
                     <div>
                       <div v-for="(img, index) in existingMK1" :key="'existing-mk1-' + index"
                         style="position: relative; display: inline-block; margin: 10px;">
@@ -899,7 +927,7 @@
                   <td class="hcell" colspan="1">
                     Packing Carrier Tape
                   </td>
-                 
+
                   <td colspan="2" style=" background-color: #f0f9ff;">
                     <el-select v-model="formData.el_carrier_tape" placeholder="선택" class="custom-select"
                       style=" height: 100%; ">
@@ -1022,7 +1050,7 @@
 
                     </div>
                   </td>
-                </tr> 
+                </tr>
               </tbody>
             </table>
             <div>
