@@ -1523,13 +1523,14 @@ async function handleEnterKey(state: string, index: number) {
         const response = await getBomCode(request);
 
         bomOptions.value = response;
-        if (["IC", "PCB", "Resistor", "Capacitor", "Inductor"].includes(smt.sref)) {
-            showBomPopupIc.value = true;
-        }
-        else {
-            showBomPopup1.value = true;
-        }
-        enterIndex.value = index;
+        showBomPopupIc.value = true;
+        // if (["IC", "PCB", "Resistor", "Capacitor", "Inductor"].includes(smt.sref)) {
+        //     showBomPopupIc.value = true;
+        // }
+        // else {
+        //     showBomPopupIc.value = true;
+        // }
+        // enterIndex.value = index;
         return;
     }
     else {
