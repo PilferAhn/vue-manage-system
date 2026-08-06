@@ -92,6 +92,8 @@ export interface FabRequestForm extends FabprobeInformation {
   isAoi?: boolean;
   isNeedEngineerCall?: boolean;
   isDv2?: boolean;
+  isSbm?: boolean;
+  isSwlp?: boolean;
   isGfl?: boolean;
   isCap?: boolean;
   isPadDl?: boolean;

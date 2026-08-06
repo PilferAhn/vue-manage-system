@@ -99,6 +99,27 @@
           class="wide-select"
         />
       </el-col>
+      <el-col :span="4">
+        <SelectCheckBox
+          v-model="props.fabApplication.isSbm"
+          label="SBM"
+          prop="isSbm"
+          :disable="false"
+          :rules="[]"
+          class="wide-select"
+        />
+      </el-col>
+    
+      <el-col :span="4">
+        <SelectCheckBox
+          v-model="props.fabApplication.isSwlp"
+          label="SWLP"
+          prop="isSwlp"
+          :disable="false"
+          :rules="[]"
+          class="wide-select"
+        />
+      </el-col>
       <!-- <el-col :span="4"
         ><SelectCheckBox
           v-model="props.fabApplication.isAlPad"
@@ -595,6 +616,44 @@ watch(trackedValues, (newValues) => {
     ).toString();
   }
 });
+
+function updateNoteKeyword(
+  keyword: string,
+  checked: boolean
+) {
+  const currentNote = props.fabApplication.note ?? "";
+
+  // 동일 키워드가 중복으로 들어가지 않도록 제거
+  const keywordRegex = new RegExp(`(^|\\s)${keyword}(?=\\s|$)`, "g");
+
+  const cleanedNote = currentNote
+    .replace(keywordRegex, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (checked) {
+    props.fabApplication.note = [cleanedNote, keyword]
+      .filter(Boolean)
+      .join(" ");
+  } else {
+    props.fabApplication.note = cleanedNote;
+  }
+}
+
+watch(
+  () => props.fabApplication.isSbm,
+  (newVal) => {
+    updateNoteKeyword("SBM", Boolean(newVal));
+  }
+);
+
+watch(
+  () => props.fabApplication.isSwlp,
+  (newVal) => {
+    updateNoteKeyword("SWLP", Boolean(newVal));
+  }
+);
+
 </script>
 <script lang="ts">
 export default {};
