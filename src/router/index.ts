@@ -393,6 +393,19 @@ const routes: RouteRecordRaw[] = [
             /* webpackChunkName: "table" */ "../views/Calculator/Markings/MarkingMaker.vue"
           ),
       },
+        {
+        path: "/calculator/marking_finder",
+        name: "MarkingFinder",
+        meta: {
+          title: "POD",
+          permiss: "11",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "table" */ "../views/Calculator/Markings/MarkingFinder.vue"
+          ),
+      },
+    
       {
         path: "/calculator/rf-limit",
         name: "RF Limit",

@@ -252,6 +252,11 @@ const items: SidebarItem[] = [
         index: "/calculator/marking_maker",
         title: "마킹설정자동화",
         permiss: "11",
+      },
+      {
+        index: "/calculator/marking_finder",
+        title: "POD",
+        permiss: "11",
       }
       // {
       //   index: "/calculator/rf-limit",

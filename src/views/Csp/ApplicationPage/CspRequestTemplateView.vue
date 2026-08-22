@@ -602,7 +602,7 @@
                     <div>
                       <div v-for="(file, index) in filesetMWA1" :key="index"
                         style="position: relative; display: inline-block; margin: 10px;">
-                        <div @click="downloadFile(file)" style="cursor:pointer;">{{ file.file_name }}</div>
+                        <!-- <div @click="downloadFile(file)" style="cursor:pointer;">{{ file.file_name }}</div> -->
                       </div>
                     </div>
                   </td>
@@ -615,7 +615,6 @@
                     <div>
                       <div v-for="(file, index) in filesetPMAP1" :key="index"
                         style="position: relative; display: inline-block; margin: 10px;">
-                        <div @click="downloadFile(file)" style="cursor:pointer;">{{ file.file_name }}</div>
                       </div>
                     </div>
                   </td>
@@ -628,7 +627,7 @@
                     <div>
                       <div v-for="(file, index) in filesetWMAP1" :key="index"
                         style="position: relative; display: inline-block; margin: 10px;">
-                        <div @click="downloadFile(file)" style="cursor:pointer;">{{ file.file_name }}</div>
+                        <!-- <div @click="downloadFile(file)" style="cursor:pointer;">{{ file.file_name }}</div> -->
                       </div>
                     </div>
                   </td>
@@ -727,6 +726,11 @@ const formData = reactive<ApplicationData>({
   system_mes_pkg: '',
   system_mes_epoxy: '',
 
+  system_mes_auwire: '',
+  pkg_dmc: '',
+  analysis_fa_lcr: '',
+
+
   wafer_chip_size: '',
   wafer_thickness: '',
   wafer_pad_type: '',
@@ -770,7 +774,17 @@ const formData = reactive<ApplicationData>({
   fb_1_numbering: "",
   mk_marking: "",
   form_status: "",
-  box_id:""
+  box_id: "",
+  bump_map: "",
+  el_carrier_tape: "",
+  pak_direction: "",
+  wafer_sin: "",
+  wafer_angle: "",
+  el_ir_test: "",
+  el_jig_vers: "",
+  el_jig_spara: "",
+  el_evb_flag: "",
+  el_qty: ""
 })
 
 const selectedLots = ref<string[]>([]);
