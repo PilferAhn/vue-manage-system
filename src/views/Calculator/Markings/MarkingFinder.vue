@@ -157,6 +157,7 @@ export default {
             sizeList: [],
             typeList: [],
             pkgNameList: [],
+            domainList: [],
             fileCodeList: [],
             ftype: "",
             inputValue: "",
@@ -179,25 +180,14 @@ export default {
         }
     },
     async mounted() {
-        const res = await axios.get("/csp/getMkFilters");
-        const mnres = await axios.get("/csp/getMkModels");
-        const fileCode = await axios.get("/csp/getMkFileCode");
+        const res = await axios.get("/csp/getDomian");
         const empId = localStorage.getItem("id");
         if (empId == 'admin') {
             this.ismanager = true;
         }
-        this.fileCodeList = fileCode.data;
-        const grouped = res.data.reduce((acc, cur) => {
-            if (!acc[cur.ftype]) acc[cur.ftype] = [];
-            acc[cur.ftype].push(cur.fvalue);
-            return acc;
-        }, {});
-        this.customerList = grouped.customer || [];
-        this.sizeList = grouped.size || [];
-        this.typeList = grouped.type || [];
-        this.pkgNameList = grouped.pkgName || [];
-        this.modelList = mnres.data.map(v => v.model_code);
-        this.filteredModels = this.modelList;
+        this.domainList = Array.isArray(res.data) ? res.data : [];
+        this.customerList = this.uniqueValues(this.domainList, "fcustomer");
+        this.updateDomainOptions();
         this.fetchTree();
     },
     computed: {
@@ -229,14 +219,43 @@ export default {
         }
     },
     watch: {
-        size(newSize) {
-            if (!newSize) { this.pkgNameList = []; return; }
-            const filtered = this.fileCodeList.filter(v => v.fsize === newSize).map(v => v.fpkg);
-            this.pkgNameList = [...new Set(filtered)];
+        customer() {
+            this.size = "";
+            this.type = "";
             this.pkgName = "";
+            this.updateDomainOptions();
+        },
+        size() {
+            this.type = "";
+            this.pkgName = "";
+            this.updateDomainOptions();
+        },
+        type() {
+            this.pkgName = "";
+            this.updateDomainOptions();
         }
     },
     methods: {
+        uniqueValues(rows, key) {
+            return [...new Set(rows.map(row => row[key]).filter(value => value !== null && value !== undefined && value !== ""))]
+                .sort((a, b) => String(a).localeCompare(String(b), undefined, { numeric: true }));
+        },
+        updateDomainOptions() {
+            const customerRows = this.customer
+                ? this.domainList.filter(row => row.fcustomer === this.customer)
+                : this.domainList;
+            this.sizeList = this.uniqueValues(customerRows, "fsize");
+
+            const sizeRows = this.size
+                ? customerRows.filter(row => row.fsize === this.size)
+                : customerRows;
+            this.typeList = this.uniqueValues(sizeRows, "fpkg");
+
+            const typeRows = this.type
+                ? sizeRows.filter(row => row.fpkg === this.type)
+                : sizeRows;
+            this.pkgNameList = this.uniqueValues(typeRows, "fthickness");
+        },
         async fetchTree() {
             this.treeLoading = true;
             try {
