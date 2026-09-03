@@ -325,13 +325,13 @@ export default {
             }
         },
         async downloadFile() {
-            const params = { modelName: this.modelName, customer: this.customer, size: this.size, type: this.type, pkgName: this.pkgName };
+            const params = { customer: this.customer, size: this.size, type: this.type, pkgName: this.pkgName };
             try {
-                const response = await axios.post("/csp/createMarking", params, { responseType: "blob" });
+                const response = await axios.post("/csp/downloadDomianCat", params, { responseType: "blob" });
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement("a");
                 link.href = url;
-                link.download = "marking.jpg";
+                link.download = "img.jpg";
                 link.click();
                 window.URL.revokeObjectURL(url);
             } catch (err) { console.error(err); throw err; }
