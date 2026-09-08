@@ -327,11 +327,12 @@ export default {
         async downloadFile() {
             const params = { customer: this.customer, size: this.size, type: this.type, pkgName: this.pkgName };
             try {
+                console.log("Downloading with params:", params);
                 const response = await axios.post("/csp/downloadDomianCat", params, { responseType: "blob" });
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement("a");
                 link.href = url;
-                link.download = "img.jpg";
+                link.download = file.fileName || `pod_${file.fid}`;
                 link.click();
                 window.URL.revokeObjectURL(url);
             } catch (err) { console.error(err); throw err; }
