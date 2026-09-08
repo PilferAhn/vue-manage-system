@@ -332,7 +332,7 @@ export default {
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement("a");
                 link.href = url;
-                link.download = file.fileName || `pod_${file.fid}`;
+                link.download = `POD_${this.customer}_${this.size}_${this.type}_${this.pkgName}.img`;
                 link.click();
                 window.URL.revokeObjectURL(url);
             } catch (err) { console.error(err); throw err; }
