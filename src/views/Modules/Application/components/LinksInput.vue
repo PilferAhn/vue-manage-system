@@ -45,6 +45,7 @@ const LINK_FIELDS: Record<MeasurementKey, LinkField[]> = {
     { key: "deembedding", label: "De-embedding" },
     { key: "rffe", label: "RFFE" },
     { key: "config", label: "Config" },
+    { key: "state", label: "STATE (Excel Config가 아닐 경우)" },
     { key: "evbRealMatchingTuningRequest", label: "EVB Real Matching Tunning 의뢰서" },
     { key: "sampleEvbRealPhoto", label: "샘플, EVB 실물사진" },
   ],

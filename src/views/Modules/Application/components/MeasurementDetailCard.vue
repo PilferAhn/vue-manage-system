@@ -12,14 +12,27 @@
               {{ `${index + 1}. ${slot.label}` }}
             </div>
 
-            <div
-              class="drag-handle"
-              draggable="true"
-              title="드래그하여 순서 변경"
-              @dragstart="$emit('drag-start', slot.key)"
-              @dragend="$emit('drag-end')"
-            >
-              ⠿
+            <div class="detail-card-header-right">
+              <a
+                v-if="MEASUREMENT_REQUEST_FORMAT_LINK_KEYS.includes(slot.key)"
+                :href="MEASUREMENT_REQUEST_FORMAT_LINK"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="measurement-request-format-link"
+                @click.stop
+              >
+                의뢰서 다운
+              </a>
+
+              <div
+                class="drag-handle"
+                draggable="true"
+                title="드래그하여 순서 변경"
+                @dragstart="$emit('drag-start', slot.key)"
+                @dragend="$emit('drag-end')"
+              >
+                ⠿
+              </div>
             </div>
           </div>
         </template>
@@ -594,12 +607,18 @@
                   <el-input v-model="measurementForms.nonlinear.imdBand" />
                 </el-form-item>
 
-                <el-form-item label="Input Power">
-                  <el-input v-model="measurementForms.nonlinear.imdInputPower" />
+                <el-form-item label="Input Power[dBm]">
+                  <el-input
+                    v-model="measurementForms.nonlinear.imdInputPower"
+                    placeholder="Default : 21.5 dBm"
+                  />
                 </el-form-item>
 
-                <el-form-item label="Fjam Power">
-                  <el-input v-model="measurementForms.nonlinear.imdFjamPower" />
+                <el-form-item label="Fjam Power[dBm]">
+                  <el-input
+                    v-model="measurementForms.nonlinear.imdFjamPower"
+                    placeholder="Default : -15 dBm"
+                  />
                 </el-form-item>
               </div>
 
@@ -613,8 +632,18 @@
                   <el-input v-model="measurementForms.nonlinear.p1dbBand" />
                 </el-form-item>
 
-                <el-form-item label="Gain_Bias Address">
-                  <el-input v-model="measurementForms.nonlinear.p1dbGainBiasAddress" />
+                <el-form-item label="측정 주파수[MHz]">
+                  <el-input
+                    v-model="measurementForms.nonlinear.p1dbFreq"
+                    placeholder="Default : Center Frequency"
+                  />
+                </el-form-item>
+
+                <el-form-item label="Gain[dB]">
+                  <el-input
+                    v-model="measurementForms.nonlinear.p1dbGain"
+                    placeholder="Default : 18dB"
+                  />
                 </el-form-item>
               </div>
 
@@ -628,8 +657,18 @@
                   <el-input v-model="measurementForms.nonlinear.iip3Band" />
                 </el-form-item>
 
-                <el-form-item label="Gain_Bias Address">
-                  <el-input v-model="measurementForms.nonlinear.iip3GainBiasAddress" />
+                <el-form-item label="측정 주파수[MHz]">
+                  <el-input
+                    v-model="measurementForms.nonlinear.iip3Freq"
+                    placeholder="Default : Center Frequency"
+                  />
+                </el-form-item>
+
+                <el-form-item label="Gain[dB]">
+                  <el-input
+                    v-model="measurementForms.nonlinear.iip3Gain"
+                    placeholder="Default : 18dB"
+                  />
                 </el-form-item>
 
                 <el-form-item label="Fjam Power">
@@ -643,11 +682,10 @@
               >
                 <div class="nonlinear-sub-title">RSE</div>
 
-                <el-form-item label="RSE 주파수">
-                  <el-input
-                    v-model="measurementForms.nonlinear.rseFrequency"
-                    placeholder="입력 레벨 변동 시"
-                  />
+                <el-form-item>
+                  <span class="rse-fixed-condition-note">
+                    RSE는 고정된 측정 조건으로 진행되며, 별도 입력 없이 항목 선택만으로 측정이 진행됩니다.
+                  </span>
                 </el-form-item>
               </div>
 
@@ -665,14 +703,25 @@
                   <el-input v-model="measurementForms.nonlinear.harmonicInputPower" />
                 </el-form-item>
 
-                <el-form-item label="측정 고조파 차수">
-                  <el-input v-model="measurementForms.nonlinear.harmonicOrder" />
+                <el-form-item label="측정 Range">
+                  <el-radio-group v-model="measurementForms.nonlinear.harmonicRange">
+                    <el-radio label="2ND">2차</el-radio>
+                    <el-radio label="2ND_3RD">2, 3차</el-radio>
+                    <el-radio label="CUSTOM">Custom</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+
+                <el-form-item
+                  v-if="measurementForms.nonlinear.harmonicRange === 'CUSTOM'"
+                  label="측정 Range (Custom)"
+                >
+                  <el-input v-model="measurementForms.nonlinear.harmonicRangeCustom" />
                 </el-form-item>
 
                 <el-form-item label="측정 단위">
                   <el-radio-group v-model="measurementForms.nonlinear.harmonicUnit">
-                    <el-radio label="dBc">dBc</el-radio>
                     <el-radio label="dBm">dBm</el-radio>
+                    <el-radio label="dBc">dBc</el-radio>
                   </el-radio-group>
                 </el-form-item>
               </div>
@@ -745,12 +794,24 @@
             <template v-else-if="slot.key === 'probeSpl'">
               <el-form-item label="샘플 종류">
                  <el-radio-group v-model="measurementForms.probeSpl.sampleType">
-                  <el-radio label="NO_MOLD">No-Mold</el-radio>
-                  <el-radio label="BTM_MOLD">BTM_MOLD</el-radio>
-                  <el-radio label="MOLD_MIPI_READ">Mold MIPI Read</el-radio>
+                  <el-radio label="NO_MOLD">No-mold (Top)</el-radio>
+                  <el-radio label="MOLD">Mold (Bottom)</el-radio>
+                  <el-radio label="MODULE_DIRECT">Module Direct</el-radio>
                 </el-radio-group>
               </el-form-item>
-              
+
+              <el-form-item label="EVB 수탑">
+                <el-checkbox v-model="measurementForms.probeSpl.evbPickupRequired">
+                  필요
+                </el-checkbox>
+              </el-form-item>
+
+              <el-form-item label="MIPI Control">
+                <el-checkbox v-model="measurementForms.probeSpl.mipiControlRequired">
+                  필요
+                </el-checkbox>
+              </el-form-item>
+
               <el-form-item label="Freq Start [MHz]">
                 <el-input v-model="measurementForms.probeSpl.freqStart" />
               </el-form-item>
@@ -759,37 +820,57 @@
                 <el-input v-model="measurementForms.probeSpl.freqStop" />
               </el-form-item>
 
-              <el-form-item label="Pitch">
-                <el-radio-group v-model="measurementForms.probeSpl.pitch">
-                  <el-radio label="450">450</el-radio>
-                  <el-radio label="150">150</el-radio>
-                  <el-radio label="1390">1390</el-radio>
-                </el-radio-group>
+              <el-form-item label="Points (Max : 20001)">
+                <el-input v-model="measurementForms.probeSpl.points" />
               </el-form-item>
 
-              <el-form-item label="Step / Point (MAX : 20001)">
-                <el-input v-model="measurementForms.probeSpl.stepPoint" />
-              </el-form-item>
-              
-              <el-form-item label="Power / IFBW">
+              <el-form-item label="Step [MHz] (자동 계산)">
                 <el-input
-                  v-model="measurementForms.probeSpl.powerIfbw"
-                  placeholder="예: 10 / 4"
+                  :model-value="
+                    calcStep(
+                      measurementForms.probeSpl.freqStart,
+                      measurementForms.probeSpl.freqStop,
+                      measurementForms.probeSpl.points
+                    )
+                  "
+                  disabled
                 />
               </el-form-item>
 
-              <el-form-item label="GS/GSG">
-                <el-radio-group
-                  v-model="measurementForms.probeSpl.gsType"
-                >
-                  <el-radio label="GS">
-                    GS/SG
-                  </el-radio>
-                
-                  <el-radio label="GSG">
-                    GSG
-                  </el-radio>
+              <el-form-item label="Power (Max : 8)">
+                <el-input v-model="measurementForms.probeSpl.power" />
+              </el-form-item>
+
+              <el-form-item label="IFBW [kHz]">
+                <el-input v-model="measurementForms.probeSpl.ifbw" />
+              </el-form-item>
+
+              <el-form-item label="Averaging">
+                <el-checkbox v-model="measurementForms.probeSpl.averagingRequired">
+                  필요
+                </el-checkbox>
+              </el-form-item>
+
+              <el-form-item
+                v-if="measurementForms.probeSpl.averagingRequired"
+                label="Factor"
+              >
+                <el-input
+                  v-model="measurementForms.probeSpl.averagingFactor"
+                  placeholder="필요 시 작성"
+                />
+              </el-form-item>
+
+              <el-form-item label="Probe Tip - Type">
+                <el-radio-group v-model="measurementForms.probeSpl.probeTipType">
+                  <el-radio label="GSG_150">GSG-150um</el-radio>
+                  <el-radio label="GS_SG_450">GS/SG-450um</el-radio>
+                  <el-radio label="GS_SG_1390">GS/SG-1390um</el-radio>
                 </el-radio-group>
+              </el-form-item>
+
+              <el-form-item label="Probe Tip - Qty">
+                <el-input v-model="measurementForms.probeSpl.probeTipQty" />
               </el-form-item>
 
               <el-form-item label="특이사항(SPL)">
@@ -856,10 +937,26 @@
 
             <!-- 9. Probe 측정 Deembedding -->
             <template v-else-if="slot.key === 'probeDeembedding'">
-              <el-form-item label="EVB 정보">
+              <el-form-item label="EVB Rev.">
                 <el-input
-                  v-model="measurementForms.probeDeembedding.evbInfo"
+                  v-model="measurementForms.probeDeembedding.evbRev"
                 />
+              </el-form-item>
+
+              <el-form-item label="EVB 종류">
+                <el-radio-group v-model="measurementForms.probeDeembedding.evbType">
+                  <el-radio label="NORMAL">Normal</el-radio>
+                  <el-radio label="BUILDUP">BuildUp</el-radio>
+                  <el-radio label="CUSTOM">Custom</el-radio>
+                </el-radio-group>
+              </el-form-item>
+
+              <el-form-item label="EVB 적층수">
+                <el-radio-group v-model="measurementForms.probeDeembedding.evbLayerCount">
+                  <el-radio label="2L">2L</el-radio>
+                  <el-radio label="4L">4L</el-radio>
+                  <el-radio label="6L">6L</el-radio>
+                </el-radio-group>
               </el-form-item>
 
               <el-form-item label="Freq Start [MHz]">
@@ -874,39 +971,59 @@
                 />
               </el-form-item>
 
-              <el-form-item label="Pitch">
-                <el-radio-group v-model="measurementForms.probeDeembedding.pitch">
-                  <el-radio label="450">450</el-radio>
-                  <el-radio label="150">150</el-radio>
-                  <el-radio label="1390">1390</el-radio>
-                </el-radio-group>
-              </el-form-item>
-
-              <el-form-item label="Step / Point (MAX : 20001)">
+              <el-form-item label="Point (Max : 20001)">
                 <el-input
-                  v-model="measurementForms.probeDeembedding.stepPoint"
-                />
-              </el-form-item>
-              
-              <el-form-item label="Power / IFBW">
-                <el-input
-                  v-model="measurementForms.probeDeembedding.powerIfbw"
-                  placeholder="예: 10 / 4"
+                  v-model="measurementForms.probeDeembedding.points"
                 />
               </el-form-item>
 
-              <el-form-item label="GS/GSG">
-                <el-radio-group
-                  v-model="measurementForms.probeDeembedding.gsType"
-                >
-                  <el-radio label="GS">
-                    GS/SG
-                  </el-radio>
-                
-                  <el-radio label="GSG">
-                    GSG
-                  </el-radio>
+              <el-form-item label="Step [MHz] (자동 계산)">
+                <el-input
+                  :model-value="
+                    calcStep(
+                      measurementForms.probeDeembedding.freqStart,
+                      measurementForms.probeDeembedding.freqStop,
+                      measurementForms.probeDeembedding.points
+                    )
+                  "
+                  disabled
+                />
+              </el-form-item>
+
+              <el-form-item label="Power (Max : 8dBm)">
+                <el-input v-model="measurementForms.probeDeembedding.power" />
+              </el-form-item>
+
+              <el-form-item label="IFBW [kHz]">
+                <el-input v-model="measurementForms.probeDeembedding.ifbw" />
+              </el-form-item>
+
+              <el-form-item label="Averaging">
+                <el-checkbox v-model="measurementForms.probeDeembedding.averagingRequired">
+                  필요
+                </el-checkbox>
+              </el-form-item>
+
+              <el-form-item
+                v-if="measurementForms.probeDeembedding.averagingRequired"
+                label="Factor"
+              >
+                <el-input
+                  v-model="measurementForms.probeDeembedding.averagingFactor"
+                  placeholder="필요 시 작성"
+                />
+              </el-form-item>
+
+              <el-form-item label="Probe Tip - Type">
+                <el-radio-group v-model="measurementForms.probeDeembedding.probeTipType">
+                  <el-radio label="GSG_150">GSG-150um</el-radio>
+                  <el-radio label="GS_SG_450">GS/SG-450um</el-radio>
+                  <el-radio label="GS_SG_1390">GS/SG-1390um</el-radio>
                 </el-radio-group>
+              </el-form-item>
+
+              <el-form-item label="Probe Tip - Qty">
+                <el-input v-model="measurementForms.probeDeembedding.probeTipQty" />
               </el-form-item>
 
               <el-form-item label="특이사항(SPL)">
@@ -1059,6 +1176,42 @@ interface MeasurementOption {
   label: string;
 }
 
+// 측정 의뢰서 Format 링크 (SharePoint) — 비선형/Probe SPL/Probe Deembedding/EVB 조립 카드 우측 상단에 노출
+const MEASUREMENT_REQUEST_FORMAT_LINK =
+  "https://ddonline.sharepoint.com/:f:/s/msteams_64a521/IgDExCmJnAujRp4V_1Jqq8nzAYNb22VcNKJU3atiU14XOos?e=ssCKcO";
+const MEASUREMENT_REQUEST_FORMAT_LINK_KEYS = [
+  "nonlinear",
+  "probeSpl",
+  "probeDeembedding",
+  "evbAssembly",
+];
+
+// Step = (Freq Stop - Freq Start + 1) / Point
+function calcStep(
+  freqStart?: string | number | null,
+  freqStop?: string | number | null,
+  points?: string | number | null
+): string {
+  const start = Number(freqStart);
+  const stop = Number(freqStop);
+  const point = Number(points);
+
+  if (
+    !freqStart ||
+    !freqStop ||
+    !points ||
+    Number.isNaN(start) ||
+    Number.isNaN(stop) ||
+    Number.isNaN(point) ||
+    point <= 0
+  ) {
+    return "";
+  }
+
+  const step = (stop - start + 1) / point;
+  return Number.isFinite(step) ? String(Math.round(step * 1000) / 1000) : "";
+}
+
 defineProps<{
   slot: MeasurementOption;
   index: number;
@@ -1103,6 +1256,23 @@ defineEmits<{
 .detail-card-title {
   font-size: 15px;
   font-weight: 700;
+}
+
+.detail-card-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.measurement-request-format-link {
+  font-size: 12px;
+  color: #409eff;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.measurement-request-format-link:hover {
+  text-decoration: underline;
 }
 
 .drag-handle {
@@ -1157,5 +1327,11 @@ defineEmits<{
 
 .mb-3 {
   margin-bottom: 12px;
+}
+
+.rse-fixed-condition-note {
+  font-size: 13px;
+  color: #909399;
+  line-height: 1.5;
 }
 </style>

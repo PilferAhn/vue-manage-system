@@ -73,6 +73,12 @@ type BoardType = "" | "IDEAL_BOARD" | "REAL_BOARD";
 type MoldType = "" | "ALL" | "NO_MOLD" | "MOLD";
 type JigSolderingType = "" | "JIG" | "SOLDERING";
 
+type ProbeSampleType = "" | "NO_MOLD" | "MOLD" | "MODULE_DIRECT";
+type ProbeTipType = "" | "GSG_150" | "GS_SG_450" | "GS_SG_1390";
+type EvbType = "" | "NORMAL" | "BUILDUP" | "CUSTOM";
+type EvbLayerCount = "" | "2L" | "4L" | "6L";
+type HarmonicRangeType = "" | "2ND" | "2ND_3RD" | "CUSTOM";
+
 const loginId = localStorage.getItem("ms_username") || "";
 
 interface MeasurementOption {
@@ -150,11 +156,15 @@ interface NonlinearForm extends CommonMeasurementFields {
   // P1dB
   p1dbBand: string;
   p1dbGainBiasAddress: string;
+  p1dbFreq: string;
+  p1dbGain: string;
 
   // IIP3
   iip3Band: string;
   iip3GainBiasAddress: string;
   iip3FjamPower: string;
+  iip3Freq: string;
+  iip3Gain: string;
 
   // RSE
   rseFrequency: string;
@@ -164,26 +174,49 @@ interface NonlinearForm extends CommonMeasurementFields {
   harmonicInputPower: string;
   harmonicOrder: string;
   harmonicUnit: "" | "dBc" | "dBm";
+  harmonicRange: HarmonicRangeType;
+  harmonicRangeCustom: string;
 }
 
 interface ProbeSplForm extends CommonMeasurementFields {
-  sampleType: string;
+  sampleType: ProbeSampleType;
+  evbPickupRequired: boolean;
+  mipiControlRequired: boolean;
   freqStart: string;
   freqStop: string;
   stepPoint: string;
+  points: string;
+  step: string;
   powerIfbw: string;
+  power: string;
+  ifbw: string;
+  averagingRequired: boolean;
+  averagingFactor: string;
   pitch: string;
   gsType: string;
+  probeTipType: ProbeTipType;
+  probeTipQty: string;
 }
 
 interface ProbeDeembeddingForm extends CommonMeasurementFields {
   evbInfo: string;
+  evbRev: string;
+  evbType: EvbType;
+  evbLayerCount: EvbLayerCount;
   freqStart: string;
   freqStop: string;
   stepPoint: string;
+  points: string;
+  step: string;
   powerIfbw: string;
+  power: string;
+  ifbw: string;
+  averagingRequired: boolean;
+  averagingFactor: string;
   pitch: string;
   gsType: string;
+  probeTipType: ProbeTipType;
+  probeTipQty: string;
 }
 
 interface EvbAssemblyForm extends CommonMeasurementFields {
@@ -298,10 +331,14 @@ function createEmptyMeasurementForms() {
 
       p1dbBand: "",
       p1dbGainBiasAddress: "",
+      p1dbFreq: "",
+      p1dbGain: "",
 
       iip3Band: "",
       iip3GainBiasAddress: "",
       iip3FjamPower: "",
+      iip3Freq: "",
+      iip3Gain: "",
 
       rseFrequency: "",
 
@@ -309,6 +346,8 @@ function createEmptyMeasurementForms() {
       harmonicInputPower: "",
       harmonicOrder: "",
       harmonicUnit: "",
+      harmonicRange: "",
+      harmonicRangeCustom: "",
 
       noteSpl: "",
       noteMeasurement: "",
@@ -323,13 +362,22 @@ function createEmptyMeasurementForms() {
 
     probeSpl: {
       sampleType: "",
+      evbPickupRequired: false,
+      mipiControlRequired: false,
       freqStart: "",
       freqStop: "",
       stepPoint: "",
+      points: "",
+      step: "",
       powerIfbw: "",
+      power: "",
+      ifbw: "",
+      averagingRequired: false,
+      averagingFactor: "",
       pitch: "",
-
       gsType: "",
+      probeTipType: "",
+      probeTipQty: "",
       noteSpl: "",
       noteMeasurement: "",
       fileLink: "",
@@ -343,12 +391,23 @@ function createEmptyMeasurementForms() {
 
     probeDeembedding: {
       evbInfo: "",
+      evbRev: "",
+      evbType: "",
+      evbLayerCount: "",
       freqStart: "",
       freqStop: "",
       stepPoint: "",
+      points: "",
+      step: "",
       powerIfbw: "",
+      power: "",
+      ifbw: "",
+      averagingRequired: false,
+      averagingFactor: "",
       pitch: "",
       gsType: "",
+      probeTipType: "",
+      probeTipQty: "",
       noteSpl: "",
       noteMeasurement: "",
       fileLink: "",
@@ -768,12 +827,16 @@ function applyDetail(detail: ModuleApplicationDetail) {
       measurementForms.nonlinear.p1dbBand = item.data?.p1dbBand ?? "";
       measurementForms.nonlinear.p1dbGainBiasAddress =
         item.data?.p1dbGainBiasAddress ?? "";
+      measurementForms.nonlinear.p1dbFreq = item.data?.p1dbFreq ?? "";
+      measurementForms.nonlinear.p1dbGain = item.data?.p1dbGain ?? "";
 
       measurementForms.nonlinear.iip3Band = item.data?.iip3Band ?? "";
       measurementForms.nonlinear.iip3GainBiasAddress =
         item.data?.iip3GainBiasAddress ?? "";
       measurementForms.nonlinear.iip3FjamPower =
         item.data?.iip3FjamPower ?? "";
+      measurementForms.nonlinear.iip3Freq = item.data?.iip3Freq ?? "";
+      measurementForms.nonlinear.iip3Gain = item.data?.iip3Gain ?? "";
 
       measurementForms.nonlinear.rseFrequency =
         item.data?.rseFrequency ?? "";
@@ -786,6 +849,10 @@ function applyDetail(detail: ModuleApplicationDetail) {
         item.data?.harmonicOrder ?? "";
       measurementForms.nonlinear.harmonicUnit =
         item.data?.harmonicUnit ?? "";
+      measurementForms.nonlinear.harmonicRange =
+        item.data?.harmonicRange ?? "";
+      measurementForms.nonlinear.harmonicRangeCustom =
+        item.data?.harmonicRangeCustom ?? "";
 
       measurementForms.nonlinear.noteSpl = item.data?.noteSpl ?? "";
       measurementForms.nonlinear.noteMeasurement =
@@ -804,12 +871,26 @@ function applyDetail(detail: ModuleApplicationDetail) {
 
     if (item.type === "probeSpl") {
       measurementForms.probeSpl.sampleType = item.data?.sampleType ?? "";
+      measurementForms.probeSpl.evbPickupRequired =
+        !!item.data?.evbPickupRequired;
+      measurementForms.probeSpl.mipiControlRequired =
+        !!item.data?.mipiControlRequired;
       measurementForms.probeSpl.freqStart = item.data?.freqStart ?? "";
       measurementForms.probeSpl.powerIfbw = item.data?.powerIfbw ?? "";
       measurementForms.probeSpl.freqStop = item.data?.freqStop ?? "";
       measurementForms.probeSpl.pitch = item.data?.pitch ?? "";
       measurementForms.probeSpl.stepPoint = item.data?.stepPoint ?? "";
+      measurementForms.probeSpl.points = item.data?.points ?? "";
+      measurementForms.probeSpl.step = item.data?.step ?? "";
+      measurementForms.probeSpl.power = item.data?.power ?? "";
+      measurementForms.probeSpl.ifbw = item.data?.ifbw ?? "";
+      measurementForms.probeSpl.averagingRequired =
+        !!item.data?.averagingRequired;
+      measurementForms.probeSpl.averagingFactor =
+        item.data?.averagingFactor ?? "";
       measurementForms.probeSpl.gsType = item.data?.gsType ?? "";
+      measurementForms.probeSpl.probeTipType = item.data?.probeTipType ?? "";
+      measurementForms.probeSpl.probeTipQty = item.data?.probeTipQty ?? "";
       measurementForms.probeSpl.noteSpl = item.data?.noteSpl ?? "";
       measurementForms.probeSpl.noteMeasurement =
         item.data?.noteMeasurement ?? "";
@@ -827,6 +908,10 @@ function applyDetail(detail: ModuleApplicationDetail) {
 
     if (item.type === "probeDeembedding") {
       measurementForms.probeDeembedding.evbInfo = item.data?.evbInfo ?? "";
+      measurementForms.probeDeembedding.evbRev = item.data?.evbRev ?? "";
+      measurementForms.probeDeembedding.evbType = item.data?.evbType ?? "";
+      measurementForms.probeDeembedding.evbLayerCount =
+        item.data?.evbLayerCount ?? "";
       measurementForms.probeDeembedding.freqStart =
         item.data?.freqStart ?? "";
       measurementForms.probeDeembedding.powerIfbw =
@@ -836,8 +921,20 @@ function applyDetail(detail: ModuleApplicationDetail) {
       measurementForms.probeDeembedding.pitch = item.data?.pitch ?? "";
       measurementForms.probeDeembedding.stepPoint =
         item.data?.stepPoint ?? "";
+      measurementForms.probeDeembedding.points = item.data?.points ?? "";
+      measurementForms.probeDeembedding.step = item.data?.step ?? "";
+      measurementForms.probeDeembedding.power = item.data?.power ?? "";
+      measurementForms.probeDeembedding.ifbw = item.data?.ifbw ?? "";
+      measurementForms.probeDeembedding.averagingRequired =
+        !!item.data?.averagingRequired;
+      measurementForms.probeDeembedding.averagingFactor =
+        item.data?.averagingFactor ?? "";
       measurementForms.probeDeembedding.gsType =
         item.data?.gsType ?? "";
+      measurementForms.probeDeembedding.probeTipType =
+        item.data?.probeTipType ?? "";
+      measurementForms.probeDeembedding.probeTipQty =
+        item.data?.probeTipQty ?? "";
       measurementForms.probeDeembedding.noteSpl =
         item.data?.noteSpl ?? "";
       measurementForms.probeDeembedding.noteMeasurement =
@@ -891,11 +988,37 @@ async function fetchDetail() {
   }
 }
 
+// Step = (Freq Stop - Freq Start + 1) / Point
+function calcStep(
+  freqStart?: string | number | null,
+  freqStop?: string | number | null,
+  points?: string | number | null
+): string {
+  const start = Number(freqStart);
+  const stop = Number(freqStop);
+  const point = Number(points);
+
+  if (
+    !freqStart ||
+    !freqStop ||
+    !points ||
+    Number.isNaN(start) ||
+    Number.isNaN(stop) ||
+    Number.isNaN(point) ||
+    point <= 0
+  ) {
+    return "";
+  }
+
+  const step = (stop - start + 1) / point;
+  return Number.isFinite(step) ? String(Math.round(step * 1000) / 1000) : "";
+}
+
 function buildMeasurementPayloadData(key: string) {
   const form = measurementForms[key as keyof typeof measurementForms] as any;
   const links = normalizeLinks(form);
 
-  return {
+  const result = {
     ...form,
     links,
     fileLink:
@@ -903,6 +1026,12 @@ function buildMeasurementPayloadData(key: string) {
       Object.values(links).find((value) => String(value ?? "").trim() !== "") ||
       "",
   };
+
+  if (key === "probeSpl" || key === "probeDeembedding") {
+    result.step = calcStep(form.freqStart, form.freqStop, form.points);
+  }
+
+  return result;
 }
 
 function buildPayload() {

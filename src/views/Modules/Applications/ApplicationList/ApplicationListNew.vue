@@ -45,6 +45,7 @@
               label="No"
               width="60"
               align="center"
+              fixed="left"
             />
 
             <el-table-column
@@ -52,6 +53,7 @@
               prop="applicationId"
               width="120"
               align="center"
+              fixed="left"
             />
 
             <el-table-column
@@ -59,6 +61,7 @@
               prop="siteType"
               width="90"
               align="center"
+              fixed="left"
             >
               <template #default="{ row }">
                 {{ row.siteType === "HQ" ? "본사" : "WHC" }}
@@ -70,6 +73,7 @@
               prop="pn"
               width="140"
               align="center"
+              fixed="left"
             />
 
             <el-table-column
@@ -77,6 +81,7 @@
               prop="requester"
               width="120"
               align="center"
+              fixed="left"
             />
 
             <el-table-column
@@ -234,7 +239,18 @@ function measurementCellTagType(cell?: MeasurementCell) {
 }
 
 const filteredList = computed(() => {
-  return appList.value.filter((app) => app.status === activeTabName.value);
+  const list = appList.value.filter((app) => app.status === activeTabName.value);
+
+  // 대기 / 진행중 탭은 먼저 의뢰한 건(오래된 순)이 위로 오도록 오름차순 정렬
+  if (activeTabName.value === "waiting" || activeTabName.value === "in_progress") {
+    return [...list].sort((a, b) => {
+      const aTime = a.createdDate ? new Date(a.createdDate).getTime() : 0;
+      const bTime = b.createdDate ? new Date(b.createdDate).getTime() : 0;
+      return aTime - bTime;
+    });
+  }
+
+  return list;
 });
 
 const pagedList = computed(() => {
