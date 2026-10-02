@@ -341,6 +341,8 @@ export function buildModuleNewPayload(app: ModuleApplicationSubmitInput) {
             vendor: data.vendor ?? "",
             deembedding: data.deembedding ?? "",
             port_extension: data.portExtension ?? "",
+            vdd_voltage: data.vddVoltage ?? "",
+            vio_voltage: data.vioVoltage ?? "",
             ...buildCommonMeasurementData(data),
           }
         };
@@ -357,6 +359,8 @@ export function buildModuleNewPayload(app: ModuleApplicationSubmitInput) {
             jig_soldering: data.jigSoldering ?? "",
             evb_tuning: !!data.evbTuning,
             appendix: !!data.appendix,
+            vdd_voltage: data.vddVoltage ?? "",
+            vio_voltage: data.vioVoltage ?? "",
             ...buildCommonMeasurementData(data),
           }
         };
@@ -369,6 +373,8 @@ export function buildModuleNewPayload(app: ModuleApplicationSubmitInput) {
             board_type: data.boardType ?? "",
             mold: data.mold ?? "",
             appendix: !!data.appendix,
+            vdd_voltage: data.vddVoltage ?? "",
+            vio_voltage: data.vioVoltage ?? "",
             ...buildCommonMeasurementData(data),
           },
         };
@@ -395,6 +401,8 @@ export function buildModuleNewPayload(app: ModuleApplicationSubmitInput) {
             freq_stop: data.freqStop ?? "",
             average: data.average ?? "",
             point: data.point ?? "",
+            vdd_voltage: data.vddVoltage ?? "",
+            vio_voltage: data.vioVoltage ?? "",
             ...buildCommonMeasurementData(data),
           },
         };
@@ -407,6 +415,8 @@ export function buildModuleNewPayload(app: ModuleApplicationSubmitInput) {
             temperature_sequence: data.temperatureSequence ?? "",
             matching: data.matching ?? "",
             jig_soldering: data.jigSoldering ?? "",
+            vdd_voltage: data.vddVoltage ?? "",
+            vio_voltage: data.vioVoltage ?? "",
             ...buildCommonMeasurementData(data),
           },
         };
@@ -441,6 +451,8 @@ export function buildModuleNewPayload(app: ModuleApplicationSubmitInput) {
             harmonic_unit: data.harmonicUnit ?? "",
             harmonic_range: data.harmonicRange ?? "",
             harmonic_range_custom: data.harmonicRangeCustom ?? "",
+            vdd_voltage: data.vddVoltage ?? "",
+            vio_voltage: data.vioVoltage ?? "",
           
             ...buildCommonMeasurementData(data),
           },

@@ -78,6 +78,7 @@ type ProbeTipType = "" | "GSG_150" | "GS_SG_450" | "GS_SG_1390";
 type EvbType = "" | "NORMAL" | "BUILDUP" | "CUSTOM";
 type EvbLayerCount = "" | "2L" | "4L" | "6L";
 type HarmonicRangeType = "" | "2ND" | "2ND_3RD" | "CUSTOM";
+type VoltageType = "" | "1.8V" | "1.2V";
 
 const loginId = localStorage.getItem("ms_username") || "";
 
@@ -102,6 +103,8 @@ interface SetupForm extends CommonMeasurementFields {
   vendor: VendorType;
   deembedding: OnOffType;
   portExtension: OnOffType;
+  vddVoltage: VoltageType;
+  vioVoltage: VoltageType;
 }
 
 interface NaForm extends CommonMeasurementFields {
@@ -112,12 +115,16 @@ interface NaForm extends CommonMeasurementFields {
   jigSoldering: JigSolderingType;
   evbTuning: boolean;
   appendix: boolean;
+  vddVoltage: VoltageType;
+  vioVoltage: VoltageType;
 }
 
 interface NfForm extends CommonMeasurementFields {
   boardType: BoardType;
   mold: MoldType;
   appendix: boolean;
+  vddVoltage: VoltageType;
+  vioVoltage: VoltageType;
 }
 
 interface MwaForm extends CommonMeasurementFields {
@@ -132,12 +139,16 @@ interface CaForm extends CommonMeasurementFields {
   freqStop: string;
   average: string;
   point: string;
+  vddVoltage: VoltageType;
+  vioVoltage: VoltageType;
 }
 
 interface TcfForm extends CommonMeasurementFields {
   temperatureSequence: string;
   matching: OnOffType;
   jigSoldering: JigSolderingType;
+  vddVoltage: VoltageType;
+  vioVoltage: VoltageType;
 }
 
 type NonlinearSubType = "imd" | "p1db" | "iip3" | "rse" | "harmonic";
@@ -176,6 +187,9 @@ interface NonlinearForm extends CommonMeasurementFields {
   harmonicUnit: "" | "dBc" | "dBm";
   harmonicRange: HarmonicRangeType;
   harmonicRangeCustom: string;
+
+  vddVoltage: VoltageType;
+  vioVoltage: VoltageType;
 }
 
 interface ProbeSplForm extends CommonMeasurementFields {
@@ -229,6 +243,8 @@ function createEmptyMeasurementForms() {
       vendor: "",
       deembedding: "",
       portExtension: "",
+      vddVoltage: "",
+      vioVoltage: "",
       noteSpl: "",
       noteMeasurement: "",
       fileLink: "",
@@ -248,6 +264,8 @@ function createEmptyMeasurementForms() {
       jigSoldering: "",
       evbTuning: false,
       appendix: false,
+      vddVoltage: "",
+      vioVoltage: "",
       noteSpl: "",
       noteMeasurement: "",
       fileLink: "",
@@ -263,6 +281,8 @@ function createEmptyMeasurementForms() {
       boardType: "",
       mold: "",
       appendix: false,
+      vddVoltage: "",
+      vioVoltage: "",
       noteSpl: "",
       noteMeasurement: "",
       fileLink: "",
@@ -295,6 +315,8 @@ function createEmptyMeasurementForms() {
       freqStop: "",
       average: "",
       point: "",
+      vddVoltage: "",
+      vioVoltage: "",
       noteSpl: "",
       noteMeasurement: "",
       fileLink: "",
@@ -310,6 +332,8 @@ function createEmptyMeasurementForms() {
       temperatureSequence: "",
       matching: "",
       jigSoldering: "",
+      vddVoltage: "",
+      vioVoltage: "",
       noteSpl: "",
       noteMeasurement: "",
       fileLink: "",
@@ -348,6 +372,9 @@ function createEmptyMeasurementForms() {
       harmonicUnit: "",
       harmonicRange: "",
       harmonicRangeCustom: "",
+
+      vddVoltage: "",
+      vioVoltage: "",
 
       noteSpl: "",
       noteMeasurement: "",
@@ -699,6 +726,8 @@ function applyDetail(detail: ModuleApplicationDetail) {
       measurementForms.setup.vendor = item.data?.vendor ?? "";
       measurementForms.setup.deembedding = item.data?.deembedding ?? "";
       measurementForms.setup.portExtension = item.data?.portExtension ?? "";
+      measurementForms.setup.vddVoltage = item.data?.vddVoltage ?? "";
+      measurementForms.setup.vioVoltage = item.data?.vioVoltage ?? "";
       measurementForms.setup.noteSpl = item.data?.noteSpl ?? "";
       measurementForms.setup.noteMeasurement = item.data?.noteMeasurement ?? "";
       measurementForms.setup.fileLink = item.data?.fileLink ?? "";
@@ -720,6 +749,8 @@ function applyDetail(detail: ModuleApplicationDetail) {
       measurementForms.na.jigSoldering = item.data?.jigSoldering ?? "";
       measurementForms.na.evbTuning = !!item.data?.evbTuning;
       measurementForms.na.appendix = !!item.data?.appendix;
+      measurementForms.na.vddVoltage = item.data?.vddVoltage ?? "";
+      measurementForms.na.vioVoltage = item.data?.vioVoltage ?? "";
       measurementForms.na.noteSpl = item.data?.noteSpl ?? "";
       measurementForms.na.noteMeasurement = item.data?.noteMeasurement ?? "";
       measurementForms.na.fileLink = item.data?.fileLink ?? "";
@@ -737,6 +768,8 @@ function applyDetail(detail: ModuleApplicationDetail) {
       measurementForms.nf.boardType = item.data?.boardType ?? "";
       measurementForms.nf.mold = item.data?.mold ?? "";
       measurementForms.nf.appendix = !!item.data?.appendix;
+      measurementForms.nf.vddVoltage = item.data?.vddVoltage ?? "";
+      measurementForms.nf.vioVoltage = item.data?.vioVoltage ?? "";
       measurementForms.nf.noteSpl = item.data?.noteSpl ?? "";
       measurementForms.nf.noteMeasurement = item.data?.noteMeasurement ?? "";
       measurementForms.nf.fileLink = item.data?.fileLink ?? "";
@@ -773,6 +806,8 @@ function applyDetail(detail: ModuleApplicationDetail) {
       measurementForms.ca.freqStop = item.data?.freqStop ?? "";
       measurementForms.ca.average = item.data?.average ?? "";
       measurementForms.ca.point = item.data?.point ?? "";
+      measurementForms.ca.vddVoltage = item.data?.vddVoltage ?? "";
+      measurementForms.ca.vioVoltage = item.data?.vioVoltage ?? "";
       measurementForms.ca.noteSpl = item.data?.noteSpl ?? "";
       measurementForms.ca.noteMeasurement = item.data?.noteMeasurement ?? "";
       measurementForms.ca.fileLink = item.data?.fileLink ?? "";
@@ -791,6 +826,8 @@ function applyDetail(detail: ModuleApplicationDetail) {
         item.data?.temperatureSequence ?? "";
       measurementForms.tcf.matching = item.data?.matching ?? "";
       measurementForms.tcf.jigSoldering = item.data?.jigSoldering ?? "";
+      measurementForms.tcf.vddVoltage = item.data?.vddVoltage ?? "";
+      measurementForms.tcf.vioVoltage = item.data?.vioVoltage ?? "";
       measurementForms.tcf.noteSpl = item.data?.noteSpl ?? "";
       measurementForms.tcf.noteMeasurement = item.data?.noteMeasurement ?? "";
       measurementForms.tcf.fileLink = item.data?.fileLink ?? "";
@@ -853,6 +890,8 @@ function applyDetail(detail: ModuleApplicationDetail) {
         item.data?.harmonicRange ?? "";
       measurementForms.nonlinear.harmonicRangeCustom =
         item.data?.harmonicRangeCustom ?? "";
+      measurementForms.nonlinear.vddVoltage = item.data?.vddVoltage ?? "";
+      measurementForms.nonlinear.vioVoltage = item.data?.vioVoltage ?? "";
 
       measurementForms.nonlinear.noteSpl = item.data?.noteSpl ?? "";
       measurementForms.nonlinear.noteMeasurement =

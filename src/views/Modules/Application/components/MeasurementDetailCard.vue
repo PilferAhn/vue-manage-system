@@ -62,6 +62,20 @@
                 </el-radio-group>
               </el-form-item>
 
+              <el-form-item label="측정 전압(VDD)">
+                <el-radio-group v-model="measurementForms.setup.vddVoltage">
+                  <el-radio label="1.8V">1.8 V</el-radio>
+                  <el-radio label="1.2V">1.2 V</el-radio>
+                </el-radio-group>
+              </el-form-item>
+
+              <el-form-item label="측정 전압(VIO)">
+                <el-radio-group v-model="measurementForms.setup.vioVoltage">
+                  <el-radio label="1.8V">1.8 V</el-radio>
+                  <el-radio label="1.2V">1.2 V</el-radio>
+                </el-radio-group>
+              </el-form-item>
+
               <el-form-item label="특이사항(SPL)">
                 <el-input
                   v-model="measurementForms.setup.noteSpl"
@@ -177,6 +191,20 @@
                 </el-checkbox>
               </el-form-item>
 
+              <el-form-item label="측정 전압(VDD)">
+                <el-radio-group v-model="measurementForms.na.vddVoltage">
+                  <el-radio label="1.8V">1.8 V</el-radio>
+                  <el-radio label="1.2V">1.2 V</el-radio>
+                </el-radio-group>
+              </el-form-item>
+
+              <el-form-item label="측정 전압(VIO)">
+                <el-radio-group v-model="measurementForms.na.vioVoltage">
+                  <el-radio label="1.8V">1.8 V</el-radio>
+                  <el-radio label="1.2V">1.2 V</el-radio>
+                </el-radio-group>
+              </el-form-item>
+
               <el-form-item label="특이사항(SPL)">
                 <el-input
                   v-model="measurementForms.na.noteSpl"
@@ -260,6 +288,20 @@
                 <el-checkbox v-model="measurementForms.nf.appendix">
                   사용
                 </el-checkbox>
+              </el-form-item>
+
+              <el-form-item label="측정 전압(VDD)">
+                <el-radio-group v-model="measurementForms.nf.vddVoltage">
+                  <el-radio label="1.8V">1.8 V</el-radio>
+                  <el-radio label="1.2V">1.2 V</el-radio>
+                </el-radio-group>
+              </el-form-item>
+
+              <el-form-item label="측정 전압(VIO)">
+                <el-radio-group v-model="measurementForms.nf.vioVoltage">
+                  <el-radio label="1.8V">1.8 V</el-radio>
+                  <el-radio label="1.2V">1.2 V</el-radio>
+                </el-radio-group>
               </el-form-item>
 
               <el-form-item label="특이사항(SPL)">
@@ -430,6 +472,20 @@
                 <el-input v-model="measurementForms.ca.point" />
               </el-form-item>
 
+              <el-form-item label="측정 전압(VDD)">
+                <el-radio-group v-model="measurementForms.ca.vddVoltage">
+                  <el-radio label="1.8V">1.8 V</el-radio>
+                  <el-radio label="1.2V">1.2 V</el-radio>
+                </el-radio-group>
+              </el-form-item>
+
+              <el-form-item label="측정 전압(VIO)">
+                <el-radio-group v-model="measurementForms.ca.vioVoltage">
+                  <el-radio label="1.8V">1.8 V</el-radio>
+                  <el-radio label="1.2V">1.2 V</el-radio>
+                </el-radio-group>
+              </el-form-item>
+
               <el-form-item label="특이사항(SPL)">
                 <el-input
                   v-model="measurementForms.ca.noteSpl"
@@ -510,6 +566,20 @@
                 <el-radio-group v-model="measurementForms.tcf.jigSoldering">
                   <el-radio label="JIG">Jig</el-radio>
                   <el-radio label="SOLDERING">Soldering</el-radio>
+                </el-radio-group>
+              </el-form-item>
+
+              <el-form-item label="측정 전압(VDD)">
+                <el-radio-group v-model="measurementForms.tcf.vddVoltage">
+                  <el-radio label="1.8V">1.8 V</el-radio>
+                  <el-radio label="1.2V">1.2 V</el-radio>
+                </el-radio-group>
+              </el-form-item>
+
+              <el-form-item label="측정 전압(VIO)">
+                <el-radio-group v-model="measurementForms.tcf.vioVoltage">
+                  <el-radio label="1.8V">1.8 V</el-radio>
+                  <el-radio label="1.2V">1.2 V</el-radio>
                 </el-radio-group>
               </el-form-item>
 
@@ -725,6 +795,20 @@
                   </el-radio-group>
                 </el-form-item>
               </div>
+
+              <el-form-item label="측정 전압(VDD)">
+                <el-radio-group v-model="measurementForms.nonlinear.vddVoltage">
+                  <el-radio label="1.8V">1.8 V</el-radio>
+                  <el-radio label="1.2V">1.2 V</el-radio>
+                </el-radio-group>
+              </el-form-item>
+
+              <el-form-item label="측정 전압(VIO)">
+                <el-radio-group v-model="measurementForms.nonlinear.vioVoltage">
+                  <el-radio label="1.8V">1.8 V</el-radio>
+                  <el-radio label="1.2V">1.2 V</el-radio>
+                </el-radio-group>
+              </el-form-item>
 
               <el-form-item label="특이사항(SPL)">
                 <el-input
