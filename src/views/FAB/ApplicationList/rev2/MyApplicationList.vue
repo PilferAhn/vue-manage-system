@@ -86,6 +86,17 @@
       </el-table-column>
       <el-table-column label="생성일" prop="createdDate" width="100" :align="'center'" :formatter="callFormatDate" sortable>
       </el-table-column>
+      <el-table-column label="수정일" prop="updatedDate" width="100" :align="'center'" sortable :sort-method="sortByUpdatedDate">
+        <template #default="scope">
+          <span v-if="scope.row.updatedDate" class="updated-date">{{ formatDate(scope.row.updatedDate) }}</span>
+          <span v-else class="empty-cell">-</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="수정자" width="90" :align="'center'" show-overflow-tooltip>
+        <template #default="scope">
+          {{ scope.row.updater?.userName ?? "-" }}
+        </template>
+      </el-table-column>
       <el-table-column
         label="Action"
         :align="'center'"
@@ -152,34 +163,43 @@ function handleVisible(status: boolean, fabRequestForm: FabRequestForm) {
   selectApplication.value = fabRequestForm;
 }
 
+const ADMIN_VIEWERS = ["admin", "w2220606", "w2150305"];
+
+/** 생성일/수정일 중 최신 시각 (재투입된 의뢰서가 위로 오도록 정렬 기준으로 사용) */
+function lastModifiedTime(app: FabRequestForm): number {
+  const created = app.createdDate ? new Date(app.createdDate).getTime() : 0;
+  const updated = app.updatedDate ? new Date(app.updatedDate).getTime() : 0;
+  return Math.max(created || 0, updated || 0);
+}
+
+async function loadApplications() {
+  const option: Record<string, string> = {
+    users: "True",
+    wafer: "True",
+    idt_type: "False",
+    hs_type: "True",
+    idt_layers: "True",
+    order_by: "created_date",
+    order_dir: "desc",
+  };
+
+  if (!ADMIN_VIEWERS.includes(getUserId())) {
+    option["observer_id"] = getUserId();
+  } else {
+    // 생성일 또는 수정일(재투입)이 180일 이내인 의뢰서
+    option["modified_date_start"] = adjustDate(getTodayDate(), -180);
+  }
+
+  const data = await getApplicationListByDict(option);
+  data.sort((a, b) => lastModifiedTime(b) - lastModifiedTime(a));
+
+  applications.length = 0;
+  applications.push(...data);
+}
+
 onMounted(async () => {
   try {
-    // getApplicationList를 호출하고 결과를 기다림
-
-    const option = {
-      users: "True",
-      wafer: "True",
-      idt_type: "False",
-      hs_type: "True",
-      idt_layers: "True",
-      order_by: "created_date",
-      order_dir: "desc",
-    };
-
-    if (getUserId() !== "admin" && getUserId() !== "w2220606" && getUserId() !== "w2150305") {
-      option["observer_id"] = getUserId();
-    }
-    else{
-
-      option["created_date_start"] = adjustDate(getTodayDate(), -180)      
-    }
-
-
-
-    applications.length = 0;
-    const data = await getApplicationListByDict(option);
-
-    applications.push(...data); // 가져온 데이터를 reactive 배열에 추가
+    await loadApplications();
     isLoad.value = true;
   } catch (error) {
     console.error("Error fetching application list:", error);
@@ -188,6 +208,12 @@ onMounted(async () => {
 
 function callFormatDate(row, column, cellValue) {
   return formatDate(cellValue);
+}
+
+function sortByUpdatedDate(a: FabRequestForm, b: FabRequestForm) {
+  const ta = a.updatedDate ? new Date(a.updatedDate).getTime() : 0;
+  const tb = b.updatedDate ? new Date(b.updatedDate).getTime() : 0;
+  return ta - tb;
 }
 
 function handleButton(action: string, application: FabRequestForm) {
@@ -224,23 +250,7 @@ async function handleDelete(application: FabRequestForm) {
         duration: 3000,
       });
 
-      const option = {
-        users: "True",
-        wafer: "True",
-        idt_type: "False",
-        hs_type: "True",
-        idt_layers: "True",
-        order_by: "created_date",
-        order_dir: "desc",
-      };
-
-      if (getUserId() !== "admin") {
-        option["observer_id"] = getUserId();
-      }
-      applications.length = 0;
-      const data = await getApplicationListByDict(option);
-
-      applications.push(...data);
+      await loadApplications();
     } else {
       throw new Error("삭제 요청이 실패했습니다.");
     }
@@ -266,6 +276,15 @@ export default {};
 </style>
 
 <style scoped>
+.updated-date {
+  color: var(--el-color-warning);
+  font-weight: 600;
+}
+
+.empty-cell {
+  color: var(--el-text-color-placeholder);
+}
+
 .ellipsis-text {
   display: inline-block;
   width: 180px;

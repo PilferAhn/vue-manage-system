@@ -127,6 +127,8 @@ export interface FabRequestForm extends FabprobeInformation {
   band?: string;
   status?: string;
   createdDate?: string;
+  updatedDate?: string;
+  updaterId?: string;
   dateOfFabCardConvey?: string;
   trimming?: string;
   hsWaferInfo?: string;
@@ -196,6 +198,7 @@ export interface FabRequestForm extends FabprobeInformation {
 
   requester?: User;
   designer?: User;
+  updater?: User;
   idtProcessId?: string;
   // wafer?: FabWafer[];
   idtType?: IdtType;

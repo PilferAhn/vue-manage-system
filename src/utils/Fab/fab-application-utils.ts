@@ -868,6 +868,10 @@ export async function sendingForm(application: FabRequestForm, type: string) : P
     }
 
     try {
+      // 업데이트(재투입 포함) 시 수정자 기록
+      if (type !== "submit") {
+        application.updaterId = getUserId();
+      }
       const app = convertKeysToPEP8(application); 
       const response = await axios.post(url, app);
       // 성공 알림
