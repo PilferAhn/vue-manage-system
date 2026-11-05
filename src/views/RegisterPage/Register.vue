@@ -69,14 +69,25 @@
 
 <script setup lang="ts">
 import axios from "axios";
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { ElForm, ElFormItem, ElInput, ElButton, ElMessage } from "element-plus";
 
 import SelectOption from "../TegPage/Application/SelectOption.vue";
 import { useRouter } from "vue-router";
 import { useForm } from "../../utils/form";
 import { registrationRules } from "../../utils/FromRule";
-import { checkPassword, departmentList } from "../../utils/registerUtility";
+import { checkPassword } from "../../utils/registerUtility";
+
+// 부서는 users_rev2_department 마스터에서 선택
+const departmentList = ref<string[]>([]);
+onMounted(async () => {
+  try {
+    const res = await axios.get("/user_rev2/get_department_list");
+    departmentList.value = res.data.map((d: { department: string }) => d.department);
+  } catch (e) {
+    ElMessage.error("부서 목록을 불러오지 못했습니다.");
+  }
+});
 
 const router = useRouter();
 

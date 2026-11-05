@@ -32,6 +32,7 @@ import { sendGetRequest, sendPostRequest } from "../../../utils/httpProtocol";
 import { RefSymbol } from "@vue/reactivity";
 import { convertPep8ToCamelCase2 } from "../../../utils/key-converter";
 import { getUserId, getUserName } from "../../../utils/account-utils";
+import { usePermissStore } from "../../../store/permiss";
 import { FabRequestForm } from "../../../interface/fab-application-rev2";
 import { getApplicationListByDict } from "../../../utils/Fab/fab-application-utils";
 
@@ -39,7 +40,8 @@ import { getApplicationListByDict } from "../../../utils/Fab/fab-application-uti
 const fabApp = ref<FabRequestForm[]>([]);
 const dv2TableData = ref<Dv2[]>([]); // 원본 데이터를 저장할 ref
 const dv2Data = ref<Dv2[]>([]);
-const adminList = ["w2220604", "w2171210", "w2171209", "admin", "w2170211"];
+// 관리 행 표시 권한: 권한관리 > dv2.manage
+const permiss = usePermissStore();
 const adminNameList = [""];
 // 📌 onMounted에서 데이터 로드 및 업데이트
 onMounted(async () => {
@@ -87,7 +89,7 @@ onMounted(async () => {
       };
 
       // 특정 조건이 만족하면 secondRow 추가
-      if (adminList.includes(getUserId().toLocaleLowerCase())) {
+      if (permiss.hasPerm("dv2.manage")) {
         return [firstRow, secondRow];
       } else if (getUserName() === row.supporter) {
         return [firstRow, secondRow];

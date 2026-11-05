@@ -2,6 +2,10 @@
     <el-row :gutter="20" class="demo-form-inline">
       <el-col :span="6">
         <el-form-item label="Designer">
+          <template #label>
+            Designer
+            <el-checkbox v-model="showAllDesigners" size="small" class="all-designers">전체</el-checkbox>
+          </template>
           <el-autocomplete
             v-model="props.fabApplication.designer.userName"
             placeholder="개발자를 입력하세요"
@@ -52,10 +56,22 @@
   <script lang="ts" setup>
   import { reactive, ref, watch } from "vue";
   import { useUserOptions } from "./utility";
+  import { getUserId } from "../../utils/account-utils";
   import type { FabRequestForm } from "../../interface/fab-application-rev2";
   import type { User } from "../../interface/user";
   
   const { userOptions } = useUserOptions();
+
+  // Designer 는 기본적으로 설계 그룹 인원 + role 이 designer 인 인원만 표시 ('전체' 체크 시 전 인원)
+  const DESIGNER_DEPARTMENTS = new Set([
+    "SAW개발그룹(A)",
+    "SAW개발그룹(B)",
+    "SAW개발그룹(C)",
+    "WHC/R&D Team",
+    "WHC/CSP",
+    "WJC/R&D Team",
+  ]);
+  const showAllDesigners = ref(false);
   const props = defineProps<{
     fabApplication: FabRequestForm;
     designerProp: string;
@@ -82,9 +98,18 @@
     cb: (suggestions: { value: string; label: string; key: string }[]) => void,
     fieldType: string // 'designer' 또는 'requester'로 구분
   ) => {
-    const results = userOptions.value.filter((user) =>
-      user.label.toLowerCase().includes(queryString.toLowerCase())
+    const query = (queryString ?? "").toLowerCase();
+    const results = userOptions.value.filter(
+      (user) =>
+        user.label.toLowerCase().includes(query) &&
+        (fieldType !== "designer" ||
+          showAllDesigners.value ||
+          user.role === "designer" ||
+          DESIGNER_DEPARTMENTS.has(user.department ?? ""))
     );
+    // 로그인한 본인을 맨 위로
+    const myId = getUserId();
+    results.sort((a, b) => Number(b.value === myId) - Number(a.value === myId));
     cb(results);
   };
   
@@ -113,6 +138,10 @@
   </script>
   
   <style scoped>
+  .all-designers {
+    margin-left: 8px;
+    height: auto;
+  }
   .demo-form-inline {
     width: 100%;
   }

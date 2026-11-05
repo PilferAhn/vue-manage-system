@@ -11,6 +11,7 @@ import type { StockItem } from "../../../../interface/stock";
 import StockItemListTemplate from "./StockItemListTemplate.vue";
 import { fetchStockItems } from "./StockItemList"; // Import the fetch function
 import { getDepartment, getUserId, getUserName } from "../../../../utils/account-utils";
+import { usePermissStore } from "../../../../store/permiss";
 
 
 const stockItems = ref<StockItem[]>([]);
@@ -21,7 +22,8 @@ onMounted(async () => {
   // console.log("Department:", getDepartment())  
 
   // Fetch StockInfo data on component mount
-  if(["admin"].includes(getUserName()) || getDepartment() === "whc" || ["w2240310", "w2171209", "w2150708", "w2120102", "w2240712", "w2170312"].includes(getUserId()) ){
+  // 전체 조회 권한: 권한관리 > solder.reel.view_all
+  if (usePermissStore().hasPerm("solder.reel.view_all")) {
     stockItems.value = await fetchStockItems("reel");
   }
   else{

@@ -17,7 +17,7 @@
                 
         <el-form-item v-else-if="props.applicationType === 'load'">
           <el-button
-          :disabled="!excludeList.includes(getUserId())"
+          :disabled="!permiss.hasPerm('fab.request.update')"
             type="primary"
             class="action-button"
             @click="submitForm('update')"
@@ -54,6 +54,7 @@ import type { FabRequestForm } from "../../../interface/fab-application-rev2";
 import type { FormInstance } from "element-plus";
 import { sendingForm, ValChkBeforeSending } from "../../../utils/Fab/fab-application-utils";
 import { getUserId } from "../../../utils/account-utils";
+import { usePermissStore } from "../../../store/permiss";
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getCurrentWeekNumber } from "../../../utils/date-utils";
 import { sendPostRequest } from "../../../utils/httpProtocol";
@@ -72,7 +73,8 @@ const emit = defineEmits<{
   (e: "clear-package-evidence-file"): void;
 }>();
 
-const excludeList = ["admin", "w220112", "w2180511", "w223051", "w2220606", "w2150305"]; 
+// 업데이트 버튼 권한: 권한관리 > fab.request.update
+const permiss = usePermissStore();
 
 // Submit 함수
 const submitForm = async (type: string) => {

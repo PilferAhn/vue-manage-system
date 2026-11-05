@@ -415,11 +415,7 @@ export default {};
         " -->
 
       <el-table-column
-        v-if="
-          getUserId() === 'admin' ||
-          getRole() === 'group leader' ||
-          getUserId() === 'w2150108'
-        "
+        v-if="permiss.hasPerm('fab.review.manage')"
         fixed="right"
         label="Action"
         width="235"
@@ -483,6 +479,9 @@ import InputText from "../../Common/InputText.vue";
 import { formatDate } from "../../Common/Application";
 import { convertKeysToPEP8 } from "../../../../utils/key-converter";
 import { getRole, getUserId } from "../../../../utils/account-utils";
+import { usePermissStore } from "../../../../store/permiss";
+// Action 컬럼 권한: 권한관리 > fab.review.manage
+const permiss = usePermissStore();
 import {
   getApplicationListByDict,
   partialUpdateForm,

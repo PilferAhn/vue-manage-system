@@ -288,7 +288,7 @@ const blockMargin = computed(() => {
 });
 
 onMounted(async () => {
-  operators.value = await getUserListByDepartment("whc");
+  operators.value = await getUserListByDepartment("WHC/R&D Team");
 });
 
 // Sorting Measurements by 'number'

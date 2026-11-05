@@ -128,7 +128,9 @@ const submitForm = (formEl: FormInstance | undefined) => {
           permiss.handleSet(keys);
 
           localStorage.setItem("ms_keys", JSON.stringify(keys));
-          
+
+          // 권한관리(web_permission) 권한 로드
+          await permiss.loadWebPermissions(true);
 
           router.push("/");
         }

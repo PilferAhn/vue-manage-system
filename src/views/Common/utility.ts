@@ -11,6 +11,8 @@ interface UserData {
   id: string;
   user_name: string;
   key : string;
+  department?: string | null;
+  role?: string | null;
 }
 
 
@@ -18,7 +20,7 @@ interface UserData {
 
 // Function to fetch the data and prepare the options for `el-select`
 export function useUserOptions() {
-  const userOptions = ref<{ value: string; label: string, key : string }[]>([]);
+  const userOptions = ref<{ value: string; label: string, key : string, department?: string | null, role?: string | null }[]>([]);
 
   const fetchUserOptions = async () => {
     try {
@@ -31,7 +33,9 @@ export function useUserOptions() {
       userOptions.value = users.map((user) => ({
         value: user.id,
         label: user.user_name,
-        key : user.id
+        key : user.id,
+        department: user.department ?? null,
+        role: user.role ?? null,
       }));
     } catch (error) {
       console.error('Failed to fetch user options:', error);

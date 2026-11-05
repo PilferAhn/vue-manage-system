@@ -22,6 +22,7 @@ import {
   getApplicationListByDictRev2,
 } from "../../../../utils/Fab/fab-application-utils";
 import { getRole, getUserId } from "../../../../utils/account-utils";
+import { usePermissStore } from "../../../../store/permiss";
 import ApplicationMonitorByPackage from "./ApplicationMonitorByPackage.vue";
 import { getAppByPackageType } from "../../../../utils/Fab/fab-application-monitor";
 import { TegApplication } from "../../../../interface/Teg/teg";
@@ -79,7 +80,8 @@ onMounted(async () => {
       wanted_fab_start_date_end: `${fabEndDate}T23:59:59`,
     };
 
-    if (getUserId() !== "admin" && getRole() !== "group leader") {
+    // 전체 조회 권한: 권한관리 > fab.monitor.view_all
+    if (!usePermissStore().hasPerm("fab.monitor.view_all")) {
       para["observer_id"] = getUserId();
     }
 

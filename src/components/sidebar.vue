@@ -10,7 +10,7 @@
       unique-opened
       router
     >
-      <template v-for="item in items" :key="item.index + '_item'">
+      <template v-for="item in visibleItems" :key="item.index + '_item'">
         <template v-if="item.subs">
           <el-sub-menu
             :index="item.index"
@@ -102,300 +102,39 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useSidebarStore } from "../store/sidebar";
-import { useRoute } from "vue-router";
-import { fabSilderBarList } from "./fab-sidebar";
-import { whcSilderBarList } from "./whc-sidebar";
-import { moduleSilderBarList } from "./module-sidebar";
-import { dv2SilderBarList } from "./dv2-sidebar";
-import { idtProbeBarList } from "./idt-probe-sidebar";
+import { useRoute, useRouter } from "vue-router";
+import { usePermissStore } from "../store/permiss";
 import { SidebarItem } from "../interface/sidebar";
-const items: SidebarItem[] = [
-  {
-    icon: "Odometer",
-    index: "/dashboard",
-    title: "Dashboard",
-    permiss: "1",
-  },
-  {
-    icon: "Calendar",
-    index: "1",
-    title: "Power Durability Test",
-    permiss: "2",
-    subs: [
-      {
-        index: "/product/create-application",
-        title: "Create Request Form",
-        permiss: "2",
-      },
-      {
-        index: "/product/reserved-application-list",
-        title: "In Progress",
-        permiss: "2",
-      },
-      {
-        index: "/product/completed-application-list",
-        title: "Completed",
-        permiss: "2",
-      },
-    ],
-  },
-  {
-    icon: "Calendar",
-    index: "2",
-    title: "Teg Measurement",
-    permiss: "2",
-    subs: [
-      {
-        index: "/teg/create-teg-application2",
-        title: "Create Reqeust Form",
-        permiss: "2",
-      },
-      {
-        index: "/teg/waiting-list",
-        title: "In Progress",
-        permiss: "2",
-      },
-      {
-        index: "/teg/finished-list",
-        title: "Completed",
-        permiss: "2",
-      },
-    ],
-  },
-  idtProbeBarList,
-  fabSilderBarList,
-  whcSilderBarList,
-  dv2SilderBarList,
-  moduleSilderBarList,
-  {
-    icon: "Edit",
-    index: "5",
-    title: "Statistics",
-    permiss: "2",
-    subs: [
-      {
-        index: "/admin/pdt",
-        title: "PDT",
-        permiss: "2",
-        subs: [
-          {
-            index: "/admin/pdt/application-list",
-            title: "In Progress",
-            permiss: "5",
-          },
-          {
-            index: "/admin/pdt/machine-list",
-            title: "Machine List",
-            permiss: "5",
-          },
-          {
-            index: "/admin/pdt/statistic",
-            title: "PDT Statistics",
-            permiss: "2",
-          },
-        ],
-      },
-      {
-        index: "/admin/teg/teg_application",
-        title: "TEG Measurement",
-        permiss: "2",
-        subs: [
-          {
-            index: "/admin/teg/teg-application-list",
-            title: "In Progress",
-            permiss: "5",
-          },
-          {
-            index: "/statistic/chart",
-            title: "TEG Statistics",
-            permiss: "2",
-          },
-          // {
-          //   index: "/admin/teg/teg-waiting-list",
-          //   title: "TEG 대기 현황",
-          //   permiss: "5",
-          // },
-        ],
-      },
-      {
-        index: "/admin/whc/solder-application",
-        title: "WHC Measurement",
-        permiss: "2",
-        subs: [
-          {
-            index: "/admin/whc/solder-application-statistic",
-            title: "WHC Statistics",
-            permiss: "2",
-          },
-          // {
-          //   index: "/admin/whc/solder-application-statistic2",
-          //   title: "WHC 측정 통계 - 월간",
-          //   permiss: "2",
-          // },
-        ],
-      },
-    ],
-  },
+import { menuItems as items } from "./menu-items";
 
-  {
-    icon: "Calendar",
-    index: "6",
-    title: "Tools",
-    permiss: "11",
-    subs: [
-      {
-        index: "/calculator/s-parameter_ver2",
-        title: "TCF Calculator",
-        permiss: "11",
-      },
-      {
-        index: "/calculator/marking_maker",
-        title: "마킹설정자동화",
-        permiss: "11",
-      },
-      {
-        index: "/calculator/marking_finder",
-        title: "POD",
-        permiss: "11",
-      }
-      // {
-      //   index: "/calculator/rf-limit",
-      //   title: "RF Limit",
-      //   permiss: "11",
-      // },
-      // {
-      //   index: "/calculator/rf-limit2",
-      //   title: "RF Limit",
-      //   permiss: "11",
-      // },
-    ],
-  },
-  // {
-  //   icon: "Calendar",
-  //   index: "7",
-  //   title: "MDR",
-  //   permiss: "4",
-  //   subs: [
-  //     {
-  //       index: "/mdr/mdr-regular",
-  //       title: "정규 MDR",
-  //       permiss: "4",
-  //       subs: [
-  //         {
-  //           index: "/mdr/mdr-regular/create-application",
-  //           title: "일정 작성",
-  //           permiss: "4",
-  //         },
-  //         {
-  //           index: "/mdr/mdr-regular/my-application-list",
-  //           title: "일정 현황",
-  //           permiss: "4",
-  //         },
-  //         {
-  //           index: "/mdr/mdr-regular/mdr",
-  //           title: "MDR",
-  //           permiss: "4",
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       index: "/mdr/mdr-china",
-  //       title: "중화 MDR",
-  //       permiss: "4",
-  //     },
-  //   ],
-  // },
+// 권한관리(web_permission) 기준으로 메뉴 필터링
+// - 등록된 화면은 부여받은 사용자에게만 표시, perm 지정 메뉴는 해당 권한 보유자에게만 표시
+// - 하위 메뉴가 모두 숨겨진 그룹은 그룹째 숨김
+const router = useRouter();
+const permissStore = usePermissStore();
 
-  // {
-  //   icon: "Calendar",
-  //   index: "5",
-  //   title: "CER",
-  //   permiss: "2",
-  //   subs: [
-  //     {
-  //       index: "/cer",
-  //       title: "CER0",
-  //       permiss: "11",
-  //       subs: [
-  //         {
-  //           index: "/cer/cer0-list2",
-  //           title: "CER 0 List",
-  //           permiss: "11",
-  //         },
-  //         {
-  //           index: "/cer/cer0",
-  //           title: "CER-0",
-  //           permiss: "11",
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       title: "CER1",
-  //     },
-  //     {
-  //       title: "CER2",
-  //     },
-  //   ],
-  // },
-  {
-    icon: "search",
-    // index: "/rules",
-    index: "/rules",
-    title: "Rules",
-    permiss: "2",
-    subs: [
-      // {
-      //   index: "/rules/pdt",
-      //   title: "내 전 력",
-      //   permiss: "2",
-      // },
-      {
-        index: "/rules/pdt2",
-        title: "내 전 력",
-        permiss: "2",
-      },
-      {
-        index: "/rules/pcb",
-        title: "Package(PCB) COST",
-        permiss: "2",
-      },
-       {
-        index: "/rules/k1standard",
-        title: "K1 IND,CAP Standard Value",
-        permiss: "2",
-      },
-      {
-        index: "/rules/csp-assy-design",
-        title: "CSP Ass'y Design",
-        permiss: "2",
-      },
-    ],
-  },
-  // {
-  //   icon: "rank",
-  //   index: "/s-parameter/SnP",
-  //   title: "S parameter",
-  //   permiss: "11",
-  // },
-  // {
-  //   icon: "PieChart",
-  //   index: "/charts",
-  //   title: "Charts",
-  //   permiss: "11",
-  // },
-  //   {
-  //     icon: "Warning",
-  //     index: "/permission",
-  //     title: "Permission Management",
-  //     permiss: "13",
-  //   },
-  //   {
-  //     icon: "CoffeeCup",
-  //     index: "/donate",
-  //     title: "Support the Author",
-  //     permiss: "14",
-  //   },
-];
+function isLeafVisible(node: { index: string; perm?: string }): boolean {
+  if (node.perm && !permissStore.hasPerm(node.perm)) return false;
+  if (!node.index.startsWith("/")) return true;
+  const resolved = router.resolve(node.index);
+  return permissStore.canAccessScreen(resolved.name);
+}
+
+function filterNodes<T extends { index: string; perm?: string; subs?: any[] }>(nodes: T[]): T[] {
+  const result: T[] = [];
+  for (const node of nodes) {
+    if (node.subs && node.subs.length > 0) {
+      if (node.perm && !permissStore.hasPerm(node.perm)) continue;
+      const subs = filterNodes(node.subs);
+      if (subs.length > 0) result.push({ ...node, subs });
+    } else if (isLeafVisible(node)) {
+      result.push(node);
+    }
+  }
+  return result;
+}
+
+const visibleItems = computed(() => filterNodes(items));
 
 const route = useRoute();
 const onRoutes = computed(() => {

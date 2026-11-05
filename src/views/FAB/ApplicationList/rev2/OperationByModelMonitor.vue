@@ -33,6 +33,7 @@ export default {};
 import { reactive, onMounted, ref } from "vue";
 // import { getApplicationListByDictRev2 } from "../../../../utils/Fab/fab-application-utils";
 import { getRole, getUserId } from "../../../../utils/account-utils";
+import { usePermissStore } from "../../../../store/permiss";
 import OperationByModelMonitorByPackage from "./OperationByModelMonitorByPackage.vue";
 import { getAppByPackageTypeForProgressMonitoring } from "../../../../utils/Fab/fab-application-monitor";
 import { getTodayDate } from "../../../../utils/date-utils";
@@ -75,7 +76,8 @@ onMounted(async () => {
                   wantedStart: `${fabStartDate}T00:00:00`,
                   wantedEnd: `${fabEndDate}T23:59:59`,
                   observerId:
-                    getUserId() !== "admin" && getRole() !== "group leader"
+                    // 전체 조회 권한: 권한관리 > fab.monitor.view_all
+                    !usePermissStore().hasPerm("fab.monitor.view_all")
                       ? getUserId()
                       : null,
                   });

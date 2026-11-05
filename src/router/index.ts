@@ -82,6 +82,19 @@ const routes: RouteRecordRaw[] = [
           ),
       },
       {
+        path: "/admin/permission",
+        name: "PermissionManage",
+        meta: {
+          title: "권한 관리",
+          permiss: "1",
+          perm: "admin.permission.manage",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "admin" */ "../views/AdminPage/PermissionManage.vue"
+          ),
+      },
+      {
         path: "/admin/pdt/application-list",
         name: "ApplicationList",
         meta: {
@@ -970,7 +983,7 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   NProgress.start();
   const role = localStorage.getItem("ms_username");
   const permiss = usePermissStore();
@@ -982,6 +995,15 @@ router.beforeEach((to, from, next) => {
     // 如果没有权限，则进入403
     next("/403");
   } else {
+    if (role && to.path !== "/login") {
+      // 권한관리(web_permission): 앱 최초 진입 시 1회 서버에서 갱신
+      await permiss.loadWebPermissions();
+      const needPerm = to.meta.perm as string | undefined;
+      if (!permiss.canAccessScreen(to.name) || (needPerm && !permiss.hasPerm(needPerm))) {
+        next("/403");
+        return;
+      }
+    }
     next();
   }
 });

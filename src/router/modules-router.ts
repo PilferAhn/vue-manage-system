@@ -1,30 +1,35 @@
 import { RouteRecordRaw } from "vue-router";
 
 export const modulesRouteIndexList: RouteRecordRaw[] = [
-  {
-    path: "/modules/application/create",
-    name: "Create Module Application",
-    meta: {
-      title: "의뢰서 작성",
-      permiss: "11",
-    },
-    component: () =>
-      import(
-        /* webpackChunkName: "table" */ "../views/Modules/Application/Create.vue"
-      ),
-  },
-  {
-    path: "/modules/application/load/:id",
-    name: "LoadModuleApplication",
-    meta: {
-      title: "의뢰서 작성",
-      permiss: "11",
-    },
-    component: () =>
-      import(
-        /* webpackChunkName: "table" */ "../views/Modules/Application/LoadApplication.vue"
-      ),
-  },
+  // 구 버전 경로로 들어오면 NEW 화면으로 이동 (없으면 '/modules/application/:id' 에 'create'/'list' 가 id 로 잡힘)
+  { path: "/modules/application/create", redirect: "/modules/application/create_new" },
+  { path: "/modules/application/list", redirect: "/modules/application/list_new" },
+  // 구 버전 모듈 의뢰서 화면: 사용 중지 (NEW 화면 사용). 아무도 접근하지 않도록 라우트 비활성화
+  // {
+  //   path: "/modules/application/create",
+  //   name: "Create Module Application",
+  //   meta: {
+  //     title: "의뢰서 작성",
+  //     permiss: "11",
+  //   },
+  //   component: () =>
+  //     import(
+  //       /* webpackChunkName: "table" */ "../views/Modules/Application/Create.vue"
+  //     ),
+  // },
+  // 구 버전 모듈 의뢰서 화면: 사용 중지 (NEW 화면 사용). 아무도 접근하지 않도록 라우트 비활성화
+  // {
+  //   path: "/modules/application/load/:id",
+  //   name: "LoadModuleApplication",
+  //   meta: {
+  //     title: "의뢰서 작성",
+  //     permiss: "11",
+  //   },
+  //   component: () =>
+  //     import(
+  //       /* webpackChunkName: "table" */ "../views/Modules/Application/LoadApplication.vue"
+  //     ),
+  // },
     {
     path: "/modules/application/create_new",
     name: "Create New Module",
@@ -37,18 +42,19 @@ export const modulesRouteIndexList: RouteRecordRaw[] = [
         /* webpackChunkName: "table" */ "../views/Modules/Application/Module_application.vue"
       ),
   },
-  {
-    path: "/modules/application/list",
-    name: "ModuleApplicationList",
-    meta: {
-      title: "의뢰서 목록",
-      permiss: "11",
-    },
-    component: () =>
-      import(
-        /* webpackChunkName: "table" */ "../views/Modules/Applications/ApplicationList/ApplicationList.vue"
-      ),
-  },
+  // 구 버전 모듈 의뢰서 화면: 사용 중지 (NEW 화면 사용). 아무도 접근하지 않도록 라우트 비활성화
+  // {
+  //   path: "/modules/application/list",
+  //   name: "ModuleApplicationList",
+  //   meta: {
+  //     title: "의뢰서 목록",
+  //     permiss: "11",
+  //   },
+  //   component: () =>
+  //     import(
+  //       /* webpackChunkName: "table" */ "../views/Modules/Applications/ApplicationList/ApplicationList.vue"
+  //     ),
+  // },
   {
     path: "/modules/application/list_new",
     name: "ModuleApplicationListNew",

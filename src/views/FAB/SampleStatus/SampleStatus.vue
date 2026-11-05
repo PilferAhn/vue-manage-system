@@ -418,20 +418,6 @@ const tableRowClassName = ({
   border-radius: 10px;
 }
 
-/* styled 상태에 따른 효과 */
-.el-button--danger {
-  background-color: #ff4d4f !important;
-  
-}
-
-.el-button--success {
-  background-color: #52c41a !important;
-  
-}
-
-.el-button--warning {
-  background-color: rgb(255, 165, 0) !important;
-}
 
 .legend {
   display: flex;
@@ -446,4 +432,19 @@ const tableRowClassName = ({
 }
 
 
+</style>
+
+<!-- 버튼 색상 강제는 이 화면에만 적용 (전역이면 다른 화면의 plain/link 버튼 글씨가 배경에 묻힘) -->
+<style scoped>
+.el-button--danger {
+  background-color: #ff4d4f !important;
+}
+
+.el-button--success {
+  background-color: #52c41a !important;
+}
+
+.el-button--warning {
+  background-color: rgb(255, 165, 0) !important;
+}
 </style>

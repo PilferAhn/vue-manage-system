@@ -2,7 +2,7 @@ import {
   FabRequest,
   FabRequestForm,
 } from "../../../../interface/fab-application-rev2";
-import { getRole } from "../../../../utils/account-utils";
+import { usePermissStore } from "../../../../store/permiss";
 import { getApplicationListByDict } from "../../../../utils/Fab/fab-application-utils";
 import { formatDate } from "../../../../utils/date-utils";
 import { sendingPostRequestByOptions } from "../../../../utils/httpProtocol";
@@ -94,10 +94,8 @@ export async function getFabAppForReview(
       wanted_fab_start_date_end,
       order_by: "created_date",
     };
-    if (
-      !["w2150108", "admin"].includes(userId) &&
-      getRole() !== "group leader"
-    ) {
+    // 전체 조회 권한: 권한관리 > fab.review.manage
+    if (!usePermissStore().hasPerm("fab.review.manage")) {
       para["observer_id"] = userId;
     }
 

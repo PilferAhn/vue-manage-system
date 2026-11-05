@@ -8,17 +8,4 @@ export function checkPassword(password : string, passwordConfirmation : string){
 
 }
 
-export const departmentList = [
-    "차세대공법개발그룹",
-    "SAW요소기술그룹",
-    "차세대SAW개발그룹",
-    "상품개발1그룹",
-    "상품개발2그룹",
-    "모듈개발1그룹",
-    "모듈개발2그룹",
-    "MRD그룹",
-    "개발기획팀",
-    "WJC/R&D Team",
-    "WHC개발",
-    "기타"
-]
+// 부서 목록은 서버(users_rev2_department)에서 조회: GET /user_rev2/get_department_list

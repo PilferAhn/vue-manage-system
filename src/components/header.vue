@@ -47,6 +47,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useSidebarStore } from '../store/sidebar';
+import { usePermissStore } from '../store/permiss';
 import { useRouter } from 'vue-router';
 import imgurl from '../assets/img/img.jpg';
 
@@ -70,6 +71,7 @@ const router = useRouter();
 const handleCommand = (command: string) => {
 	if (command == 'loginout') {
 		localStorage.removeItem('ms_username');
+		usePermissStore().clearWebPermissions();
 		router.push('/login');
 	} else if (command == 'user') {
 		router.push('/user');

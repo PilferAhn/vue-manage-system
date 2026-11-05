@@ -139,6 +139,7 @@ import {
 } from "../../../../utils/Fab/fab-application-utils";
 import router from "../../../../router";
 import { getUserId } from "../../../../utils/account-utils";
+import { usePermissStore } from "../../../../store/permiss";
 import { adjustDate, getTodayDate } from "../../../../utils/date-utils";
 import { formatDate } from "../../Common/Application";
 
@@ -163,7 +164,8 @@ function handleVisible(status: boolean, fabRequestForm: FabRequestForm) {
   selectApplication.value = fabRequestForm;
 }
 
-const ADMIN_VIEWERS = ["admin", "w2220606", "w2150305"];
+// 전체 조회 권한: 권한관리 > fab.my_list.view_all
+const permiss = usePermissStore();
 
 /** 생성일/수정일 중 최신 시각 (재투입된 의뢰서가 위로 오도록 정렬 기준으로 사용) */
 function lastModifiedTime(app: FabRequestForm): number {
@@ -183,7 +185,7 @@ async function loadApplications() {
     order_dir: "desc",
   };
 
-  if (!ADMIN_VIEWERS.includes(getUserId())) {
+  if (!permiss.hasPerm("fab.my_list.view_all")) {
     option["observer_id"] = getUserId();
   } else {
     // 생성일 또는 수정일(재투입)이 180일 이내인 의뢰서
