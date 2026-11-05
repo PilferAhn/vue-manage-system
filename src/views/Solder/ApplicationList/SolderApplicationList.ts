@@ -7,6 +7,7 @@ import type {
 import { ElMessageBox, ElMessage } from "element-plus";
 import { removeApplicationByUuid } from "../Application/SolderApplication";
 import { getUserName } from "../../../utils/account-utils";
+import { usePermissStore } from "../../../store/permiss";
 import { extractYearFromDateTime } from "../../../utils/date-utils";
 import {
   LotStatus,
@@ -131,20 +132,8 @@ function traverseLotStatus(
 }
 
 export function getMyApplicationList(applicationData: ApplicationData[]) {
-  if (
-    [
-      "admin",
-      "안지민",
-      "엄정은",
-      "whcRD",
-      "Jeremy",
-      "박두철",
-      "MinhyePark",
-    ].includes(getUserName())
-  ) {
-    return applicationData;
-  }
-  else if(getDepartment() === "요소기술그룹"){
+  // 전체 조회: 권한관리의 solder.application.view_all (요소기술그룹 + 개별 사번)
+  if (usePermissStore().hasPerm("solder.application.view_all")) {
     return applicationData;
   }
 
