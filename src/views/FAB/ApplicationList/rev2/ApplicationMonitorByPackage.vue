@@ -552,6 +552,7 @@ export default {};
 <script lang="ts" setup>
 import { ref, computed } from "vue";
 import { useFillHeight } from "../../../../utils/use-fill-height";
+import { useSessionRef } from "../../../../utils/session-state";
 
 // 표 높이 = 화면 아래 끝까지 (탭 안쪽 여백 15 + 본문 여백 10 + 여유)
 const tableBox = ref<HTMLElement | null>(null);
@@ -578,15 +579,18 @@ import { holidaysList } from "../../../../utils/date-utils";
 const props = defineProps<{
   fabApp: FabRequest[];
   isWlp?: boolean;
+  /** 검색어/필터를 F5 후에도 유지하기 위한 탭별 저장 키 (csp / wlp / etc) */
+  stateKey?: string;
 }>();
 
-// 라우터 및 현재 경로 가져오기
-const searchTerm = ref("");
-const searchCategory = ref("productName"); // 기본 검색 기준을 "Lot ID"로 설정
-const isRunningFab = ref(true);
-const isDealyFab = ref(false);
-const isDVonly = ref(false);
-const isTransitedOnly = ref(false);
+// 검색/필터 상태: 탭별로 sessionStorage 에 저장 → F5 후에도 유지 (브라우저 탭을 닫으면 초기화)
+const sk = (name: string) => `sample_monitor:${props.stateKey ?? "default"}:${name}`;
+const searchTerm = useSessionRef<string>(sk("searchTerm"), "");
+const searchCategory = useSessionRef<string>(sk("searchCategory"), "productName");
+const isRunningFab = useSessionRef<boolean>(sk("isRunningFab"), true);
+const isDealyFab = useSessionRef<boolean>(sk("isDealyFab"), false);
+const isDVonly = useSessionRef<boolean>(sk("isDVonly"), false);
+const isTransitedOnly = useSessionRef<boolean>(sk("isTransitedOnly"), false);
 // Clear the search input
 function handleClear() {
   searchTerm.value = ""; // Reset search term

@@ -2,13 +2,13 @@
   <div>
     <el-tabs v-model="activeTab" type="border-card">
       <el-tab-pane :label="cspLabel" name="csp">
-        <ApplicationMonitorByPackage :fabApp="cspApps" />
+        <ApplicationMonitorByPackage :fabApp="cspApps" stateKey="csp" />
       </el-tab-pane>
       <el-tab-pane :label="wlpLabel" name="wlp">
-        <ApplicationMonitorByPackage :fabApp="wlpApps" :isWlp="true" />
+        <ApplicationMonitorByPackage :fabApp="wlpApps" :isWlp="true" stateKey="wlp" />
       </el-tab-pane>
       <el-tab-pane :label="'개발전달'" name="etc">
-        <ApplicationMonitorByPackage :fabApp="etcApps" />
+        <ApplicationMonitorByPackage :fabApp="etcApps" stateKey="etc" />
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -24,6 +24,7 @@ import {
 import { getRole, getUserId } from "../../../../utils/account-utils";
 import { usePermissStore } from "../../../../store/permiss";
 import ApplicationMonitorByPackage from "./ApplicationMonitorByPackage.vue";
+import { useSessionRef } from "../../../../utils/session-state";
 import { getAppByPackageType } from "../../../../utils/Fab/fab-application-monitor";
 import { FabApplicationForm } from "../../../../interface/mes-interface";
 import { getTodayDate, adjustDate } from "../../../../utils/date-utils";
@@ -34,7 +35,8 @@ const wlpApps = reactive<FabRequest[]>([]);
 const etcApps = reactive<FabRequest[]>([]);
 const cspLabel = "CSP";
 const wlpLabel = "WLP(BDMP)";
-const activeTab = ref("csp"); // 기본 선택 탭
+// 선택한 탭은 F5 후에도 유지 (브라우저 탭을 닫으면 CSP 로 초기화)
+const activeTab = useSessionRef<string>("sample_monitor:tab", "csp");
 
 onMounted(async () => {
   const today = getTodayDate();             

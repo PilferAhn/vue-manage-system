@@ -34,7 +34,7 @@
   </template>
 
   <script lang="ts" setup>
-  import { reactive, onMounted, onBeforeUnmount, ref, watch, nextTick, computed } from "vue";
+  import { reactive, onMounted, onBeforeUnmount, ref, watch, nextTick, computed, toRaw } from "vue";
   import { convertPep8ToCamelCase2 } from "../../../utils/key-converter";
   import ApplicationTemplate from "./ApplicationTemplate.vue";
   import PreviousRevisionDialog from "./PreviousRevisionDialog.vue";
@@ -111,6 +111,39 @@ import { sendGetRequest, sendPostRequest } from "../../../utils/httpProtocol";
 
   resetRevisionGuard();
   onBeforeUnmount(() => resetRevisionGuard());
+
+  // 작성 중 보호: P/N 을 입력했고 저장 후 바뀐 내용이 있으면 F5/창 닫기 때 브라우저 확인 창을 띄운다.
+  // (다른 탭에 가 있어도 이 화면이 열려 있으면 내용이 남아 있으므로 같이 보호됨. 탭을 닫으면 해제)
+  const formJson = () => {
+    try {
+      return JSON.stringify(fabApplication);
+    } catch {
+      return null;
+    }
+  };
+  let savedJson: string | null = null; // null = 아직 저장 안 함
+  function hasUnsavedInput(): boolean {
+    if (!(fabApplication.productName ?? "").trim()) return false;
+    if (savedJson === null) return true;
+    const cur = formJson();
+    return cur !== null && cur !== savedJson;
+  }
+  function onBeforeUnload(e: BeforeUnloadEvent) {
+    if (!hasUnsavedInput()) return;
+    e.preventDefault();
+    e.returnValue = ""; // 브라우저 기본 문구("변경사항이 저장되지 않을 수 있습니다")가 표시됨
+  }
+  function onSaved(e: Event) {
+    // 다른 화면(의뢰서 보기 등)의 저장은 무시
+    if ((e as CustomEvent).detail?.app !== toRaw(fabApplication)) return;
+    savedJson = formJson() ?? "";
+  }
+  window.addEventListener("beforeunload", onBeforeUnload);
+  window.addEventListener("fab-request:saved", onSaved);
+  onBeforeUnmount(() => {
+    window.removeEventListener("beforeunload", onBeforeUnload);
+    window.removeEventListener("fab-request:saved", onSaved);
+  });
 
   onMounted(async () => {
     fabApplication.requester.userName = getUserName();

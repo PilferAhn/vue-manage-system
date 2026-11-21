@@ -61,7 +61,8 @@ const collapseChage = () => {
 };
 
 onMounted(() => {
-	if (document.body.clientWidth < 1500) {
+	// 새로고침(F5)으로 저장된 접힘 상태를 되살린 경우에는 그대로 둔다
+	if (!sidebar.restored && !sidebar.collapse && document.body.clientWidth < 1500) {
 		collapseChage();
 	}
 });

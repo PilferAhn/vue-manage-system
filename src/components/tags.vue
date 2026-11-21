@@ -101,6 +101,25 @@ const setTags = (route: any) => {
     });
   }
 };
+// F5 로 되살린 탭: 제목은 현재 라우터 기준으로 다시 맞추고, 없어진 화면은 제거
+tags.list.forEach((item) => {
+  try {
+    const r = router.resolve(item.path);
+    if (r.matched.length && r.meta?.title) item.title = r.meta.title as string;
+  } catch {
+    /* 무시 */
+  }
+});
+const validTags = tags.list.filter((item) => {
+  try {
+    return router.resolve(item.path).matched.length > 0;
+  } catch {
+    return false;
+  }
+});
+if (validTags.length !== tags.list.length) tags.closeTagsOther(validTags);
+else tags.persist();
+
 setTags(route);
 onBeforeRouteUpdate((to) => {
   setTags(to);

@@ -50,6 +50,7 @@
 </template>
 
 <script lang="ts" setup>
+import { toRaw } from "vue";
 import type { FabRequestForm } from "../../../interface/fab-application-rev2";
 import type { FormInstance } from "element-plus";
 import { sendingForm, ValChkBeforeSending } from "../../../utils/Fab/fab-application-utils";
@@ -96,6 +97,8 @@ const submitForm = async (type: string) => {
     if (!savedApp) return;
 
     emit("update:fabApplication", savedApp as any);
+    // 저장 완료 알림: 작성 화면의 "새로고침 시 내용 사라짐" 경고를 끄기 위함
+    window.dispatchEvent(new CustomEvent("fab-request:saved", { detail: { app: toRaw(props.fabApplication) } }));
 
     //2) create + 사진 선택되어 있으면 업로드까지 이어서 처리
     if (type === "submit" && props.packageEvidenceFile) {
