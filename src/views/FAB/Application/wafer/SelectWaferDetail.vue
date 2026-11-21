@@ -272,13 +272,14 @@
     () => props.fabApplication.waferId,
     (newVal) => {
       if (props.applicationType !== "load") {
-        if (props.fabApplication.waferType === "TC") {
-          props.fabApplication.waferAngle = 126;          
-        }
-        else if(props.fabApplication.waferType === "NS"){
-          props.fabApplication.waferAngle = 42;
+        // TC/NS: 고정 기본값(126/42)을 넣으면 웨이퍼에 맞지 않는 각도가 확인 없이 제출될 수 있어
+        // 비워 두고 사용자가 고르게 한다. 등록 각도가 하나뿐이면 아래에서 그 값을 넣는다.
+        // (각도는 필수 항목이라 비어 있으면 제출 시 검증에서 막힘)
+        if (["TC", "NS"].includes(props.fabApplication.waferType)) {
+          props.fabApplication.waferAngle = undefined;
         }
          else {
+          // HS: HS 구조 선택 시 SetWaferThick 이 PE 각도로 다시 정함
           props.fabApplication.waferAngle = 43;
         }
   
@@ -321,6 +322,13 @@
               props.fabApplication.waferThickness = parseInt(
                 thickOptions.value[0].value
               );
+            }
+            // 등록된 각도가 하나뿐일 때만 자동 입력 (두께와 같은 규칙)
+            if (angleOptions.value.length == 1) {
+              props.fabApplication.waferAngle = parseFloat(angleOptions.value[0].value);
+              if (props.fabApplication.isMixedWafer) {
+                props.fabApplication.waferAngle2 = props.fabApplication.waferAngle;
+              }
             }
             if(props.fabApplication.isMixedWafer && props.fabApplication.waferType !== "HS"){
               props.fabApplication.waferThickness2 = props.fabApplication.waferThickness;
