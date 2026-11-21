@@ -17,7 +17,7 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
     path: "/fab/create-application2",
     name: "FabApplication2",
     meta: {
-      title: "새로운 의뢰서 작성",
+      title: "Create Request Form",
       permiss: "11",
     },
     component: () =>
@@ -54,7 +54,7 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
     path: "/fab/feb-application-list3",
     name: "FabApplicationList3",
     meta: {
-      title: "개발 현황",
+      title: "Sample Monitor",
       permiss: "11",
     },
     component: () =>
@@ -66,7 +66,7 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
     path: "/fab/fab-card-moniter",
     name: "PlanedWholeApps",
     meta: {
-      title: "FabCard현황",
+      title: "Fab Card 작성 현황",
       permiss: "11",
     },
     component: () =>
@@ -90,7 +90,7 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
     path: "/fab/view-application-list-rev2",
     name: "FabApplicationListRev2",
     meta: {
-      title: "투입 계획서 현황2",
+      title: "My Form List",
       permiss: "11",
     },
     component: () =>
@@ -102,7 +102,7 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
     path: "/fab/operration-by-model",
     name: "OperationByModel",
     meta: {
-      title: "공정현황",
+      title: "기종별 공정진행상황",
       permiss: "11",
     },
     component: () =>
@@ -114,7 +114,7 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
     path: "/fab/review-application",
     name: "ApplicationReviewList",
     meta: {
-      title: "투입 계획서 검토",
+      title: "Form Review",
       permiss: "11",
     },
     component: () =>
@@ -126,7 +126,7 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
     path: "/fab/admin-control",
     name: "AdminCortrol",
     meta: {
-      title: "관리자 메뉴",
+      title: "Admin Option",
       permiss: "16",
     },
     component: () =>
@@ -150,7 +150,7 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
     path: "/fab/load_application2/:productName",
     name: "LoadApplication2",
     meta: {
-      title: "LoadApplication2",
+      title: "의뢰서 보기",
       permiss: "11",
     },
     component: () =>
@@ -174,7 +174,7 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
     path: "/fab/mes/sample_status",
     name: "SampleStatus",
     meta: {
-      title: "SampleStatus",
+      title: "SPL Status - HQ",
       permiss: "11",
     },
     component: () =>

@@ -82,7 +82,7 @@
     <el-table
       :data="paginatedData"
       style="width: 100%"
-      :height="tableHeight"
+      :height="tableHeight" scrollbar-always-on
       @sort-change="handleSortChange"
       :row-class-name="tableRowClassName"
       :lazy="true"

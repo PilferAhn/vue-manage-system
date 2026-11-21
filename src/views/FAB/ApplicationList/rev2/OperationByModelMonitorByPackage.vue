@@ -26,7 +26,7 @@ export default {};
 
     <!-- ✅ 기종별 1줄 + MES 현재공정/진행률 (FAB only) -->
     <div ref="tableBox">
-    <el-table :data="filteredRows" row-key="rowKey" :span-method="spanMethod" class="custom-table" border size="small" :height="tableHeight">
+    <el-table :data="filteredRows" row-key="rowKey" :span-method="spanMethod" class="custom-table" border size="small" :height="tableHeight" scrollbar-always-on>
       <el-table-column fixed="left" type="index" label="No" width="55" align="center" />
       <el-table-column fixed="left" prop="productName" label="P/N" width="140" align="center" />
       <el-table-column fixed="left" prop="designer" label="개발자" width="140" align="center" />

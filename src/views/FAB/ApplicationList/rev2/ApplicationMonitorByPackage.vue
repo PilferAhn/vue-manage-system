@@ -65,7 +65,7 @@ export default {};
       :data="filteredApplicationData"
       class="custom-table"
       style="min-width: 1000px"
-      :height="tableHeight"
+      :height="tableHeight" scrollbar-always-on
       :default-sort="{ prop: 'wantedFabStartDate', order: 'ascending' }"
       :row-style="{ height: '30px' }"
       :cell-class-name="cellClass"

@@ -1,6 +1,6 @@
 <template>
   <div ref="tableBox">
-    <el-table v-if="isLoad" :data="applications" border class="table-class" :height="tableHeight">
+    <el-table v-if="isLoad" :data="applications" border class="table-class" :height="tableHeight" scrollbar-always-on>
       <el-table-column
         prop="user.designer.department"
         label="그룹"

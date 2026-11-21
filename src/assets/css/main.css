@@ -50,6 +50,46 @@ a {
     left: 65px;
 }
 
+/* 표 스크롤바: Element Plus 기본(6px, 반투명, 마우스 올릴 때만 표시)은 잘 안 보이고 잡기 어려움
+   → 12px, 진한 색. 항상 표시는 각 표의 scrollbar-always-on 속성으로 지정 */
+.el-table .el-scrollbar__bar {
+    background: rgba(0, 0, 0, 0.06);
+    border-radius: 6px;
+}
+.el-table .el-scrollbar__bar.is-horizontal {
+    height: 12px;
+    bottom: 1px;
+}
+.el-table .el-scrollbar__bar.is-vertical {
+    width: 12px;
+    right: 1px;
+}
+.el-table .el-scrollbar__thumb {
+    background-color: #8c939d;
+    opacity: 0.85;
+}
+.el-table .el-scrollbar__thumb:hover,
+.el-table .el-scrollbar__thumb:active {
+    background-color: #5a6270;
+    opacity: 1;
+}
+
+/* 본문 영역 스크롤바도 같은 굵기/색으로 */
+.content::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+.content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.06);
+}
+.content::-webkit-scrollbar-thumb {
+    background: #8c939d;
+    border-radius: 6px;
+}
+.content::-webkit-scrollbar-thumb:hover {
+    background: #5a6270;
+}
+
 .container {
     padding: 30px;
     background: #fff;

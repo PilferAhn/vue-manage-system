@@ -14,7 +14,7 @@ export default {};
         class="custom-table"
         :border="true"
         :fit="true"
-        :height="tableHeight"
+        :height="tableHeight" scrollbar-always-on
         :row-style="{ height: '30px' }"
         :lazy="true"
         :row-class-name="cellClass"

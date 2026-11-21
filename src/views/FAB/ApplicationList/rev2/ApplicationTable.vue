@@ -39,7 +39,7 @@ export default {};
       class="custom-table"
       style="min-width: 1000px"
       :border="true"
-      :height="tableHeight"
+      :height="tableHeight" scrollbar-always-on
       :row-style="{ height: '30px' }"
       :lazy="true"
       :row-class-name="cellClass"
