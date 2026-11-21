@@ -577,6 +577,7 @@ export default {};
 import { ref, computed } from "vue";
 import { useFillHeight } from "../../../../utils/use-fill-height";
 import { useSessionRef } from "../../../../utils/session-state";
+import { ElMessage } from "element-plus";
 
 // 표 높이 = 화면 아래 끝까지 (탭 안쪽 여백 15 + 본문 여백 10 + 여유)
 const tableBox = ref<HTMLElement | null>(null);
@@ -1038,11 +1039,13 @@ const EXCEL_HEADERS = [
   "FAB 투입일",
   "FAB OUT 계획일",
   "FAB 현위치(투입시간)",
+  "FAB 진행률(%)",
   "FAB OUT",
   "FAB 진행일",
   "FAB 리드타임",
   "출하 현위치(투입시간)",
   "HQ 출하",
+  "BOX ID",
   "출하 리드타임",
   "WHC 도착",
   "Assy In",
@@ -1073,6 +1076,18 @@ function buildExcelRows(source: any[]): any[] {
     const requester = app?.requester?.userName ?? "";
     const priority = app?.priorityId ?? "";
     const wantedFabFinishDate = app?.wantedFabFinishDate ?? null;
+
+    // 아직 투입되지 않은(lot 없는) 의뢰서도 화면처럼 한 행으로 넣는다 (예전에는 Excel 에서 빠졌음)
+    if (!(app?.lotStatus ?? []).length) {
+      const row: Record<string, any> = Object.fromEntries(EXCEL_HEADERS.map((h) => [h, ""]));
+      row["P/N"] = pn;
+      row["개발자"] = designer;
+      row["의뢰자"] = requester;
+      row["우선순위"] = priority;
+      row["FAB OUT 계획일"] = wantedFabFinishDate ? formatDate(wantedFabFinishDate) : "";
+      rows.push(row);
+      return;
+    }
 
     (app?.lotStatus ?? []).forEach((st: any) => {
       const lotId = st?.lotId ?? "";
@@ -1115,11 +1130,14 @@ function buildExcelRows(source: any[]): any[] {
         "FAB 투입일": fabIn ? formatDate(fabIn) : "",
         "FAB OUT 계획일": wantedFabFinishDate ? formatDate(wantedFabFinishDate) : "",
         "FAB 현위치(투입시간)": fabWhere || "",
+        // 화면 FAB 진행률과 같은 값 (100 = 완료). 진행률 조회 전/실패면 빈칸
+        "FAB 진행률(%)": progressOf(st) === null ? "" : Math.round(progressOf(st)!),
         "FAB OUT": fabOut ? formatDate(fabOut) : "",
         "FAB 진행일": fabProgressLabel ?? "",
         "FAB 리드타임": fabLeadLabel ?? "",
         "출하 현위치(투입시간)": shipWhere,
         "HQ 출하": hqShip ? formatDate(hqShip) : "",
+        "BOX ID": st?.lotUdf12 ?? "",
         "출하 리드타임": shipLeadLabel ?? "",
         "WHC 도착": whcArrive ? formatDate(whcArrive) : "",
         "Assy In": assyIn ? formatDate(assyIn) : "",
@@ -1214,7 +1232,7 @@ async function handleExcelSubmit() {
 
     for (let r = 2; r <= ws.rowCount; r++) {
       const row = ws.getRow(r);
-      row.height = 18; // (엑셀의 자동높이는 완전 자동이 아님. wrapText용 기본값)
+      // 행 높이를 고정하지 않음: 고정(18)하면 줄바꿈된 긴 내용의 둘째 줄이 가려졌음. 미지정이면 Excel 이 내용에 맞춤
       row.eachCell((cell) => {
         cell.border = borderThin;
         cell.alignment = { vertical: "top", horizontal: "left", wrapText: true };
@@ -1248,6 +1266,7 @@ async function handleExcelSubmit() {
     saveAs(new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }), fn);
   } catch (err) {
     console.error("Excel export failed:", err);
+    ElMessage.error("Excel 파일을 만들지 못했습니다. 잠시 후 다시 시도해 주세요.");
   }
 }
 
