@@ -8,12 +8,13 @@ export default {};
       :process-data="currentWeek"
       :week-number="weekNumber"
     /> -->
-    <div class="table-wrapper">
+    <div class="table-wrapper" ref="tableBox">
       <el-table
         :data="filteredData"
         class="custom-table"
         :border="true"
         :fit="true"
+        :height="tableHeight"
         :row-style="{ height: '30px' }"
         :lazy="true"
         :row-class-name="cellClass"
@@ -119,6 +120,11 @@ import {
   onBeforeUnmount,
 } from "vue";
 import { FabRequest } from "../../../../interface/fab-application-rev2";
+import { useFillHeight } from "../../../../utils/use-fill-height";
+
+// 표 높이 = 화면 아래 끝까지 (본문 여백 10 + 여유). 이전에는 높이 제한이 없어 페이지 전체가 스크롤됨
+const tableBox = ref<HTMLElement | null>(null);
+const { height: tableHeight } = useFillHeight(tableBox, 16);
 import {
   handleDateChange as externalHandleDateChange,
   updatePendingStatus,

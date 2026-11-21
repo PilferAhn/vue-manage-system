@@ -20,7 +20,7 @@
 					<span class="btn-bell-badge" v-if="message"></span>
 				</div> -->
 				<!-- 用户头像 -->
-				<el-avatar class="user-avator" :size="30" :src="imgurl" />
+				<el-avatar class="user-avator" :size="24" :src="imgurl" />
 				<!-- 用户名下拉菜单 -->
 				<el-dropdown class="user-name" trigger="click" @command="handleCommand">
 					<span class="el-dropdown-link">
@@ -82,12 +82,13 @@ const handleCommand = (command: string) => {
 };
 </script>
 <style scoped>
+/* 상단 헤더: 내용 영역을 넓히기 위해 70px → 40px 로 축소 (main.css .content-box, sidebar.vue top 과 맞춤) */
 .header {
 	position: relative;
 	box-sizing: border-box;
 	width: 100%;
-	height: 70px;
-	font-size: 22px;
+	height: 40px;
+	font-size: 15px;
 	color: #fff;
 }
 .collapse-btn {
@@ -96,22 +97,24 @@ const handleCommand = (command: string) => {
 	align-items: center;
 	height: 100%;
 	float: left;
-	padding: 0 21px;
+	padding: 0 14px;
+	font-size: 18px;
 	cursor: pointer;
 }
 .header .logo {
 	float: left;
-	width: 250px;
-	line-height: 70px;
+	line-height: 40px;
+	font-weight: 600;
 }
 .header-right {
 	float: right;
-	padding-right: 50px;
+	padding-right: 20px;
 }
 .header-user-con {
 	display: flex;
-	height: 70px;
+	height: 40px;
 	align-items: center;
+	font-size: 14px;
 }
 .btn-fullscreen {
 	transform: rotate(45deg);

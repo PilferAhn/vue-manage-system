@@ -4,6 +4,19 @@
 	<el-button type="primary" @click="goForward">앞으로가기</el-button>
   </div> -->
   <div class="tags" v-if="tags.show">
+		<!-- 뒤로 / 앞으로 (브라우저 기록 기준. Alt+← / 마우스 뒤로 버튼과 동일) -->
+		<div class="tags-nav">
+			<el-tooltip content="뒤로 (Alt + ←)" placement="bottom" :show-after="400">
+				<button class="tags-nav-btn" :disabled="!canGoBack" @click="goBack">
+					<el-icon><ArrowLeft /></el-icon>
+				</button>
+			</el-tooltip>
+			<el-tooltip content="앞으로 (Alt + →)" placement="bottom" :show-after="400">
+				<button class="tags-nav-btn" :disabled="!canGoForward" @click="goForward">
+					<el-icon><ArrowRight /></el-icon>
+				</button>
+			</el-tooltip>
+		</div>
 		<ul>
 			<li
 				class="tags-li"
@@ -35,6 +48,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch, nextTick } from "vue";
 import { useTagsStore } from "../store/tags";
 import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 
@@ -44,11 +58,21 @@ const isActive = (path: string) => {
   return path === route.fullPath;
 };
 
+// vue-router 는 history.state 에 back/forward 경로를 기록함 → 갈 곳이 없으면 버튼 비활성
+const canGoBack = ref(false);
+const canGoForward = ref(false);
+const refreshNavState = () => {
+  const state = (window.history.state ?? {}) as { back?: string | null; forward?: string | null };
+  canGoBack.value = !!state.back;
+  canGoForward.value = !!state.forward;
+};
+watch(() => route.fullPath, () => nextTick(refreshNavState), { immediate: true });
+
 const goBack = () => {
-  router.go(-1); // 이전 페이지로 이동
+  router.back();
 };
 const goForward = () => {
-  window.history.forward();
+  router.forward();
 };
 const tags = useTagsStore();
 // 关闭单个标签
@@ -69,7 +93,7 @@ const setTags = (route: any) => {
     return item.path === route.fullPath;
   });
   if (!isExist) {
-    if (tags.list.length >= 8) tags.delTagsItem(0);
+    if (tags.list.length >= 12) tags.delTagsItem(0); // 최근 12개 화면 유지 (이전 8개)
     tags.setTagsItem({
       name: route.name,
       title: route.meta.title,
@@ -108,23 +132,62 @@ const handleTags = (command: string) => {
 <style>
 .tags {
   position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
   height: 30px;
   overflow: hidden;
   background: #fff;
-  padding-right: 120px;
   box-shadow: 0 5px 10px #ddd;
 }
 
+.tags-nav {
+  display: flex;
+  gap: 2px;
+  padding: 0 6px;
+  border-right: 1px solid #e9eaec;
+  flex-shrink: 0;
+}
+
+.tags-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 22px;
+  border: 1px solid #dcdfe6;
+  border-radius: 3px;
+  background: #fff;
+  color: #409eff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.tags-nav-btn:hover:not(:disabled) {
+  background: #ecf5ff;
+}
+
+.tags-nav-btn:disabled {
+  color: #c0c4cc;
+  cursor: not-allowed;
+}
+
+/* 탭이 많으면 줄을 넘기지 않고 각 탭이 줄어듦 (가로 스크롤 없음) */
 .tags ul {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
   box-sizing: border-box;
-  width: 100%;
   height: 100%;
+  list-style: none;
 }
 
 .tags-li {
   display: flex;
   align-items: center;
-  float: left;
+  flex: 0 1 auto;
+  min-width: 60px;
   margin: 3px 5px 2px 3px;
   border-radius: 3px;
   font-size: 12px;
@@ -149,8 +212,9 @@ const handleTags = (command: string) => {
 }
 
 .tags-li-title {
-  float: left;
-  max-width: 80px;
+  flex: 1;
+  min-width: 0;
+  max-width: 160px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

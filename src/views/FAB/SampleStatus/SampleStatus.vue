@@ -78,10 +78,11 @@
     </el-form>
 
     <!-- 필터링된 데이터가 표시되는 테이블 -->
+    <div ref="tableBox">
     <el-table
       :data="paginatedData"
       style="width: 100%"
-      height="700"
+      :height="tableHeight"
       @sort-change="handleSortChange"
       :row-class-name="tableRowClassName"
       :lazy="true"
@@ -185,6 +186,7 @@
         </el-table-column>
       </el-table-column>
     </el-table>
+    </div>
 
     <!-- 페이지네이션 컴포넌트 -->
     <el-pagination
@@ -200,6 +202,11 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from "vue";
 import type { FabData } from "./SampleStatusInterface";
+import { useFillHeight } from "../../../utils/use-fill-height";
+
+// 표 높이 = 화면 아래 끝까지. 아래 페이지 번호(32) + 본문 여백(10) + 여유 만큼 남김
+const tableBox = ref<HTMLElement | null>(null);
+const { height: tableHeight } = useFillHeight(tableBox, 50);
 import { getTodayAsString, getPrevious30DaysAsString } from "./SampleStatus";
 import axios from "axios";
 import { cn69ModelNames } from "./Cn69List";

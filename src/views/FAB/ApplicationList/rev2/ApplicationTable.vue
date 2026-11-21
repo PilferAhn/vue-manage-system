@@ -33,13 +33,13 @@ export default {};
     :process-data="props.processData"
     :week-number="props.weekNumber"
   />
-  <div class="table-wrapper">
+  <div class="table-wrapper" ref="tableBox">
     <el-table
       :data="filteredData"
       class="custom-table"
       style="min-width: 1000px"
       :border="true"
-      height="640"
+      :height="tableHeight"
       :row-style="{ height: '30px' }"
       :lazy="true"
       :row-class-name="cellClass"
@@ -469,6 +469,11 @@ export default {};
 <script lang="ts" setup>
 import { computed, ref, onMounted, reactive, watch } from "vue";
 import { FabRequest } from "../../../../interface/fab-application-rev2";
+import { useFillHeight } from "../../../../utils/use-fill-height";
+
+// 표 높이 = 화면 아래 끝까지. 아래 "To Excel" 버튼(32+15) + .container 여백(30) + 본문 여백(10) 만큼 남김
+const tableBox = ref<HTMLElement | null>(null);
+const { height: tableHeight } = useFillHeight(tableBox, 95);
 import {
   handleDateChange as externalHandleDateChange,
   updatePendingStatus,

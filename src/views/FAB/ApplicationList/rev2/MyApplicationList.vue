@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <el-table v-if="isLoad" :data="applications" border class="table-class">
+  <div ref="tableBox">
+    <el-table v-if="isLoad" :data="applications" border class="table-class" :height="tableHeight">
       <el-table-column
         prop="user.designer.department"
         label="그룹"
@@ -131,6 +131,11 @@
 <script lang="ts" setup>
 import { onMounted, reactive, ref } from "vue";
 import { ElNotification, ElMessageBox } from "element-plus";
+import { useFillHeight } from "../../../../utils/use-fill-height";
+
+// 표 높이 = 화면 아래 끝까지 (본문 여백 10 + 여유). 이전에는 높이 제한이 없어 페이지 전체가 스크롤됨
+const tableBox = ref<HTMLElement | null>(null);
+const { height: tableHeight } = useFillHeight(tableBox, 16);
 import DialogTemplate from "../ApplicationLinksDialog.vue";
 import type { FabRequestForm } from "../../../../interface/fab-application-rev2";
 import {

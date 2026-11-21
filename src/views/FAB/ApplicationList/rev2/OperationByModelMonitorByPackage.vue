@@ -25,7 +25,8 @@ export default {};
     </div>
 
     <!-- ✅ 기종별 1줄 + MES 현재공정/진행률 (FAB only) -->
-    <el-table :data="filteredRows" row-key="rowKey" :span-method="spanMethod" class="custom-table" border size="small" height="720">
+    <div ref="tableBox">
+    <el-table :data="filteredRows" row-key="rowKey" :span-method="spanMethod" class="custom-table" border size="small" :height="tableHeight">
       <el-table-column fixed="left" type="index" label="No" width="55" align="center" />
       <el-table-column fixed="left" prop="productName" label="P/N" width="140" align="center" />
       <el-table-column fixed="left" prop="designer" label="개발자" width="140" align="center" />
@@ -88,6 +89,7 @@ export default {};
         </template>
       </el-table-column>
     </el-table>
+    </div>
   </div>
 
   <el-dialog v-model="waferDialogOpen" title="Wafer 목록" width="640px">
@@ -149,6 +151,11 @@ export default {};
 
 <script lang="ts" setup>
 import { computed, ref, watch, onMounted } from "vue";
+import { useFillHeight } from "../../../../utils/use-fill-height";
+
+// 표 높이 = 화면 아래 끝까지 (탭 안쪽 여백 15 + 본문 여백 10 + 여유)
+const tableBox = ref<HTMLElement | null>(null);
+const { height: tableHeight } = useFillHeight(tableBox, 30);
 import type { FabMonitorRow } from "../../../../interface/fab-application-rev2";
 import { getTransitLotsByMaterial } from "../../../../utils/Fab/fab-application-utils";
 import { ElNotification, TableColumnCtx } from "element-plus";

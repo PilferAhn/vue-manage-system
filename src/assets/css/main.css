@@ -21,23 +21,28 @@ a {
 }
 
 
+/* 본문 영역: 헤더(40px) 아래를 탭 줄 + 내용으로 채움.
+   이전에는 height:100% + padding-bottom:30px 로 탭 줄 높이를 보정해 아래 여백이 생겼고,
+   세로 스크롤바가 항상 보였음 → flex 로 정확히 채우고 스크롤바는 필요할 때만 표시 */
 .content-box {
     position: absolute;
     left: 250px;
     right: 0;
-    top: 70px;
+    top: 40px;
     bottom: 0;
-    padding-bottom: 30px;
+    display: flex;
+    flex-direction: column;
     -webkit-transition: left .3s ease-in-out;
     transition: left .3s ease-in-out;
     background: #f0f0f0;
 }
 
 .content {
+    flex: 1;
+    min-height: 0;
     width: auto;
-    height: 100%;
     padding: 10px;
-    overflow-y: scroll;
+    overflow-y: auto;
     box-sizing: border-box;
 }
 

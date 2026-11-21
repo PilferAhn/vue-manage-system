@@ -9,6 +9,7 @@
       active-text-color="#20a0ff"
       unique-opened
       router
+      @select="collapseAfterSelect"
     >
       <template v-for="item in visibleItems" :key="item.index + '_item'">
         <template v-if="item.subs">
@@ -142,6 +143,11 @@ const onRoutes = computed(() => {
 });
 
 const sidebar = useSidebarStore();
+
+// 메뉴를 고르면 왼쪽 메뉴를 접어 본문을 넓게 쓴다 (왼쪽 위 버튼으로 다시 펼침)
+function collapseAfterSelect() {
+  if (!sidebar.collapse) sidebar.handleCollapse();
+}
 </script>
 
 <style scoped>
@@ -149,7 +155,7 @@ const sidebar = useSidebarStore();
   display: block;
   position: absolute;
   left: 0;
-  top: 70px;
+  top: 40px; /* header.vue 높이와 맞춤 */
   bottom: 0;
   overflow-y: scroll;
 }

@@ -42,13 +42,30 @@ export default {};
           style="margin-left: 20px"
         ></el-switch>
       </div>
+
+      <!-- 필터/엑셀 버튼: 표 아래에 있던 것을 위로 옮겨 표가 화면 끝까지 차게 함 -->
+      <div class="toolbar-actions">
+        <el-button type="warning" :plain="!isDealyFab" @click="toggleLateFilter">
+          {{ isDealyFab ? "원래 데이터 보기" : "지연 과제 보기" }}
+        </el-button>
+        <el-button type="warning" :plain="!isDVonly" @click="toggleDVFilter">
+          {{ isDVonly ? "Cancel DV" : "DV only" }}
+        </el-button>
+        <el-button type="warning" :plain="!isTransitedOnly" @click="toggleTransitedFilter">
+          {{ isTransitedOnly ? "전체 보기" : "출하완료 보기" }}
+        </el-button>
+        <el-button type="primary" @click="handleExcelSubmit">
+          개발 샘플 진행 상황 EXCEL
+        </el-button>
+      </div>
     </div>
 
+    <div ref="tableBox">
     <el-table
       :data="filteredApplicationData"
       class="custom-table"
       style="min-width: 1000px"
-      height="670"
+      :height="tableHeight"
       :default-sort="{ prop: 'wantedFabStartDate', order: 'ascending' }"
       :row-style="{ height: '30px' }"
       :cell-class-name="cellClass"
@@ -524,31 +541,21 @@ export default {};
           >
         </el-table-column> -->
     </el-table>
+    </div>
     <!-- <DialogTemplate
         v-model:visible="dialogTableVisible"
         :fabApplicationId="selectApplicationId"
       ></DialogTemplate> -->
   </div>
-
-  <!-- <el-button type="primary" @click="toggleFilter" class="buttun-section">
-      {{ isFiltered ? "원래 데이터 보기" : "중화 69 과제 보기" }}
-    </el-button> -->
-    <el-button type="warning" @click="toggleLateFilter" class="buttun-section">
-      {{ isDealyFab ? "원래 데이터 보기" : "지연 과제 보기" }}
-    </el-button>
-    <el-button type="warning" @click="toggleDVFilter" class="buttun-section">
-      {{ isDVonly ? "Cancel DV" : "DV only" }}
-    </el-button>
-    <el-button type="warning" @click="toggleTransitedFilter" class="buttun-section">
-      {{ isTransitedOnly ? "전체 보기" : "출하완료 보기" }}
-    </el-button>
-    <el-button type="primary" @click="handleExcelSubmit" class="buttun-section">
-      개발 샘플 진행 상황 EXCEL
-    </el-button>
 </template>
 
 <script lang="ts" setup>
 import { ref, computed } from "vue";
+import { useFillHeight } from "../../../../utils/use-fill-height";
+
+// 표 높이 = 화면 아래 끝까지 (탭 안쪽 여백 15 + 본문 여백 10 + 여유)
+const tableBox = ref<HTMLElement | null>(null);
+const { height: tableHeight } = useFillHeight(tableBox, 30);
 import type { FabRequest } from "../../../../interface/fab-application-rev2";
 import {
   formatDate,
@@ -1247,7 +1254,13 @@ const toggleTransitedFilter = () => {
   color: #1e40af;
 }
 
-.buttun-section {
-  margin-top: 15px;
+.toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+.toolbar-actions .el-button + .el-button {
+  margin-left: 0;
 }
 </style>
