@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import VueSetupExtend from 'vite-plugin-vue-setup-extend';
 import AutoImport from 'unplugin-auto-import/vite';
@@ -45,18 +45,18 @@ export default defineConfig({
 			'vue': 'vue/dist/vue.esm-bundler.js', // 이 부분이 추가되었습니다.
 		},
 	},
-	test: {
-		environment: 'happy-dom',
-		css: false,
-		server: {
-			deps: {
-				inline: ['element-plus']
-			}
-		},
-		alias: {
-			'\\.(css|less|scss|sass)$': './__mocks__/styleMock.js'
-		}
-	},
+	// test: {
+	// 	environment: 'happy-dom',
+	// 	css: false,
+	// 	server: {
+	// 		deps: {
+	// 			inline: ['element-plus']
+	// 		}
+	// 	},
+	// 	alias: {
+	// 		'\\.(css|less|scss|sass)$': './__mocks__/styleMock.js'
+	// 	}
+	// },
 	server: {
 		host: getServerIpAddress(),
 		port: 40006,
@@ -66,7 +66,7 @@ export default defineConfig({
 			"/measurement": "http://10.29.11.57:40000",
 			"/wafer": "http://10.29.11.57:40000",
 			"/application": "http://10.29.11.57:40000",
-			"/user": "http://10.29.11.59:40000",
+			"/user": "http://10.29.11.57:40000",
 			"/teg_application": "http://10.29.11.57:40000",
 			"/tcf": "http://10.29.11.57:8002",
 			"/s-parameter": "http://10.29.11.57:8002",
@@ -77,7 +77,7 @@ export default defineConfig({
 			"/fab_monitoring/": "http://10.29.11.57:40000",
 			"/bfsm2": "http://10.20.10.114",
 			"/mes": "http://10.29.11.57:40000",
-			"/OpeationMns": "http://10.70.21.216:9086",
+			"/Opeat\ionMns": "http://10.70.21.216:9086",
 			"/stock/": "http://10.29.11.57:40000",
 			"/dv2": "http://10.29.11.57:40000",
 			"/test": "http://10.29.11.59:8002",
@@ -93,7 +93,8 @@ export default defineConfig({
 			"/images": "http://10.29.11.57:40000",
 			"/wpms": "http://10.20.10.202:8000",
 			"/ordersheet": "http://10.29.11.57:40000",
-			"/idt_probe": "http://10.29.11.57:40000"
+			"/idt_probe": "http://10.29.11.57:40000",
+			"/web_permission": "http://10.29.11.57:40000"
 		},
 	}
 }

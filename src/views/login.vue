@@ -1,7 +1,7 @@
 <template>
   <div class="login-wrap">
     <div class="ms-login">
-      <div class="ms-title">요소기술그룹 측정 시스템</div>
+      <div class="ms-title">RF개발팀 측정 시스템</div>
       <el-form
         :model="param"
         :rules="rules"
