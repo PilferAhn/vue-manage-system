@@ -62,7 +62,10 @@ export default {};
     </div>
 
     <div ref="tableBox">
+    <!-- LOT ID 열 숨김용 스타일 (열 id 는 표가 만든 값이라 런타임에 생성) -->
+    <component :is="'style'">{{ lotIdHideCss }}</component>
     <el-table
+      ref="tableRef"
       :data="filteredApplicationData"
       class="custom-table"
       style="min-width: 1000px"
@@ -99,9 +102,10 @@ export default {};
         :align="'center'"
       />
       
-      <!-- Wafer LOT ID: 기본 숨김, 상단 "LOT ID 보기" 버튼으로 표시 -->
+      <!-- Wafer LOT ID: 기본 숨김, 상단 "LOT ID 보기" 버튼으로 표시.
+           v-if 로 열을 넣고 빼면 표 전체 행을 다시 그려 수 초씩 멈추므로, 열은 그대로 두고 CSS 로 폭만 0 으로 줄인다 -->
       <el-table-column
-        v-if="showLotId"
+        column-key="lotIdCol"
         width="110"
         :align="'center'"
         fixed="left"
@@ -649,6 +653,22 @@ const isDVonly = useSessionRef<boolean>(sk("isDVonly"), false);
 const isTransitedOnly = useSessionRef<boolean>(sk("isTransitedOnly"), false);
 // Wafer LOT ID 열 표시 여부 (기본 숨김, F5 후에도 유지)
 const showLotId = useSessionRef<boolean>(sk("showLotId"), false);
+// 숨김은 CSS 로만 처리 (행을 다시 그리지 않아 즉시 반영): 열 폭 0 + 셀 내용 숨김.
+// 셀(th/td)과 <col name> 에는 표가 만든 열 id(el-table_N_column_M)가 붙어 있어 이것으로 지정한다.
+const tableRef = ref<any>(null);
+const lotIdColId = computed<string>(() => {
+  const cols = tableRef.value?.store?.states?.columns?.value ?? [];
+  return cols.find((c: any) => c.columnKey === "lotIdCol")?.id ?? "";
+});
+const lotIdHideCss = computed(() => {
+  const id = lotIdColId.value;
+  if (showLotId.value || !id) return "";
+  return (
+    `col[name="${id}"]{width:0 !important}` +
+    `th.${id},td.${id}{padding:0 !important;border-width:0 !important}` +
+    `th.${id}>.cell,td.${id}>.cell{display:none !important}`
+  );
+});
 // Clear the search input
 function handleClear() {
   searchTerm.value = ""; // Reset search term
