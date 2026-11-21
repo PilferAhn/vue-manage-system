@@ -2,13 +2,13 @@
   <div>
     <el-tabs v-model="activeTab" type="border-card">
       <el-tab-pane :label="cspLabel" name="csp">
-        <ApplicationMonitorByPackage :fabApp="cspApps" stateKey="csp" />
+        <ApplicationMonitorByPackage :fabApp="cspApps" stateKey="csp" :lotProgress="lotProgress" :lotProgressState="lotProgressState" />
       </el-tab-pane>
       <el-tab-pane :label="wlpLabel" name="wlp">
-        <ApplicationMonitorByPackage :fabApp="wlpApps" :isWlp="true" stateKey="wlp" />
+        <ApplicationMonitorByPackage :fabApp="wlpApps" :isWlp="true" stateKey="wlp" :lotProgress="lotProgress" :lotProgressState="lotProgressState" />
       </el-tab-pane>
       <el-tab-pane :label="'개발전달'" name="etc">
-        <ApplicationMonitorByPackage :fabApp="etcApps" stateKey="etc" />
+        <ApplicationMonitorByPackage :fabApp="etcApps" stateKey="etc" :lotProgress="lotProgress" :lotProgressState="lotProgressState" />
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -20,6 +20,8 @@ import { reactive, onMounted, ref } from "vue";
 import {
   getApplicationListByDict,
   getApplicationListByDictRev2,
+  getLotProgressByProductNames,
+  type LotProgress,
 } from "../../../../utils/Fab/fab-application-utils";
 import { getRole, getUserId } from "../../../../utils/account-utils";
 import { usePermissStore } from "../../../../store/permiss";
@@ -35,6 +37,22 @@ const wlpApps = reactive<FabRequest[]>([]);
 const etcApps = reactive<FabRequest[]>([]);
 const cspLabel = "CSP";
 const wlpLabel = "WLP(BDMP)";
+// lot 별 FAB 진행률 (key = lot_id). 'loading' → 조회 중, 'failed' → 조회 실패
+const lotProgress = ref<Record<string, LotProgress>>({});
+const lotProgressState = ref<"loading" | "done" | "failed">("loading");
+
+async function loadLotProgress(productNames: string[]) {
+  const t0 = performance.now();
+  try {
+    lotProgress.value = await getLotProgressByProductNames(productNames);
+    lotProgressState.value = "done";
+  } catch (e) {
+    console.error("FAB 진행률 조회 실패:", e);
+    lotProgressState.value = "failed";
+  }
+  console.log(`FAB 진행률 조회: ${((performance.now() - t0) / 1000).toFixed(2)}초`);
+}
+
 // 선택한 탭은 F5 후에도 유지 (브라우저 탭을 닫으면 CSP 로 초기화)
 const activeTab = useSessionRef<string>("sample_monitor:tab", "csp");
 
@@ -104,6 +122,9 @@ onMounted(async () => {
     );
 
     console.log("Fetched app count:", apps.length);
+
+    // FAB 진행률: 표를 먼저 보여주고 따로 조회해서 도착하면 채움 (await 하지 않음 → 표 표시 시간에 영향 없음)
+    loadLotProgress(apps.map((a) => a.productName).filter(Boolean) as string[]);
   } catch (error) {
     console.error("Error fetching application list:", error);
   }

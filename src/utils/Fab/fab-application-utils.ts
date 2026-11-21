@@ -527,6 +527,32 @@ export async function getFabMonitorRowsByWantedDate(params: {
   return data.map((x) => convertPep8ToCamelCase2(x)) as FabMonitorRow[];
 }
 
+/** lot 별 FAB 진행률 (Sample Monitor 진행률 열). key = lot_id */
+export type LotProgress = {
+  lotId: string;
+  progress: number | null;      // 0~100
+  currentSeqNo: number | null;
+  totalSeqNo: number | null;
+  isRework: boolean;
+};
+
+export async function getLotProgressByProductNames(
+  productNames: string[]
+): Promise<Record<string, LotProgress>> {
+  const formData = new FormData();
+  formData.append("product_names", JSON.stringify(productNames));
+  const data = (await sendPostRequest(
+    serverUrl + "/fab_monitoring_rev2/get_lot_progress_by_product_names",
+    formData
+  )) as object[];
+  const map: Record<string, LotProgress> = {};
+  for (const x of data ?? []) {
+    const r = convertPep8ToCamelCase2(x) as LotProgress;
+    if (r?.lotId) map[r.lotId] = r;
+  }
+  return map;
+}
+
 export async function getTransitLotsByMaterial(params: {
   materialId: string;                
   packageType: "CSP" | "WLP" | "MODULE" | "ETC";        

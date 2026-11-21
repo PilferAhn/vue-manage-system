@@ -78,13 +78,13 @@ export default {};
 
       <el-table-column
         label="개발자"
-        width="110"
+        width="120"
         :align="'center'"
         :fixed="'left'"
       >
+        <!-- 한 줄 표시: 개발자=의뢰자면 이름 한 번, 다르면 "개발자 / 의뢰자". 길면 … 처리, 마우스를 대면 전체 -->
         <template #default="scope">
-          {{ scope.row.designer.userName }} <br />
-          {{ scope.row.requester.userName }}
+          <div class="one-line" :title="peopleLabel(scope.row)">{{ peopleLabel(scope.row) }}</div>
         </template>
       </el-table-column>
       
@@ -125,7 +125,7 @@ export default {};
         </template>
       </el-table-column> -->
 
-      <el-table-column label="FAB 투입일" :align="'center'" width="110">
+      <el-table-column label="FAB 투입일" :align="'center'" width="110" class-name="even-row">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             {{ formatDate(item.creationDate) }}
@@ -146,6 +146,7 @@ export default {};
         label="FAB 현위치(투입시간)"
         :align="'center'"
         width="320"
+        class-name="even-row"
       >
         <template #default="scope">
           <span 
@@ -184,6 +185,30 @@ export default {};
           {{ scope.row.tegFinishedDate }}
         </template>
       </el-table-column> -->
+
+      <!-- FAB 진행률: lot 마다 한 줄 막대. 표와 따로 조회되어 도착하면 채워짐 -->
+      <el-table-column label="FAB 진행률" :align="'center'" width="150">
+        <template #default="scope">
+          <div
+            v-for="(item, index) in scope.row.lotStatus"
+            :key="index"
+            class="pbar-line"
+            :title="progressTitle(item)"
+          >
+            <template v-if="progressOf(item) !== null">
+              <span class="pbar">
+                <span
+                  class="pbar-fill"
+                  :class="{ done: progressOf(item) === 100, rework: lotProgress?.[item.lotId]?.isRework }"
+                  :style="{ width: progressOf(item) + '%' }"
+                ></span>
+              </span>
+              <span class="pbar-txt">{{ progressOf(item) === 100 ? "완료" : Math.round(progressOf(item)!) + "%" }}</span>
+            </template>
+            <span v-else class="pbar-empty">{{ lotProgressState === "loading" ? "…" : "-" }}</span>
+          </div>
+        </template>
+      </el-table-column>
 
       <el-table-column label="FAB OUT" :align="'center'" width="100">
         <template #default="scope">
@@ -231,7 +256,7 @@ export default {};
         </template>
       </el-table-column>
 
-      <el-table-column  :align="'center'" width="90">
+      <el-table-column  :align="'center'" width="90" class-name="even-row">
         <template #header>
            FAB<br/>진행일
         </template>
@@ -298,7 +323,7 @@ export default {};
         </template>
       </el-table-column> -->
 
-      <el-table-column label="HQ 출하" :align="'center'" width="100">
+      <el-table-column label="HQ 출하" :align="'center'" width="100" class-name="even-row">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             <span v-if="item['operation']['name'] === 'Transit 공정'">
@@ -556,6 +581,7 @@ import { cn69ModelNames } from "../../SampleStatus/Cn69List";
 import type { ModifiedFabDataInterface } from "../../../../interface/fab";
 import {
   getRunningFabReqeustRev2,
+  type LotProgress,
 } from "../../../../utils/Fab/fab-application-utils";
 import {
   testFabOutAlarm,
@@ -571,7 +597,40 @@ const props = defineProps<{
   isWlp?: boolean;
   /** 검색어/필터를 F5 후에도 유지하기 위한 탭별 저장 키 (csp / wlp / etc) */
   stateKey?: string;
+  /** lot 별 FAB 진행률 (key = lot_id) */
+  lotProgress?: Record<string, LotProgress>;
+  lotProgressState?: "loading" | "done" | "failed";
 }>();
+
+/** 개발자 칸 한 줄 표시용 */
+function peopleLabel(row: any): string {
+  const d = row?.designer?.userName ?? "";
+  const r = row?.requester?.userName ?? "";
+  if (!r || r === d) return d || "-";
+  if (!d) return r;
+  return `${d} / ${r}`;
+}
+
+/**
+ * lot 의 FAB 진행률(0~100). 모르면 null.
+ * FAB OUT 이력이 있거나, 출하(TRANSIT)/하노이로 넘어간 lot 은 MES 진행 목록에서 빠지므로 완료(100)로 본다.
+ */
+function progressOf(item: any): number | null {
+  const p = props.lotProgress?.[item?.lotId]?.progress;
+  if (typeof p === "number" && p >= 100) return 100;
+  const site = String(item?.operation?.siteId ?? "");
+  if (item?.fabOutHistory != null || item?.operation?.operationId === "TRANSIT" || site.startsWith("HANOI")) return 100;
+  return typeof p === "number" ? Math.max(0, p) : null;
+}
+
+function progressTitle(item: any): string {
+  const info = props.lotProgress?.[item?.lotId];
+  const pct = progressOf(item);
+  if (pct === null) return props.lotProgressState === "failed" ? "진행률 조회 실패" : "";
+  if (pct === 100 && !(info && (info.progress ?? 0) >= 100)) return `${item?.lotId}: FAB 완료`;
+  const seq = info?.currentSeqNo != null && info?.totalSeqNo ? ` (공정 ${info.currentSeqNo}/${info.totalSeqNo})` : "";
+  return `${item?.lotId}: ${pct === 100 ? "FAB 완료" : pct.toFixed(1) + "%"}${seq}${info?.isRework ? " · 재작업 중" : ""}`;
+}
 
 // 검색/필터 상태: 탭별로 sessionStorage 에 저장 → F5 후에도 유지 (브라우저 탭을 닫으면 초기화)
 const sk = (name: string) => `sample_monitor:${props.stateKey ?? "default"}:${name}`;
@@ -680,11 +739,8 @@ const filteredData = computed(() => {
 // 셀에 적용할 클래스 반환
 const cellClass = ({ row, rowIndex, column, columnIndex }) => {
   // 예: 짝수 행에만 스타일을 적용
-  // 강조 열: FAB 투입일, FAB 현위치, FAB 진행일, HQ 출하 (No 열 제거로 번호가 하나씩 당겨짐)
-  if ([4, 6, 8, 11].includes(columnIndex)) {
-    return "even-row";
-  }
-
+  // 강조 열(FAB 투입일, FAB 현위치, FAB 진행일, HQ 출하)은 각 열의 class-name="even-row" 로 지정
+  // (예전에는 열 순번으로 판단해서 열을 추가/삭제하면 엉뚱한 열이 강조됨)
   return "";
 };
 
@@ -1249,6 +1305,52 @@ const toggleTransitedFilter = () => {
   font-weight: bold;
   font-size: 12px;
   color: #1e40af;
+}
+
+/* 개발자 칸: 한 줄, 넘치면 … */
+.one-line {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* FAB 진행률: 다른 열의 lot 한 줄(23px)과 높이를 맞춰 줄이 어긋나지 않게 함 */
+.pbar-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 23px;
+}
+.pbar {
+  position: relative;
+  flex: 1;
+  max-width: 80px;
+  height: 8px;
+  border-radius: 4px;
+  background: #e4e7ed;
+  overflow: hidden;
+}
+.pbar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 4px;
+  background: #409eff;
+}
+.pbar-fill.rework {
+  background: #e6a23c;
+}
+.pbar-fill.done {
+  background: #67c23a;
+}
+.pbar-txt {
+  width: 34px;
+  text-align: right;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.pbar-empty {
+  color: #c0c4cc;
 }
 
 .toolbar-actions {
