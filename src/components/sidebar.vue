@@ -1,9 +1,16 @@
 <template>
-  <div class="sidebar">
+  <!-- 접힌 상태에서 마우스를 대면 본문 위에 겹쳐 펼침(본문 폭은 그대로 → 표 재계산 없음), 벗어나면 다시 접힘 -->
+  <div
+    class="sidebar"
+    :class="{ 'sidebar--peek': isPeeking }"
+    @mouseenter="onPeekEnter"
+    @mouseleave="onPeekLeave"
+  >
     <el-menu
       class="sidebar-el-menu"
       :default-active="onRoutes"
-      :collapse="sidebar.collapse"
+      :collapse="sidebar.collapse && !isPeeking"
+      :collapse-transition="false"
       background-color="#324157"
       text-color="#bfcbd9"
       active-text-color="#20a0ff"
@@ -101,7 +108,7 @@
 
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch, onBeforeUnmount } from "vue";
 import { useSidebarStore } from "../store/sidebar";
 import { useRoute, useRouter } from "vue-router";
 import { usePermissStore } from "../store/permiss";
@@ -146,8 +153,31 @@ const sidebar = useSidebarStore();
 
 // 메뉴를 고르면 왼쪽 메뉴를 접어 본문을 넓게 쓴다 (왼쪽 위 버튼으로 다시 펼침)
 function collapseAfterSelect() {
+  stopPeek();
   if (!sidebar.collapse) sidebar.handleCollapse();
 }
+
+// 마우스 자동 펼침 (접힌 상태에서만). 스쳐 지나갈 때 펼쳐지지 않도록 잠깐 머물러야 펼치고,
+// 메뉴 밖으로 잠깐 벗어났다 돌아와도 닫히지 않도록 약간 늦게 닫는다.
+const isPeeking = ref(false);
+let peekTimer: ReturnType<typeof setTimeout> | undefined;
+function onPeekEnter() {
+  clearTimeout(peekTimer);
+  if (!sidebar.collapse || isPeeking.value) return;
+  peekTimer = setTimeout(() => (isPeeking.value = true), 150);
+}
+function onPeekLeave() {
+  clearTimeout(peekTimer);
+  if (!isPeeking.value) return;
+  peekTimer = setTimeout(() => (isPeeking.value = false), 250);
+}
+function stopPeek() {
+  clearTimeout(peekTimer);
+  isPeeking.value = false;
+}
+// 왼쪽 위 버튼으로 고정/해제하면 겹쳐 펼친 상태는 정리
+watch(() => sidebar.collapse, stopPeek);
+onBeforeUnmount(() => clearTimeout(peekTimer));
 </script>
 
 <style scoped>
@@ -158,6 +188,11 @@ function collapseAfterSelect() {
   top: 40px; /* header.vue 높이와 맞춤 */
   bottom: 0;
   overflow-y: scroll;
+}
+/* 겹쳐 펼침: 본문 위에 띄움 */
+.sidebar--peek {
+  z-index: 1000;
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.25);
 }
 .sidebar::-webkit-scrollbar {
   width: 0;
