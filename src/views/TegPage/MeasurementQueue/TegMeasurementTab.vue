@@ -118,64 +118,54 @@ const currentPage = ref(1);
 const pageSize = props.pageSize;
 const applications = ref<TegApplication[]>([]);
 
+// Location 에서 제외할 공정 (출하/후공정). 이 공정에 있는 lot 은 건너뛰고 아직 FAB 진행 중인 lot 위치를 보여준다
+const EXCLUDED_OPERATIONS = new Set([
+  "Transit 공정",
+  "출하",
+  "포장",
+  "전수검사",
+  "AOI",
+  "IDT 프로브",
+  "LTE 외검",
+  "LTE 깊이",
+  "LTE S L/O",
+  "LTE 에칭",
+  "LTE 현상외검",
+  "LTE 현상",
+  "LTE 노광",
+  "LTE 코팅",
+]);
+
+/**
+ * TEG 의뢰마다 같은 P/N 의 FAB 의뢰서 lot 중 제외 공정이 아닌 첫 lot 의 공정/투입시간을 Location 으로 채운다.
+ * (이전 코드는 lot 이 없거나 모두 제외 공정이면 배열 끝을 넘어 읽다가 오류가 나서, 그 뒤 의뢰 전부 Location 이 비었음)
+ */
+function applyLocations() {
+  if (!props.fabApp?.length || !applications.value.length) return;
+  const byProduct = new Map<string, FabRequest[]>();
+  for (const fr of props.fabApp) {
+    if (!fr?.productName) continue;
+    if (!byProduct.has(fr.productName)) byProduct.set(fr.productName, []);
+    byProduct.get(fr.productName)!.push(fr);
+  }
+  for (const app of applications.value) {
+    for (const fr of byProduct.get(app.productName) ?? []) {
+      const lot = (fr.lotStatus ?? []).find(
+        (l: any) => l?.operation?.name && !EXCLUDED_OPERATIONS.has(l.operation.name)
+      );
+      if (lot) {
+        app.currentStage = lot.operation.name;
+        app.currentStageTime = formatDateTime(lot.moveinDate);
+        break;
+      }
+    }
+  }
+}
+
 onMounted(async () => {
   try {
     applications.value = await getTegApplication(props.category);
-
-    for (let i = 0; i < applications.value.length; i++) {
-      let isFound = false;
-      for (let j = 0; j < props.fabApp.length; j++) {
-        if (applications.value[i].productName === props.fabApp[j].productName) {
-          let isFound2 = false;
-          let foundedIndex = -1;
-
-          if(props.fabApp[j].productName === "TWG45AAS005A"){
-            console.log(props.fabApp[j].productName)
-          }
-
-          for (let k = 0; k <= props.fabApp[j].lotStatus.length; k++) {
-            if (
-              ![
-                "Transit 공정",
-                "출하",
-                "포장",
-                "전수검사",
-                "AOI",
-                "IDT 프로브",
-                "LTE 외검",
-                "LTE 깊이",
-                "LTE S L/O",
-                "LTE 에칭",
-                "LTE 현상외검",
-                "LTE 현상",
-                "LTE 노광",
-                "LTE 코팅",
-              ].includes(props.fabApp[j].lotStatus[k].operation.name)
-            ) {
-              isFound2 = true;
-              foundedIndex = k;
-              break;
-            }
-          }
-
-          if (
-            props.fabApp[j].lotStatus !== undefined &&
-            props.fabApp[j].lotStatus.length >= 1 &&
-            isFound2
-          ) {
-            applications.value[i].currentStage =
-              props.fabApp[j].lotStatus[foundedIndex].operation.name;
-            applications.value[i].currentStageTime = formatDateTime(
-              props.fabApp[j].lotStatus[foundedIndex].moveinDate
-            );
-            isFound = true;
-          }
-        }
-        if (isFound) {
-          break;
-        }
-      }
-    }
+    applyLocations();
   } catch (error) {
     console.error("Error fetching applications:", error);
   }
@@ -189,66 +179,8 @@ const filteredData = computed(() => {
   );
 });
 
-watch(
-  () => props.fabApp,
-  (newVal) => {
-    if (newVal.length >= 1) {
-      for (let i = 0; i < applications.value.length; i++) {
-        let isFound = false;
-        for (let j = 0; j < props.fabApp.length; j++) {
-          if (applications.value[i].productName === props.fabApp[j].productName) {
-            let isFound2 = false;
-            let foundedIndex = -1;
-
-            for (let k = 0; k <= props.fabApp[j].lotStatus.length; k++) {
-              if (
-                ![
-                  "Transit 공정",
-                  "출하",
-                  "포장",
-                  "전수검사",
-                  "AOI",
-                  "IDT 프로브",
-                  "LTE 외검",
-                  "LTE 깊이",
-                  "LTE S L/O",
-                  "LTE 에칭",
-                  "LTE 현상외검",
-                  "LTE 현상",
-                  "LTE 노광",
-                  "LTE 코팅",
-                ].includes(props.fabApp[j].lotStatus[k].operation.name)
-              ) {
-                isFound2 = true;
-                foundedIndex = k;
-                break;
-              }
-            }
-
-            if (
-              props.fabApp[j].lotStatus !== undefined &&
-              props.fabApp[j].lotStatus.length >= 1 &&
-              isFound2
-            ) {
-              applications.value[i].currentStage =
-                props.fabApp[j].lotStatus[foundedIndex].operation.name;
-              applications.value[i].currentStageTime = formatDateTime(
-                props.fabApp[j].lotStatus[foundedIndex].moveinDate
-              );
-              isFound = true;
-            }
-          }
-          if (isFound) {
-            break;
-          }
-        }
-      }
-    }
-  },
-  {
-    immediate: true,
-  }
-);
+// FAB 의뢰서 목록이 TEG 목록보다 늦게 도착하는 경우
+watch(() => props.fabApp, applyLocations);
 
 // useRouter 훅을 사용하여 라우터 인스턴스를 가져옵니다.
 const router = useRouter();
