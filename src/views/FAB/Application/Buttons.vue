@@ -59,6 +59,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { getCurrentWeekNumber } from "../../../utils/date-utils";
 import { sendPostRequest } from "../../../utils/httpProtocol";
 import { uploadPackageEvidence } from "../../../utils/Fab/fab-application-utils";
+import { confirmRevisionChanges } from "../../../utils/Fab/fab-revision-utils";
 
 const props = defineProps<{
   fabApplication: FabRequestForm;
@@ -83,6 +84,10 @@ const submitForm = async (type: string) => {
       console.error("폼 유효성 검사 실패: 필수 항목을 확인해주세요.");
       return;
     }
+
+    // 새 의뢰서: 이전 차수에서 불러온 공정 조건이 바뀌었거나, 불러오지 않았으면 경고
+    if (type === "submit" && !(await confirmRevisionChanges(props.fabApplication))) return;
+
     const resultApplication = await ValChkBeforeSending(props.fabApplication, type)
     if (!resultApplication) return;
 

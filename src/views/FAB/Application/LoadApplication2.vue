@@ -39,6 +39,7 @@
   import { initPhoto } from "../../../utils/Fab/photo-utils";
   import { serverUrl } from "../../../utils/Fab/fab-application-utils";
   import { initBom } from "../../../utils/Fab/bom-utils";
+  import { fixLayersBySawType } from "../../../utils/Fab/fab-revision-utils";
   
   const isLoad = ref<boolean>(false);
   const route = useRoute(); // Access the route
@@ -95,26 +96,9 @@
       }
 
       
-      // Fix layers
-      const fixLayers = (targetId: any, targetLayers: Layer[], type: any[], searchFucnc :CallableFunction) => {
-        if (targetId != null) {
-          const layers: Layer[] = type.find(
-            (item) => searchFucnc(item, targetId)
-          )?.layers ?? [];
-          
-          if (layers.length !== targetLayers.length) {
-            targetLayers.splice(0, targetLayers.length, ...layers);
-          }
-        }
-      }
+      // Fix layers (Create Request Form 의 이전 차수 불러오기와 공용)
+      fixLayersBySawType(appData, sawTypeData);
 
-      fixLayers(appData.idtId, appData.idtLayers, sawTypeData.idtTypes, (type: IdtType, id: any) => type.idtId === id);
-      fixLayers(appData.idt2Id, appData.idt2Layers, sawTypeData.idtTypes, (type: IdtType, id: any) => type.idtId === id);
-      fixLayers(appData.tcId, appData.tcLayers, sawTypeData.tcTypes, (type: TcType, id: any) => type.tcId === id);
-      fixLayers(appData.pstId, appData.pstLayers, sawTypeData.pstTypes, (type: PstType, id: any) => type.pstId === id);
-      fixLayers(appData.seedId, appData.seedLayers, sawTypeData.seedTypes, (type: seedType, id: any) => type.seedId === id);
-      fixLayers(appData.passivationId, appData.passivationLayers, sawTypeData.passivationTypes, (type: passivationType, id: any) => type.passivationId === id);
-      
       // Assign the converted data to processData
       Object.assign(app, appData);
       Object.assign(sawTypes, sawTypesData);
