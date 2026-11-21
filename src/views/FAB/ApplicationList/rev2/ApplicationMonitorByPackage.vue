@@ -43,6 +43,9 @@ export default {};
 
       <!-- 필터/엑셀 버튼: 표 아래에 있던 것을 위로 옮겨 표가 화면 끝까지 차게 함 -->
       <div class="toolbar-actions">
+        <el-button type="info" :plain="!showLotId" @click="showLotId = !showLotId">
+          {{ showLotId ? "LOT ID 숨기기" : "LOT ID 보기" }}
+        </el-button>
         <el-button type="warning" :plain="!isDealyFab" @click="toggleLateFilter">
           {{ isDealyFab ? "원래 데이터 보기" : "지연 과제 보기" }}
         </el-button>
@@ -96,7 +99,9 @@ export default {};
         :align="'center'"
       />
       
+      <!-- Wafer LOT ID: 기본 숨김, 상단 "LOT ID 보기" 버튼으로 표시 -->
       <el-table-column
+        v-if="showLotId"
         width="110"
         :align="'center'"
         fixed="left"
@@ -642,6 +647,8 @@ const isRunningFab = useSessionRef<boolean>(sk("isRunningFab"), true);
 const isDealyFab = useSessionRef<boolean>(sk("isDealyFab"), false);
 const isDVonly = useSessionRef<boolean>(sk("isDVonly"), false);
 const isTransitedOnly = useSessionRef<boolean>(sk("isTransitedOnly"), false);
+// Wafer LOT ID 열 표시 여부 (기본 숨김, F5 후에도 유지)
+const showLotId = useSessionRef<boolean>(sk("showLotId"), false);
 // Clear the search input
 function handleClear() {
   searchTerm.value = ""; // Reset search term
