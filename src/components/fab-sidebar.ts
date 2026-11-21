@@ -41,11 +41,8 @@ export const fabSilderBarList: SidebarItem = {
       title: "My Form List",
       permiss: "11",
     },
-    {
-      index: "/fab/operration-by-model",
-      title: "기종별 공정진행상황",
-      permiss: "11",
-    },
+    // 기종별 공정진행상황(/fab/operration-by-model): Sample Monitor 의 FAB 진행률 열로 대체되어 메뉴에서 제거.
+    // 화면 파일과 라우트는 남겨 둠 (되살리려면 이 항목만 다시 추가)
     {
       index: "/fab/review-application",
       title: "Form Review",
