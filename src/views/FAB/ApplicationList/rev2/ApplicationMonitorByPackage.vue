@@ -539,18 +539,6 @@ export default {};
     <el-button type="warning" @click="toggleDVFilter" class="buttun-section">
       {{ isDVonly ? "Cancel DV" : "DV only" }}
     </el-button>
-    <el-button type="warning" @click="toggleSMFilter" class="buttun-section">
-      {{ isSMOnly ? "Cancel SM" : "SM 개발" }}
-    </el-button>
-    <el-button type="warning" @click="toggleSMSPLFilter" class="buttun-section">
-      {{ isSMSPLOnly ? "Cancel SMSPL" : "SM SPL" }}
-    </el-button>
-    <el-button type="warning" @click="toggleSMPFilter" class="buttun-section">
-      {{ isSMPOnly ? "Cancel SMP" : "SM P" }}
-    </el-button>
-    <el-button type="warning" @click="toggleK1Filter" class="buttun-section">
-      {{ isK1Only ? "Cancel K1_긴급" : "K1_긴급" }}
-    </el-button>
     <el-button type="warning" @click="toggleTransitedFilter" class="buttun-section">
       {{ isTransitedOnly ? "전체 보기" : "출하완료 보기" }}
     </el-button>
@@ -562,7 +550,6 @@ export default {};
 <script lang="ts" setup>
 import { ref, computed } from "vue";
 import type { FabRequest } from "../../../../interface/fab-application-rev2";
-import type { TegApplication } from "../../../../interface/Teg/teg";
 import {
   formatDate,
   formatDateTime,
@@ -583,7 +570,6 @@ import {saveAs} from "file-saver";
 import { holidaysList } from "../../../../utils/date-utils";
 const props = defineProps<{
   fabApp: FabRequest[];
-  tegApp: TegApplication[];
   isWlp?: boolean;
 }>();
 
@@ -593,66 +579,11 @@ const searchCategory = ref("productName"); // 기본 검색 기준을 "Lot ID"�
 const isRunningFab = ref(true);
 const isDealyFab = ref(false);
 const isDVonly = ref(false);
-const isSMOnly = ref(false);
-const isSMSPLOnly = ref(false);
-const isSMPOnly = ref(false)
-const isK1Only = ref(false)
 const isTransitedOnly = ref(false);
 // Clear the search input
 function handleClear() {
   searchTerm.value = ""; // Reset search term
 }
-
-const smModelNames = [
-  "TQG47AVB0B4A",
-  "TRG00AA8003A",
-  "TDG93BAT006A",
-  "TX725BT7003A",
-  "TXG35ANN004A",
-  "THG93AS5002A",
-  "THG93AS5002B",
-  "THG93AS5003A",
-  "THG93AS5003B",
-  "TX725BT7004A",
-];
-const smSPLModelNames = [
-  "TX897AG7001A",
-  "TX725BT7001A",
-  "TDG35AAU001A",
-  "TDG93BAT004A",
-  "TXG35ANN003A",
-  "TX831AG6002A",
-  "TRG00AA8002B",
-  "TQG47AVB0A2B",
-  "THG93AS5001A",
-];
-const smpModelNames = [
-  "TXG35A00000A",
-  "TX787A00000A",
-  "TX707A00000A",
-  "TX634A00000A",
-  "TV831A00000A",
-  "TT725A00000A",
-  "TDG35A00000A",
-  "TDG93A00000A",
-  "TWG40A00001A",
-  "TWG42A00001A",
-  "TXG82A00000A"
-];
-const k1ModelNames = [
-  "TXG10AQZ004A",
-  "TXG10AQZ003A",
-  "TX634AQL006A",
-  "TX634AQL006B",
-  "TX787AQX005D",
-  "TX787AQX005B",
-  "TX787AQX005C",
-  "TX787AQX005A",
-  "TX748BQY001A",
-  "MX748AQY003A",
-  "MRG00DAH001A",
-  "THG72CFC002B",
-];
 
 const dialogTableVisible = ref(false);
 const selectApplicationId = ref("");
@@ -708,40 +639,6 @@ const filteredData = computed(() => {
     tempApp.value = tempApp.value.filter((item) => item.productName.charAt(0) === 'D');
   }
 
-  if (isSMOnly.value) {
-  const set = new Set(smModelNames);
-  tempApp.value = tempApp.value.filter((item) => {
-    if (!item.productName) return false;
-    const base = item.productName.split("@")[0].trim().toUpperCase();
-    return set.has(base);
-    });
-  }
-  if (isSMSPLOnly.value) {
-  const set = new Set(smSPLModelNames);
-  tempApp.value = tempApp.value.filter((item) => {
-    if (!item.productName) return false;
-    const base = item.productName.split("@")[0].trim().toUpperCase();
-    return set.has(base);
-    });
-  }
-  
-  if (isSMPOnly.value) {
-  const set = new Set(smpModelNames);
-  tempApp.value = tempApp.value.filter((item) => {
-    if (!item.productName) return false;
-    const base = item.productName.split("@")[0].trim().toUpperCase();
-    return set.has(base);
-    });
-  }
-
-  if (isK1Only.value) {
-  const set = new Set(k1ModelNames);
-  tempApp.value = tempApp.value.filter((item) => {
-    if (!item.productName) return false;
-    const base = item.productName.split("@")[0].trim().toUpperCase();
-    return set.has(base);
-    });
-  }
   if (isTransitedOnly.value) {
     // Keep only the lotStatus.operationId 'TRANSIT'
     const filteredTransited = tempApp.value.map((item) => {
@@ -1114,7 +1011,7 @@ function buildExcelRows(source: any[]): any[] {
 
       // ⬇⬇⬇ 추가: 출하/WHC 현위치 텍스트
       const shipWhere = buildShipWhere(st);
-      const whcWhere = buildWhcWhere(st, /* isWlp= */ false /* 필요시 props.isWlp 주입 */);
+      const whcWhere = buildWhcWhere(st, props.isWlp); // WLP 탭이면 hanoiWlp, 아니면 hanoiCsp 체인
       // ⬆⬆⬆
 
       const whcArrive =
@@ -1283,18 +1180,6 @@ const toggleDVFilter = () => {
   isDVonly.value = !isDVonly.value;
 };
 
-const toggleSMFilter = () => {
-  isSMOnly.value = !isSMOnly.value;
-};
-const toggleSMSPLFilter = () => {
-  isSMSPLOnly.value = !isSMSPLOnly.value;
-};
-const toggleSMPFilter = () => {
-  isSMPOnly.value = !isSMPOnly.value;
-};
-const toggleK1Filter = () => {
-  isK1Only.value = !isK1Only.value;
-};
 const toggleTransitedFilter = () => {
   isTransitedOnly.value = !isTransitedOnly.value;
 };

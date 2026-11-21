@@ -329,8 +329,14 @@ export function getLateFabRev2(fabList: FabRequest[]) {
     }
 
     if (isLate) {
-      fab.lotStatus = tempLots.value
-      LateFabList.value.push(fab);
+      // 원본(fab)을 직접 수정하면 필터를 꺼도 지연되지 않은 랏이 복구되지 않으므로
+      // 클래스(프로토타입)를 유지한 사본을 만들어 lotStatus 만 교체한다.
+      const lateFab = Object.assign(
+        Object.create(Object.getPrototypeOf(fab)),
+        fab,
+        { lotStatus: tempLots.value }
+      ) as FabRequest;
+      LateFabList.value.push(lateFab);
     }
   });
 

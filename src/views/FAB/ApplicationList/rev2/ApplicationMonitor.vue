@@ -2,13 +2,13 @@
   <div>
     <el-tabs v-model="activeTab" type="border-card">
       <el-tab-pane :label="cspLabel" name="csp">
-        <ApplicationMonitorByPackage :fabApp="cspApps" :teg-app="tegApp" />
+        <ApplicationMonitorByPackage :fabApp="cspApps" />
       </el-tab-pane>
       <el-tab-pane :label="wlpLabel" name="wlp">
-        <ApplicationMonitorByPackage :fabApp="wlpApps" :teg-app="tegApp" :isWlp="true" />
+        <ApplicationMonitorByPackage :fabApp="wlpApps" :isWlp="true" />
       </el-tab-pane>
       <el-tab-pane :label="'개발전달'" name="etc">
-        <ApplicationMonitorByPackage :fabApp="etcApps" :teg-app="tegApp" />
+        <ApplicationMonitorByPackage :fabApp="etcApps" />
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -25,8 +25,6 @@ import { getRole, getUserId } from "../../../../utils/account-utils";
 import { usePermissStore } from "../../../../store/permiss";
 import ApplicationMonitorByPackage from "./ApplicationMonitorByPackage.vue";
 import { getAppByPackageType } from "../../../../utils/Fab/fab-application-monitor";
-import { TegApplication } from "../../../../interface/Teg/teg";
-import { getTegApplicationsByFinishDateStatus } from "../../../../utils/tegUtility";
 import { FabApplicationForm } from "../../../../interface/mes-interface";
 import { getTodayDate, adjustDate } from "../../../../utils/date-utils";
 
@@ -37,7 +35,6 @@ const etcApps = reactive<FabRequest[]>([]);
 const cspLabel = "CSP";
 const wlpLabel = "WLP(BDMP)";
 const activeTab = ref("csp"); // 기본 선택 탭
-const tegApp = ref<TegApplication[]>([]);
 
 onMounted(async () => {
   const today = getTodayDate();             
@@ -59,10 +56,9 @@ onMounted(async () => {
   })();
   const start = performance.now(); // 시작 시간 (ms)
 
-  tegApp.value = await getTegApplicationsByFinishDateStatus(
-    "2024-02-14 00:00:00",
-    "finished"
-  );
+  // TEG 완료 목록 조회는 제거함: "TEG 완료시간" 컬럼이 주석 처리되어 결과를 쓰지 않으면서
+  // 요청서 조회를 순차로 지연시키고, 실패 시 화면 전체가 비는 문제가 있었음.
+  // 컬럼을 되살릴 경우 getTegApplicationsByFinishDateStatus 를 요청서 조회와 병렬로 호출할 것.
 
   try {
     let para = {
@@ -92,15 +88,6 @@ onMounted(async () => {
       apps,
       rawApps.map((item) => new FabRequest(item))
     );
-
-    apps.forEach((app, index) => {
-      for (let i = 0; i < tegApp.value.length; i++) {
-        if (app.productName === tegApp.value[i].modelName) {
-          app.tegFinishedDate = tegApp.value[i].dateOfFinish;
-          app.measType = tegApp.value[i].measType;
-        }
-      }
-    });
 
     // apps.forEach((app) => app.createMesInfo())
 
