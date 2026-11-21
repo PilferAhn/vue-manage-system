@@ -598,9 +598,8 @@ import {
   getLateFabRev2,
 } from "../ApplicationList";
 import { onMounted, watch } from "vue";
-import * as xlsx from "xlsx";
-import ExcelJS, { Alignment, Borders, FillPattern } from "exceljs";
-import {saveAs} from "file-saver";
+// exceljs(약 1.5MB)/file-saver 는 Excel 버튼을 누를 때만 불러온다 (화면을 열 때마다 받던 것을 제거)
+import type { Alignment, Borders, FillPattern } from "exceljs";
 import { holidaysList } from "../../../../utils/date-utils";
 const props = defineProps<{
   fabApp: FabRequest[];
@@ -1186,6 +1185,10 @@ function buildWhcWhere(st: any, isWlp?: boolean): string {
 
 async function handleExcelSubmit() {
   try {
+    const [excelMod, saverMod]: any[] = await Promise.all([import("exceljs"), import("file-saver")]);
+    const ExcelJS = excelMod.default ?? excelMod;
+    const saveAs = saverMod.saveAs ?? saverMod.default?.saveAs ?? saverMod.default;
+
     const data = filteredApplicationData.value ?? [];
     const rows = buildExcelRows(data);
     const headers = EXCEL_HEADERS;
