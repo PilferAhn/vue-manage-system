@@ -25,7 +25,7 @@ const routes: RouteRecordRaw[] = [
         path: "/dashboard",
         name: "dashboard",
         meta: {
-          title: "DashBoard",
+          title: "Home",
           permiss: "1",
         },
         component: () =>

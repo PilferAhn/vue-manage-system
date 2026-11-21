@@ -8,9 +8,9 @@ import { idtProbeBarList } from "./idt-probe-sidebar";
 /** 사이드바 메뉴 정의 (sidebar.vue, 권한관리 화면 등록 목록에서 공용) */
 export const menuItems: SidebarItem[] = [
   {
-    icon: "Odometer",
+    icon: "HomeFilled",
     index: "/dashboard",
-    title: "Dashboard",
+    title: "Home",
     permiss: "1",
   },
   {
