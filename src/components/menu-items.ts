@@ -12,6 +12,8 @@ export const menuItems: SidebarItem[] = [
     index: "/dashboard",
     title: "Home",
     permiss: "1",
+    // 왼쪽 위 집 아이콘 / "RF 개발팀" 글자로 이동하므로 메뉴에서는 숨김
+    hideInSidebar: true,
   },
   {
     icon: "Calendar",

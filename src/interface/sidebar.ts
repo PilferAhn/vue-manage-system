@@ -23,4 +23,6 @@ export interface SidebarItem {
     permiss: string;
     perm?: string;
     subs?: SidebarSubItemLevel1[];
+    /** 왼쪽 메뉴에는 표시하지 않음 (권한관리 화면 목록에는 그대로 남음) */
+    hideInSidebar?: boolean;
 }

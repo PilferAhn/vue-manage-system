@@ -142,7 +142,7 @@ function filterNodes<T extends { index: string; perm?: string; subs?: any[] }>(n
   return result;
 }
 
-const visibleItems = computed(() => filterNodes(items));
+const visibleItems = computed(() => filterNodes(items.filter((i) => !i.hideInSidebar)));
 
 const route = useRoute();
 const onRoutes = computed(() => {

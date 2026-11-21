@@ -1,11 +1,10 @@
 <template>
 	<div class="header">
-		<!-- 折叠按钮 -->
-		<div class="collapse-btn" @click="collapseChage">
-			<el-icon v-if="sidebar.collapse"><Expand /></el-icon>
-			<el-icon v-else><Fold /></el-icon>
+		<!-- 홈 버튼 (예전 메뉴 접기 버튼 자리). 메뉴는 왼쪽에 마우스를 대면 펼쳐짐 -->
+		<div class="collapse-btn" title="Home" @click="goHome">
+			<el-icon><HomeFilled /></el-icon>
 		</div>
-		<div class="logo">RF 개발팀</div>
+		<div class="logo" title="Home" @click="goHome">RF 개발팀</div>
 		<div class="header-right">
 			<div class="header-user-con">
 				<!-- 消息中心 -->
@@ -55,20 +54,15 @@ const username: string | null = localStorage.getItem('ms_username');
 const message: number = 2;
 
 const sidebar = useSidebarStore();
-// 侧边栏折叠
-const collapseChage = () => {
-	sidebar.handleCollapse();
-};
 
+// 메뉴 접기 버튼을 홈 버튼으로 바꿨으므로 메뉴는 항상 접힌 상태로 시작 (마우스를 대면 펼쳐짐)
 onMounted(() => {
-	// 새로고침(F5)으로 저장된 접힘 상태를 되살린 경우에는 그대로 둔다
-	if (!sidebar.restored && !sidebar.collapse && document.body.clientWidth < 1500) {
-		collapseChage();
-	}
+	if (!sidebar.collapse) sidebar.handleCollapse();
 });
 
 // 用户名下拉菜单选择事件
 const router = useRouter();
+const goHome = () => router.push('/dashboard');
 const handleCommand = (command: string) => {
 	if (command == 'loginout') {
 		localStorage.removeItem('ms_username');
@@ -106,6 +100,7 @@ const handleCommand = (command: string) => {
 	float: left;
 	line-height: 40px;
 	font-weight: 600;
+	cursor: pointer;
 }
 .header-right {
 	float: right;
