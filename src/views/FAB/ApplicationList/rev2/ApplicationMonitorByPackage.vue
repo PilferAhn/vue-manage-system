@@ -22,8 +22,6 @@ export default {};
         >
           <el-option label="Designer" value="designer"></el-option>
           <el-option label="Product Name" value="productName"></el-option>
-          <el-option label="Priority" value="priorityId"></el-option>
-          <el-option label="Week Number" value="weekNumber"></el-option>
         </el-select>
 
         <el-input
@@ -70,14 +68,6 @@ export default {};
       :row-style="{ height: '30px' }"
       :cell-class-name="cellClass"
     >
-      <el-table-column
-        :fixed="'left'"
-        type="index"
-        label="No"
-        width="50"
-        :align="'center'"
-      ></el-table-column>
-
       <el-table-column
         :fixed="'left'"
         prop="productName"
@@ -587,6 +577,8 @@ const props = defineProps<{
 const sk = (name: string) => `sample_monitor:${props.stateKey ?? "default"}:${name}`;
 const searchTerm = useSessionRef<string>(sk("searchTerm"), "");
 const searchCategory = useSessionRef<string>(sk("searchCategory"), "productName");
+// 검색 기준은 Designer / Product Name 두 가지만 (Priority, Week Number 제거). 예전에 저장된 값이면 기본값으로
+if (!["designer", "productName"].includes(searchCategory.value)) searchCategory.value = "productName";
 const isRunningFab = useSessionRef<boolean>(sk("isRunningFab"), true);
 const isDealyFab = useSessionRef<boolean>(sk("isDealyFab"), false);
 const isDVonly = useSessionRef<boolean>(sk("isDVonly"), false);
@@ -688,7 +680,8 @@ const filteredData = computed(() => {
 // 셀에 적용할 클래스 반환
 const cellClass = ({ row, rowIndex, column, columnIndex }) => {
   // 예: 짝수 행에만 스타일을 적용
-  if ([5, 7, 9, 12].includes(columnIndex)) {
+  // 강조 열: FAB 투입일, FAB 현위치, FAB 진행일, HQ 출하 (No 열 제거로 번호가 하나씩 당겨짐)
+  if ([4, 6, 8, 11].includes(columnIndex)) {
     return "even-row";
   }
 
