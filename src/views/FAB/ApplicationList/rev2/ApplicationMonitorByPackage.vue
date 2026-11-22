@@ -84,7 +84,7 @@ export default {};
 
       <el-table-column
         label="개발자"
-        width="120"
+        width="90"
         :align="'center'"
         :fixed="'left'"
       >
@@ -154,7 +154,7 @@ export default {};
       <el-table-column
         label="FAB 현위치(투입시간)"
         :align="'center'"
-        width="320"
+        width="290"
         class-name="even-row"
       >
         <template #default="scope">
@@ -196,7 +196,7 @@ export default {};
       </el-table-column> -->
 
       <!-- FAB 진행률: lot 마다 한 줄 막대. 표와 따로 조회되어 도착하면 채워짐 -->
-      <el-table-column label="FAB 진행률" :align="'center'" width="150">
+      <el-table-column label="FAB 진행률" :align="'center'" width="130">
         <template #default="scope">
           <div
             v-for="(item, index) in scope.row.lotStatus"
@@ -294,7 +294,7 @@ export default {};
       <el-table-column
         label="출하 현위치(투입시간)"
         :align="'center'"
-        width="250"
+        width="230"
       >
         <template #default="scope">
           <span 
