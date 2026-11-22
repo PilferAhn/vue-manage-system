@@ -92,6 +92,22 @@ const setTags = (route: any) => {
   const isExist = tags.list.some((item) => {
     return item.path === route.fullPath;
   });
+  // meta.singleTab 화면(의뢰서 자세히 등): 탭을 새로 늘리지 않고 기존 탭을 지금 주소로 바꿈.
+  // 같은 의뢰서에서 ?tab= 만 바뀐 경우에는 화면이 정한 제목(의뢰번호/모델명)을 그대로 둠
+  if (!isExist && route.meta?.singleTab) {
+    const idx = tags.list.findIndex((item) => item.name === route.name);
+    if (idx !== -1) {
+      const old = tags.list[idx];
+      const samePage = old.path.split("?")[0] === route.path;
+      tags.replaceTagsItem(idx, {
+        name: route.name,
+        title: samePage ? old.title : route.meta.title,
+        path: route.fullPath,
+        customTitle: samePage ? old.customTitle : false,
+      });
+      return;
+    }
+  }
   if (!isExist) {
     if (tags.list.length >= 12) tags.delTagsItem(0); // 최근 12개 화면 유지 (이전 8개)
     tags.setTagsItem({
@@ -105,14 +121,18 @@ const setTags = (route: any) => {
 tags.list.forEach((item) => {
   try {
     const r = router.resolve(item.path);
-    if (r.matched.length && r.meta?.title) item.title = r.meta.title as string;
+    if (r.matched.length && r.meta?.title && !item.customTitle) item.title = r.meta.title as string;
   } catch {
     /* 무시 */
   }
 });
-const validTags = tags.list.filter((item) => {
+const validTags = tags.list.filter((item, i) => {
   try {
-    return router.resolve(item.path).matched.length > 0;
+    const r = router.resolve(item.path);
+    if (!r.matched.length) return false;
+    // 탭 하나만 쓰는 화면이 예전 방식으로 여러 개 열려 있으면 마지막 것만 남김
+    if (r.meta?.singleTab && tags.list.slice(i + 1).some((other) => other.name === item.name)) return false;
+    return true;
   } catch {
     return false;
   }

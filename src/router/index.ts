@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import { usePermissStore } from "../store/permiss";
+import { setLastFromRoute } from "../utils/measurement-search";
 import Home from "../views/home.vue";
 import { fabRouteIndexList } from "./fab-router";
 import { whcRouteIndexList } from "./whc-router";
@@ -49,8 +50,10 @@ const routes: RouteRecordRaw[] = [
         path: "/product/meas-info/:uuid",
         name: "MeasurementInfo",
         meta: {
-          title: "의뢰서 작성",
+          title: "의뢰서 자세히",
           permiss: "2",
+          // 상단 탭은 하나만 쓰고, 다른 의뢰서를 열면 그 탭 내용이 바뀜 (제목은 의뢰번호/모델명으로 화면에서 지정)
+          singleTab: true,
         },
         component: () =>
           import(
@@ -158,7 +161,7 @@ const routes: RouteRecordRaw[] = [
         path: "/product/reserved-application-list",
         name: "ReservedMeasurement",
         meta: {
-          title: "의뢰서 자세히",
+          title: "측정 진행/대기 항목",
           permiss: "2",
         },
         component: () =>
@@ -229,7 +232,7 @@ const routes: RouteRecordRaw[] = [
         path: "/teg/finished-list",
         name: "TegMeasurementFinishedQue",
         meta: {
-          title: "의뢰서 자세히",
+          title: "TEG 측정 완료 항목",
           permiss: "2",
         },
         component: () =>
@@ -1008,8 +1011,10 @@ router.beforeEach(async (to, from, next) => {
   }
 });
 
-router.afterEach(() => {
+router.afterEach((to, from) => {
   NProgress.done();
+  // 측정 목록 검색어: 의뢰서 화면에서 돌아왔는지 판단용
+  setLastFromRoute(from.name);
 });
 
 export default router;

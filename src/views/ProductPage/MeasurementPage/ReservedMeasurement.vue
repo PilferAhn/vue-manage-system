@@ -111,21 +111,17 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { onActivated, onMounted } from "vue";
 import MeasurementTab from "./MeasurementTab.vue";
+import { useSessionRef } from "../../../utils/session-state";
+import { resetSearchUnlessReturning } from "../../../utils/measurement-search";
 
-onMounted(() => {
-  const reloadOnBack = () => {
-    window.location.reload();
-  };
+// 화면에 들어올 때마다(keep-alive 복귀 포함): 의뢰서 화면에서 돌아온 게 아니면 검색어 비움
+// (keep-alive 에 없는 경우엔 onActivated 가 안 불리므로 onMounted 에서도 호출. 두 번 불려도 결과 같음)
+onMounted(() => resetSearchUnlessReturning("reserved"));
+onActivated(() => resetSearchUnlessReturning("reserved"));
 
-  window.addEventListener("popstate", reloadOnBack);
-
-  // 페이지를 벗어날 때 이벤트 리스너 제거
-  onUnmounted(() => {
-    window.removeEventListener("popstate", reloadOnBack);
-  });
-});
-
-const activeTabName = ref("maxFuse");
+// 뒤로가기 시 페이지 전체 새로고침은 제거 (MeasurementTab 이 목록을 기억했다가 바로 보여주고 뒤에서 갱신)
+// 보던 탭은 F5/뒤로가기 후에도 유지 (브라우저 탭을 닫으면 MAX FUSE 로 초기화)
+const activeTabName = useSessionRef<string>("measurement_list:reserved:tab", "maxFuse");
 </script>
