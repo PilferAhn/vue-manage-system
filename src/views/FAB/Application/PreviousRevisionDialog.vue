@@ -1,12 +1,18 @@
 <template>
   <el-dialog
     :model-value="props.visible"
-    title="이전 차수 공정 조건 불러오기"
+    :title="isJa ? '前回の工程条件の読み込み' : '이전 차수 공정 조건 불러오기'"
     width="680px"
     :close-on-click-modal="false"
     @update:model-value="(v: boolean) => !v && emit('skip')"
   >
-    <p style="margin: 0 0 12px; line-height: 1.6">
+    <!-- WJC 사용자는 일본어 (utils/i18n.ts 의 isJapaneseUser) -->
+    <p v-if="isJa" style="margin: 0 0 12px; line-height: 1.6">
+      <strong>{{ props.productName }}</strong> の前回の依頼書があります。<br />
+      選択した依頼書の <strong>Freq Range, Wafer, HS Wafer Structure, IDT, Piston, Passivation, SiO2, Photo</strong>
+      条件を読み込みます。読み込んだ後に値を変更すると、提出時に警告が表示されます。
+    </p>
+    <p v-else style="margin: 0 0 12px; line-height: 1.6">
       <strong>{{ props.productName }}</strong> 이전 차수의 의뢰서가 있습니다.<br />
       선택한 의뢰서의 <strong>Freq Range, Wafer, HS Wafer Structure, IDT, Piston, Passivation, SiO2, Photo</strong>
       조건을 불러옵니다. 불러온 뒤 값을 바꾸면 제출 시 경고가 표시됩니다.
@@ -27,19 +33,19 @@
         </template>
       </el-table-column>
       <el-table-column prop="productName" label="P/N" width="160" align="center" />
-      <el-table-column label="등록일" width="120" align="center">
+      <el-table-column :label="isJa ? '登録日' : '등록일'" width="120" align="center">
         <template #default="scope">{{ formatDate(scope.row.createdDate) }}</template>
       </el-table-column>
-      <el-table-column label="FAB 투입일" width="120" align="center">
+      <el-table-column :label="isJa ? 'FAB 投入日' : 'FAB 투입일'" width="120" align="center">
         <template #default="scope">{{ formatDate(scope.row.wantedFabStartDate) }}</template>
       </el-table-column>
-      <el-table-column prop="designerName" label="개발자" align="center" />
+      <el-table-column prop="designerName" :label="isJa ? '開発者' : '개발자'" align="center" />
     </el-table>
 
     <template #footer>
-      <el-button @click="emit('skip')">불러오지 않음</el-button>
+      <el-button @click="emit('skip')">{{ isJa ? "読み込まない" : "불러오지 않음" }}</el-button>
       <el-button type="primary" :disabled="!selected" :loading="props.loading" @click="emit('load', selected)">
-        불러오기
+        {{ isJa ? "読み込む" : "불러오기" }}
       </el-button>
     </template>
   </el-dialog>
@@ -49,6 +55,9 @@
 import { ref, watch } from "vue";
 import type { PreviousRevision } from "../../../utils/Fab/fab-revision-utils";
 import { formatDate } from "../../../utils/date-utils";
+import { isJapaneseUser } from "../../../utils/i18n";
+
+const isJa = isJapaneseUser();
 
 const props = defineProps<{
   visible: boolean;

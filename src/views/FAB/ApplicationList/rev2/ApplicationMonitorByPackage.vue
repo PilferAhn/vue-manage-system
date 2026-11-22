@@ -16,7 +16,7 @@ export default {};
       <div style="display: flex; align-items: center">
         <el-select
           v-model="searchCategory"
-          placeholder="검색 기준"
+          :placeholder="tt('검색 기준')"
           class="search-dropdown"
           style="width: 150px"
         >
@@ -26,7 +26,7 @@ export default {};
 
         <el-input
           v-model="searchTerm"
-          :placeholder="`검색할 ${searchCategory} 입력`"
+          :placeholder="tt(`검색할 ${searchCategory} 입력`)"
           class="search-input mr10"
           clearable
           @clear="handleClear"
@@ -35,8 +35,8 @@ export default {};
 
         <el-switch
           v-model="isRunningFab"
-          active-text="진행 공정 보기"
-          inactive-text="모든 공정 보기"
+          :active-text="tt('진행 공정 보기')"
+          :inactive-text="tt('모든 공정 보기')"
           style="margin-left: 20px"
         ></el-switch>
       </div>
@@ -44,19 +44,19 @@ export default {};
       <!-- 필터/엑셀 버튼: 표 아래에 있던 것을 위로 옮겨 표가 화면 끝까지 차게 함 -->
       <div class="toolbar-actions">
         <el-button type="info" :plain="!showLotId" @click="showLotId = !showLotId">
-          {{ showLotId ? "LOT ID 숨기기" : "LOT ID 보기" }}
+          {{ showLotId ? tt("LOT ID 숨기기") : tt("LOT ID 보기") }}
         </el-button>
         <el-button type="warning" :plain="!isDealyFab" @click="toggleLateFilter">
-          {{ isDealyFab ? "원래 데이터 보기" : "지연 과제 보기" }}
+          {{ isDealyFab ? tt("원래 데이터 보기") : tt("지연 과제 보기") }}
         </el-button>
         <el-button type="warning" :plain="!isDVonly" @click="toggleDVFilter">
           {{ isDVonly ? "Cancel DV" : "DV only" }}
         </el-button>
         <el-button type="warning" :plain="!isTransitedOnly" @click="toggleTransitedFilter">
-          {{ isTransitedOnly ? "전체 보기" : "출하완료 보기" }}
+          {{ isTransitedOnly ? tt("전체 보기") : tt("출하완료 보기") }}
         </el-button>
         <el-button type="primary" @click="handleExcelSubmit">
-          개발 샘플 진행 상황 EXCEL
+          {{ tt("개발 샘플 진행 상황 EXCEL") }}
         </el-button>
       </div>
     </div>
@@ -83,14 +83,14 @@ export default {};
       />
 
       <el-table-column
-        label="개발자"
-        width="90"
+        :label="tt('개발자')"
+        width="115"
         :align="'center'"
         :fixed="'left'"
       >
         <!-- 한 줄 표시: 개발자=의뢰자면 이름 한 번, 다르면 "개발자 / 의뢰자". 길면 … 처리, 마우스를 대면 전체 -->
         <template #default="scope">
-          <div class="one-line" :title="peopleLabel(scope.row)">{{ peopleLabel(scope.row) }}</div>
+          <div class="one-line dev-name" :title="peopleLabel(scope.row)">{{ peopleLabel(scope.row) }}</div>
         </template>
       </el-table-column>
       
@@ -134,7 +134,7 @@ export default {};
         </template>
       </el-table-column> -->
 
-      <el-table-column label="FAB 투입일" :align="'center'" width="110" class-name="even-row">
+      <el-table-column :label="tt('FAB 투입일')" :align="'center'" width="110" class-name="even-row">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             {{ formatDate(item.creationDate) }}
@@ -143,7 +143,7 @@ export default {};
         </template>
       </el-table-column>
 
-      <el-table-column label="FAB OUT 계획일" width="105" :align="'center'">
+      <el-table-column :label="tt('FAB OUT 계획일')" width="105" :align="'center'">
         <template #default="scope">
           <span>
             {{ formatDate(scope.row.wantedFabFinishDate) }}
@@ -152,35 +152,24 @@ export default {};
       </el-table-column>
 
       <el-table-column
-        label="FAB 현위치(투입시간)"
+        :label="tt('FAB 현위치(투입시간)')"
         :align="'center'"
-        width="290"
+        width="210"
         class-name="even-row"
       >
+        <!-- lot 마다 한 줄. 칸보다 길면 … 로 줄이고, 마우스를 대면 전체 문구 표시 -->
         <template #default="scope">
-          <span 
+          <div
             v-for="(item, index) in scope.row.lotStatus"
-
             :key="index"
+            class="one-line lot-line"
             :style="
               testFabOutAlarm(item.operation.operationId, item.moveinDate)
                 ? 'color: red;'
                 : ''
             "
-          >
-          <span
-              v-if="item['fabOutHistory'] == null"
-            >
-            {{ item["operation"]["name"] }}
-            {{ formatDateTime(item.moveinDate) }}
-            <!-- {{ item.operation.operationId }} -->
-            
-          </span>
-          <span v-else>  
-            {{ item["fabOutHistory"]["operation"]["name"] }}
-            {{formatDate(item["fabOutHistory"]["endDate"])}} </span>
-            <br />
-          </span>
+            :title="fabLocationText(item)"
+          >{{ fabLocationText(item) }}</div>
         </template>
       </el-table-column>
       <!-- <el-table-column
@@ -196,7 +185,7 @@ export default {};
       </el-table-column> -->
 
       <!-- FAB 진행률: lot 마다 한 줄 막대. 표와 따로 조회되어 도착하면 채워짐 -->
-      <el-table-column label="FAB 진행률" :align="'center'" width="130">
+      <el-table-column :label="tt('FAB 진행률')" :align="'center'" width="130">
         <template #default="scope">
           <div
             v-for="(item, index) in scope.row.lotStatus"
@@ -212,7 +201,7 @@ export default {};
                   :style="{ width: progressOf(item) + '%' }"
                 ></span>
               </span>
-              <span class="pbar-txt">{{ progressOf(item) === 100 ? "완료" : Math.round(progressOf(item)!) + "%" }}</span>
+              <span class="pbar-txt">{{ progressOf(item) === 100 ? tt("완료") : Math.round(progressOf(item)!) + "%" }}</span>
             </template>
             <span v-else class="pbar-empty">{{ lotProgressState === "loading" ? "…" : "-" }}</span>
           </div>
@@ -267,7 +256,7 @@ export default {};
 
       <el-table-column  :align="'center'" width="90" class-name="even-row">
         <template #header>
-           FAB<br/>진행일
+           FAB<br/>{{ tt("진행일") }}
         </template>
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
@@ -280,7 +269,7 @@ export default {};
 
       <el-table-column  :align="'center'" width="120">
         <template #header>
-           FAB<br/>리드타임
+           FAB<br/>{{ tt("리드타임") }}
         </template>
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
@@ -292,7 +281,7 @@ export default {};
       </el-table-column>
 
       <el-table-column
-        label="출하 현위치(투입시간)"
+        :label="tt('출하 현위치(투입시간)')"
         :align="'center'"
         width="230"
       >
@@ -332,7 +321,7 @@ export default {};
         </template>
       </el-table-column> -->
 
-      <el-table-column label="HQ 출하" :align="'center'" width="100" class-name="even-row">
+      <el-table-column :label="tt('HQ 출하')" :align="'center'" width="100" class-name="even-row">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             <span v-if="item['operation']['name'] === 'Transit 공정'">
@@ -359,7 +348,7 @@ export default {};
       
       <el-table-column :align="'center'" width="90">
         <template #header>
-          출하<br/>리드타임
+          {{ tt("출하") }}<br/>{{ tt("리드타임") }}
         </template>
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
@@ -370,7 +359,7 @@ export default {};
         </template>
       </el-table-column>
 
-      <el-table-column label="WHC 도착" :align="'center'" width="120">
+      <el-table-column :label="tt('WHC 도착')" :align="'center'" width="120">
         <template #default="scope">
           <span v-for="(item, index) in scope.row.lotStatus" :key="index">
             <span v-if="item['hanoiCsp'] !== null">
@@ -398,12 +387,12 @@ export default {};
       </el-table-column>
 
       <el-table-column
-        label="WHC 현위치(투입시간)"
+        :label="tt('WHC 현위치(투입시간)')"
         :align="'center'"
         width="1500"
         v-if="!props.isWlp"
       >
-        <el-table-column label="플립본딩" width="450" :align="'center'">
+        <el-table-column :label="tt('플립본딩')" width="450" :align="'center'">
           <template #default="scope">
             <span v-for="(item, index) in scope.row.lotStatus" :key="index">
               <span v-if="item['hanoiCsp'] !== null">
@@ -458,7 +447,7 @@ export default {};
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="최종출하" width="400" :align="'center'">
+        <el-table-column :label="tt('최종출하')" width="400" :align="'center'">
           <template #default="scope">
             <span v-for="(item, index) in scope.row.lotStatus" :key="index">
               <span
@@ -500,12 +489,12 @@ export default {};
       </el-table-column>
 
       <el-table-column
-        label="WHC 현위치(투입시간)"
+        :label="tt('WHC 현위치(투입시간)')"
         :align="'center'"
         width="1500"
         v-if="props.isWlp"
       >
-        <el-table-column label="현재 공정" width="450" :align="'center'">
+        <el-table-column :label="tt('현재 공정')" width="450" :align="'center'">
           <template #default="scope">
             <span v-for="(item, index) in scope.row.lotStatus" :key="index">
               <span v-if="item['hanoiWlp'] !== null">
@@ -535,7 +524,7 @@ export default {};
 
       
       <el-table-column
-        label="WHC 개발팀 입고"
+        :label="tt('WHC 개발팀 입고')"
         width="150"
         :align="'center'"
       ></el-table-column>
@@ -577,11 +566,14 @@ export default {};
 import { ref, computed } from "vue";
 import { useFillHeight } from "../../../../utils/use-fill-height";
 import { useSessionRef } from "../../../../utils/session-state";
+import { useT } from "../../../../utils/i18n";
 import { ElMessage } from "element-plus";
 
 // 표 높이 = 화면 아래 끝까지 (탭 안쪽 여백 15 + 본문 여백 10 + 여유)
 const tableBox = ref<HTMLElement | null>(null);
-const { height: tableHeight } = useFillHeight(tableBox, 30);
+const { height: fillHeight } = useFillHeight(tableBox, 30);
+// fixedHeight 를 주면(메인 화면 등) 그 높이로 고정, 없으면 기존처럼 화면 끝까지
+const tableHeight = computed(() => props.fixedHeight ?? fillHeight.value);
 import type { FabRequest } from "../../../../interface/fab-application-rev2";
 import {
   formatDate,
@@ -597,7 +589,7 @@ import {
   testFabOutAlarm,
   getLateFabRev2,
 } from "../ApplicationList";
-import { onMounted, watch } from "vue";
+import { onMounted, watch, nextTick, onActivated, onBeforeUnmount } from "vue";
 // exceljs(약 1.5MB)/file-saver 는 Excel 버튼을 누를 때만 불러온다 (화면을 열 때마다 받던 것을 제거)
 import type { Alignment, Borders, FillPattern } from "exceljs";
 import { holidaysList } from "../../../../utils/date-utils";
@@ -609,7 +601,20 @@ const props = defineProps<{
   /** lot 별 FAB 진행률 (key = lot_id) */
   lotProgress?: Record<string, LotProgress>;
   lotProgressState?: "loading" | "done" | "failed";
+  /** 표 높이 고정(px). 없으면 화면 아래 끝까지 */
+  fixedHeight?: number;
+  /** 메인 화면에서만 true: WJC 사용자에게 화면 문구를 일본어로 (데이터는 그대로) */
+  translate?: boolean;
 }>();
+const tt = useT(() => props.translate);
+
+/** FAB 현위치 한 줄 문구 (FAB 진행 중: 현재 공정 + 투입시간 / FAB OUT: OUT 공정 + 날짜) */
+function fabLocationText(item: any): string {
+  if (item?.fabOutHistory == null) {
+    return `${item?.operation?.name ?? ""} ${formatDateTime(item?.moveinDate)}`.trim();
+  }
+  return `${item.fabOutHistory?.operation?.name ?? ""} ${formatDate(item.fabOutHistory?.endDate)}`.trim();
+}
 
 /** 개발자 칸 한 줄 표시용 */
 function peopleLabel(row: any): string {
@@ -635,10 +640,10 @@ function progressOf(item: any): number | null {
 function progressTitle(item: any): string {
   const info = props.lotProgress?.[item?.lotId];
   const pct = progressOf(item);
-  if (pct === null) return props.lotProgressState === "failed" ? "진행률 조회 실패" : "";
-  if (pct === 100 && !(info && (info.progress ?? 0) >= 100)) return `${item?.lotId}: FAB 완료`;
-  const seq = info?.currentSeqNo != null && info?.totalSeqNo ? ` (공정 ${info.currentSeqNo}/${info.totalSeqNo})` : "";
-  return `${item?.lotId}: ${pct === 100 ? "FAB 완료" : pct.toFixed(1) + "%"}${seq}${info?.isRework ? " · 재작업 중" : ""}`;
+  if (pct === null) return props.lotProgressState === "failed" ? tt("진행률 조회 실패") : "";
+  if (pct === 100 && !(info && (info.progress ?? 0) >= 100)) return `${item?.lotId}: ${tt("FAB 완료")}`;
+  const seq = info?.currentSeqNo != null && info?.totalSeqNo ? ` (${tt("공정")} ${info.currentSeqNo}/${info.totalSeqNo})` : "";
+  return `${item?.lotId}: ${pct === 100 ? tt("FAB 완료") : pct.toFixed(1) + "%"}${seq}${info?.isRework ? ` · ${tt("재작업 중")}` : ""}`;
 }
 
 // 검색/필터 상태: 탭별로 sessionStorage 에 저장 → F5 후에도 유지 (브라우저 탭을 닫으면 초기화)
@@ -701,6 +706,28 @@ const filteredApplicationData = computed(() => {
   });
 });
 
+// 스크롤바 크기/위치 다시 계산
+// 숨겨진 탭 안에서 만들어지거나(메인 화면), 데이터가 나중에 도착하면 처음 계산한 스크롤바 길이가
+// 실제 내용과 맞지 않게 남는다 → 데이터·높이가 바뀔 때, 표가 보이게 될 때, 화면 복귀 시 다시 맞춘다
+function refreshTableLayout() {
+  nextTick(() => {
+    requestAnimationFrame(() => {
+      tableRef.value?.doLayout?.();
+      tableRef.value?.scrollBarRef?.update?.();
+    });
+  });
+}
+let layoutObserver: ResizeObserver | null = null;
+onMounted(() => {
+  if (typeof ResizeObserver !== "undefined" && tableBox.value) {
+    layoutObserver = new ResizeObserver(refreshTableLayout); // 숨김 → 표시(탭 전환) 때도 호출됨
+    layoutObserver.observe(tableBox.value);
+  }
+  refreshTableLayout();
+});
+onActivated(refreshTableLayout);
+onBeforeUnmount(() => layoutObserver?.disconnect());
+
 const isFiltered = ref(false);
 const temp = ref<FabRequest[]>([]);
 
@@ -762,6 +789,9 @@ const filteredData = computed(() => {
 
   return tempApp.value;
 });
+
+// 표시 행 수·표 높이가 바뀌면 스크롤바 다시 계산 (filteredData 선언 뒤에 있어야 함)
+watch(() => [filteredApplicationData.value.length, tableHeight.value], refreshTableLayout);
 
 // 셀에 적용할 클래스 반환
 const cellClass = ({ row, rowIndex, column, columnIndex }) => {
@@ -1361,6 +1391,16 @@ const toggleTransitedFilter = () => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+/* 개발자 이름: 조금 크게 */
+.dev-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+/* FAB 현위치: lot 한 줄 높이를 다른 열(23px)과 맞춤 */
+.lot-line {
+  height: 23px;
+  line-height: 23px;
 }
 
 /* FAB 진행률: 다른 열의 lot 한 줄(23px)과 높이를 맞춰 줄이 어긋나지 않게 함 */

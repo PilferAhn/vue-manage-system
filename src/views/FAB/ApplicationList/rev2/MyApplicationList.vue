@@ -94,7 +94,12 @@
       </el-table-column>
       <el-table-column label="수정자" width="90" :align="'center'" show-overflow-tooltip>
         <template #default="scope">
-          {{ scope.row.updater?.userName ?? "-" }}
+          <!-- 수정자 MES: 마우스를 대면 MES 가 바꾼 내용 표시 -->
+          <MesChangeBadge
+            v-if="scope.row.updaterId === 'MES' || scope.row.updater?.id === 'MES'"
+            :product-name="scope.row.productName"
+          />
+          <template v-else>{{ scope.row.updater?.userName ?? "-" }}</template>
         </template>
       </el-table-column>
       <el-table-column
@@ -137,6 +142,7 @@ import { useFillHeight } from "../../../../utils/use-fill-height";
 const tableBox = ref<HTMLElement | null>(null);
 const { height: tableHeight } = useFillHeight(tableBox, 16);
 import DialogTemplate from "../ApplicationLinksDialog.vue";
+import MesChangeBadge from "../../Common/MesChangeBadge.vue";
 import type { FabRequestForm } from "../../../../interface/fab-application-rev2";
 import {
   getApplicationListByDict,

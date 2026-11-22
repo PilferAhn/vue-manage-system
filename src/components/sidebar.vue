@@ -103,6 +103,18 @@
         </template>
       </template>
     </el-menu>
+
+    <!-- 맨 아래: 변경 이력 (접힌 상태에서는 아이콘만) -->
+    <router-link
+      to="/changelog"
+      class="sidebar-changelog"
+      :class="{ collapsed: sidebar.collapse && !isPeeking }"
+      title="변경 이력"
+      @click="collapseAfterSelect"
+    >
+      <el-icon><Document /></el-icon>
+      <span v-if="!(sidebar.collapse && !isPeeking)">변경 이력</span>
+    </router-link>
   </div>
 </template>
 
@@ -200,7 +212,36 @@ onBeforeUnmount(() => clearTimeout(peekTimer));
 .sidebar-el-menu:not(.el-menu--collapse) {
   width: 250px;
 }
+/* 메뉴가 위를 채우고 "변경 이력" 은 맨 아래에 붙음 */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  background-color: #324157;
+}
 .sidebar > ul {
-  height: 100%;
+  flex: 1 0 auto;
+}
+.sidebar-changelog {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 250px;
+  box-sizing: border-box;
+  padding: 14px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  color: #bfcbd9;
+  font-size: 14px;
+  text-decoration: none;
+}
+.sidebar-changelog.collapsed {
+  width: 64px;
+  justify-content: center;
+  padding: 14px 0;
+}
+.sidebar-changelog:hover,
+.sidebar-changelog.router-link-active {
+  color: #20a0ff;
+  background: rgba(0, 0, 0, 0.12);
 }
 </style>

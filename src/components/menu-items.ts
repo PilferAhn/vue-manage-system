@@ -2,7 +2,8 @@ import { SidebarItem } from "../interface/sidebar";
 import { fabSilderBarList } from "./fab-sidebar";
 import { whcSilderBarList } from "./whc-sidebar";
 import { moduleSilderBarList } from "./module-sidebar";
-import { dv2SilderBarList } from "./dv2-sidebar";
+// DV2 사용 중지 (2026-11-22)
+// import { dv2SilderBarList } from "./dv2-sidebar";
 import { idtProbeBarList } from "./idt-probe-sidebar";
 
 /** 사이드바 메뉴 정의 (sidebar.vue, 권한관리 화면 등록 목록에서 공용) */
@@ -64,7 +65,7 @@ export const menuItems: SidebarItem[] = [
   idtProbeBarList,
   fabSilderBarList,
   whcSilderBarList,
-  dv2SilderBarList,
+  // dv2SilderBarList, // DV2 사용 중지 (2026-11-22)
   moduleSilderBarList,
   {
     icon: "Edit",

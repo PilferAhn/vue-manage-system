@@ -1,18 +1,20 @@
 <template>
-  <el-dialog v-model="isVisible" title="의뢰서 선택">
+  <el-dialog v-model="isVisible" :title="tt('의뢰서 선택')">
     <h2>{{ props.fabApplication.productName }}</h2>
     <br />
     <el-table :data="ApplicationTypes">
-      <el-table-column prop="name" label="측정 의뢰서 항목"></el-table-column>
+      <el-table-column prop="name" :label="tt('측정 의뢰서 항목')">
+        <template #default="scope">{{ tt(scope.row.name) }}</template>
+      </el-table-column>
       <el-table-column label="Action">
         <template #default="scope"><el-button :disabled="!scope.row.status"
-            @click="createApplication(props.fabApplication, scope.row.type)">의뢰서 생성</el-button></template>
+            @click="createApplication(props.fabApplication, scope.row.type)">{{ tt("의뢰서 생성") }}</el-button></template>
       </el-table-column>
     </el-table>
     <br />
-    <p>의뢰서를 선택하세요</p>
+    <p>{{ tt("의뢰서를 선택하세요") }}</p>
     <template #footer>
-      <el-button @click="closeDialog">Close</el-button>
+      <el-button @click="closeDialog">{{ tt("Close") }}</el-button>
     </template>
   </el-dialog>
 </template>
@@ -27,14 +29,21 @@ import { formatDate } from "../../../utils/date-utils";
 import { getMesFabFormInfo } from "./rev2/ApplicationTable";
 import { buttonTypes } from "element-plus";
 import { getCheckSap } from "../../../utils/cspRequestFormUtill"
+import { useT } from "../../../utils/i18n";
 
 const props = defineProps<{
   visible: boolean;
   fabApplication: FabRequestForm;
+  /** 메인 화면에서만 true: WJC 사용자에게 화면 문구를 일본어로 */
+  translate?: boolean;
 }>();
+const tt = useT(() => props.translate);
 
 const router = useRouter();
 function createApplication(fabApplication: FabRequestForm, type: string) {
+  // 다른 화면으로 이동하기 전에 팝업을 닫는다.
+  // (닫지 않으면 숨겨진 이전 화면의 팝업 덮개가 남아 홈 버튼 등 클릭이 막힘)
+  emit("update:visible", false);
   if (type === "whc") {
     router.push({
       name: "CreateWhcAppByFabRequestForm",

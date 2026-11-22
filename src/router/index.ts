@@ -1,5 +1,7 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import { usePermissStore } from "../store/permiss";
+import { useTagsStore } from "../store/tags";
+import { hasLoginSession, clearLoginData } from "../utils/login-session";
 import { setLastFromRoute } from "../utils/measurement-search";
 import Home from "../views/home.vue";
 import { fabRouteIndexList } from "./fab-router";
@@ -7,7 +9,7 @@ import { whcRouteIndexList } from "./whc-router";
 import { modulesRouteIndexList } from "./modules-router";
 import { tegRouteIndexList } from "./teg-router";
 import { pdtRouteIndexList } from "./pdt-router";
-import { dv2RouteIndexList } from "./dv2-router";
+// import { dv2RouteIndexList } from "./dv2-router"; // DV2 사용 중지 (2026-11-22)
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import { idtProbeRouteIndexList } from "./idt-probe-router";
@@ -22,6 +24,15 @@ const routes: RouteRecordRaw[] = [
     name: "Home",
     component: Home,
     children: [
+      {
+        // 변경 이력 (사이드바 맨 아래 링크). 로그인한 모든 사용자 (2026-11-22)
+        path: "/changelog",
+        name: "ChangeLog",
+        meta: {
+          title: "변경 이력",
+        },
+        component: () => import("../views/ChangeLog.vue"),
+      },
       {
         path: "/dashboard",
         name: "dashboard",
@@ -945,7 +956,7 @@ const routes: RouteRecordRaw[] = [
       ...idtProbeRouteIndexList,
       ...fabRouteIndexList,
       ...whcRouteIndexList,
-      ...dv2RouteIndexList,
+      // ...dv2RouteIndexList, // DV2 사용 중지 (2026-11-22)
       ...modulesRouteIndexList,
       ...tegRouteIndexList,
       ...pdtRouteIndexList,
@@ -988,8 +999,14 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   NProgress.start();
-  const role = localStorage.getItem("ms_username");
   const permiss = usePermissStore();
+  // 브라우저를 껐다 켠 경우(세션 쿠키 없음): 로그아웃하고 로그인 화면으로. 이전 화면 탭 목록도 비움 (2026-11-22)
+  if (localStorage.getItem("ms_username") && !hasLoginSession()) {
+    clearLoginData();
+    permiss.clearWebPermissions();
+    useTagsStore().clearTags();
+  }
+  const role = localStorage.getItem("ms_username");
   if (to.path === "/create-account") {
     next();
   } else if (!role && to.path !== "/login") {

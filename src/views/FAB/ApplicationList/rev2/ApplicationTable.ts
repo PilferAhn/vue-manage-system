@@ -61,6 +61,18 @@ export async function getMesFabFormInfo(apps: FabRequest[]) {
       apps[i].isFabCardCreated = null
     }
 
+    // Not Found 인데 같은 기종의 다른 변형(마지막 글자만 다른 P/N, 예: B 대신 A)만 MES 에 있으면
+    // 이 변형은 투입 취소된 것으로 보고 화면에 "투입취소 확인 요망" 표시 (2026-11-22)
+    (apps[i] as any).mesSiblingName = null;
+    if (!isFound && apps[i].productName) {
+      const pn = apps[i].productName;
+      const base = pn.slice(0, -1);
+      const sibling = fabMesDataList.find(
+        (m) => m.pmname && m.pmname !== pn && m.pmname.length === pn.length && m.pmname.startsWith(base)
+      );
+      if (sibling) (apps[i] as any).mesSiblingName = sibling.pmname;
+    }
+
   }
 
   return {

@@ -53,6 +53,7 @@ import { ElMessage } from "element-plus";
 import type { FormInstance, FormRules } from "element-plus";
 import { Lock, User } from "@element-plus/icons-vue";
 import { userLogin } from "../utils/login";
+import { markLoginSession } from "../utils/login-session";
 
 
 interface LoginInfo {
@@ -131,6 +132,9 @@ const submitForm = (formEl: FormInstance | undefined) => {
 
           // 권한관리(web_permission) 권한 로드
           await permiss.loadWebPermissions(true);
+
+          // 브라우저를 닫으면 로그아웃되도록 세션 표시 (utils/login-session.ts)
+          markLoginSession();
 
           router.push("/");
         }

@@ -5,6 +5,18 @@
 			<el-icon><HomeFilled /></el-icon>
 		</div>
 		<div class="logo" title="Home" @click="goHome">RF 개발팀</div>
+		<!-- 업데이트 날짜 / 개발자 / 개선 요청 안내 (WJC 사용자는 일본어 + 미검수 안내) -->
+		<div class="header-info">
+			<span>{{ info.updated }} {{ LAST_UPDATED }}</span>
+			<span class="sep">|</span>
+			<span>{{ info.developer }} {{ info.devName }}</span>
+			<span class="sep">|</span>
+			<span class="welcome">{{ info.welcome }}</span>
+			<template v-if="info.notice">
+				<span class="sep">|</span>
+				<span class="notice">{{ info.notice }}</span>
+			</template>
+		</div>
 		<div class="header-right">
 			<div class="header-user-con">
 				<!-- 消息中心 -->
@@ -49,6 +61,27 @@ import { useSidebarStore } from '../store/sidebar';
 import { usePermissStore } from '../store/permiss';
 import { useRouter } from 'vue-router';
 import imgurl from '../assets/img/img.jpg';
+import { isJapaneseUser } from '../utils/i18n';
+import { resetCancelCheckPopup } from '../utils/Fab/fab-card-monitor';
+import { clearLoginSession } from '../utils/login-session';
+
+// 화면을 고칠 때마다 이 날짜를 바꿔 주세요
+const LAST_UPDATED = '2026-11-22';
+const info = isJapaneseUser()
+	? {
+			updated: '更新日',
+			developer: '開発者',
+			devName: '오해관',
+			welcome: '改善のご要望はいつでも歓迎します',
+			notice: '※ 日本語表示はまだネイティブチェックを受けていません',
+		}
+	: {
+			updated: '업데이트',
+			developer: '개발자',
+			devName: '오해관',
+			welcome: '개선 요청사항은 언제든 환영합니다',
+			notice: '',
+		};
 
 const username: string | null = localStorage.getItem('ms_username');
 const message: number = 2;
@@ -62,9 +95,15 @@ onMounted(() => {
 
 // 用户名下拉菜单选择事件
 const router = useRouter();
-const goHome = () => router.push('/dashboard');
+const goHome = () => {
+	// 이미 메인 화면이면 주소가 같아 아무 변화가 없으므로, 메인 화면에 '내 현황' 탭으로 돌아가라고 알린다
+	window.dispatchEvent(new Event('go-home'));
+	router.push('/dashboard');
+};
 const handleCommand = (command: string) => {
 	if (command == 'loginout') {
+		resetCancelCheckPopup(); // 다음 로그인 때 "투입취소 확인 요망" 팝업 다시 확인
+		clearLoginSession(); // 브라우저 세션 표시 삭제 (utils/login-session.ts)
 		localStorage.removeItem('ms_username');
 		usePermissStore().clearWebPermissions();
 		router.push('/login');
@@ -101,6 +140,24 @@ const handleCommand = (command: string) => {
 	line-height: 40px;
 	font-weight: 600;
 	cursor: pointer;
+}
+.header-info {
+	float: left;
+	line-height: 40px;
+	margin-left: 18px;
+	font-size: 12px;
+	color: #a9b6c8;
+	white-space: nowrap;
+}
+.header-info .sep {
+	margin: 0 8px;
+	color: #5d6b80;
+}
+.header-info .welcome {
+	color: #d6e4f5;
+}
+.header-info .notice {
+	color: #f3c26b;
 }
 .header-right {
 	float: right;

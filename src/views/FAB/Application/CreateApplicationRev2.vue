@@ -6,7 +6,7 @@
         <el-input
           v-model="fabApplication.productName"
           class="pn-gate__input"
-          placeholder="예) TSG00ARX004A"
+          :placeholder="pnPlaceholder"
           clearable
           @keyup.enter="checkNow"
         />
@@ -74,6 +74,7 @@
   // import {generateMachineOptionsForEtching} from "../../../utils/Fab/fab-application-deposition.utils"
   import { OptionInterface } from "../../../interface/option";
   import { getUserId, getUserName } from "../../../utils/account-utils";
+  import { isJapaneseUser } from "../../../utils/i18n";
   import axios from "axios";
   import { ElMessage } from "element-plus";
 import ApplicationUnavailableMessage from "./ApplicationUnavailableMessage.vue";
@@ -96,17 +97,31 @@ import { sendGetRequest, sendPostRequest } from "../../../utils/httpProtocol";
   const isFormUnlocked = ref(false);
   const isCheckingRevision = ref(false);
 
+  // P/N 입력 안내: WJC 사용자는 일본어 (utils/i18n.ts 의 isJapaneseUser)
+  const isJa = isJapaneseUser();
+  const pnPlaceholder = isJa ? "例) TSG00ARX004A" : "예) TSG00ARX004A";
+
   const gateMessage = computed(() => {
     const pn = (fabApplication.productName ?? "").trim();
     if (isFormUnlocked.value) {
-      if (revisionGuard.loadedFrom) return `✔ ${revisionGuard.loadedFrom}의 공정 조건을 불러왔습니다.`;
-      if (revisionGuard.candidates.length) return "✔ 이전 차수 조건을 불러오지 않고 작성합니다.";
-      return "✔ 확인 완료 (이전 차수 기록 없음)";
+      if (revisionGuard.loadedFrom)
+        return isJa
+          ? `✔ ${revisionGuard.loadedFrom} の工程条件を読み込みました。`
+          : `✔ ${revisionGuard.loadedFrom}의 공정 조건을 불러왔습니다.`;
+      if (revisionGuard.candidates.length)
+        return isJa ? "✔ 前回の条件を読み込まずに作成します。" : "✔ 이전 차수 조건을 불러오지 않고 작성합니다.";
+      return isJa ? "✔ 確認完了 (前回の記録なし)" : "✔ 확인 완료 (이전 차수 기록 없음)";
     }
-    if (isCheckingRevision.value) return "이전 차수 기록 확인 중...";
-    if (revisionDialogVisible.value) return "이전 차수 공정 조건을 불러올지 선택하세요.";
-    if (pn && !parseRevision(pn)) return `P/N 은 12자리입니다 (현재 ${pn.length}자리). 예) TSG00ARX004A`;
-    return "P/N 12자리를 먼저 입력하세요. 확인이 끝나면 나머지 항목이 활성화됩니다.";
+    if (isCheckingRevision.value) return isJa ? "前回の記録を確認中..." : "이전 차수 기록 확인 중...";
+    if (revisionDialogVisible.value)
+      return isJa ? "前回の工程条件を読み込むか選択してください。" : "이전 차수 공정 조건을 불러올지 선택하세요.";
+    if (pn && !parseRevision(pn))
+      return isJa
+        ? `P/N は12桁です (現在 ${pn.length}桁)。例) TSG00ARX004A`
+        : `P/N 은 12자리입니다 (현재 ${pn.length}자리). 예) TSG00ARX004A`;
+    return isJa
+      ? "まず P/N(12桁)を入力してください。確認が終わると残りの項目が入力できるようになります。"
+      : "P/N 12자리를 먼저 입력하세요. 확인이 끝나면 나머지 항목이 활성화됩니다.";
   });
 
   resetRevisionGuard();
@@ -215,7 +230,11 @@ import { sendGetRequest, sendPostRequest } from "../../../utils/httpProtocol";
     } catch (e) {
       console.error("이전 차수 조회 실패:", e);
       // 조회 실패로 작성을 막지는 않는다 (제출 시 한 번 더 확인함)
-      ElMessage.warning("이전 차수 기록을 확인하지 못했습니다. 그대로 작성할 수 있습니다.");
+      ElMessage.warning(
+        isJa
+          ? "前回の記録を確認できませんでした。このまま作成できます。"
+          : "이전 차수 기록을 확인하지 못했습니다. 그대로 작성할 수 있습니다."
+      );
       isFormUnlocked.value = true;
     } finally {
       isCheckingRevision.value = false;
@@ -228,7 +247,11 @@ import { sendGetRequest, sendPostRequest } from "../../../utils/httpProtocol";
       const source = await fetchFabRequest(sourceProductName);
       const sourceSawType = defineSawTypeByWaferType(source.wafer?.sawTypeId, sawTypes);
       if (!sourceSawType) {
-        ElMessage.error(`${sourceProductName}의 웨이퍼 종류를 확인할 수 없어 불러오지 못했습니다.`);
+        ElMessage.error(
+          isJa
+            ? `${sourceProductName} のウェーハ種類を確認できないため、読み込めませんでした。`
+            : `${sourceProductName}의 웨이퍼 종류를 확인할 수 없어 불러오지 못했습니다.`
+        );
         return;
       }
 
@@ -251,11 +274,13 @@ import { sendGetRequest, sendPostRequest } from "../../../utils/httpProtocol";
       revisionGuard.loadedFrom = sourceProductName;
       revisionDialogVisible.value = false;
       isFormUnlocked.value = true;
-      ElMessage.success(`${sourceProductName}의 공정 조건을 불러왔습니다.`);
+      ElMessage.success(
+        isJa ? `${sourceProductName} の工程条件を読み込みました。` : `${sourceProductName}의 공정 조건을 불러왔습니다.`
+      );
     } catch (e) {
       console.error("이전 차수 불러오기 실패:", e);
       showForm.value = true;
-      ElMessage.error("이전 차수 공정 조건을 불러오지 못했습니다.");
+      ElMessage.error(isJa ? "前回の工程条件を読み込めませんでした。" : "이전 차수 공정 조건을 불러오지 못했습니다.");
     } finally {
       isLoadingRevision.value = false;
     }
