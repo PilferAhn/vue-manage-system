@@ -13,7 +13,6 @@
               :category="'next'"
               key="next"
               :page-size="5"
-              :fab-app="fabAppList"
             />
           </template>
         </el-tab-pane>
@@ -23,7 +22,6 @@
               :category="'delay'"
               key="delay"
               :page-size="5"
-              :fab-app="fabAppList"
             />
           </template>
         </el-tab-pane>
@@ -37,7 +35,6 @@
               :category="'product'"
               key="product"
               :page-size="10"
-              :fab-app="fabAppList"
             />
           </template>
         </el-tab-pane>
@@ -47,7 +44,6 @@
               :category="'model'"
               key="model"
               :page-size="10"
-              :fab-app="fabAppList"
             />
           </template>
         </el-tab-pane>
@@ -57,7 +53,6 @@
               :category="'tcf'"
               key="tcf"
               :page-size="10"
-              :fab-app="fabAppList"
             />
           </template>
         </el-tab-pane>
@@ -75,44 +70,15 @@ import {
   getRunningMeasurement,
   TegRunningMeas,
 } from "./../../../utils/waferMeasurementHelper";
-import type { FabApplicationForm } from "../../../interface/mes-interface";
-import { fetchProcessData } from "../../FAB/ApplicationList/ApplicationList";
-import { getApplicationListByDictRev2 } from "../../../utils/Fab/fab-application-utils";
-import { FabRequest } from "../../../interface/fab-application-rev2";
-
 const activeTabMain = ref("main1");
 const activeTabSub = ref("sub1");
-const fabApp = ref<FabApplicationForm[]>([]);
-const fabAppList = ref<FabRequest[]>([])
 const runningMeas = ref<TegRunningMeas[]>([]);
 
+// Location 용 FAB 의뢰서는 각 탭(TegMeasurementTab)이 자기 목록의 모델만 따로 받아옴.
+// (예전에는 여기서 FAB 의뢰서 전체 약 2천 건 / 42MB 를 받아 35초 이상 걸렸음)
 onMounted(async () => {
   try {
-
     runningMeas.value = await getRunningMeasurement();
-    // fabApp.value = await fetchProcessData(fabApp.value);
-
-    let tempNames = ""
-
-    let para = {
-      users: true,
-      wafer: true,
-      idt_type: true,
-      hs_type: true,
-      idt_layers: false,
-      lot_status: true,
-      is_pending: false,      
-    };
-
-    for(let i = 0 ; i < runningMeas.value.length; i++){
-      tempNames += runningMeas.value[i].productName + ","
-    }
-
-    // para["product_names"] = tempNames
-
-    fabAppList.value = await getApplicationListByDictRev2(para)
-    console.log(fabAppList.value.length)
-
   } catch (error) {
     console.error("Error fetching applications:", error);
   }

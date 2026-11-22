@@ -53,8 +53,11 @@
     </el-table-column>
     <el-table-column label="Location" :align="'center'" width="150">
       <template #default="scope">
-        {{ scope.row.currentStage }} <br />
-        {{ scope.row.currentStageTime }}
+        <template v-if="scope.row.currentStage">
+          {{ scope.row.currentStage }} <br />
+          {{ scope.row.currentStageTime }}
+        </template>
+        <span v-else class="location-empty">{{ locationLoading ? "…" : "-" }}</span>
       </template>
     </el-table-column>
     <el-table-column label="Progress" :align="'center'" width="100">
@@ -93,8 +96,14 @@
   ></el-pagination>
 </template>
 
+<script lang="ts">
+// 모델(P/N)별 FAB 의뢰서 (Location 계산용). 탭/재방문 사이에 공유, F5 하면 비워짐
+const fabCache = new Map<string, any[]>();
+</script>
+
 <script lang="ts" setup>
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { getApplicationListByDictRev2 } from "../../../utils/Fab/fab-application-utils";
 import { useRouter } from "vue-router";
 import {
   TegApplication,
@@ -108,7 +117,6 @@ import { FabRequest } from "../../../interface/fab-application-rev2";
 const props = defineProps<{
   category: string;
   pageSize: number;
-  fabApp: FabRequest[];
 }>();
 
 const userType = localStorage.getItem("ms_username");
@@ -136,28 +144,56 @@ const EXCLUDED_OPERATIONS = new Set([
   "LTE 코팅",
 ]);
 
+const locationLoading = ref(false);
+
 /**
- * TEG 의뢰마다 같은 P/N 의 FAB 의뢰서 lot 중 제외 공정이 아닌 첫 lot 의 공정/투입시간을 Location 으로 채운다.
+ * Location 계산에 쓰는 FAB 의뢰서(lot 위치)를 이 탭 목록에 있는 모델만 서버에서 받아온다.
+ * (예전에는 부모 화면이 FAB 의뢰서 전체 2천여 건/약 42MB 를 받아 35초 이상 걸렸음 → 필요한 모델만 약 1초)
+ * 한 번 받은 모델은 fabCache 에 기억해 다른 탭/재방문 때 다시 요청하지 않는다.
+ */
+async function loadFabForProducts(productNames: string[]) {
+  const missing = [...new Set(productNames.filter((n) => n && !fabCache.has(n)))];
+  const CHUNK = 100;
+  for (let i = 0; i < missing.length; i += CHUNK) {
+    const chunk = missing.slice(i, i + CHUNK);
+    const list = await getApplicationListByDictRev2({
+      users: false,
+      wafer: false,
+      idt_type: false,
+      customer: false,
+      hs_type: false,
+      idt_layers: false,
+      lot_status: true,
+      is_pending: false,
+      product_names: chunk.join(","),
+    });
+    for (const n of chunk) fabCache.set(n, []);
+    for (const fr of list as any[]) {
+      if (fr?.productName) {
+        if (!fabCache.has(fr.productName)) fabCache.set(fr.productName, []);
+        fabCache.get(fr.productName)!.push(fr);
+      }
+    }
+  }
+}
+
+/**
+ * TEG 의뢰마다 같은 P/N 의 FAB 의뢰서 lot 중 제외 공정이 아닌 lot 의 공정/투입시간을 Location 으로 채운다.
+ * TEG LOT ID 와 같은 계열의 lot (예: NCKK90080 → NCKK9008x) 을 먼저 찾고, 없으면 같은 P/N 의 다른 lot 을 쓴다.
  * (이전 코드는 lot 이 없거나 모두 제외 공정이면 배열 끝을 넘어 읽다가 오류가 나서, 그 뒤 의뢰 전부 Location 이 비었음)
  */
 function applyLocations() {
-  if (!props.fabApp?.length || !applications.value.length) return;
-  const byProduct = new Map<string, FabRequest[]>();
-  for (const fr of props.fabApp) {
-    if (!fr?.productName) continue;
-    if (!byProduct.has(fr.productName)) byProduct.set(fr.productName, []);
-    byProduct.get(fr.productName)!.push(fr);
-  }
-  for (const app of applications.value) {
-    for (const fr of byProduct.get(app.productName) ?? []) {
-      const lot = (fr.lotStatus ?? []).find(
-        (l: any) => l?.operation?.name && !EXCLUDED_OPERATIONS.has(l.operation.name)
-      );
-      if (lot) {
-        app.currentStage = lot.operation.name;
-        app.currentStageTime = formatDateTime(lot.moveinDate);
-        break;
-      }
+  const usable = (l: any) => l?.operation?.name && !EXCLUDED_OPERATIONS.has(l.operation.name);
+  for (const app of applications.value as any[]) {
+    const frs = fabCache.get(app.productName) ?? [];
+    const lots = frs.flatMap((fr: any) => fr.lotStatus ?? []);
+    const family = (app.lotId || "").slice(0, -1);
+    const lot =
+      (family.length >= 5 ? lots.find((l: any) => usable(l) && (l.lotId || "").startsWith(family)) : undefined) ??
+      lots.find(usable);
+    if (lot) {
+      app.currentStage = lot.operation.name;
+      app.currentStageTime = formatDateTime(lot.moveinDate);
     }
   }
 }
@@ -165,9 +201,20 @@ function applyLocations() {
 onMounted(async () => {
   try {
     applications.value = await getTegApplication(props.category);
-    applyLocations();
   } catch (error) {
     console.error("Error fetching applications:", error);
+    return;
+  }
+  // 목록은 먼저 보여주고 Location 은 뒤에서 채움
+  applyLocations(); // 이미 받아 둔 모델은 바로 표시
+  locationLoading.value = true;
+  try {
+    await loadFabForProducts(applications.value.map((a: any) => a.productName));
+    applyLocations();
+  } catch (error) {
+    console.error("Location(FAB lot 위치) 조회 실패:", error);
+  } finally {
+    locationLoading.value = false;
   }
 });
 
@@ -179,8 +226,6 @@ const filteredData = computed(() => {
   );
 });
 
-// FAB 의뢰서 목록이 TEG 목록보다 늦게 도착하는 경우
-watch(() => props.fabApp, applyLocations);
 
 // useRouter 훅을 사용하여 라우터 인스턴스를 가져옵니다.
 const router = useRouter();
@@ -216,6 +261,10 @@ function filterTable() {
 }
 .pagination-margin {
   margin-top: 20px;
+}
+
+.location-empty {
+  color: #c0c4cc;
 }
 
 .high-priority {

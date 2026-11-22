@@ -94,7 +94,8 @@ export const getNewTegApplication = async (
 ): Promise<oldTegApplication[]> => {
   try {
     const url = "teg_application/get-teg-applications-by-status";
-    const response = await axios.get(url + "/" + status);
+    // light=true: 아래에서 쓰는 필드만 받음 (전체 37개 필드 → 약 8MB 였음). 서버가 모르는 경우엔 무시되고 전체 필드가 옴
+    const response = await axios.get(url + "/" + status, { params: { light: true } });
     let wafers = [];
 
     const applications: oldTegApplication[] = response.data.map((app: any) => ({
