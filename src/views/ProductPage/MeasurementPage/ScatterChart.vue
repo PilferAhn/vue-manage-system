@@ -1,6 +1,8 @@
 <template class="test">
   <div class="chart-container">
-    <canvas ref="chartCanvas"></canvas>
+    <!-- 마우스로 영역을 드래그하면 그 영역으로 확대, 더블클릭하면 처음 범위로 -->
+    <canvas ref="chartCanvas" @dblclick="onDblClick"></canvas>
+    <div class="zoom-hint">드래그: 영역 확대 · Ctrl+휠: 확대/축소 · Shift+드래그: 이동 · 더블클릭: 원래대로</div>
     <div class="controls">
       <div class="input-group">
         <label class="input-label">X축 최소값:</label>
@@ -86,6 +88,15 @@ let myChart = null;
 
 // console.log(props.chartData)
 
+// 확대/이동한 범위를 입력칸에 반영
+const syncScatterInputs = (chart) => {
+  const r = (v) => (Number.isFinite(v) ? Number(v.toFixed(2)) : v);
+  xMin.value = r(chart.scales.x.min);
+  xMax.value = r(chart.scales.x.max);
+  yMin.value = r(chart.scales.y.min);
+  yMax.value = r(chart.scales.y.max);
+};
+
 const drawChart = () => {
   if (myChart) {
     myChart.destroy();
@@ -157,6 +168,32 @@ const drawChart = () => {
         },
       },
       plugins: {
+        // 마우스 드래그: 영역 확대 / Ctrl+휠: 확대·축소 / Shift+드래그: 이동
+        // (휠만 쓰면 페이지 스크롤과 겹치므로 Ctrl 을 누를 때만)
+        zoom: {
+          pan: {
+            enabled: true,
+            mode: "xy",
+            modifierKey: "shift",
+            onPanComplete: ({ chart }) => syncScatterInputs(chart),
+          },
+          zoom: {
+            wheel: {
+              enabled: true,
+              modifierKey: "ctrl",
+              speed: 0.1,
+            },
+            drag: {
+              enabled: true,
+              backgroundColor: "rgba(64, 158, 255, 0.15)",
+              borderColor: "#409eff",
+              borderWidth: 1,
+              threshold: 5,
+            },
+            mode: "xy",
+            onZoomComplete: ({ chart }) => syncScatterInputs(chart),
+          },
+        },
         // zoom: {
         //   zoom: {
         //     wheel: {
@@ -192,6 +229,14 @@ const drawChart = () => {
   });
 };
 
+// 더블클릭 초기화는 그래프 영역 안에서만 (범례 SPL 을 빠르게 두 번 눌러 켜고 끌 때 확대가 풀리지 않도록)
+const onDblClick = (e) => {
+  const area = myChart?.chartArea;
+  if (!area) return;
+  const x = e.offsetX;
+  const y = e.offsetY;
+  if (x >= area.left && x <= area.right && y >= area.top && y <= area.bottom) resetScale();
+};
 const resetScale = () => {
   const minMax = getMinMax(props.chartData, props.chartTitle);
   xMax.value = minMax.xMax;
@@ -229,4 +274,9 @@ watch(() => props.chartData, drawChart, { deep: true });
 
 <style scoped>
 @import "../../../assets/css/LinveGraph.css";
+.zoom-hint {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #909399;
+}
 </style>

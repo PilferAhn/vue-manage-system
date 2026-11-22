@@ -14,6 +14,9 @@ export const getTargetFreqArray = () => {
 
 
 export const getSummaryData = async (uuid: string) => {
+  // 이전에 본 의뢰서의 데이터/그래프가 남아 보이지 않도록 먼저 비움
+  // (페이지가 keep-alive 로 유지되고 뒤로가기 새로고침도 없어서, 비우지 않으면 다른 의뢰서 값이 섞여 보임)
+  calculatedSummaries.value = [];
   try {
     const response = await axios.get(
       "/pdt_measurement/get_summary_data/" + uuid

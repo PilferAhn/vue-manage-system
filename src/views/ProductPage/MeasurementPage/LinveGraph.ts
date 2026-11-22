@@ -269,7 +269,24 @@ interface CustomPluginOptions {
 
 export const customPlugin = (startX, endX, targets): Plugin => ({
   id: "myCustomPlugin",
-  afterDraw: (chart, args, options) => {
+  // 확대(축 범위 변경/마우스 드래그) 시 Spec 선이 그래프 영역 밖(축/제목 위)에 그려지지 않도록 그래프 영역으로 잘라서 그림
+  afterDraw: (chart) => {
+    const { ctx, chartArea } = chart;
+    if (!chartArea) return;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(chartArea.left, chartArea.top, chartArea.right - chartArea.left, chartArea.bottom - chartArea.top);
+    ctx.clip();
+    try {
+      drawSpecMarks(chart, startX, endX, targets);
+    } finally {
+      ctx.restore();
+    }
+  },
+});
+
+function drawSpecMarks(chart, startX, endX, targets) {
+  {
 
     
 
@@ -299,6 +316,8 @@ export const customPlugin = (startX, endX, targets): Plugin => ({
   
 
     targets.map((dict, index) => {
+      // 범례에서 꺼 둔 SPL 의 Spec 선은 그리지 않음
+      if (index < chart.data.datasets.length && !chart.isDatasetVisible(index)) return;
       const centerFC = dict["fc"];
       const splXPixcel = xAxis.getPixelForValue(centerFC);
 
@@ -412,8 +431,8 @@ export const customPlugin = (startX, endX, targets): Plugin => ({
     ctx.fillStyle = "black";
     ctx.fillText(`System fc`, xPixel - 23, yEnd - 23); // x 값의 위치에 텍스트 추가
     ctx.restore();
-    
-  },
-});
+
+  }
+}
 
 export default customPlugin;
