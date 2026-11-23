@@ -3,7 +3,7 @@ import { SidebarItem } from "../interface/sidebar";
 export const moduleSilderBarList: SidebarItem = {
   icon: "Pear",
   index: "7",
-  title: "모듈 (Module)",
+  title: "모듈",
   permiss: "11",
   subs: [
     // 구 버전 의뢰서 작성/의뢰 항목은 메뉴에서 제외 (NEW 화면 사용). 라우트는 기존 링크 호환을 위해 유지

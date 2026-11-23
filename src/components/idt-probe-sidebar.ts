@@ -8,7 +8,7 @@ export const idtProbeBarList:SidebarItem = {
     subs: [
       {
         index: "/idt-probe/register-items",
-        title: "Register Items",
+        title: "항목 등록",
         permiss: "2",
       },
       {

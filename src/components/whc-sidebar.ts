@@ -3,23 +3,23 @@ import { SidebarItem } from "../interface/sidebar";
 export const whcSilderBarList: SidebarItem = {
   icon: "Pear",
   index: "4",
-  title: "WHC Measurement",
+  title: "WHC", // WHC Measurement (2026-11-23 메뉴 이름 짧게)
   permiss: "11",
   subs: [
     {
       index: "/whc/create-application",
-      title: "Create Request Form",
+      title: "의뢰서",
       permiss: "11",
     },
   
     {
       index: "/whc/cspzolip-list",
-      title: "CSP Req Form List",
+      title: "CSP 리스트", // CSP Req Form List (2026-11-23)
       permiss: "11",
     },
     {
       index: "/whc/application-list",
-      title: "Measurement monitor",
+      title: "측정 현황", // Measurement monitor (2026-11-23)
       permiss: "11",
     },
     {
@@ -34,7 +34,7 @@ export const whcSilderBarList: SidebarItem = {
           subs: [
             {
               index: "/whc/solder-stock-management/create-stock",
-              title: "Solder Registration",
+              title: "Solder 등록",
               permiss: "11",
             },
             {
@@ -46,12 +46,12 @@ export const whcSilderBarList: SidebarItem = {
         },
         {
           index: "/whc/stock-management",
-          title: "Finished Product (Reel) ",
+          title: "완제품 (Reel)", // Finished Product (Reel)
           permiss: "11",
           subs: [
             {
               index: "/whc/stock-management/create-stock",
-              title: "LOT Registration",
+              title: "LOT 등록",
               permiss: "11",
             },
             {

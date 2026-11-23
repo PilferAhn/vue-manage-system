@@ -93,7 +93,7 @@ const sidebar = useSidebarStore();
 
 // 메뉴 접기 버튼을 홈 버튼으로 바꿨으므로 메뉴는 항상 접힌 상태로 시작 (마우스를 대면 펼쳐짐)
 onMounted(() => {
-	if (!sidebar.collapse) sidebar.handleCollapse();
+	sidebar.collapseIfNotPinned(); // 메뉴 고정을 켠 사람은 펼친 상태 유지
 });
 
 // 用户名下拉菜单选择事件

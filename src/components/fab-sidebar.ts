@@ -3,7 +3,7 @@ import { SidebarItem } from "../interface/sidebar";
 export const fabSilderBarList: SidebarItem = {
   icon: "DocumentAdd",
   index: "3",
-  title: "Development SAMPLE",
+  title: "개발 샘플", // Development SAMPLE (2026-11-23)
   permiss: "11",
   subs: [
     // {
@@ -28,12 +28,12 @@ export const fabSilderBarList: SidebarItem = {
     // },
     {
       index: "/fab/create-application2",
-      title: "Create Request Form",
+      title: "의뢰서", // Create Request Form (2026-11-23)
       permiss: "11",
     },
     {
       index: "/fab/fab-card-moniter",
-      title: "Fab Card 작성 현황",
+      title: "Fab Card 현황",
       permiss: "11",
     },
     {
@@ -65,7 +65,7 @@ export const fabSilderBarList: SidebarItem = {
       subs: [
         {
           index: "/fab/mes/sample_status",
-          title: "SPL Status - HQ",
+          title: "SPL 현황 (HQ)",
           permiss: "11",
         },
         // {

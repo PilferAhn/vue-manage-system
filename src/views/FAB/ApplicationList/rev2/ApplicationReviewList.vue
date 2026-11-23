@@ -1,27 +1,26 @@
 <template>
-  <div class="container">
-    <!-- Tabs for This Week, Last Week, and Next Week -->
-    <el-tabs v-model="activeTab" type="card" @tab-click="handleTabClick">
-      <el-tab-pane :label="priviousWeekLabel" name="lastWeek">
+  <!-- Form Review: 지난 주 / 이번 주 / 다음 주 투입분 탭
+       lazy: 처음 열 때만 불러오고, 한 번 연 탭은 그대로 유지 → 탭을 오가도 다시 조회/다시 그리지 않음 (2026-11-23)
+       (예전 v-if 는 탭을 누를 때마다 표를 지우고 의뢰서·MES 조회와 그리기를 처음부터 반복해 느렸음) -->
+  <div class="review-page">
+    <el-tabs v-model="activeTab" type="card">
+      <el-tab-pane :label="priviousWeekLabel" name="lastWeek" lazy>
         <ApplicationsByWeek
-          v-if="activeTab === 'lastWeek'"
           :processData="lastWeekDataArray"
           :week-number="lastWeekNumberForSearch"
           :week-year="lastWeekYearForSearch"
         />
       </el-tab-pane>
 
-      <el-tab-pane :label="currentWeekLabel" name="thisWeek">
+      <el-tab-pane :label="currentWeekLabel" name="thisWeek" lazy>
         <ApplicationsByWeek
-          v-if="activeTab === 'thisWeek'"
           :processData="applications"
           :week-number="thisWeekNumberForSearch"
           :week-year="thisWeekYearForSearch"
         />
       </el-tab-pane>
-      <el-tab-pane :label="nextWeekLabel" name="nextWeek">
+      <el-tab-pane :label="nextWeekLabel" name="nextWeek" lazy>
         <ApplicationsByWeek
-          v-if="activeTab === 'nextWeek'"
           :processData="nextWeekDataArray"
           :week-number="nextWeekNumberForSearch"
           :week-year="nextWeekYearForSearch"
@@ -31,20 +30,10 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted, reactive } from "vue";
+import { ref, reactive } from "vue";
 import { getCurrentWeekNumber, getWeekYearFromWantedFabStart } from "../../../../utils/date-utils";
-import { fetchProcessData } from ".././ApplicationList";
 import ApplicationsByWeek from "./ApplicationTable.vue";
-import type { ProcessData } from "../../Interface/ApplicationInterface";
-import {
-  FabRequestForm,
-  FabRequest,
-} from "../../../../interface/fab-application-rev2";
-import {
-  getApplicationList,
-  getApplicationListByDict,
-} from "../../../../utils/Fab/fab-application-utils";
-import { getUserId } from "../../../../utils/account-utils";
+import { FabRequest } from "../../../../interface/fab-application-rev2";
 
 function getInputWeekInfoFromWriteDate(writeDate: Date) {
   // 작성한 주의 "다음 주"가 실제 투입 주
@@ -90,51 +79,21 @@ const {
 const nextWeekNumberForSearch = getCurrentWeekNumber(nextWeekDate);
 const nextWeekYearForSearch   = getWeekYearFromWantedFabStart(nextWeekDate);
 
-const priviousWeekLabel =
-  lastWeekNumber + "주 투입분 - (지난 주)";
-const currentWeekLabel = thisWeekNumber + "주 투입분 작성- (이번 주)";
-const nextWeekLabel =
-  nextWeekNumber + "주 투입분 - (다음 주 )"
-// const currentWeekNumber: number = getCurrentWeekNumber();
-// const currentWeekLabel = (currentWeekNumber + 1).toString() + "주 투입분 작성- (이번 주)"
-// const priviousWeekLabel =
-//   (currentWeekNumber).toString() +
-//   "주 투입분 - (지난 주)"
-// const nextWeekLabel =
-//   (currentWeekNumber + 2).toString() +
-//   "주 투입분 - (다음 주 )" 
+const priviousWeekLabel = lastWeekNumber + "주 투입분 - (지난 주)";
+const currentWeekLabel = thisWeekNumber + "주 투입분 작성 - (이번 주)";
+const nextWeekLabel = nextWeekNumber + "주 투입분 - (다음 주)";
 
-// Define the active tab, default is 'thisWeek'
 const activeTab = ref("thisWeek");
-// Handle tab click if you need any additional logic
-const handleTabClick = (tab: any) => {
-  console.log("Active Tab:", tab.name);
-};
 
-// Define processData arrays for different tabs
-const processDataArray = ref<FabRequest[]>([]); // For this week's data
-const thisWeekDataArray = ref<FabRequest[]>([]); // For this week's data
-const lastWeekDataArray = ref<FabRequest[]>([]); // For last week's data
-const nextWeekDataArray = ref<FabRequest[]>([]); // For next week's data
-const isLoad = ref<boolean>(false);
+// 탭별 의뢰서 목록 (각 탭의 ApplicationTable 이 열릴 때 채움)
+// (reactive 배열: ApplicationTable 이 같은 배열 안의 내용을 바꿔 채움)
+const lastWeekDataArray = reactive<FabRequest[]>([]);
 const applications = reactive<FabRequest[]>([]);
-
-
+const nextWeekDataArray = reactive<FabRequest[]>([]);
 </script>
 
 <style scoped>
-/* Add margin or padding to give extra space for the scrollbar */
-.container {
-  padding-right: 30px; /* Increases space between the scroll bar and the table */
-}
-
-.custom-table {
-  box-sizing: border-box;
-  padding-right: 20px; /* Adds padding inside the table for extra space */
-  margin-right: 10px; /* Adds a margin outside the table */
-}
-
-.uppercase {
-  text-transform: uppercase;
+.review-page :deep(.el-tabs__header) {
+  margin-bottom: 8px;
 }
 </style>

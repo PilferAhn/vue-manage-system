@@ -19,12 +19,12 @@ export const menuItems: SidebarItem[] = [
   {
     icon: "Calendar",
     index: "1",
-    title: "Power Durability Test",
+    title: "PDT", // Power Durability Test (2026-11-23 메뉴 이름 짧게)
     permiss: "2",
     subs: [
       {
         index: "/product/create-application",
-        title: "Create Request Form",
+        title: "의뢰서",
         permiss: "2",
       },
       {
@@ -42,12 +42,12 @@ export const menuItems: SidebarItem[] = [
   {
     icon: "Calendar",
     index: "2",
-    title: "Teg Measurement",
+    title: "TEG", // Teg Measurement
     permiss: "2",
     subs: [
       {
         index: "/teg/create-teg-application2",
-        title: "Create Reqeust Form",
+        title: "의뢰서",
         permiss: "2",
       },
       {
@@ -70,7 +70,7 @@ export const menuItems: SidebarItem[] = [
   {
     icon: "Edit",
     index: "5",
-    title: "Statistics",
+    title: "통계", // Statistics
     permiss: "2",
     subs: [
       {
@@ -90,14 +90,14 @@ export const menuItems: SidebarItem[] = [
           },
           {
             index: "/admin/pdt/statistic",
-            title: "PDT Statistics",
+            title: "PDT 통계",
             permiss: "2",
           },
         ],
       },
       {
         index: "/admin/teg/teg_application",
-        title: "TEG Measurement",
+        title: "TEG",
         permiss: "2",
         subs: [
           {
@@ -107,7 +107,7 @@ export const menuItems: SidebarItem[] = [
           },
           {
             index: "/statistic/chart",
-            title: "TEG Statistics",
+            title: "TEG 통계",
             permiss: "2",
           },
           // {
@@ -119,12 +119,12 @@ export const menuItems: SidebarItem[] = [
       },
       {
         index: "/admin/whc/solder-application",
-        title: "WHC Measurement",
+        title: "WHC",
         permiss: "2",
         subs: [
           {
             index: "/admin/whc/solder-application-statistic",
-            title: "WHC Statistics",
+            title: "WHC 통계",
             permiss: "2",
           },
           // {
@@ -145,12 +145,12 @@ export const menuItems: SidebarItem[] = [
     subs: [
       {
         index: "/calculator/s-parameter_ver2",
-        title: "TCF Calculator",
+        title: "TCF 계산기",
         permiss: "11",
       },
       {
         index: "/calculator/marking_maker",
-        title: "마킹설정자동화",
+        title: "마킹 자동화",
         permiss: "11",
       },
       {
@@ -256,12 +256,12 @@ export const menuItems: SidebarItem[] = [
       },
       {
         index: "/rules/pcb",
-        title: "Package(PCB) COST",
+        title: "PKG cost" /* Package(PCB) COST */,
         permiss: "2",
       },
        {
         index: "/rules/k1standard",
-        title: "K1 IND,CAP Standard Value",
+        title: "K1 IND/CAP 기준값",
         permiss: "2",
       },
       {
