@@ -6,6 +6,19 @@ export type ChangeLogEntry = { date: string; author: string; items: ChangeLogIte
 
 export const CHANGELOG: ChangeLogEntry[] = [
   {
+    date: "2026-11-23",
+    author: "오해관",
+    items: [
+      { area: "메인 화면", text: "바로가기에 [작성된 의뢰 항목 (TEG/PDT)] 버튼 복구 → 내 의뢰서 목록(TEG/PDT) 화면 (사용자 요청)" },
+      { area: "의뢰서 작성", text: "의뢰서 작성/보기 화면에서는 마우스를 왼쪽으로 옮겨도 메뉴가 자동으로 펼쳐지지 않음 (사용자 요청)" },
+      { area: "공통", text: "상단 홈 버튼 옆에 메뉴 열기/닫기 아이콘 추가" },
+      { area: "공통", text: "왼쪽 메뉴 자동 펼침 대기 시간 0.15초 → 0.5초 (너무 빨리 펼쳐진다는 요청), 접힘 대기 0.4초" },
+      { area: "의뢰서 작성", text: "이전 차수 불러오기에 Package, Designer, Band, Filter Type 추가" },
+      { area: "코드 정리", text: "코드 리뷰 반영: MES 자동 보정이 값 변화 없이 '수정자 MES' 로 기록되던 가능성 제거, MES 연동 중 서버 응답이 멈추던 구조 수정, 서버 작업자 4개로 복귀(주기 작업 중복 실행 방지)" },
+      { area: "코드 정리", text: "휴일 목록을 한 곳(korean-holidays.ts)에서 관리, 로그아웃 처리 통일, Fab Card 화면 안 쓰는 코드 정리, 백업 파일 삭제" },
+    ],
+  },
+  {
     date: "2026-11-22",
     author: "오해관",
     items: [

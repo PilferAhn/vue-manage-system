@@ -1,7 +1,6 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import { usePermissStore } from "../store/permiss";
-import { useTagsStore } from "../store/tags";
-import { hasLoginSession, clearLoginData } from "../utils/login-session";
+import { hasLoginSession, clearLoginState } from "../utils/login-session";
 import { setLastFromRoute } from "../utils/measurement-search";
 import Home from "../views/home.vue";
 import { fabRouteIndexList } from "./fab-router";
@@ -1002,9 +1001,7 @@ router.beforeEach(async (to, from, next) => {
   const permiss = usePermissStore();
   // 브라우저를 껐다 켠 경우(세션 쿠키 없음): 로그아웃하고 로그인 화면으로. 이전 화면 탭 목록도 비움 (2026-11-22)
   if (localStorage.getItem("ms_username") && !hasLoginSession()) {
-    clearLoginData();
-    permiss.clearWebPermissions();
-    useTagsStore().clearTags();
+    clearLoginState();
   }
   const role = localStorage.getItem("ms_username");
   if (to.path === "/create-account") {

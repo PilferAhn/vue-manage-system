@@ -158,6 +158,10 @@ export const PROCESS_FIELDS: ProcessField[] = [
 // 화면 표시에 필요한 서버 조인 객체 (비교 대상은 아님)
 const EXTRA_COPY_KEYS = ["wafer", "hsType"];
 
+// 기본 정보: 이전 차수에서 같이 불러오는 항목 (2026-11-23 사용자 요청)
+// 공정 조건이 아니므로 "불러온 뒤 바뀐 항목" 경고(비교) 대상에서는 제외
+const BASIC_COPY_KEYS = ["packageId", "packageSubTypeId", "band", "filterType"];
+
 const clone = <T>(v: T): T => (v === undefined ? v : JSON.parse(JSON.stringify(v)));
 
 // ---------------------------------------------------------------- Photo
@@ -210,6 +214,13 @@ export function applyProcessSections(
   const s = source as any;
   for (const f of PROCESS_FIELDS) t[f.key] = clone(s[f.key]);
   for (const k of EXTRA_COPY_KEYS) t[k] = clone(s[k]);
+  // 기본 정보: Package / Band / Filter Type / Designer (원본에 값이 있을 때만 덮어씀)
+  for (const k of BASIC_COPY_KEYS) if (s[k] != null && s[k] !== "") t[k] = clone(s[k]);
+  if (s.designer?.id) {
+    // Designer 입력칸은 designer.id / designer.userName 을 보고, designerId 는 User2.vue 가 designer.id 로 맞춤
+    t.designer = { ...(t.designer ?? {}), id: s.designer.id, userName: s.designer.userName };
+    t.designerId = s.designer.id;
+  }
   if (s.photo?.photoProcesses) t.photo = clone(s.photo); // 원본에 Photo 가 없으면 현재 값 유지
   revisionGuard.photoMemory = buildPhotoMemory(s.photo);
 

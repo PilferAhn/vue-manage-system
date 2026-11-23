@@ -173,15 +173,20 @@ function collapseAfterSelect() {
 // 메뉴 밖으로 잠깐 벗어났다 돌아와도 닫히지 않도록 약간 늦게 닫는다.
 const isPeeking = ref(false);
 let peekTimer: ReturnType<typeof setTimeout> | undefined;
+// 자동 펼침 대기 시간 (2026-11-23 사용자 요청: 너무 빠름 → 0.15초에서 0.5초로)
+const PEEK_OPEN_DELAY = 500; // 메뉴 위에 이만큼 머물러야 펼침 (ms)
+const PEEK_CLOSE_DELAY = 400; // 메뉴 밖으로 나가고 이만큼 지나야 접힘 (ms)
 function onPeekEnter() {
   clearTimeout(peekTimer);
   if (!sidebar.collapse || isPeeking.value) return;
-  peekTimer = setTimeout(() => (isPeeking.value = true), 150);
+  // 의뢰서 작성/수정 화면(meta.noSidebarPeek)에서는 자동 펼침 안 함 → 상단 메뉴 아이콘으로 열기 (2026-11-23)
+  if (route.meta?.noSidebarPeek) return;
+  peekTimer = setTimeout(() => (isPeeking.value = true), PEEK_OPEN_DELAY);
 }
 function onPeekLeave() {
   clearTimeout(peekTimer);
   if (!isPeeking.value) return;
-  peekTimer = setTimeout(() => (isPeeking.value = false), 250);
+  peekTimer = setTimeout(() => (isPeeking.value = false), PEEK_CLOSE_DELAY);
 }
 function stopPeek() {
   clearTimeout(peekTimer);

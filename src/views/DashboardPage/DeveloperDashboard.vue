@@ -29,6 +29,8 @@
           </div>
           <div class="quick-links">
             <el-button type="primary" @click="go('FabApplication2')">{{ t("샘플 의뢰서 작성") }}</el-button>
+            <!-- 내 의뢰서 목록(PDT/TEG): 왼쪽 메뉴에 없고 메인 바로가기로만 들어가는 화면 (기존 메인의 "작성된 의뢰 항목") -->
+            <el-button v-if="canOpenMyApplications" @click="go('MyApplications')">{{ t("작성된 의뢰 항목 (TEG/PDT)") }}</el-button>
           </div>
         </el-card>
       </el-col>
@@ -212,6 +214,7 @@ import ApplicationMonitorByPackage from "../FAB/ApplicationList/rev2/Application
 import { FabRequest } from "../../interface/fab-application-rev2";
 import { getAppByPackageType } from "../../utils/Fab/fab-application-monitor";
 import { useSessionRef } from "../../utils/session-state";
+import { usePermissStore } from "../../store/permiss";
 import { getUserId, getUserName, getDepartment } from "../../utils/account-utils";
 import { t, isJapaneseUser } from "../../utils/i18n";
 import jaLocale from "element-plus/es/locale/lang/ja";
@@ -253,6 +256,9 @@ function openApp(row: any) {
 
 // ── 의뢰서 작성 가능 여부 ───────────────────
 const canCreate = ref<boolean | null>(null);
+
+// "내 의뢰서 목록" 화면 권한(ms_keys "2"): 없으면 버튼을 숨겨 403 화면으로 가지 않게 함
+const canOpenMyApplications = usePermissStore().key.includes("2");
 
 // ── 내 샘플 모니터 (Sample Monitor 와 같은 조회 조건 + 본인 기준) ──
 const myApps = ref<any[]>([]);
@@ -364,9 +370,10 @@ async function loadForms() {
       order_dir: "desc",
       observer_id: userId, // 항상 본인 기준
     });
-    const t = (a: any) =>
+    // 생성일/수정일 중 최신 시각 순 (재투입·수정된 의뢰서가 위로)
+    const lastModified = (a: any) =>
       Math.max(a.createdDate ? new Date(a.createdDate).getTime() : 0, a.updatedDate ? new Date(a.updatedDate).getTime() : 0);
-    myForms.value = [...(data ?? [])].sort((a, b) => t(b) - t(a));
+    myForms.value = [...(data ?? [])].sort((a, b) => lastModified(b) - lastModified(a));
   } catch (e) {
     console.error("My Form List 조회 실패:", e);
   } finally {

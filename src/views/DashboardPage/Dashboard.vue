@@ -1,6 +1,5 @@
 <template>
-  <!-- admin: 기존 메인 화면 / 그 외: 개발자용 메인 화면 (2026-11-22)
-       기존 화면 원본: Dashboard.vue.bak_20261122 -->
+  <!-- admin: 기존 메인 화면(AdminDashboard.vue) / 그 외: 개발자용 메인 화면(DeveloperDashboard.vue) (2026-11-22) -->
   <AdminDashboard v-if="isAdmin" />
   <DeveloperDashboard v-else />
 </template>

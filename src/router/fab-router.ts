@@ -7,6 +7,7 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
     meta: {
       title: "의뢰서 작성",
       permiss: "11",
+      noSidebarPeek: true, // 의뢰서 작성/수정 화면: 왼쪽 메뉴 자동 펼침 끔 (상단 메뉴 아이콘으로 열기)
     },
     component: () =>
       import(
@@ -19,6 +20,7 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
     meta: {
       title: "Create Request Form",
       permiss: "11",
+      noSidebarPeek: true,
     },
     component: () =>
       import(
@@ -152,6 +154,7 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
     meta: {
       title: "의뢰서 보기",
       permiss: "11",
+      noSidebarPeek: true,
     },
     component: () =>
       import(
@@ -164,6 +167,7 @@ export const fabRouteIndexList: RouteRecordRaw[] = [
     meta: {
       title: "LoadApplication",
       permiss: "11",
+      noSidebarPeek: true,
     },
     component: () =>
       import(

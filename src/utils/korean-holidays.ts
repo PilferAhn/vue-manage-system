@@ -1,10 +1,15 @@
-// 메인 화면 달력에 표시하는 한국 공휴일 (2026-11-22)
-// - 표시 전용. 근무일 계산은 기존 date-utils.ts 의 holidaysList 를 그대로 사용 (이 파일과 무관)
-// - 일본(WJC) 사용자에게도 같은 날짜를 표시하고, 이름은 일본어 + "韓国の祝日" 안내
+// 한국 공휴일 + 회사 휴일 (2026-11-22) — 휴일은 이 파일 한 곳에서만 관리
+// - 메인 화면 달력 표시 (일본(WJC) 사용자는 일본어 이름 + "韓国の祝日" 안내)
+// - 근무일 계산(Fab Card 전달일, 리드타임): date-utils.ts 의 holidaysList 가 이 목록에서 만들어짐
 // - 매년 말에 다음 해 날짜를 추가할 것 (음력 명절/대체공휴일/임시공휴일은 해마다 다름)
 // - 회사 휴일: 매년 9월 1일 창립기념일
 
-export type KoreanHoliday = { ko: string; ja: string };
+export type KoreanHoliday = {
+  ko: string;
+  ja: string;
+  /** true: 공휴일이지만 회사는 근무 (달력에는 표시, 근무일 계산에서는 근무일로 봄) */
+  companyWorkday?: boolean;
+};
 
 const N = {
   newYear: { ko: "신정", ja: "元日" },
@@ -30,7 +35,7 @@ const N = {
 export const KOREAN_HOLIDAYS: Record<string, KoreanHoliday> = {
   // 2025
   "2025-01-01": N.newYear,
-  "2025-01-27": N.temporary,
+  "2025-01-27": { ...N.temporary, companyWorkday: true }, // 기존 회사 휴일 목록에 없던 날 (근무일 계산 결과 유지)
   "2025-01-28": N.seollal,
   "2025-01-29": N.seollal,
   "2025-01-30": N.seollal,
@@ -101,3 +106,16 @@ export const KOREAN_HOLIDAYS: Record<string, KoreanHoliday> = {
   "2027-12-25": N.christmas,
   "2027-12-27": N.substitute,
 };
+
+/**
+ * 근무일 계산용 휴일 목록 ("YYYY. M. D." 형식 = toLocaleDateString("ko-KR") 과 같은 형식)
+ * 회사 근무일(companyWorkday)은 제외. 주말에 걸친 공휴일도 들어가지만 근무일 계산은 주말을 이미 건너뛰므로 영향 없음
+ */
+export function buildWorkdayHolidayList(): string[] {
+  return Object.entries(KOREAN_HOLIDAYS)
+    .filter(([, h]) => !h.companyWorkday)
+    .map(([ymd]) => {
+      const [y, m, d] = ymd.split("-").map(Number);
+      return `${y}. ${m}. ${d}.`;
+    });
+}

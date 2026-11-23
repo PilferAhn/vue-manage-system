@@ -9,12 +9,12 @@
     <!-- WJC 사용자는 일본어 (utils/i18n.ts 의 isJapaneseUser) -->
     <p v-if="isJa" style="margin: 0 0 12px; line-height: 1.6">
       <strong>{{ props.productName }}</strong> の前回の依頼書があります。<br />
-      選択した依頼書の <strong>Freq Range, Wafer, HS Wafer Structure, IDT, Piston, Passivation, SiO2, Photo</strong>
+      選択した依頼書の <strong>Package, Designer, Band, Filter Type, Freq Range, Wafer, HS Wafer Structure, IDT, Piston, Passivation, SiO2, Photo</strong>
       条件を読み込みます。読み込んだ後に値を変更すると、提出時に警告が表示されます。
     </p>
     <p v-else style="margin: 0 0 12px; line-height: 1.6">
       <strong>{{ props.productName }}</strong> 이전 차수의 의뢰서가 있습니다.<br />
-      선택한 의뢰서의 <strong>Freq Range, Wafer, HS Wafer Structure, IDT, Piston, Passivation, SiO2, Photo</strong>
+      선택한 의뢰서의 <strong>Package, Designer, Band, Filter Type, Freq Range, Wafer, HS Wafer Structure, IDT, Piston, Passivation, SiO2, Photo</strong>
       조건을 불러옵니다. 불러온 뒤 값을 바꾸면 제출 시 경고가 표시됩니다.
     </p>
 

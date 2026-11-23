@@ -108,12 +108,13 @@ export function resetCancelCheckPopup(): void {
 export async function showMyCancelCheckPopup(userId: string | null): Promise<void> {
   if (!userId || userId === "admin" || userId === "MES") return;
   if (popupShownFor === userId) return;
-  popupShownFor = userId;
+  popupShownFor = userId; // 조회 중 화면 이동으로 다시 호출되어도 중복 실행 안 함
   let items: FabRequest[] = [];
   try {
     items = await getMyCancelCheckItems(userId);
   } catch (e) {
     console.error("투입취소 확인 대상 조회 실패:", e);
+    popupShownFor = null; // 실패하면 다음 화면 이동 때 다시 시도
     return;
   }
   if (!items.length) return;
